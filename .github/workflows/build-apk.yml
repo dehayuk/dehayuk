@@ -1,6 +1,6 @@
 # Membuat APK di server GitHub setiap kali ada perubahan, agar laptop tidak perlu Android SDK.
 # Setiap APK diterbitkan sebagai Release, sehingga siapa pun bisa mengunduh tanpa akun GitHub:
-# https://github.com/dehayuk/tebak-kata/releases/latest/download/dehayuk.apk
+# https://github.com/dehayuk/dehayuk/releases/latest/download/dehayuk.apk
 name: Build APK
 
 on:
