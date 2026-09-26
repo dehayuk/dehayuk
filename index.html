@@ -247,6 +247,18 @@ const REWARD_CLEAN = 5;
 const INTERSTITIAL_EVERY = 3;
 const STORE_KEY = "tebakkata.v1";
 
+// ID AdMob milik app Tebak Kata. Selama testing = true, AdMob hanya mengirim iklan uji.
+// Ubah ke false hanya untuk versi yang terbit di Play Store.
+const ADMOB = {
+  testing: true,
+  banner: "ca-app-pub-4794081394235829/4901968658",
+  interstitial: "ca-app-pub-4794081394235829/1704959677",
+  rewarded: "ca-app-pub-4794081394235829/8681256555"
+};
+// Di app Android, plugin AdMob tersedia; di browser tidak, jadi iklan tiruan yang tampil.
+const NativeAds = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() && window.capacitorStripe
+  ? window.capacitorStripe.AdMob : null;
+
 let state = { level: 0, coins: 60, freeHints: 0 };
 try {
   const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
@@ -399,7 +411,7 @@ function win() {
       "<button class=\"btn main\" id=\"next\" type=\"button\">Lanjut</button>",
       () => $("next").onclick = () => {
         hideOverlay();
-        if (solved % INTERSTITIAL_EVERY === 0) showAd("interstitial", startLevel);
+        if (solved % INTERSTITIAL_EVERY === 0) showInterstitial(startLevel);
         else startLevel();
       }
     );
@@ -414,6 +426,83 @@ function showFinish() {
   );
 }
 
+const native = { interstitialReady: false, rewardedReady: false, afterInterstitial: null, rewardEarned: false };
+
+async function initNativeAds() {
+  if (!NativeAds) return;
+  document.querySelector(".banner").hidden = true;
+  try {
+    await NativeAds.initialize({});
+    try {
+      const consent = await NativeAds.requestConsentInfo();
+      if (consent.isConsentFormAvailable && consent.status === "REQUIRED") await NativeAds.showConsentForm();
+    } catch (e) {}
+
+    NativeAds.addListener("interstitialAdDismissed", () => {
+      const next = native.afterInterstitial;
+      native.afterInterstitial = null;
+      prepareInterstitial();
+      if (next) next();
+    });
+    NativeAds.addListener("interstitialAdFailedToShow", () => {
+      const next = native.afterInterstitial;
+      native.afterInterstitial = null;
+      prepareInterstitial();
+      if (next) next();
+    });
+    NativeAds.addListener("onRewardedVideoAdReward", () => { native.rewardEarned = true; });
+    NativeAds.addListener("onRewardedVideoAdDismissed", () => {
+      if (native.rewardEarned) {
+        state.freeHints++;
+        save();
+        toast("Hadiah didapat: 1 petunjuk gratis");
+      }
+      native.rewardEarned = false;
+      render();
+      prepareRewarded();
+    });
+
+    await NativeAds.showBanner({
+      adId: ADMOB.banner, adSize: "ADAPTIVE_BANNER", position: "BOTTOM_CENTER", margin: 0, isTesting: ADMOB.testing
+    });
+    prepareInterstitial();
+    prepareRewarded();
+  } catch (e) {}
+}
+
+function prepareInterstitial() {
+  native.interstitialReady = false;
+  NativeAds.prepareInterstitial({ adId: ADMOB.interstitial, isTesting: ADMOB.testing })
+    .then(() => { native.interstitialReady = true; }).catch(() => {});
+}
+
+function prepareRewarded() {
+  native.rewardedReady = false;
+  NativeAds.prepareRewardVideoAd({ adId: ADMOB.rewarded, isTesting: ADMOB.testing })
+    .then(() => { native.rewardedReady = true; }).catch(() => {});
+}
+
+function showInterstitial(onDone) {
+  if (!NativeAds) return showAd("interstitial", onDone);
+  if (!native.interstitialReady) { prepareInterstitial(); return onDone(); }
+  native.interstitialReady = false;
+  native.afterInterstitial = onDone;
+  NativeAds.showInterstitial().catch(() => {
+    native.afterInterstitial = null;
+    prepareInterstitial();
+    onDone();
+  });
+}
+
+function showRewarded() {
+  if (!NativeAds) return showAd("rewarded", render);
+  if (!native.rewardedReady) { prepareRewarded(); return toast("Iklan belum siap, coba lagi sebentar"); }
+  native.rewardedReady = false;
+  native.rewardEarned = false;
+  NativeAds.showRewardVideoAd().catch(() => { prepareRewarded(); toast("Iklan gagal tampil, coba lagi"); });
+}
+
+// Iklan tiruan untuk versi browser, meniru perilaku iklan asli.
 function showAd(kind, onDone) {
   const rewarded = kind === "rewarded";
   let left = rewarded ? 5 : 3;
@@ -471,7 +560,7 @@ function startLevel() {
 
 $("btnClear").onclick = clearSlots;
 $("btnHint").onclick = useHint;
-$("btnWatch").onclick = () => { if (!cur.busy) showAd("rewarded", render); };
+$("btnWatch").onclick = () => { if (!cur.busy) showRewarded(); };
 
 document.addEventListener("keydown", (e) => {
   if (!$("overlay").hidden || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -488,4 +577,5 @@ document.addEventListener("keydown", (e) => {
 });
 
 startLevel();
+initNativeAds();
 </script>
