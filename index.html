@@ -43,12 +43,6 @@
     background: var(--board); border: 1px solid var(--board-edge); border-radius: 16px;
     padding: 18px; display: flex; flex-direction: column; gap: 14px;
   }
-  .tiles { display: flex; gap: 6px; }
-  .tiles i {
-    width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; font-style: normal;
-    background: var(--tile); color: var(--tile-ink); box-shadow: inset 0 -3px 0 var(--tile-shade);
-    font-family: var(--display); font-weight: 800; font-size: 20px;
-  }
   .game h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 26px; line-height: 1.1; }
   .game p { margin: 0; color: var(--muted); line-height: 1.5; }
   .features { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
@@ -64,15 +58,21 @@
   .btn.install { align-self: flex-start; margin-top: 8px; border-color: var(--tile-shade); text-align: left; }
   a:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 
-  /* Ikon mini tiap game, dibuat dengan CSS tanpa gambar */
-  .art { height: 36px; display: flex; align-items: flex-end; gap: 6px; }
-  .blocks { display: grid; grid-template-columns: repeat(5, 16px); grid-auto-rows: 16px; gap: 3px; height: auto; }
-  .blocks i { border-radius: 4px; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .25); }
-  .tube {
-    width: 22px; height: 36px; border: 2px solid #C9A46A; border-top: 0; border-radius: 0 0 11px 11px;
+  /* Ikon tiap game: gambar yang menggambarkan cara mainnya (bukan nama game), tinggi sama untuk semua.
+     Dibuat dengan CSS, tanpa berkas gambar. */
+  .art { height: 38px; display: flex; align-items: flex-end; gap: 5px; }
+  .art .letter {
+    width: 30px; height: 30px; border-radius: 7px; display: grid; place-items: center; font-style: normal;
+    background: var(--tile); color: var(--tile-ink); box-shadow: inset 0 -3px 0 var(--tile-shade);
+    font-family: var(--display); font-weight: 800; font-size: 17px;
+  }
+  .art.blocks { display: grid; grid-template-columns: repeat(5, 16px); grid-template-rows: repeat(2, 16px); gap: 3px; align-content: end; }
+  .art .block { width: 16px; height: 16px; border-radius: 4px; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .25); }
+  .art .tube {
+    width: 22px; height: 38px; border: 2px solid #C9A46A; border-top: 0; border-radius: 0 0 11px 11px;
     display: flex; flex-direction: column-reverse; align-items: center; gap: 1px; padding-bottom: 2px;
   }
-  .tube i { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset -2px -2px 0 rgba(0, 0, 0, .25); }
+  .art .ball { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset -2px -2px 0 rgba(0, 0, 0, .25); }
 
   .game.soon { background: transparent; border-style: dashed; justify-content: center; }
   .game.soon h2 { color: var(--muted); font-size: 22px; }
@@ -90,15 +90,13 @@
   <p class="section-label">Game</p>
   <div class="games">
     <article class="game">
-      <div class="tiles" aria-hidden="true"><i>N</i><i>A</i><i>L</i><i>A</i><i>R</i></div>
+      <div class="art" aria-hidden="true"><i class="letter">K</i><i class="letter">A</i><i class="letter">T</i><i class="letter">A</i></div>
       <h2>NalarGame</h2>
-      <p>Susun huruf menjadi kata. Level tanpa batas dari ribuan kata bahasa Indonesia, ditambah tebak kata dengan petunjuk yang jenaka.</p>
+      <p>Susun huruf menjadi kata dari ribuan kata bahasa Indonesia. Ada juga Mode Kilat, tebak kata jenaka, dan Tebak Aku bersama teman.</p>
       <ul class="features">
-        <li>Susun Kata tanpa batas</li>
-        <li>Tantangan Harian</li>
-        <li>Mode Kilat</li>
-        <li>Duel</li>
-        <li>Tebak Aku</li>
+        <li>Tanpa batas</li>
+        <li>Harian</li>
+        <li>Tantang teman</li>
       </ul>
       <div class="actions">
         <a class="btn main" href="/nalargame/">Main sekarang</a>
@@ -107,14 +105,14 @@
 
     <article class="game">
       <div class="art blocks" aria-hidden="true">
-        <i style="background:#F4C152"></i><i style="background:#F4C152"></i><i></i><i style="background:#6EC1FF"></i><i style="background:#6EC1FF"></i>
-        <i style="background:#FF7A70"></i><i style="background:#F4C152"></i><i style="background:#7FE0A3"></i><i style="background:#7FE0A3"></i><i style="background:#6EC1FF"></i>
+        <i class="block" style="background:#F4C152"></i><i class="block" style="background:#F4C152"></i><i></i><i class="block" style="background:#6EC1FF"></i><i class="block" style="background:#6EC1FF"></i>
+        <i class="block" style="background:#FF7A70"></i><i class="block" style="background:#F4C152"></i><i class="block" style="background:#7FE0A3"></i><i class="block" style="background:#7FE0A3"></i><i class="block" style="background:#6EC1FF"></i>
       </div>
       <h2>Balok Ria</h2>
       <p>Seret balok ke papan, penuhi baris atau kolom sampai meledak. Dua menit semainan, dan selalu ingin sekali lagi.</p>
       <ul class="features">
-        <li>Main santai tanpa batas</li>
-        <li>Harian: balok sama untuk semua</li>
+        <li>Tanpa batas</li>
+        <li>Harian</li>
         <li>Tantang teman</li>
       </ul>
       <div class="actions">
@@ -124,14 +122,14 @@
 
     <article class="game">
       <div class="art" aria-hidden="true">
-        <span class="tube"><i style="background:#FF7A70"></i><i style="background:#6EC1FF"></i></span>
-        <span class="tube"><i style="background:#6EC1FF"></i><i style="background:#7FE0A3"></i><i style="background:#FF7A70"></i></span>
-        <span class="tube"><i style="background:#7FE0A3"></i></span>
+        <span class="tube"><i class="ball" style="background:#FF7A70"></i><i class="ball" style="background:#6EC1FF"></i></span>
+        <span class="tube"><i class="ball" style="background:#6EC1FF"></i><i class="ball" style="background:#7FE0A3"></i><i class="ball" style="background:#FF7A70"></i></span>
+        <span class="tube"><i class="ball" style="background:#7FE0A3"></i></span>
       </div>
       <h2>Pilah Kelereng</h2>
-      <p>Kelerengnya tercampur! Pindahkan satu per satu antar tabung bambu sampai setiap tabung berisi satu warna. Santai, tanpa waktu, levelnya tidak pernah habis.</p>
+      <p>Kelerengnya tercampur! Pindahkan antar tabung bambu sampai setiap tabung berisi satu warna. Santai, tanpa waktu, dan levelnya tidak pernah habis.</p>
       <ul class="features">
-        <li>Level tanpa batas</li>
+        <li>Tanpa batas</li>
         <li>Harian</li>
         <li>Tantang teman</li>
       </ul>
