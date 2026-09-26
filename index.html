@@ -177,6 +177,22 @@
   .panel .row { display: flex; gap: 8px; width: 100%; }
   .panel .row .btn { flex: 1; }
   .count { font-variant-numeric: tabular-nums; font-weight: 800; }
+  .panel b { color: var(--ink); }
+
+  .name-input {
+    width: 100%; padding: 10px 12px; border-radius: 10px; text-align: center;
+    border: 1px solid var(--board-edge); background: var(--ground); color: var(--ink);
+    font-family: var(--body); font-weight: 800; font-size: 18px;
+  }
+  .name-input:focus { outline: 2px solid var(--tile); outline-offset: 1px; }
+  .versus { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; width: 100%; }
+  .versus .side { background: var(--ground); border: 1px solid var(--board-edge); border-radius: 12px; padding: 10px 6px; min-width: 0; }
+  .versus .side.win { border-color: var(--good); box-shadow: 0 0 0 1px var(--good); }
+  .versus .who { font-weight: 800; overflow-wrap: anywhere; }
+  .versus .score { font-family: var(--display); font-weight: 800; font-size: 26px; line-height: 1.1; }
+  .versus .side.win .score { color: var(--good); }
+  .versus .time { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .versus .vs { font-family: var(--display); font-weight: 800; color: var(--tile); }
 
   .toast {
     position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
@@ -216,6 +232,11 @@
         <span class="mode-name">Mode Kilat</span>
         <span class="mode-desc">60 detik, jawab sebanyak mungkin</span>
         <span class="mode-state" id="stBlitz">Rekor: 0</span>
+      </button>
+      <button class="mode" id="modeDuel" type="button">
+        <span class="mode-name">Duel</span>
+        <span class="mode-desc">Tantang teman lewat WhatsApp, siapa lebih jago?</span>
+        <span class="mode-state" id="stDuel">Tantang</span>
       </button>
       <button class="mode" id="modeAdventure" type="button">
         <span class="mode-name">Petualangan</span>
@@ -522,7 +543,12 @@ const DAILY_BONUS = 30;
 const BLITZ_SECONDS = 60;
 const BLITZ_COINS = 2;
 const BLITZ_INTERSTITIAL_EVERY = 2;
-const XP_PER_WIN = { adventure: 10, daily: 15, blitz: 5 };
+const XP_PER_WIN = { adventure: 10, daily: 15, blitz: 5, duel: 10 };
+const DUEL_COUNT = 5;
+const DUEL_WIN_BONUS = 20;
+const DUEL_MEMORY = 30;
+// Alamat yang dibagikan dalam tantangan dan hasil harian. Ganti di sini bila memakai domain sendiri.
+const GAME_URL = "https://socialiam.github.io/tebak-kata/";
 
 // Gelar naik terus. Setelah Legenda Kata, bintangnya bertambah tanpa batas.
 const TITLES = [
@@ -546,7 +572,8 @@ const NativeAds = IN_APP && window.capacitorStripe ? window.capacitorStripe.AdMo
 let state = {
   level: 0, coins: 60, freeHints: 0, xp: 0,
   streak: 0, bestStreak: 0, lastDailyDate: null, daily: null,
-  blitzBest: 0, blitzRounds: 0
+  blitzBest: 0, blitzRounds: 0,
+  name: "", duelWins: 0, duelLosses: 0, duelsDone: {}, pendingDuel: null
 };
 try {
   const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
@@ -558,6 +585,7 @@ const $ = (id) => document.getElementById(id);
 let mode = "adventure";
 let cur = null;
 let blitz = null;
+let duel = null;
 
 function rng(seed) {
   return function () {
@@ -655,6 +683,10 @@ function renderHome() {
 
   $("stBlitz").textContent = "Rekor: " + state.blitzBest + " kata";
 
+  const pending = state.pendingDuel ? decodeDuel(state.pendingDuel) : null;
+  $("stDuel").textContent = pending ? "Ditantang " + pending.name + "!"
+    : state.duelWins + state.duelLosses > 0 ? "Menang " + state.duelWins + " · Kalah " + state.duelLosses : "Tantang";
+
   const finished = state.level >= LEVELS.length;
   $("descAdventure").textContent = LEVELS.length + " soal, makin lama makin sulit";
   $("stAdventure").textContent = finished ? "Main lagi" : state.level === 0 ? "Mulai" : "Soal " + (state.level + 1) + " / " + LEVELS.length;
@@ -664,6 +696,7 @@ setInterval(() => { if (!$("home").hidden) renderHome(); }, 1000);
 function showGame() { $("home").hidden = true; $("game").hidden = false; }
 function goHome() {
   stopBlitz();
+  stopDuel();
   cur = null;
   $("game").hidden = true;
   $("home").hidden = false;
@@ -674,6 +707,7 @@ function goHome() {
 function currentIndex() {
   if (mode === "daily") return dailyQuestions(state.daily.date)[state.daily.index];
   if (mode === "blitz") return blitz.queue[blitz.pos % blitz.queue.length];
+  if (mode === "duel") return duel.queue[duel.pos];
   return ORDER[state.level];
 }
 
@@ -714,6 +748,7 @@ function render() {
   $("clue").textContent = cur.q.clue;
 
   if (mode === "blitz") updateBlitzHud();
+  else if (mode === "duel") updateDuelHud();
   else if (mode === "daily") {
     $("levelLabel").textContent = "Harian " + (state.daily.index + 1) + " / " + DAILY_COUNT;
     $("bar").style.width = (state.daily.index / DAILY_COUNT * 100) + "%";
@@ -722,7 +757,8 @@ function render() {
     $("bar").style.width = (state.level / LEVELS.length * 100) + "%";
   }
 
-  const isBlitz = mode === "blitz";
+  // Kilat dan Duel adalah adu cepat: tanpa petunjuk, ada tombol Lewati.
+  const isBlitz = mode === "blitz" || mode === "duel";
   $("btnHint").hidden = isBlitz;
   $("btnWatch").hidden = isBlitz;
   $("btnSkip").hidden = !isBlitz;
@@ -791,7 +827,7 @@ function checkIfFull() {
 }
 
 function useHint() {
-  if (!cur || cur.busy || mode === "blitz") return;
+  if (!cur || cur.busy || mode === "blitz" || mode === "duel") return;
   if (state.freeHints > 0) state.freeHints--;
   else if (state.coins >= HINT_COST) state.coins -= HINT_COST;
   else return toast(IN_APP ? "Koin kurang. Tonton iklan untuk petunjuk gratis" : "Koin kurang. Pakai tombol petunjuk gratis");
@@ -834,6 +870,19 @@ function win() {
       if (mode !== "blitz" || !blitz || blitz.over) return;
       blitz.pos++;
       loadQuestion();
+    }, 350);
+    return;
+  }
+
+  if (mode === "duel") {
+    duel.solved++;
+    state.coins += BLITZ_COINS;
+    save();
+    $("coins").textContent = state.coins;
+    if (levelUp) toast("Naik gelar: " + levelUp + "!");
+    setTimeout(() => {
+      if (mode !== "duel" || !duel || duel.over) return;
+      nextDuelQuestion();
     }, 350);
     return;
   }
@@ -925,7 +974,7 @@ function finishDaily(upLine) {
   const shareText = "Tebak Kata Harian " + day + "/" + m + "/" + y + "\n" +
     "✅ " + DAILY_COUNT + "/" + DAILY_COUNT + (d.clean ? " tanpa petunjuk" : "") + "\n" +
     "🔥 " + state.streak + " hari beruntun\n" +
-    "https://socialiam.github.io/tebak-kata/";
+    GAME_URL;
 
   showPanel(
     "<h2>Tuntas!</h2><p>Tantangan hari ini selesai" + (d.clean ? " tanpa petunjuk" : "") + ".</p>" +
@@ -940,8 +989,15 @@ function finishDaily(upLine) {
   );
 }
 
+// Di HP, buka menu bagikan bawaan (WhatsApp dan lainnya); bila tidak tersedia, salin teks.
+function shareText(text) {
+  if (navigator.share) {
+    navigator.share({ text }).catch((e) => { if (!e || e.name !== "AbortError") copyText(text); });
+  } else copyText(text);
+}
+
 function copyText(text) {
-  const done = () => toast("Hasil disalin. Tempel di WhatsApp!");
+  const done = () => toast("Tersalin. Tempel di WhatsApp!");
   const fallback = () => {
     const ta = document.createElement("textarea");
     ta.value = text;
@@ -1006,9 +1062,194 @@ function endBlitz() {
 }
 
 function skipQuestion() {
-  if (mode !== "blitz" || !cur || cur.busy) return;
+  if (!cur || cur.busy) return;
+  if (mode === "duel") return nextDuelQuestion();
+  if (mode !== "blitz") return;
   blitz.pos++;
   loadQuestion();
+}
+
+// ---------- Duel ----------
+// Tanpa server: soal (seed), nama, dan skor penantang disimpan di dalam link.
+// Menang = benar lebih banyak; bila sama, yang lebih cepat.
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
+}
+function cleanName(s) { return String(s || "").replace(/[^\p{L}\p{N} ._-]/gu, "").trim().slice(0, 12); }
+function fmtTime(tenths) { return (tenths / 10).toFixed(1).replace(".", ",") + " dtk"; }
+
+function encodeDuel(d) {
+  const json = JSON.stringify([1, d.seed, d.name, d.solved, d.tenths]);
+  return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+function decodeDuel(code) {
+  try {
+    const a = JSON.parse(decodeURIComponent(escape(atob(code.replace(/-/g, "+").replace(/_/g, "/")))));
+    if (!Array.isArray(a) || a[0] !== 1) return null;
+    const [, seed, name, solved, tenths] = a;
+    if (!Number.isInteger(seed) || !Number.isInteger(solved) || solved < 0 || solved > DUEL_COUNT) return null;
+    if (!Number.isInteger(tenths) || tenths < 0 || tenths > 360000) return null;
+    const cleaned = cleanName(name);
+    return cleaned ? { seed, name: cleaned, solved, tenths, code } : null;
+  } catch (e) { return null; }
+}
+function duelQuestions(seed) {
+  return shuffle(LEVELS.map((_, i) => i), rng(seed)).slice(0, DUEL_COUNT)
+    .sort((a, b) => LEVELS[a].answer.length - LEVELS[b].answer.length);
+}
+function compareDuel(a, b) {
+  if (a.solved !== b.solved) return a.solved > b.solved ? 1 : -1;
+  if (a.tenths !== b.tenths) return a.tenths < b.tenths ? 1 : -1;
+  return 0;
+}
+
+function askName(then) {
+  showPanel(
+    "<h2>Siapa namamu?</h2><p>Nama ini dilihat lawan duelmu.</p>" +
+    "<input class=\"name-input\" id=\"nameInput\" maxlength=\"12\" autocomplete=\"nickname\" value=\"" + esc(state.name) + "\">" +
+    "<button class=\"btn main\" id=\"nameOk\" type=\"button\">Mulai duel</button>" +
+    "<button class=\"btn\" id=\"nameCancel\" type=\"button\">Batal</button>",
+    () => {
+      const go = () => {
+        const n = cleanName($("nameInput").value);
+        if (!n) return toast("Isi namamu dulu ya");
+        state.name = n;
+        save();
+        hideOverlay();
+        then();
+      };
+      $("nameOk").onclick = go;
+      $("nameCancel").onclick = () => { hideOverlay(); renderHome(); };
+      $("nameInput").onkeydown = (e) => { if (e.key === "Enter") go(); };
+    }
+  );
+  $("nameInput").focus();
+}
+
+function startDuel(opponent) {
+  askName(() => {
+    if (opponent) { state.pendingDuel = null; save(); }
+    const seed = opponent ? opponent.seed : newSeed();
+    duel = { seed, queue: duelQuestions(seed), pos: 0, solved: 0, startAt: Date.now(), opponent, over: false, timer: null };
+    mode = "duel";
+    showGame();
+    loadQuestion();
+    duel.timer = setInterval(updateDuelHud, 200);
+  });
+}
+
+function stopDuel() {
+  if (duel && !duel.over) {
+    clearInterval(duel.timer);
+    duel.over = true;
+  }
+}
+
+function updateDuelHud() {
+  if (!duel) return;
+  const tenths = Math.floor((Date.now() - duel.startAt) / 100);
+  $("levelLabel").textContent = "Duel " + Math.min(duel.pos + 1, DUEL_COUNT) + " / " + DUEL_COUNT + " · " + fmtTime(tenths);
+  $("bar").style.width = (duel.pos / DUEL_COUNT * 100) + "%";
+}
+
+function nextDuelQuestion() {
+  duel.pos++;
+  if (duel.pos >= DUEL_COUNT) return finishDuel();
+  loadQuestion();
+}
+
+function finishDuel() {
+  stopDuel();
+  if (cur) cur.busy = true;
+  const me = { name: state.name, solved: duel.solved, tenths: Math.round((Date.now() - duel.startAt) / 100) };
+  const opp = duel.opponent;
+
+  if (!opp) {
+    const url = GAME_URL + "?duel=" + encodeDuel({ seed: duel.seed, name: me.name, solved: me.solved, tenths: me.tenths });
+    const text = me.name + " menantangmu di Tebak Kata! Aku benar " + me.solved + "/" + DUEL_COUNT +
+      " dalam " + fmtTime(me.tenths) + ". Berani lawan? " + url;
+    showPanel(
+      "<h2>Selesai!</h2><div class=\"word\">" + me.solved + " / " + DUEL_COUNT + "</div>" +
+      "<p>Waktumu " + fmtTime(me.tenths) + ". Kirim ke teman: soalnya sama persis, siapa lebih jago?</p>" +
+      "<button class=\"btn main\" id=\"send\" type=\"button\">Kirim tantangan</button>" +
+      "<button class=\"btn\" id=\"toMenu\" type=\"button\">Menu</button>",
+      () => {
+        $("send").onclick = () => shareText(text);
+        $("toMenu").onclick = () => { hideOverlay(); goHome(); };
+      }
+    );
+    return;
+  }
+
+  const result = compareDuel(me, opp);
+  if (result > 0) { state.duelWins++; state.coins += DUEL_WIN_BONUS; }
+  else if (result < 0) state.duelLosses++;
+  state.duelsDone[opp.code] = { solved: me.solved, tenths: me.tenths };
+  const keys = Object.keys(state.duelsDone);
+  if (keys.length > DUEL_MEMORY) delete state.duelsDone[keys[0]];
+  save();
+  $("coins").textContent = state.coins;
+  showVersus(me, opp, result, true);
+}
+
+function showVersus(me, opp, result, fresh) {
+  const side = (p, isWinner) =>
+    "<div class=\"side" + (isWinner ? " win" : "") + "\"><div class=\"who\">" + esc(p.name) + "</div>" +
+    "<div class=\"score\">" + p.solved + "/" + DUEL_COUNT + "</div><div class=\"time\">" + fmtTime(p.tenths) + "</div></div>";
+  const winnerLine = result > 0 ? me.name + " menang!" : result < 0 ? opp.name + " menang!" : "Seri!";
+  const text = "Duel Tebak Kata: " + opp.name + " " + opp.solved + "/" + DUEL_COUNT + " (" + fmtTime(opp.tenths) + ") vs " +
+    me.name + " " + me.solved + "/" + DUEL_COUNT + " (" + fmtTime(me.tenths) + "). " + winnerLine + " Main juga: " + GAME_URL;
+  showPanel(
+    "<h2>" + (result > 0 ? "Kamu menang!" : result < 0 ? "Kamu kalah" : "Seri!") + "</h2>" +
+    "<div class=\"versus\">" + side(opp, result < 0) + "<div class=\"vs\">VS</div>" + side(me, result > 0) + "</div>" +
+    (fresh && result > 0 ? "<p>+" + DUEL_WIN_BONUS + " koin bonus menang</p>" : "") +
+    (fresh ? "" : "<p>Kamu sudah menjawab tantangan ini.</p>") +
+    "<button class=\"btn\" id=\"send\" type=\"button\">Kirim hasil ke " + esc(opp.name) + "</button>" +
+    "<button class=\"btn main\" id=\"newDuel\" type=\"button\">Tantang balik, soal baru</button>" +
+    "<button class=\"btn\" id=\"toMenu\" type=\"button\">Menu</button>",
+    () => {
+      $("send").onclick = () => shareText(text);
+      $("newDuel").onclick = () => { hideOverlay(); startDuel(null); };
+      $("toMenu").onclick = () => { hideOverlay(); goHome(); };
+    }
+  );
+}
+
+function showDuelIntro(opp) {
+  const done = state.duelsDone[opp.code];
+  if (done) {
+    state.pendingDuel = null;
+    save();
+    const me = { name: state.name || "Kamu", solved: done.solved, tenths: done.tenths };
+    return showVersus(me, opp, compareDuel(me, opp), false);
+  }
+  showPanel(
+    "<h2>Ditantang!</h2><p><b>" + esc(opp.name) + "</b> menantangmu duel Tebak Kata.</p>" +
+    "<div class=\"word\">" + opp.solved + " / " + DUEL_COUNT + "</div>" +
+    "<p>dalam " + fmtTime(opp.tenths) + ". Soalnya sama persis. Bisa lebih baik?</p>" +
+    "<button class=\"btn main\" id=\"accept\" type=\"button\">Terima tantangan</button>" +
+    "<button class=\"btn\" id=\"later\" type=\"button\">Nanti saja</button>",
+    () => {
+      $("accept").onclick = () => { hideOverlay(); startDuel(opp); };
+      $("later").onclick = () => { state.pendingDuel = opp.code; save(); hideOverlay(); renderHome(); };
+    }
+  );
+}
+
+function openDuelMenu() {
+  const pending = state.pendingDuel ? decodeDuel(state.pendingDuel) : null;
+  if (pending) return showDuelIntro(pending);
+  startDuel(null);
+}
+
+// Link tantangan: ?duel=kode. Setelah dibaca, alamatnya dibersihkan agar tidak terbuka ulang.
+function checkIncomingDuel() {
+  const code = new URLSearchParams(location.search).get("duel");
+  if (!code) return;
+  try { history.replaceState(null, "", location.pathname); } catch (e) {}
+  const opp = decodeDuel(code);
+  if (!opp) return toast("Link tantangan tidak valid");
+  showDuelIntro(opp);
 }
 
 // ---------- Iklan ----------
@@ -1155,6 +1396,7 @@ function toast(msg) {
 $("modeAdventure").onclick = startAdventure;
 $("modeDaily").onclick = startDaily;
 $("modeBlitz").onclick = startBlitz;
+$("modeDuel").onclick = openDuelMenu;
 $("btnBack").onclick = goHome;
 $("btnClear").onclick = clearSlots;
 $("btnHint").onclick = useHint;
@@ -1177,4 +1419,5 @@ document.addEventListener("keydown", (e) => {
 
 renderHome();
 initNativeAds();
+checkIncomingDuel();
 </script>
