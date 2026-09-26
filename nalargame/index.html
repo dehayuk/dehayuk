@@ -105,7 +105,7 @@
     color: var(--tile); border: 1px solid var(--tile-shade); padding: 1px 10px; border-radius: 6px;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
   }
-  #levelLabel { margin-left: auto; color: var(--muted); font-size: 13px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  #levelLabel, .level-label { margin-left: auto; color: var(--muted); font-size: 13px; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .bar { height: 6px; background: var(--board); border-radius: 3px; overflow: hidden; }
   .bar > i { display: block; height: 100%; background: var(--tile); transition: width .4s; }
 
@@ -227,6 +227,35 @@
     grid-row: span 2; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
     background: var(--tile); color: var(--tile-ink); font-weight: 800; font-size: 14px;
   }
+
+  /* Susun Kata */
+  .mode.primary { border-color: var(--tile-shade); box-shadow: 0 0 0 1px var(--tile-shade) inset; }
+  .mode.primary .mode-name { color: var(--tile); }
+  .words {
+    display: flex; flex-wrap: wrap; gap: 10px 12px; justify-content: center; align-content: flex-start;
+    background: var(--board); border: 1px solid var(--board-edge); border-radius: 14px; padding: 14px 10px; min-height: 96px;
+  }
+  .word { display: flex; gap: 3px; }
+  .word i {
+    width: 26px; height: 26px; border-radius: 6px; display: grid; place-items: center; font-style: normal;
+    background: var(--ground); border: 1px solid var(--slot-edge);
+    font-family: var(--display); font-weight: 800; font-size: 15px; color: var(--tile-ink);
+  }
+  .word i.shown { background: var(--tile); border-color: transparent; }
+  .word.found i { background: var(--good); border-color: transparent; }
+  .word.pop { animation: pop .4s ease-out; }
+  .attempt { min-height: 54px; display: flex; justify-content: center; align-items: center; gap: 6px; }
+  .attempt i {
+    width: 42px; height: 50px; border-radius: 10px; display: grid; place-items: center; font-style: normal;
+    background: var(--tile); color: var(--tile-ink); box-shadow: inset 0 -4px 0 var(--tile-shade);
+    font-family: var(--display); font-weight: 800; font-size: 26px;
+  }
+  .attempt .hint { color: var(--muted); font-size: 13px; }
+  .attempt.wrong { animation: shake .4s; }
+  .attempt.wrong i { background: var(--bad); box-shadow: inset 0 -4px 0 #C24E46; }
+  .wheel { display: flex; justify-content: center; gap: 8px; }
+  .wheel .tile { flex: 0 1 56px; min-width: 0; }
+  #susunSubmit { width: 100%; }
   .versus { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; width: 100%; }
   .versus .side { background: var(--ground); border: 1px solid var(--board-edge); border-radius: 12px; padding: 10px 6px; min-width: 0; }
   .versus .side.win { border-color: var(--good); box-shadow: 0 0 0 1px var(--good); }
@@ -272,6 +301,11 @@
     </div>
 
     <div class="modes">
+      <button class="mode primary" id="modeSusun" type="button">
+        <span class="mode-name">Susun Kata</span>
+        <span class="mode-desc">Level tanpa batas dari ribuan kata. Temukan semua kata dari huruf yang ada.</span>
+        <span class="mode-state" id="stSusun">Level 1</span>
+      </button>
       <button class="mode" id="modeDaily" type="button">
         <span class="mode-name">Tantangan Harian</span>
         <span class="mode-desc">5 soal baru setiap hari, sama untuk semua pemain</span>
@@ -324,6 +358,25 @@
     <p class="note">Ketuk huruf untuk mengisi, ketuk kotak untuk mengembalikan. Di komputer bisa langsung mengetik.</p>
   </section>
 
+  <section id="susun" hidden>
+    <div class="topbar">
+      <button class="back" id="susunBack" type="button">‹ Menu</button>
+      <span class="chip">Susun Kata</span>
+      <span id="susunLabel" class="level-label">Level 1</span>
+    </div>
+    <div class="bar"><i id="susunBar" style="width:0%"></i></div>
+    <div class="words" id="susunWords" aria-label="Kata yang harus ditemukan"></div>
+    <div class="attempt" id="susunAttempt" aria-live="polite"></div>
+    <div class="wheel" id="susunTiles"></div>
+    <div class="actions">
+      <button class="btn" id="susunErase" type="button">Hapus<small>huruf terakhir</small></button>
+      <button class="btn" id="susunShuffle" type="button">Acak<small>susun ulang</small></button>
+      <button class="btn watch" id="susunHint" type="button">Petunjuk<small id="susunHintCost">20 koin</small></button>
+    </div>
+    <button class="btn main" id="susunSubmit" type="button">Kirim kata</button>
+    <p class="note" id="susunNote">Ketuk huruf untuk menyusun kata (minimal 3 huruf), lalu Kirim. Kata lain yang benar menjadi bonus koin.</p>
+  </section>
+
   <section id="maker" hidden>
     <div class="topbar">
       <button class="back" id="makerBack" type="button">‹ Menu</button>
@@ -349,6 +402,7 @@
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
+<script src="kamus.js"></script>
 <script>
 const THEMES = [
   ["Hewan", [
@@ -687,6 +741,8 @@ try {
 } catch (e) {}
 // Pemain lama tidak perlu panduan pemain baru.
 if (!state.onboarded && (state.xp > 0 || state.level > 0)) state.onboarded = true;
+// Kemajuan Susun Kata: level sekarang, kata yang sudah ditemukan, huruf petunjuk yang dibuka, kata bonus.
+if (!state.susun || typeof state.susun.level !== "number") state.susun = { level: 1, found: [], shown: {}, bonus: [] };
 function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
 
 const $ = (id) => document.getElementById(id);
@@ -863,6 +919,7 @@ function renderHome() {
     : d && d.index > 0 ? "Lanjut " + d.index + " / " + DAILY_COUNT : "Siap dimainkan";
 
   $("stBlitz").textContent = "Rekor: " + state.blitzBest + " kata";
+  $("stSusun").textContent = "Level " + state.susun.level;
 
   const pendingAku = state.pendingAku ? decodeAku(state.pendingAku) : null;
   $("stAku").textContent = pendingAku ? "Soal dari " + pendingAku.name + "!" : state.akuDraft ? "Kirim lagi" : "Buat soal";
@@ -884,8 +941,11 @@ function goHome() {
   stopDuel();
   cur = null;
   aku = null;
+  susunLevel = null;
+  susunPicked = [];
   $("game").hidden = true;
   $("maker").hidden = true;
+  $("susun").hidden = true;
   $("home").hidden = false;
   renderHome();
 }
@@ -1682,6 +1742,231 @@ function checkIncomingAku() {
   showAkuIntro(data);
 }
 
+// ---------- Susun Kata (level tanpa batas) ----------
+// Setiap level dibentuk otomatis dari satu kata dasar di kamus.js: pemain menyusun huruf-hurufnya
+// menjadi semua kata wajib. Kata benar lain yang tidak wajib menjadi bonus koin.
+const KAMUS = window.KAMUS_SUSUN || { T: "", B: "", D: "" };
+const SUSUN_TARGETS = KAMUS.T ? KAMUS.T.split(" ") : [];
+const SUSUN_RANK = new Map(SUSUN_TARGETS.map((w, i) => [w, i]));
+const SUSUN_BONUS = new Set(KAMUS.B ? KAMUS.B.split(" ") : []);
+const SUSUN_BASES = KAMUS.D ? KAMUS.D.split(" ") : [];
+const SUSUN_MAX_WORDS = 10;
+const SUSUN_LEVEL_COINS = 10;
+const SUSUN_BONUS_COINS = 1;
+const SUSUN_HINT_COST = 20;
+const SUSUN_XP_WORD = 3;
+const SUSUN_XP_LEVEL = 15;
+const SUSUN_EASY_LEVELS = 20;
+
+let susunLevel = null;   // data level yang sedang dimainkan
+let susunPicked = [];    // urutan ubin yang sedang disusun
+
+function letterCount(w) { const c = {}; for (const ch of w) c[ch] = (c[ch] || 0) + 1; return c; }
+function fitsIn(w, pool) { const c = letterCount(w); for (const k in c) if ((pool[k] || 0) < c[k]) return false; return true; }
+
+// Panjang kata dasar naik bertahap: 5 huruf di awal, lalu campuran 5-6, lalu 6-7, lalu semua.
+function susunLengths(level) {
+  if (level <= 15) return [5];
+  if (level <= 50) return [5, 6];
+  if (level <= 120) return [6, 7, 6];
+  return [5, 6, 7];
+}
+
+function buildSusunLevel(level) {
+  const lens = susunLengths(level);
+  const len = lens[level % lens.length];
+  let pool = SUSUN_BASES.filter((b) => b.length === len);
+  // Level awal memakai kata dasar yang paling umum (kamus sudah urut dari yang paling sering).
+  if (level <= SUSUN_EASY_LEVELS) pool = pool.slice(0, 60);
+  const order = shuffle(pool.slice(), rng(state.seed + len * 1009 + (level <= SUSUN_EASY_LEVELS ? 7 : 0)));
+  const base = order[Math.floor(level / lens.length) % order.length];
+  const letters = letterCount(base);
+  let words = SUSUN_TARGETS.filter((w) => fitsIn(w, letters));
+  // Maksimal 10 kata wajib: yang paling umum, dan kata dasarnya selalu ikut.
+  words.sort((a, b) => SUSUN_RANK.get(a) - SUSUN_RANK.get(b));
+  words = words.slice(0, SUSUN_MAX_WORDS);
+  if (!words.includes(base)) words[words.length - 1] = base;
+  words.sort((a, b) => a.length - b.length || a.localeCompare(b));
+  const tiles = shuffle(base.toUpperCase().split(""), rng(state.seed + level * 7919));
+  return { level, base, words, tiles };
+}
+
+function startSusun() {
+  if (!SUSUN_BASES.length) return toast("Kamus belum termuat. Periksa koneksi lalu buka ulang.");
+  mode = "susun";
+  susunLevel = buildSusunLevel(state.susun.level);
+  susunPicked = [];
+  $("home").hidden = true;
+  $("game").hidden = true;
+  $("susun").hidden = false;
+  enterScreen();
+  renderSusun();
+}
+
+function renderSusun() {
+  const s = state.susun;
+  const lv = susunLevel;
+  $("coins").textContent = state.coins;
+  $("susunLabel").textContent = "Level " + s.level + " · " + s.found.length + "/" + lv.words.length;
+  $("susunBar").style.width = (s.found.length / lv.words.length * 100) + "%";
+  $("susunHintCost").textContent = state.freeHints > 0 ? state.freeHints + " gratis" : SUSUN_HINT_COST + " koin";
+
+  const wordsEl = $("susunWords");
+  wordsEl.innerHTML = "";
+  for (const w of lv.words) {
+    const row = document.createElement("div");
+    const found = s.found.includes(w);
+    const shown = s.shown[w] || 0;
+    row.className = "word" + (found ? " found" : "");
+    row.dataset.word = w;
+    row.setAttribute("aria-label", found ? "Kata " + w : "Kata " + w.length + " huruf, belum ditemukan");
+    for (let k = 0; k < w.length; k++) {
+      const box = document.createElement("i");
+      if (found || k < shown) {
+        box.textContent = w[k].toUpperCase();
+        if (!found) box.className = "shown";
+      }
+      row.appendChild(box);
+    }
+    wordsEl.appendChild(row);
+  }
+
+  const attempt = $("susunAttempt");
+  attempt.className = "attempt";
+  attempt.innerHTML = "";
+  if (!susunPicked.length) {
+    const hint = document.createElement("span");
+    hint.className = "hint";
+    hint.textContent = "Ketuk huruf di bawah";
+    attempt.appendChild(hint);
+  }
+  for (const ti of susunPicked) {
+    const box = document.createElement("i");
+    box.textContent = lv.tiles[ti];
+    attempt.appendChild(box);
+  }
+
+  const tilesEl = $("susunTiles");
+  tilesEl.innerHTML = "";
+  lv.tiles.forEach((ch, ti) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "tile";
+    b.textContent = ch;
+    b.disabled = susunPicked.includes(ti);
+    b.onclick = () => susunTap(ti);
+    tilesEl.appendChild(b);
+  });
+}
+
+function susunTap(ti) {
+  if (!susunLevel || susunLevel.done || susunPicked.includes(ti)) return;
+  susunPicked.push(ti);
+  sfx.tap();
+  buzz(8);
+  renderSusun();
+}
+
+function susunErase() {
+  if (!susunPicked.length) return;
+  susunPicked.pop();
+  renderSusun();
+}
+
+function susunShuffle() {
+  if (!susunLevel || susunLevel.done) return;
+  susunPicked = [];
+  shuffle(susunLevel.tiles, Math.random);
+  renderSusun();
+}
+
+function susunSubmit() {
+  const lv = susunLevel;
+  if (!lv || lv.done) return;
+  const word = susunPicked.map((ti) => lv.tiles[ti]).join("").toLowerCase();
+  const s = state.susun;
+  if (word.length < 3) return toast("Minimal 3 huruf");
+  susunPicked = [];
+
+  if (lv.words.includes(word)) {
+    if (s.found.includes(word)) { renderSusun(); return toast("Sudah ditemukan"); }
+    s.found.push(word);
+    const levelUp = addXp(SUSUN_XP_WORD);
+    save();
+    renderSusun();
+    const row = document.querySelector('#susunWords [data-word="' + word + '"]');
+    if (row) row.classList.add("pop");
+    if (levelUp) { sfx.big(); confetti(); toast("Naik gelar: " + levelUp + "!"); } else sfx.right();
+    buzz(20);
+    if (s.found.length >= lv.words.length) susunLevelDone();
+    return;
+  }
+
+  if (SUSUN_BONUS.has(word) || SUSUN_RANK.has(word)) {
+    if (s.bonus.includes(word)) { renderSusun(); return toast("Kata bonus ini sudah dihitung"); }
+    s.bonus.push(word);
+    state.coins += SUSUN_BONUS_COINS;
+    save();
+    renderSusun();
+    coinsGained();
+    sfx.tap();
+    return toast("Kata bonus: " + word.toUpperCase() + " +" + SUSUN_BONUS_COINS + " koin");
+  }
+
+  renderSusun();
+  $("susunAttempt").classList.add("wrong");
+  const wrongBox = $("susunAttempt");
+  wrongBox.innerHTML = "";
+  for (const ch of word.toUpperCase()) { const box = document.createElement("i"); box.textContent = ch; wrongBox.appendChild(box); }
+  sfx.wrong();
+  buzz([30, 40, 30]);
+  toast("Bukan kata yang dikenal");
+  const token = lv;
+  setTimeout(() => { if (susunLevel === token && !$("susun").hidden) renderSusun(); }, 600);
+}
+
+// Petunjuk membuka satu huruf dari kata terpendek yang belum ditemukan.
+function susunHint() {
+  const lv = susunLevel;
+  if (!lv || lv.done) return;
+  const s = state.susun;
+  const target = lv.words.find((w) => !s.found.includes(w));
+  if (!target) return;
+  if (state.freeHints > 0) state.freeHints--;
+  else if (state.coins >= SUSUN_HINT_COST) state.coins -= SUSUN_HINT_COST;
+  else return toast(IN_APP ? "Koin kurang. Tonton iklan di Petualangan untuk petunjuk gratis" : "Koin kurang. Kumpulkan dari kata bonus");
+  s.shown[target] = (s.shown[target] || 0) + 1;
+  // Kata yang semua hurufnya sudah dibuka dianggap ditemukan, agar pemain tidak tersangkut.
+  if (s.shown[target] >= target.length) s.found.push(target);
+  save();
+  sfx.tap();
+  renderSusun();
+  if (s.found.length >= lv.words.length) susunLevelDone();
+}
+
+function susunLevelDone() {
+  const lv = susunLevel;
+  lv.done = true;
+  const levelUp = addXp(SUSUN_XP_LEVEL);
+  state.coins += SUSUN_LEVEL_COINS;
+  const next = state.susun.level + 1;
+  state.susun = { level: next, found: [], shown: {}, bonus: [] };
+  save();
+  coinsGained();
+  sfx.big();
+  confetti();
+  toast("Level " + lv.level + " tuntas! +" + SUSUN_LEVEL_COINS + " koin" + (levelUp ? " · Naik gelar: " + levelUp : ""));
+  setTimeout(() => {
+    if (susunLevel !== lv || $("susun").hidden) return;
+    showInterstitial(() => {
+      if ($("susun").hidden) return;
+      susunLevel = buildSusunLevel(state.susun.level);
+      susunPicked = [];
+      renderSusun();
+    });
+  }, 1400);
+}
+
 // ---------- Iklan ----------
 const native = { interstitialReady: false, rewardedReady: false, afterInterstitial: null, rewardEarned: false };
 
@@ -1846,13 +2131,15 @@ window.addEventListener("popstate", () => {
   backArmed = false;
   const inGame = !$("game").hidden;
   const inMaker = !$("maker").hidden;
+  const inSusun = !$("susun").hidden;
   if (!$("overlay").hidden) {
     hideOverlay();
     // Panel hasil akhir (ronde selesai): Back langsung ke menu.
     if (inGame && cur && cur.busy) return goHome();
-    if (inGame || inMaker) enterScreen();
+    if (inGame || inMaker || inSusun) enterScreen();
     return;
   }
+  if (inSusun) return goHome();
   const racing = (mode === "blitz" && blitz && !blitz.over) || (mode === "duel" && duel && !duel.over);
   if (inGame && racing) {
     return showPanel(
@@ -1880,6 +2167,12 @@ function toast(msg) {
 }
 
 // ---------- Tombol ----------
+$("modeSusun").onclick = startSusun;
+$("susunBack").onclick = goHome;
+$("susunErase").onclick = susunErase;
+$("susunShuffle").onclick = susunShuffle;
+$("susunHint").onclick = susunHint;
+$("susunSubmit").onclick = susunSubmit;
 $("modeAdventure").onclick = startAdventure;
 $("modeDaily").onclick = startDaily;
 $("modeBlitz").onclick = startBlitz;
@@ -1925,7 +2218,18 @@ function showWelcome() {
 }
 
 document.addEventListener("keydown", (e) => {
-  if ($("game").hidden || !$("overlay").hidden || !cur || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (!$("overlay").hidden || e.ctrlKey || e.metaKey || e.altKey) return;
+  // Susun Kata bisa dimainkan dengan keyboard: huruf, Backspace, Enter.
+  if (!$("susun").hidden && susunLevel) {
+    if (e.key === "Enter") { e.preventDefault(); return susunSubmit(); }
+    if (e.key === "Backspace") { e.preventDefault(); return susunErase(); }
+    const letter = e.key.length === 1 ? e.key.toUpperCase() : "";
+    if (!/^[A-Z]$/.test(letter)) return;
+    const idx = susunLevel.tiles.findIndex((t, k) => t === letter && !susunPicked.includes(k));
+    if (idx >= 0) susunTap(idx);
+    return;
+  }
+  if ($("game").hidden || !cur) return;
   if (e.key === "Backspace") {
     for (let k = cur.slots.length - 1; k >= 0; k--) {
       if (!cur.slots[k].locked && cur.slots[k].tile !== null) { e.preventDefault(); return tapSlot(k); }
