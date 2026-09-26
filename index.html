@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tebak Kata</title>
+<title>NalarGame</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap">
@@ -225,7 +225,7 @@
 
 <div class="wrap">
   <header>
-    <div class="brand">Tebak<span>Kata</span></div>
+    <div class="brand">Nalar<span>Game</span></div>
     <div class="coins" title="Koin"><i class="coin-dot"></i><span id="coins">0</span></div>
   </header>
 
@@ -309,7 +309,7 @@
 
 <div class="getapp" id="getApp">
   <div class="getapp-text"><b>Main lebih seru di app</b><span>Gratis · khusus HP Android</span></div>
-  <a class="getapp-btn" href="https://github.com/dehayuk/tebak-kata/releases/latest/download/tebak-kata.apk">Pasang</a>
+  <a class="getapp-btn" href="https://github.com/dehayuk/tebak-kata/releases/latest/download/nalargame.apk">Pasang</a>
   <button class="getapp-close" id="getAppClose" type="button" aria-label="Tutup">×</button>
 </div>
 
@@ -571,7 +571,7 @@ const HINT_COST = 30;
 const REWARD_WIN = 10;
 const REWARD_CLEAN = 5;
 const INTERSTITIAL_EVERY = 3;
-const STORE_KEY = "tebakkata.v1";
+const STORE_KEY = "tebakkata.v1"; // nama lama sengaja dipertahankan agar progres pemain tidak hilang
 
 const DAILY_COUNT = 5;
 const DAILY_BONUS = 30;
@@ -612,7 +612,7 @@ const TITLES = [
 ];
 const LEGEND_STEP = 3000;
 
-// ID AdMob milik app Tebak Kata. Selama testing = true, AdMob hanya mengirim iklan uji.
+// ID AdMob milik app NalarGame (di AdMob masih terdaftar sebagai Tebak Kata). Selama testing = true, AdMob hanya mengirim iklan uji.
 // Ubah ke false hanya untuk versi yang terbit di Play Store.
 const ADMOB = {
   testing: true,
@@ -1051,7 +1051,7 @@ function finishDaily(upLine) {
   $("coins").textContent = state.coins;
 
   const [y, m, day] = d.date.split("-");
-  const shareText = "Tebak Kata Harian " + day + "/" + m + "/" + y + "\n" +
+  const shareText = "NalarGame Harian " + day + "/" + m + "/" + y + "\n" +
     "✅ " + DAILY_COUNT + "/" + DAILY_COUNT + (d.clean ? " tanpa petunjuk" : "") + "\n" +
     "🔥 " + state.streak + " hari beruntun\n" +
     GAME_URL;
@@ -1250,7 +1250,7 @@ function finishDuel() {
 
   if (!opp) {
     const url = GAME_URL + "?duel=" + encodeDuel({ seed: duel.seed, name: me.name, solved: me.solved, tenths: me.tenths });
-    const text = me.name + " menantangmu di Tebak Kata! Aku benar " + me.solved + "/" + DUEL_COUNT +
+    const text = me.name + " menantangmu di NalarGame! Aku benar " + me.solved + "/" + DUEL_COUNT +
       " dalam " + fmtTime(me.tenths) + ". Berani lawan? " + url;
     showPanel(
       "<h2>Selesai!</h2><div class=\"word\">" + me.solved + " / " + DUEL_COUNT + "</div>" +
@@ -1281,7 +1281,7 @@ function showVersus(me, opp, result, fresh) {
     "<div class=\"side" + (isWinner ? " win" : "") + "\"><div class=\"who\">" + esc(p.name) + "</div>" +
     "<div class=\"score\">" + p.solved + "/" + DUEL_COUNT + "</div><div class=\"time\">" + fmtTime(p.tenths) + "</div></div>";
   const winnerLine = result > 0 ? me.name + " menang!" : result < 0 ? opp.name + " menang!" : "Seri!";
-  const text = "Duel Tebak Kata: " + opp.name + " " + opp.solved + "/" + DUEL_COUNT + " (" + fmtTime(opp.tenths) + ") vs " +
+  const text = "Duel NalarGame: " + opp.name + " " + opp.solved + "/" + DUEL_COUNT + " (" + fmtTime(opp.tenths) + ") vs " +
     me.name + " " + me.solved + "/" + DUEL_COUNT + " (" + fmtTime(me.tenths) + "). " + winnerLine + " Main juga: " + GAME_URL;
   showPanel(
     "<h2>" + (result > 0 ? "Kamu menang!" : result < 0 ? "Kamu kalah" : "Seri!") + "</h2>" +
@@ -1308,7 +1308,7 @@ function showDuelIntro(opp) {
     return showVersus(me, opp, compareDuel(me, opp), false);
   }
   showPanel(
-    "<h2>Ditantang!</h2><p><b>" + esc(opp.name) + "</b> menantangmu duel Tebak Kata.</p>" +
+    "<h2>Ditantang!</h2><p><b>" + esc(opp.name) + "</b> menantangmu duel NalarGame.</p>" +
     "<div class=\"word\">" + opp.solved + " / " + DUEL_COUNT + "</div>" +
     "<p>dalam " + fmtTime(opp.tenths) + ". Soalnya sama persis. Bisa lebih baik?</p>" +
     "<button class=\"btn main\" id=\"accept\" type=\"button\">Terima tantangan</button>" +
@@ -1421,7 +1421,7 @@ function saveMaker() {
   state.name = name;
   save();
   const url = GAME_URL + "?aku=" + encodeAku(name, items);
-  const text = "Seberapa kenal kamu sama aku? 😏 Tebak " + items.length + " hal tentang " + name + " di Tebak Kata: " + url;
+  const text = "Seberapa kenal kamu sama aku? 😏 Tebak " + items.length + " hal tentang " + name + " di NalarGame: " + url;
   showPanel(
     "<h2>Soalmu siap!</h2><p>Kirim ke teman atau grup WhatsApp. Lihat siapa yang paling kenal denganmu.</p>" +
     "<button class=\"btn main\" id=\"send\" type=\"button\">Kirim ke teman</button>" +
@@ -1488,7 +1488,7 @@ function finishAku() {
 function showAkuResult(data, known, fresh) {
   const total = data.items.length;
   const label = akuLabel(known, total);
-  const text = "Aku kenal " + data.name + " " + known + "/" + total + " di Tebak Kata! " + label +
+  const text = "Aku kenal " + data.name + " " + known + "/" + total + " di NalarGame! " + label +
     " Kamu seberapa kenal? " + GAME_URL + "?aku=" + data.code;
   showPanel(
     "<h2>" + label + "</h2><p>Kamu kenal <b>" + esc(data.name) + "</b></p>" +

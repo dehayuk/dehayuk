@@ -1,8 +1,8 @@
 {
-  "name": "tebak-kata",
+  "name": "nalargame",
   "version": "0.1.0",
   "private": true,
-  "description": "Game Tebak Kata dengan iklan AdMob",
+  "description": "NalarGame, kumpulan game kata dengan iklan AdMob",
   "scripts": {
     "build": "node scripts/build-www.js",
     "serve": "node server.js"

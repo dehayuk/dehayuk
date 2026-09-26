@@ -1,6 +1,6 @@
 # Membuat APK di server GitHub setiap kali ada perubahan, agar laptop tidak perlu Android SDK.
 # Setiap APK diterbitkan sebagai Release, sehingga siapa pun bisa mengunduh tanpa akun GitHub:
-# https://github.com/dehayuk/tebak-kata/releases/latest/download/tebak-kata.apk
+# https://github.com/dehayuk/tebak-kata/releases/latest/download/nalargame.apk
 name: Build APK
 
 on:
@@ -36,20 +36,20 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
-          cp app/build/outputs/apk/debug/app-debug.apk ../tebak-kata.apk
+          cp app/build/outputs/apk/debug/app-debug.apk ../nalargame.apk
 
       - uses: actions/upload-artifact@v4
         with:
-          name: tebak-kata-apk
-          path: tebak-kata.apk
+          name: nalargame.apk
+          path: nalargame.apk
 
       - name: Terbitkan sebagai Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v0.1.${{ github.run_number }}
-          name: Tebak Kata 0.1.${{ github.run_number }}
+          name: NalarGame 0.1.${{ github.run_number }}
           body: |
-            Versi awal Tebak Kata untuk HP Android.
-            Unduh tebak-kata.apk di bawah, lalu izinkan "instal dari sumber tidak dikenal".
-          files: tebak-kata.apk
+            Versi awal NalarGame untuk HP Android.
+            Unduh nalargame.apk di bawah, lalu izinkan "instal dari sumber tidak dikenal".
+          files: nalargame.apk
           make_latest: true

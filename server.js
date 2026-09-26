@@ -18,4 +18,4 @@ http.createServer((req, res) => {
     res.writeHead(200, { "Content-Type": TYPES[path.extname(file)] || "application/octet-stream" });
     res.end(data);
   });
-}).listen(PORT, HOST, () => console.log("Tebak Kata jalan di http://" + HOST + ":" + PORT + "/"));
+}).listen(PORT, HOST, () => console.log("NalarGame jalan di http://" + HOST + ":" + PORT + "/"));

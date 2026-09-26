@@ -1,4 +1,4 @@
-# Pengaturan Netlify untuk versi web Tebak Kata.
+# Pengaturan Netlify untuk versi web NalarGame.
 # Game web cukup satu berkas index.html, jadi tidak ada langkah build.
 # Setiap push ke cabang main di GitHub otomatis ditayangkan ulang oleh Netlify.
 [build]

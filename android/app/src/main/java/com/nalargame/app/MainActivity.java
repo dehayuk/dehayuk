@@ -1,4 +1,4 @@
-package io.github.socialiam.tebakkata;
+package com.nalargame.app;
 
 import com.getcapacitor.BridgeActivity;
 
