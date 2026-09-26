@@ -1,0 +1,488 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tebak Kata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --ground: #0E3534;
+    --board: #15504D;
+    --board-edge: #1E6763;
+    --tile: #F4C152;
+    --tile-shade: #C9952A;
+    --tile-ink: #3B2A05;
+    --ink: #EAF6F3;
+    --muted: #9EC6C0;
+    --good: #7FE0A3;
+    --bad: #FF7A70;
+    --ad: #2A2F3A;
+    --ad-ink: #D7DCE6;
+    --display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+    --body: "Nunito", "Segoe UI", system-ui, sans-serif;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 15px;
+  }
+  .wrap {
+    max-width: 480px;
+    margin: 0 auto;
+    padding-inline: 16px;
+    padding-block: 14px 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .brand { font-family: var(--display); font-weight: 800; font-size: 26px; line-height: 1; letter-spacing: .5px; }
+  .brand span { color: var(--tile); }
+  .coins {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--board); border: 1px solid var(--board-edge);
+    padding: 6px 12px; border-radius: 999px;
+    font-weight: 800; font-variant-numeric: tabular-nums;
+  }
+  .coin-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--tile); box-shadow: inset 0 -2px 0 var(--tile-shade); }
+
+  .meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted); }
+  .chip {
+    font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--tile); border: 1px solid var(--tile-shade); padding: 1px 10px; border-radius: 6px;
+  }
+  .bar { height: 6px; background: var(--board); border-radius: 3px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--tile); transition: width .4s; }
+
+  .clue {
+    background: var(--board); border: 1px solid var(--board-edge); border-radius: 14px;
+    padding: 18px 16px; text-align: center;
+  }
+  .clue small { display: block; color: var(--muted); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .clue p { margin: 0; font-size: 19px; font-weight: 800; line-height: 1.35; text-wrap: balance; }
+
+  .slots { display: flex; justify-content: center; gap: 6px; }
+  .slot {
+    flex: 1 1 0; max-width: 44px; aspect-ratio: 1;
+    border-radius: 9px; border: 2px dashed var(--board-edge); background: transparent;
+    font-family: var(--display); font-weight: 800; font-size: 22px; color: var(--tile-ink);
+    display: grid; place-items: center; padding: 0; cursor: pointer;
+  }
+  .slot.filled { border: 0; background: var(--tile); box-shadow: inset 0 -3px 0 var(--tile-shade); }
+  .slot.locked { background: var(--good); box-shadow: inset 0 -3px 0 #4FA877; cursor: default; }
+  .slots.wrong .slot.filled:not(.locked) { background: var(--bad); box-shadow: inset 0 -3px 0 #C24E46; }
+  .slots.wrong { animation: shake .4s; }
+  .slots.right .slot { background: var(--good); box-shadow: inset 0 -3px 0 #4FA877; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 75%{transform:translateX(7px)} }
+
+  .tiles { display: grid; gap: 8px; }
+  .tile {
+    aspect-ratio: 1; border: 0; border-radius: 10px; padding: 0;
+    background: var(--tile); color: var(--tile-ink); box-shadow: inset 0 -4px 0 var(--tile-shade);
+    font-family: var(--display); font-weight: 800; font-size: 24px; cursor: pointer;
+    transition: transform .08s;
+  }
+  .tile:active { transform: translateY(2px); }
+  .tile:disabled { visibility: hidden; }
+
+  .actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .btn {
+    border: 1px solid var(--board-edge); background: var(--board); color: var(--ink);
+    border-radius: 10px; padding: 10px 6px; font-family: var(--body); font-weight: 800; font-size: 13px;
+    cursor: pointer; line-height: 1.2;
+  }
+  .btn small { display: block; font-weight: 600; color: var(--muted); font-size: 11px; margin-top: 2px; }
+  .btn.watch { border-color: var(--tile-shade); }
+  .btn.main {
+    background: var(--tile); color: var(--tile-ink); border: 0; box-shadow: inset 0 -4px 0 var(--tile-shade);
+    font-family: var(--display); font-size: 20px; padding: 12px 20px;
+  }
+  button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+  .note { font-size: 12px; color: var(--muted); text-align: center; margin: 0; }
+
+  .banner {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px));
+    background: var(--ad); color: var(--ad-ink); text-align: center; font-size: 12px;
+    border-top: 1px solid #3B4252;
+  }
+  .banner b { display: inline-block; background: #F4C152; color: #3B2A05; font-size: 10px; padding: 0 5px; border-radius: 3px; margin-right: 6px; }
+
+  .overlay {
+    position: fixed; inset: 0; background: rgba(5, 20, 20, .88);
+    display: grid; place-items: center; padding: 16px; z-index: 10;
+  }
+  .panel {
+    width: 100%; max-width: 380px; background: var(--board); border: 1px solid var(--board-edge);
+    border-radius: 16px; padding: 22px 18px; text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center;
+  }
+  .panel h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 30px; line-height: 1.1; color: var(--tile); }
+  .panel p { margin: 0; color: var(--muted); }
+  .panel .word { font-family: var(--display); font-weight: 800; font-size: 26px; letter-spacing: 3px; color: var(--ink); }
+  .adpanel { background: var(--ad); border-color: #3B4252; color: var(--ad-ink); }
+  .adbox {
+    width: 100%; aspect-ratio: 16 / 10; border-radius: 10px; display: grid; place-items: center;
+    background: repeating-linear-gradient(45deg, #333948 0 14px, #2E3441 14px 28px);
+    font-weight: 800; letter-spacing: 2px; font-size: 13px; color: #AEB6C6;
+  }
+  .adlabel { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #F4C152; font-weight: 800; }
+  .count { font-variant-numeric: tabular-nums; font-weight: 800; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 70px; transform: translateX(-50%);
+    background: var(--ink); color: var(--ground); font-weight: 800; font-size: 13px;
+    padding: 8px 14px; border-radius: 999px; z-index: 20; max-width: calc(100% - 32px); text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .slots.wrong { animation: none; }
+    .bar > i, .tile { transition: none; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">Tebak<span>Kata</span></div>
+    <div class="coins" title="Koin"><i class="coin-dot"></i><span id="coins">0</span></div>
+  </header>
+
+  <div>
+    <div class="meta"><span class="chip" id="theme">Hewan</span><span id="levelLabel">Soal 1 / 50</span></div>
+    <div class="bar" style="margin-top:8px"><i id="bar" style="width:0%"></i></div>
+  </div>
+
+  <div class="clue"><small>Petunjuk</small><p id="clue"></p></div>
+
+  <div class="slots" id="slots"></div>
+  <div class="tiles" id="tiles"></div>
+
+  <div class="actions">
+    <button class="btn" id="btnClear" type="button">Hapus<small>kosongkan</small></button>
+    <button class="btn" id="btnHint" type="button">Petunjuk<small id="hintCost">30 koin</small></button>
+    <button class="btn watch" id="btnWatch" type="button">Tonton iklan<small>+1 petunjuk</small></button>
+  </div>
+
+  <p class="note">Ketuk huruf untuk mengisi, ketuk kotak untuk mengembalikan. Di komputer bisa langsung mengetik.</p>
+</div>
+
+<div class="banner"><b>UJI</b>Tempat banner AdMob. Iklan asli hanya tampil di app Android.</div>
+
+<div class="overlay" id="overlay" hidden></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const THEMES = [
+  ["Hewan", [
+    ["KUCING", "Hewan peliharaan yang suka mengeong"],
+    ["SAPI", "Penghasil susu yang sering dipelihara petani"],
+    ["LEBAH", "Serangga kecil penghasil madu"],
+    ["GAJAH", "Hewan besar dengan belalai panjang"],
+    ["CICAK", "Merayap di dinding, ekornya bisa putus"],
+    ["BUAYA", "Reptil besar penghuni sungai, mulutnya lebar"],
+    ["KOMODO", "Kadal raksasa dari Nusa Tenggara Timur"],
+    ["JERAPAH", "Hewan berleher paling panjang"],
+    ["KELELAWAR", "Tidur tergantung terbalik di siang hari"],
+    ["ORANGUTAN", "Kera berambut merah dari Kalimantan dan Sumatra"]
+  ]],
+  ["Makanan", [
+    ["SATE", "Potongan daging ditusuk lalu dibakar"],
+    ["BAKSO", "Bola daging dalam kuah hangat"],
+    ["TEMPE", "Kedelai yang difermentasi, lauk sehari-hari"],
+    ["RAWON", "Sup daging berkuah hitam dari kluwek"],
+    ["GUDEG", "Nangka muda manis khas Yogyakarta"],
+    ["KLEPON", "Kue hijau isi gula merah, bertabur kelapa"],
+    ["PEMPEK", "Olahan ikan khas Palembang, dicocol cuko"],
+    ["SEBLAK", "Kerupuk basah pedas dari Bandung"],
+    ["RENDANG", "Olahan daging khas Padang yang dimasak berjam-jam"],
+    ["MARTABAK", "Ada yang manis, ada yang telur, laris di malam hari"]
+  ]],
+  ["Kota", [
+    ["BOGOR", "Kota Hujan dengan Kebun Raya yang terkenal"],
+    ["MEDAN", "Ibu kota Sumatera Utara, terkenal dengan bika ambon"],
+    ["MALANG", "Kota sejuk yang dijuluki Kota Apel"],
+    ["PADANG", "Ibu kota Sumatera Barat, kota rumah gadang"],
+    ["BANDUNG", "Kota Kembang, dijuluki Paris van Java"],
+    ["SURABAYA", "Kota Pahlawan di Jawa Timur"],
+    ["MAKASSAR", "Kota Pantai Losari dan coto"],
+    ["DENPASAR", "Ibu kota Provinsi Bali"],
+    ["PONTIANAK", "Kota yang dilintasi garis khatulistiwa"],
+    ["YOGYAKARTA", "Kota Pelajar dengan Jalan Malioboro"]
+  ]],
+  ["Benda", [
+    ["JAM", "Menunjukkan waktu"],
+    ["SAPU", "Dipakai untuk membersihkan lantai"],
+    ["KUNCI", "Pasangan gembok dan pintu"],
+    ["KIPAS", "Dikibaskan supaya terasa sejuk"],
+    ["PAYUNG", "Dibuka saat hujan turun"],
+    ["BANTAL", "Alas kepala saat tidur"],
+    ["CERMIN", "Memantulkan bayangan wajah"],
+    ["SENTER", "Lampu kecil bertenaga baterai"],
+    ["PULPEN", "Alat tulis bertinta"],
+    ["GUNTING", "Dua bilah tajam untuk memotong kertas"]
+  ]],
+  ["Profesi", [
+    ["GURU", "Mengajar murid di sekolah"],
+    ["KOKI", "Memasak di dapur restoran"],
+    ["PILOT", "Menerbangkan pesawat"],
+    ["BIDAN", "Membantu ibu melahirkan"],
+    ["DOKTER", "Memeriksa dan mengobati orang sakit"],
+    ["PETANI", "Menanam padi di sawah"],
+    ["NELAYAN", "Menangkap ikan di laut"],
+    ["MASINIS", "Mengemudikan kereta api"],
+    ["ARSITEK", "Merancang gedung dan rumah"],
+    ["WARTAWAN", "Mencari dan menulis berita"]
+  ]]
+];
+const LEVELS = THEMES.flatMap(([theme, list]) => list.map(([answer, clue]) => ({ theme, answer, clue })));
+const HINT_COST = 30;
+const REWARD_WIN = 10;
+const REWARD_CLEAN = 5;
+const INTERSTITIAL_EVERY = 3;
+const STORE_KEY = "tebakkata.v1";
+
+let state = { level: 0, coins: 60, freeHints: 0 };
+try {
+  const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+  if (saved && typeof saved.level === "number") state = Object.assign(state, saved);
+} catch (e) {}
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
+
+let cur = null;
+const $ = (id) => document.getElementById(id);
+
+function rng(seed) {
+  return function () {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function buildLevel(i) {
+  const { answer } = LEVELS[i];
+  const rand = rng(i * 7919 + 13);
+  const total = answer.length <= 6 ? 12 : answer.length <= 8 ? 14 : 16;
+  const letters = answer.split("");
+  const pool = "ABDEGIKLMNOPRSTU";
+  while (letters.length < total) letters.push(pool[Math.floor(rand() * pool.length)]);
+  for (let k = letters.length - 1; k > 0; k--) {
+    const j = Math.floor(rand() * (k + 1));
+    [letters[k], letters[j]] = [letters[j], letters[k]];
+  }
+  cur = {
+    answer,
+    tiles: letters.map((ch) => ({ ch, used: false })),
+    slots: answer.split("").map(() => ({ tile: null, locked: false })),
+    usedHint: false,
+    busy: false
+  };
+}
+
+function render() {
+  const lv = LEVELS[state.level];
+  $("coins").textContent = state.coins;
+  $("theme").textContent = lv.theme;
+  $("levelLabel").textContent = "Soal " + (state.level + 1) + " / " + LEVELS.length;
+  $("bar").style.width = (state.level / LEVELS.length * 100) + "%";
+  $("clue").textContent = lv.clue;
+  $("hintCost").textContent = state.freeHints > 0 ? state.freeHints + " gratis" : HINT_COST + " koin";
+
+  const slotsEl = $("slots");
+  slotsEl.className = "slots";
+  slotsEl.innerHTML = "";
+  cur.slots.forEach((s, si) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "slot" + (s.tile !== null ? " filled" : "") + (s.locked ? " locked" : "");
+    b.textContent = s.tile !== null ? cur.tiles[s.tile].ch : "";
+    b.setAttribute("aria-label", s.tile !== null ? "Huruf " + cur.tiles[s.tile].ch : "Kotak kosong");
+    b.onclick = () => tapSlot(si);
+    slotsEl.appendChild(b);
+  });
+
+  const tilesEl = $("tiles");
+  tilesEl.style.gridTemplateColumns = "repeat(" + (cur.tiles.length / 2) + ", 1fr)";
+  tilesEl.innerHTML = "";
+  cur.tiles.forEach((t, ti) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "tile";
+    b.textContent = t.ch;
+    b.disabled = t.used;
+    b.onclick = () => tapTile(ti);
+    tilesEl.appendChild(b);
+  });
+}
+
+function tapTile(ti) {
+  if (cur.busy || cur.tiles[ti].used) return;
+  const si = cur.slots.findIndex((s) => s.tile === null);
+  if (si < 0) return;
+  cur.slots[si].tile = ti;
+  cur.tiles[ti].used = true;
+  render();
+  checkIfFull();
+}
+
+function tapSlot(si) {
+  const s = cur.slots[si];
+  if (cur.busy || s.locked || s.tile === null) return;
+  cur.tiles[s.tile].used = false;
+  s.tile = null;
+  render();
+}
+
+function clearSlots() {
+  if (cur.busy) return;
+  cur.slots.forEach((s) => {
+    if (!s.locked && s.tile !== null) { cur.tiles[s.tile].used = false; s.tile = null; }
+  });
+  render();
+}
+
+function checkIfFull() {
+  if (cur.slots.some((s) => s.tile === null)) return;
+  const word = cur.slots.map((s) => cur.tiles[s.tile].ch).join("");
+  if (word === cur.answer) return win();
+  $("slots").classList.add("wrong");
+  toast("Belum tepat, coba lagi");
+}
+
+function useHint() {
+  if (cur.busy) return;
+  if (state.freeHints > 0) state.freeHints--;
+  else if (state.coins >= HINT_COST) state.coins -= HINT_COST;
+  else return toast("Koin kurang. Tonton iklan untuk petunjuk gratis");
+
+  const si = cur.slots.findIndex((s, k) => !s.locked && (s.tile === null || cur.tiles[s.tile].ch !== cur.answer[k]));
+  if (si < 0) return;
+  const need = cur.answer[si];
+  const slot = cur.slots[si];
+  if (slot.tile !== null) { cur.tiles[slot.tile].used = false; slot.tile = null; }
+  let ti = cur.tiles.findIndex((t) => !t.used && t.ch === need);
+  if (ti < 0) {
+    const holder = cur.slots.find((s) => !s.locked && s.tile !== null && cur.tiles[s.tile].ch === need);
+    ti = holder.tile;
+    holder.tile = null;
+  }
+  slot.tile = ti;
+  slot.locked = true;
+  cur.tiles[ti].used = true;
+  cur.usedHint = true;
+  save();
+  render();
+  checkIfFull();
+}
+
+function win() {
+  cur.busy = true;
+  $("slots").classList.add("right");
+  const gained = REWARD_WIN + (cur.usedHint ? 0 : REWARD_CLEAN);
+  state.coins += gained;
+  const solved = state.level + 1;
+  state.level = solved;
+  save();
+  $("coins").textContent = state.coins;
+  setTimeout(() => {
+    if (state.level >= LEVELS.length) return showFinish();
+    showPanel(
+      "<h2>Benar!</h2><div class=\"word\">" + cur.answer + "</div>" +
+      "<p>+" + gained + " koin" + (cur.usedHint ? "" : " (termasuk bonus tanpa petunjuk)") + "</p>" +
+      "<button class=\"btn main\" id=\"next\" type=\"button\">Lanjut</button>",
+      () => $("next").onclick = () => {
+        hideOverlay();
+        if (solved % INTERSTITIAL_EVERY === 0) showAd("interstitial", startLevel);
+        else startLevel();
+      }
+    );
+  }, 450);
+}
+
+function showFinish() {
+  showPanel(
+    "<h2>Tamat!</h2><p>Semua " + LEVELS.length + " soal sudah terjawab. Koin kamu: " + state.coins + ".</p>" +
+    "<button class=\"btn main\" id=\"again\" type=\"button\">Main dari awal</button>",
+    () => $("again").onclick = () => { state.level = 0; save(); hideOverlay(); startLevel(); }
+  );
+}
+
+function showAd(kind, onDone) {
+  const rewarded = kind === "rewarded";
+  let left = rewarded ? 5 : 3;
+  showPanel(
+    "<div class=\"adlabel\">Iklan uji · " + (rewarded ? "rewarded" : "interstitial") + "</div>" +
+    "<div class=\"adbox\">IKLAN ADMOB</div>" +
+    "<p id=\"adText\">" + (rewarded ? "Tonton sampai habis untuk 1 petunjuk gratis" : "Iklan jeda setiap " + INTERSTITIAL_EVERY + " soal") +
+    " · <span class=\"count\" id=\"adCount\">" + left + "</span> dtk</p>" +
+    "<button class=\"btn\" id=\"adClose\" type=\"button\" " + (rewarded ? "" : "hidden") + ">" + (rewarded ? "Batal" : "Tutup") + "</button>",
+    null, true
+  );
+  const closeBtn = $("adClose");
+  const timer = setInterval(() => {
+    left--;
+    if (left > 0) { $("adCount").textContent = left; return; }
+    clearInterval(timer);
+    if (rewarded) {
+      state.freeHints++;
+      save();
+      $("adText").textContent = "Hadiah didapat: 1 petunjuk gratis";
+      closeBtn.textContent = "Ambil hadiah";
+    } else {
+      $("adText").textContent = "Iklan selesai";
+      closeBtn.hidden = false;
+    }
+    closeBtn.onclick = () => { hideOverlay(); onDone && onDone(); };
+  }, 1000);
+  closeBtn.onclick = () => { clearInterval(timer); hideOverlay(); onDone && onDone(); };
+}
+
+function showPanel(html, wire, isAd) {
+  const o = $("overlay");
+  o.innerHTML = "<div class=\"panel" + (isAd ? " adpanel" : "") + "\">" + html + "</div>";
+  o.hidden = false;
+  if (wire) wire();
+  const btn = o.querySelector("button:not([hidden])");
+  if (btn) btn.focus();
+}
+function hideOverlay() { $("overlay").hidden = true; $("overlay").innerHTML = ""; }
+
+let toastTimer = null;
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; }, 1800);
+}
+
+function startLevel() {
+  if (state.level >= LEVELS.length) { buildLevel(LEVELS.length - 1); render(); return showFinish(); }
+  buildLevel(state.level);
+  render();
+}
+
+$("btnClear").onclick = clearSlots;
+$("btnHint").onclick = useHint;
+$("btnWatch").onclick = () => { if (!cur.busy) showAd("rewarded", render); };
+
+document.addEventListener("keydown", (e) => {
+  if (!$("overlay").hidden || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === "Backspace") {
+    for (let k = cur.slots.length - 1; k >= 0; k--) {
+      if (!cur.slots[k].locked && cur.slots[k].tile !== null) { e.preventDefault(); return tapSlot(k); }
+    }
+    return;
+  }
+  const ch = e.key.length === 1 ? e.key.toUpperCase() : "";
+  if (!/^[A-Z]$/.test(ch)) return;
+  const ti = cur.tiles.findIndex((t) => !t.used && t.ch === ch);
+  if (ti >= 0) tapTile(ti);
+});
+
+startLevel();
+</script>
