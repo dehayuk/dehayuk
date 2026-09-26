@@ -108,6 +108,26 @@
   .note { font-size: 12px; color: var(--muted); text-align: center; margin: 0; }
   .note a { color: var(--tile); font-weight: 800; }
 
+  .getapp {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+    background: var(--board); border-top: 1px solid var(--board-edge);
+    box-shadow: 0 -6px 18px rgba(0, 0, 0, .25);
+  }
+  .getapp-text { flex: 1; display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+  .getapp-text b { font-family: var(--display); font-weight: 800; font-size: 17px; color: var(--ink); }
+  .getapp-text span { font-size: 12px; color: var(--muted); }
+  .getapp-btn {
+    background: var(--tile); color: var(--tile-ink); box-shadow: inset 0 -3px 0 var(--tile-shade);
+    font-family: var(--display); font-weight: 800; font-size: 17px; text-decoration: none;
+    padding: 8px 18px; border-radius: 10px;
+  }
+  .getapp-close {
+    background: none; border: 0; color: var(--muted); font-size: 22px; line-height: 1;
+    padding: 4px 2px; cursor: pointer;
+  }
+
   .overlay {
     position: fixed; inset: 0; background: rgba(5, 20, 20, .88);
     display: grid; place-items: center; padding: 16px; z-index: 10;
@@ -122,7 +142,7 @@
   .count { font-variant-numeric: tabular-nums; font-weight: 800; }
 
   .toast {
-    position: fixed; left: 50%; bottom: 70px; transform: translateX(-50%);
+    position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
     background: var(--ink); color: var(--ground); font-weight: 800; font-size: 13px;
     padding: 8px 14px; border-radius: 999px; z-index: 20; max-width: calc(100% - 32px); text-align: center;
   }
@@ -157,7 +177,12 @@
 
   <p class="note">Ketuk huruf untuk mengisi, ketuk kotak untuk mengembalikan. Di komputer bisa langsung mengetik.</p>
   <p class="note" id="adStatus" hidden></p>
-  <p class="note" id="getApp"><a href="https://github.com/socialiam/tebak-kata/releases/latest/download/tebak-kata.apk">Unduh app Android (APK)</a></p>
+</div>
+
+<div class="getapp" id="getApp">
+  <div class="getapp-text"><b>Main lebih seru di app</b><span>Gratis · khusus HP Android</span></div>
+  <a class="getapp-btn" href="https://github.com/socialiam/tebak-kata/releases/latest/download/tebak-kata.apk">Pasang</a>
+  <button class="getapp-close" id="getAppClose" type="button" aria-label="Tutup">×</button>
 </div>
 
 
@@ -442,9 +467,10 @@ function adStatus(text) {
 function errorText(e) { return (e && (e.message || e.code)) || String(e); }
 
 async function initNativeAds() {
-  // Tautan APK hanya berguna di Android dan komputer; di app dan di iPhone disembunyikan.
-  const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  if (IN_APP || isIos) $("getApp").hidden = true;
+  // Bilah "Pasang app" tampil di semua versi web; di dalam app tidak perlu.
+  // Tombol × menyembunyikannya sampai halaman dibuka lagi.
+  if (IN_APP) $("getApp").hidden = true;
+  $("getAppClose").onclick = () => { $("getApp").hidden = true; };
   if (!IN_APP) return;
   $("btnWatch").innerHTML = "Tonton iklan<small>+1 petunjuk</small>";
   if (!NativeAds) return adStatus("plugin tidak ditemukan");
