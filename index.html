@@ -185,6 +185,23 @@
     font-family: var(--body); font-weight: 800; font-size: 18px;
   }
   .name-input:focus { outline: 2px solid var(--tile); outline-offset: 1px; }
+
+  .lead { margin: 0; color: var(--muted); line-height: 1.5; }
+  .field-label { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: -10px; }
+  .field {
+    width: 100%; padding: 10px 12px; border-radius: 10px;
+    border: 1px solid var(--board-edge); background: var(--board); color: var(--ink);
+    font-family: var(--body); font-weight: 600; font-size: 15px;
+  }
+  .field::placeholder { color: var(--muted); opacity: .7; }
+  .field:focus { outline: 2px solid var(--tile); outline-offset: 1px; }
+  .field.answer { font-family: var(--display); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+  .qlist { display: flex; flex-direction: column; gap: 12px; }
+  .qrow { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; align-items: center; }
+  .qnum {
+    grid-row: span 2; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--tile); color: var(--tile-ink); font-weight: 800; font-size: 14px;
+  }
   .versus { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; width: 100%; }
   .versus .side { background: var(--ground); border: 1px solid var(--board-edge); border-radius: 12px; padding: 10px 6px; min-width: 0; }
   .versus .side.win { border-color: var(--good); box-shadow: 0 0 0 1px var(--good); }
@@ -238,6 +255,11 @@
         <span class="mode-desc">Tantang teman lewat WhatsApp, siapa lebih jago?</span>
         <span class="mode-state" id="stDuel">Tantang</span>
       </button>
+      <button class="mode" id="modeAku" type="button">
+        <span class="mode-name">Tebak Aku</span>
+        <span class="mode-desc">Buat soal tentang dirimu. Seberapa kenal temanmu?</span>
+        <span class="mode-state" id="stAku">Buat soal</span>
+      </button>
       <button class="mode" id="modeAdventure" type="button">
         <span class="mode-name">Petualangan</span>
         <span class="mode-desc" id="descAdventure">Semua soal, makin lama makin sulit</span>
@@ -267,6 +289,19 @@
     </div>
 
     <p class="note">Ketuk huruf untuk mengisi, ketuk kotak untuk mengembalikan. Di komputer bisa langsung mengetik.</p>
+  </section>
+
+  <section id="maker" hidden>
+    <div class="topbar">
+      <button class="back" id="makerBack" type="button">‹ Menu</button>
+      <span class="chip">Tebak Aku</span>
+    </div>
+    <p class="lead">Tulis sampai 5 hal tentang dirimu, lalu kirim ke teman. Seberapa kenal mereka denganmu?</p>
+    <label class="field-label" for="makerName">Namamu</label>
+    <input class="field" id="makerName" maxlength="12" autocomplete="nickname" placeholder="misal: Budi">
+    <div class="qlist" id="qlist"></div>
+    <p class="note">Jawaban cukup satu kata, 3–10 huruf, tanpa spasi. Minimal 3 soal.</p>
+    <button class="btn main" id="makerSave" type="button">Buat link untuk teman</button>
   </section>
 
   <p class="note" id="adStatus" hidden></p>
@@ -543,7 +578,21 @@ const DAILY_BONUS = 30;
 const BLITZ_SECONDS = 60;
 const BLITZ_COINS = 2;
 const BLITZ_INTERSTITIAL_EVERY = 2;
-const XP_PER_WIN = { adventure: 10, daily: 15, blitz: 5, duel: 10 };
+const XP_PER_WIN = { adventure: 10, daily: 15, blitz: 5, duel: 10, aku: 10 };
+const AKU_MAX = 5;
+const AKU_MIN = 3;
+const AKU_COINS = 5;
+// Contoh di formulir Tebak Aku: [petunjuk, jawaban].
+const AKU_EXAMPLES = [
+  ["Makanan favoritku, pedas dari Bandung", "SEBLAK"],
+  ["Kota tempat aku lahir", "MEDAN"],
+  ["Nama hewan peliharaanku", "MOCHI"],
+  ["Hobiku di akhir pekan", "MANCING"],
+  ["Warna kesukaanku", "BIRU"]
+];
+// Saringan sederhana untuk soal buatan pemain.
+const BLOCKED_WORDS = ["KONTOL", "MEMEK", "NGENTOT", "ENTOT", "JEMBUT", "PEPEK", "BANGSAT", "BAJINGAN",
+  "KAMPRET", "GOBLOK", "TOLOL", "JANCOK", "JANCUK", "DANCOK", "ASU", "TAIK", "PELACUR", "LONTE", "PEREK"];
 const DUEL_COUNT = 5;
 const DUEL_WIN_BONUS = 20;
 const DUEL_MEMORY = 30;
@@ -573,7 +622,8 @@ let state = {
   level: 0, coins: 60, freeHints: 0, xp: 0,
   streak: 0, bestStreak: 0, lastDailyDate: null, daily: null,
   blitzBest: 0, blitzRounds: 0,
-  name: "", duelWins: 0, duelLosses: 0, duelsDone: {}, pendingDuel: null
+  name: "", duelWins: 0, duelLosses: 0, duelsDone: {}, pendingDuel: null,
+  akuDraft: null, akuDone: {}, pendingAku: null
 };
 try {
   const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
@@ -586,6 +636,7 @@ let mode = "adventure";
 let cur = null;
 let blitz = null;
 let duel = null;
+let aku = null;
 
 function rng(seed) {
   return function () {
@@ -683,6 +734,9 @@ function renderHome() {
 
   $("stBlitz").textContent = "Rekor: " + state.blitzBest + " kata";
 
+  const pendingAku = state.pendingAku ? decodeAku(state.pendingAku) : null;
+  $("stAku").textContent = pendingAku ? "Soal dari " + pendingAku.name + "!" : state.akuDraft ? "Kirim lagi" : "Buat soal";
+
   const pending = state.pendingDuel ? decodeDuel(state.pendingDuel) : null;
   $("stDuel").textContent = pending ? "Ditantang " + pending.name + "!"
     : state.duelWins + state.duelLosses > 0 ? "Menang " + state.duelWins + " · Kalah " + state.duelLosses : "Tantang";
@@ -698,23 +752,28 @@ function goHome() {
   stopBlitz();
   stopDuel();
   cur = null;
+  aku = null;
   $("game").hidden = true;
+  $("maker").hidden = true;
   $("home").hidden = false;
   renderHome();
 }
 
 // ---------- Soal ----------
-function currentIndex() {
-  if (mode === "daily") return dailyQuestions(state.daily.date)[state.daily.index];
-  if (mode === "blitz") return blitz.queue[blitz.pos % blitz.queue.length];
-  if (mode === "duel") return duel.queue[duel.pos];
-  return ORDER[state.level];
+// Soal yang sedang dimainkan: [data soal, angka kunci untuk mengacak huruf].
+function currentQuestion() {
+  if (mode === "aku") return [aku.items[aku.pos], 100000 + aku.pos];
+  let qi;
+  if (mode === "daily") qi = dailyQuestions(state.daily.date)[state.daily.index];
+  else if (mode === "blitz") qi = blitz.queue[blitz.pos % blitz.queue.length];
+  else if (mode === "duel") qi = duel.queue[duel.pos];
+  else qi = ORDER[state.level];
+  return [LEVELS[qi], qi];
 }
 
-function buildLevel(qi) {
-  const q = LEVELS[qi];
+function buildLevel(q, key) {
   const answer = q.answer;
-  const rand = rng(qi * 7919 + state.seed + (mode === "blitz" ? blitz.pos : 0));
+  const rand = rng(key * 7919 + state.seed + (mode === "blitz" ? blitz.pos : 0));
   const total = answer.length <= 6 ? 12 : answer.length <= 8 ? 14 : 16;
   const letters = answer.split("");
   const pool = "ABDEGIKLMNOPRSTU";
@@ -731,7 +790,8 @@ function buildLevel(qi) {
 }
 
 function loadQuestion() {
-  buildLevel(currentIndex());
+  const [q, key] = currentQuestion();
+  buildLevel(q, key);
   render();
 }
 
@@ -749,7 +809,10 @@ function render() {
 
   if (mode === "blitz") updateBlitzHud();
   else if (mode === "duel") updateDuelHud();
-  else if (mode === "daily") {
+  else if (mode === "aku") {
+    $("levelLabel").textContent = "Soal " + (aku.pos + 1) + " / " + aku.items.length;
+    $("bar").style.width = (aku.pos / aku.items.length * 100) + "%";
+  } else if (mode === "daily") {
     $("levelLabel").textContent = "Harian " + (state.daily.index + 1) + " / " + DAILY_COUNT;
     $("bar").style.width = (state.daily.index / DAILY_COUNT * 100) + "%";
   } else {
@@ -758,11 +821,12 @@ function render() {
   }
 
   // Kilat dan Duel adalah adu cepat: tanpa petunjuk, ada tombol Lewati.
-  const isBlitz = mode === "blitz" || mode === "duel";
-  $("btnHint").hidden = isBlitz;
-  $("btnWatch").hidden = isBlitz;
-  $("btnSkip").hidden = !isBlitz;
-  $("actions").classList.toggle("two", isBlitz);
+  // Tebak Aku boleh memakai petunjuk koin dan boleh melewati soal.
+  const isSpeed = mode === "blitz" || mode === "duel";
+  $("btnHint").hidden = isSpeed;
+  $("btnWatch").hidden = isSpeed || mode === "aku";
+  $("btnSkip").hidden = !(isSpeed || mode === "aku");
+  $("actions").classList.toggle("two", isSpeed);
   $("hintCost").textContent = state.freeHints > 0 ? state.freeHints + " gratis" : HINT_COST + " koin";
 
   const slotsEl = $("slots");
@@ -871,6 +935,16 @@ function win() {
       blitz.pos++;
       loadQuestion();
     }, 350);
+    return;
+  }
+
+  if (mode === "aku") {
+    aku.known++;
+    state.coins += AKU_COINS;
+    save();
+    $("coins").textContent = state.coins;
+    if (levelUp) toast("Naik gelar: " + levelUp + "!");
+    setTimeout(() => { if (mode === "aku" && aku) nextAkuQuestion(); }, 450);
     return;
   }
 
@@ -1064,6 +1138,10 @@ function endBlitz() {
 function skipQuestion() {
   if (!cur || cur.busy) return;
   if (mode === "duel") return nextDuelQuestion();
+  if (mode === "aku") {
+    toast("Jawabannya: " + cur.answer);
+    return nextAkuQuestion();
+  }
   if (mode !== "blitz") return;
   blitz.pos++;
   loadQuestion();
@@ -1252,6 +1330,190 @@ function checkIncomingDuel() {
   showDuelIntro(opp);
 }
 
+// ---------- Tebak Aku ----------
+// Pemain menulis soal tentang dirinya; soal disimpan di link ?aku=, tanpa server.
+function hasBlocked(text) {
+  const words = String(text).toUpperCase().replace(/[^A-Z]+/g, " ").trim().split(" ");
+  return words.some((w) => BLOCKED_WORDS.includes(w));
+}
+function toCode(value) {
+  return btoa(unescape(encodeURIComponent(JSON.stringify(value)))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+function fromCode(code) {
+  return JSON.parse(decodeURIComponent(escape(atob(code.replace(/-/g, "+").replace(/_/g, "/")))));
+}
+function encodeAku(name, items) { return toCode([1, name, items.map((q) => [q.answer, q.clue])]); }
+function decodeAku(code) {
+  try {
+    const a = fromCode(code);
+    if (!Array.isArray(a) || a[0] !== 1 || !Array.isArray(a[2])) return null;
+    const name = cleanName(a[1]);
+    if (!name || hasBlocked(name)) return null;
+    const items = a[2].slice(0, AKU_MAX).map(([answer, clue]) => ({
+      theme: "Tentang " + name,
+      answer: String(answer || "").toUpperCase(),
+      clue: String(clue || "").trim().slice(0, 70)
+    }));
+    if (items.length < AKU_MIN) return null;
+    if (items.some((q) => !/^[A-Z]{3,10}$/.test(q.answer) || q.clue.length < 3 || hasBlocked(q.answer) || hasBlocked(q.clue))) return null;
+    return { name, items, code };
+  } catch (e) { return null; }
+}
+
+function openMaker() {
+  const draft = state.akuDraft || { name: state.name, items: [] };
+  $("makerName").value = draft.name || state.name || "";
+  const list = $("qlist");
+  list.innerHTML = "";
+  for (let i = 0; i < AKU_MAX; i++) {
+    const saved = draft.items[i] || { answer: "", clue: "" };
+    const [exClue, exAnswer] = AKU_EXAMPLES[i];
+    const row = document.createElement("div");
+    row.className = "qrow";
+    row.innerHTML =
+      "<span class=\"qnum\">" + (i + 1) + "</span>" +
+      "<input class=\"field\" id=\"mc" + i + "\" maxlength=\"70\" placeholder=\"Petunjuk, misal: " + esc(exClue) + "\" aria-label=\"Petunjuk soal " + (i + 1) + "\">" +
+      "<input class=\"field answer\" id=\"ma" + i + "\" maxlength=\"10\" autocapitalize=\"characters\" autocomplete=\"off\" placeholder=\"Jawaban, misal: " + exAnswer + "\" aria-label=\"Jawaban soal " + (i + 1) + "\">";
+    list.appendChild(row);
+    $("mc" + i).value = saved.clue;
+    $("ma" + i).value = saved.answer;
+    $("ma" + i).oninput = (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, ""); };
+  }
+  $("home").hidden = true;
+  $("game").hidden = true;
+  $("maker").hidden = false;
+  window.scrollTo(0, 0);
+}
+
+function readMaker() {
+  const name = cleanName($("makerName").value);
+  const items = [];
+  for (let i = 0; i < AKU_MAX; i++) {
+    const clue = $("mc" + i).value.trim().slice(0, 70);
+    const answer = $("ma" + i).value.toUpperCase().replace(/[^A-Z]/g, "");
+    if (!clue && !answer) continue;
+    items.push({ n: i + 1, clue, answer });
+  }
+  return { name, items };
+}
+
+function saveMaker() {
+  const { name, items } = readMaker();
+  state.akuDraft = { name, items: items.map(({ clue, answer }) => ({ clue, answer })) };
+  save();
+  if (!name) return toast("Isi namamu dulu ya");
+  if (hasBlocked(name)) return toast("Nama itu tidak bisa dipakai");
+  for (const q of items) {
+    if (!q.clue) return toast("Soal " + q.n + ": petunjuknya belum diisi");
+    if (q.clue.length < 3) return toast("Soal " + q.n + ": petunjuknya terlalu pendek");
+    if (q.answer.length < 3 || q.answer.length > 10) return toast("Soal " + q.n + ": jawaban harus 3–10 huruf");
+    if (hasBlocked(q.answer) || hasBlocked(q.clue)) return toast("Soal " + q.n + ": ada kata yang tidak bisa dipakai");
+    if (q.clue.toUpperCase().replace(/[^A-Z]/g, "").includes(q.answer)) return toast("Soal " + q.n + ": petunjuknya menyebut jawaban");
+  }
+  if (items.length < AKU_MIN) return toast("Isi minimal " + AKU_MIN + " soal");
+
+  state.name = name;
+  save();
+  const url = GAME_URL + "?aku=" + encodeAku(name, items);
+  const text = "Seberapa kenal kamu sama aku? 😏 Tebak " + items.length + " hal tentang " + name + " di Tebak Kata: " + url;
+  showPanel(
+    "<h2>Soalmu siap!</h2><p>Kirim ke teman atau grup WhatsApp. Lihat siapa yang paling kenal denganmu.</p>" +
+    "<button class=\"btn main\" id=\"send\" type=\"button\">Kirim ke teman</button>" +
+    "<button class=\"btn\" id=\"edit\" type=\"button\">Ubah soal</button>" +
+    "<button class=\"btn\" id=\"toMenu\" type=\"button\">Menu</button>",
+    () => {
+      $("send").onclick = () => shareText(text);
+      $("edit").onclick = hideOverlay;
+      $("toMenu").onclick = () => { hideOverlay(); goHome(); };
+    }
+  );
+}
+
+function akuLabel(known, total) {
+  if (known === total) return "Sahabat sejati!";
+  if (known >= total - 1) return "Teman dekat!";
+  if (known * 2 >= total) return "Lumayan kenal.";
+  if (known > 0) return "Baru kenalan, nih.";
+  return "Kalian perlu lebih sering ngobrol!";
+}
+
+function showAkuIntro(data) {
+  const done = state.akuDone[data.code];
+  if (done !== undefined) {
+    state.pendingAku = null;
+    save();
+    return showAkuResult(data, done, false);
+  }
+  showPanel(
+    "<h2>Seberapa kenal?</h2><p><b>" + esc(data.name) + "</b> membuat " + data.items.length +
+    " soal tentang dirinya. Tebak sebanyak mungkin!</p>" +
+    "<button class=\"btn main\" id=\"accept\" type=\"button\">Mulai menebak</button>" +
+    "<button class=\"btn\" id=\"later\" type=\"button\">Nanti saja</button>",
+    () => {
+      $("accept").onclick = () => {
+        hideOverlay();
+        state.pendingAku = null;
+        save();
+        aku = { ...data, pos: 0, known: 0 };
+        mode = "aku";
+        showGame();
+        loadQuestion();
+      };
+      $("later").onclick = () => { state.pendingAku = data.code; save(); hideOverlay(); renderHome(); };
+    }
+  );
+}
+
+function nextAkuQuestion() {
+  aku.pos++;
+  if (aku.pos >= aku.items.length) return finishAku();
+  loadQuestion();
+}
+
+function finishAku() {
+  if (cur) cur.busy = true;
+  state.akuDone[aku.code] = aku.known;
+  const keys = Object.keys(state.akuDone);
+  if (keys.length > DUEL_MEMORY) delete state.akuDone[keys[0]];
+  save();
+  showAkuResult(aku, aku.known, true);
+}
+
+function showAkuResult(data, known, fresh) {
+  const total = data.items.length;
+  const label = akuLabel(known, total);
+  const text = "Aku kenal " + data.name + " " + known + "/" + total + " di Tebak Kata! " + label +
+    " Kamu seberapa kenal? " + GAME_URL + "?aku=" + data.code;
+  showPanel(
+    "<h2>" + label + "</h2><p>Kamu kenal <b>" + esc(data.name) + "</b></p>" +
+    "<div class=\"word\">" + known + " / " + total + "</div>" +
+    (fresh ? "" : "<p>Kamu sudah menebak soal ini.</p>") +
+    "<button class=\"btn\" id=\"send\" type=\"button\">Kirim hasil ke " + esc(data.name) + "</button>" +
+    "<button class=\"btn main\" id=\"makeOwn\" type=\"button\">Buat soal tentang dirimu</button>" +
+    "<button class=\"btn\" id=\"toMenu\" type=\"button\">Menu</button>",
+    () => {
+      $("send").onclick = () => shareText(text);
+      $("makeOwn").onclick = () => { hideOverlay(); goHome(); openMaker(); };
+      $("toMenu").onclick = () => { hideOverlay(); goHome(); };
+    }
+  );
+}
+
+function openAkuMenu() {
+  const pending = state.pendingAku ? decodeAku(state.pendingAku) : null;
+  if (pending) return showAkuIntro(pending);
+  openMaker();
+}
+
+function checkIncomingAku() {
+  const code = new URLSearchParams(location.search).get("aku");
+  if (!code) return;
+  try { history.replaceState(null, "", location.pathname); } catch (e) {}
+  const data = decodeAku(code);
+  if (!data) return toast("Link soal tidak valid");
+  showAkuIntro(data);
+}
+
 // ---------- Iklan ----------
 const native = { interstitialReady: false, rewardedReady: false, afterInterstitial: null, rewardEarned: false };
 
@@ -1397,6 +1659,14 @@ $("modeAdventure").onclick = startAdventure;
 $("modeDaily").onclick = startDaily;
 $("modeBlitz").onclick = startBlitz;
 $("modeDuel").onclick = openDuelMenu;
+$("modeAku").onclick = openAkuMenu;
+$("makerSave").onclick = saveMaker;
+$("makerBack").onclick = () => {
+  const { name, items } = readMaker();
+  state.akuDraft = { name, items: items.map(({ clue, answer }) => ({ clue, answer })) };
+  save();
+  goHome();
+};
 $("btnBack").onclick = goHome;
 $("btnClear").onclick = clearSlots;
 $("btnHint").onclick = useHint;
@@ -1420,4 +1690,5 @@ document.addEventListener("keydown", (e) => {
 renderHome();
 initNativeAds();
 checkIncomingDuel();
+checkIncomingAku();
 </script>
