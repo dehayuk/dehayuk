@@ -170,6 +170,7 @@
   </div>
 
   <p class="note">Ketuk huruf untuk mengisi, ketuk kotak untuk mengembalikan. Di komputer bisa langsung mengetik.</p>
+  <p class="note" id="adStatus" hidden></p>
 </div>
 
 <div class="banner"><b>UJI</b>Tempat banner AdMob. Iklan asli hanya tampil di app Android.</div>
@@ -428,11 +429,25 @@ function showFinish() {
 
 const native = { interstitialReady: false, rewardedReady: false, afterInterstitial: null, rewardEarned: false };
 
+// Status AdMob, hanya tampil di app Android selama mode uji, untuk memeriksa sambungan iklan.
+function adStatus(text) {
+  const el = $("adStatus");
+  el.hidden = false;
+  el.textContent = "AdMob: " + text;
+}
+function errorText(e) { return (e && (e.message || e.code)) || String(e); }
+
 async function initNativeAds() {
-  if (!NativeAds) return;
+  const inApp = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform();
+  if (!NativeAds) {
+    if (inApp) adStatus("plugin tidak ditemukan, iklan tiruan yang dipakai");
+    return;
+  }
   document.querySelector(".banner").hidden = true;
+  if (ADMOB.testing) adStatus("menyambung...");
   try {
     await NativeAds.initialize({});
+    if (ADMOB.testing) adStatus("tersambung, memuat banner...");
     try {
       const consent = await NativeAds.requestConsentInfo();
       if (consent.isConsentFormAvailable && consent.status === "REQUIRED") await NativeAds.showConsentForm();
@@ -465,21 +480,26 @@ async function initNativeAds() {
     await NativeAds.showBanner({
       adId: ADMOB.banner, adSize: "ADAPTIVE_BANNER", position: "BOTTOM_CENTER", margin: 0, isTesting: ADMOB.testing
     });
+    if (ADMOB.testing) adStatus("tersambung, banner tampil");
     prepareInterstitial();
     prepareRewarded();
-  } catch (e) {}
+  } catch (e) {
+    adStatus("gagal - " + errorText(e));
+  }
 }
 
 function prepareInterstitial() {
   native.interstitialReady = false;
   NativeAds.prepareInterstitial({ adId: ADMOB.interstitial, isTesting: ADMOB.testing })
-    .then(() => { native.interstitialReady = true; }).catch(() => {});
+    .then(() => { native.interstitialReady = true; })
+    .catch((e) => { if (ADMOB.testing) adStatus("iklan jeda gagal dimuat - " + errorText(e)); });
 }
 
 function prepareRewarded() {
   native.rewardedReady = false;
   NativeAds.prepareRewardVideoAd({ adId: ADMOB.rewarded, isTesting: ADMOB.testing })
-    .then(() => { native.rewardedReady = true; }).catch(() => {});
+    .then(() => { native.rewardedReady = true; })
+    .catch((e) => { if (ADMOB.testing) adStatus("iklan hadiah gagal dimuat - " + errorText(e)); });
 }
 
 function showInterstitial(onDone) {
