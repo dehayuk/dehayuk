@@ -108,14 +108,6 @@
   .note { font-size: 12px; color: var(--muted); text-align: center; margin: 0; }
   .note a { color: var(--tile); font-weight: 800; }
 
-  .banner {
-    position: fixed; left: 0; right: 0; bottom: 0;
-    padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px));
-    background: var(--ad); color: var(--ad-ink); text-align: center; font-size: 12px;
-    border-top: 1px solid #3B4252;
-  }
-  .banner b { display: inline-block; background: #F4C152; color: #3B2A05; font-size: 10px; padding: 0 5px; border-radius: 3px; margin-right: 6px; }
-
   .overlay {
     position: fixed; inset: 0; background: rgba(5, 20, 20, .88);
     display: grid; place-items: center; padding: 16px; z-index: 10;
@@ -127,13 +119,6 @@
   .panel h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 30px; line-height: 1.1; color: var(--tile); }
   .panel p { margin: 0; color: var(--muted); }
   .panel .word { font-family: var(--display); font-weight: 800; font-size: 26px; letter-spacing: 3px; color: var(--ink); }
-  .adpanel { background: var(--ad); border-color: #3B4252; color: var(--ad-ink); }
-  .adbox {
-    width: 100%; aspect-ratio: 16 / 10; border-radius: 10px; display: grid; place-items: center;
-    background: repeating-linear-gradient(45deg, #333948 0 14px, #2E3441 14px 28px);
-    font-weight: 800; letter-spacing: 2px; font-size: 13px; color: #AEB6C6;
-  }
-  .adlabel { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #F4C152; font-weight: 800; }
   .count { font-variant-numeric: tabular-nums; font-weight: 800; }
 
   .toast {
@@ -167,7 +152,7 @@
   <div class="actions">
     <button class="btn" id="btnClear" type="button">Hapus<small>kosongkan</small></button>
     <button class="btn" id="btnHint" type="button">Petunjuk<small id="hintCost">30 koin</small></button>
-    <button class="btn watch" id="btnWatch" type="button">Tonton iklan<small>+1 petunjuk</small></button>
+    <button class="btn watch" id="btnWatch" type="button">Petunjuk gratis<small>tunggu 5 detik</small></button>
   </div>
 
   <p class="note">Ketuk huruf untuk mengisi, ketuk kotak untuk mengembalikan. Di komputer bisa langsung mengetik.</p>
@@ -175,7 +160,6 @@
   <p class="note" id="getApp"><a href="https://github.com/socialiam/tebak-kata/releases/latest/download/tebak-kata.apk">Unduh app Android (APK)</a></p>
 </div>
 
-<div class="banner"><b>UJI</b>Tempat banner AdMob. Iklan asli hanya tampil di app Android.</div>
 
 <div class="overlay" id="overlay" hidden></div>
 <div class="toast" id="toast" hidden></div>
@@ -258,7 +242,8 @@ const ADMOB = {
   interstitial: "ca-app-pub-4794081394235829/1704959677",
   rewarded: "ca-app-pub-4794081394235829/8681256555"
 };
-// Di app Android, plugin AdMob tersedia; di browser tidak, jadi iklan tiruan yang tampil.
+// Di app Android, plugin AdMob tersedia; di browser tidak ada iklan sama sekali.
+const IN_APP = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 const NativeAds = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() && window.capacitorStripe
   ? window.capacitorStripe.AdMob : null;
 
@@ -375,7 +360,7 @@ function useHint() {
   if (cur.busy) return;
   if (state.freeHints > 0) state.freeHints--;
   else if (state.coins >= HINT_COST) state.coins -= HINT_COST;
-  else return toast("Koin kurang. Tonton iklan untuk petunjuk gratis");
+  else return toast(IN_APP ? "Koin kurang. Tonton iklan untuk petunjuk gratis" : "Koin kurang. Pakai tombol petunjuk gratis");
 
   const si = cur.slots.findIndex((s, k) => !s.locked && (s.tile === null || cur.tiles[s.tile].ch !== cur.answer[k]));
   if (si < 0) return;
@@ -440,13 +425,12 @@ function adStatus(text) {
 function errorText(e) { return (e && (e.message || e.code)) || String(e); }
 
 async function initNativeAds() {
-  const inApp = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform();
-  if (inApp) $("getApp").hidden = true;
-  if (!NativeAds) {
-    if (inApp) adStatus("plugin tidak ditemukan, iklan tiruan yang dipakai");
-    return;
-  }
-  document.querySelector(".banner").hidden = true;
+  // Tautan APK hanya berguna di Android dan komputer; di app dan di iPhone disembunyikan.
+  const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (IN_APP || isIos) $("getApp").hidden = true;
+  if (!IN_APP) return;
+  $("btnWatch").innerHTML = "Tonton iklan<small>+1 petunjuk</small>";
+  if (!NativeAds) return adStatus("plugin tidak ditemukan");
   if (ADMOB.testing) adStatus("menyambung...");
   try {
     await NativeAds.initialize({});
@@ -506,7 +490,7 @@ function prepareRewarded() {
 }
 
 function showInterstitial(onDone) {
-  if (!NativeAds) return showAd("interstitial", onDone);
+  if (!NativeAds) return onDone();
   if (!native.interstitialReady) { prepareInterstitial(); return onDone(); }
   native.interstitialReady = false;
   native.afterInterstitial = onDone;
@@ -518,47 +502,39 @@ function showInterstitial(onDone) {
 }
 
 function showRewarded() {
-  if (!NativeAds) return showAd("rewarded", render);
+  if (!NativeAds) return showFreeHintWait();
   if (!native.rewardedReady) { prepareRewarded(); return toast("Iklan belum siap, coba lagi sebentar"); }
   native.rewardedReady = false;
   native.rewardEarned = false;
   NativeAds.showRewardVideoAd().catch(() => { prepareRewarded(); toast("Iklan gagal tampil, coba lagi"); });
 }
 
-// Iklan tiruan untuk versi browser, meniru perilaku iklan asli.
-function showAd(kind, onDone) {
-  const rewarded = kind === "rewarded";
-  let left = rewarded ? 5 : 3;
+// Versi browser tidak punya iklan: petunjuk gratis diberikan setelah jeda singkat.
+function showFreeHintWait() {
+  let left = 5;
   showPanel(
-    "<div class=\"adlabel\">Iklan uji · " + (rewarded ? "rewarded" : "interstitial") + "</div>" +
-    "<div class=\"adbox\">IKLAN ADMOB</div>" +
-    "<p id=\"adText\">" + (rewarded ? "Tonton sampai habis untuk 1 petunjuk gratis" : "Iklan jeda setiap " + INTERSTITIAL_EVERY + " soal") +
-    " · <span class=\"count\" id=\"adCount\">" + left + "</span> dtk</p>" +
-    "<button class=\"btn\" id=\"adClose\" type=\"button\" " + (rewarded ? "" : "hidden") + ">" + (rewarded ? "Batal" : "Tutup") + "</button>",
-    null, true
+    "<h2>Petunjuk gratis</h2>" +
+    "<p id=\"waitText\">Sebentar ya, petunjuk sedang disiapkan · <span class=\"count\" id=\"waitCount\">" + left + "</span></p>" +
+    "<button class=\"btn\" id=\"waitClose\" type=\"button\">Batal</button>"
   );
-  const closeBtn = $("adClose");
+  const closeBtn = $("waitClose");
   const timer = setInterval(() => {
     left--;
-    if (left > 0) { $("adCount").textContent = left; return; }
+    if (left > 0) { $("waitCount").textContent = left; return; }
     clearInterval(timer);
-    if (rewarded) {
-      state.freeHints++;
-      save();
-      $("adText").textContent = "Hadiah didapat: 1 petunjuk gratis";
-      closeBtn.textContent = "Ambil hadiah";
-    } else {
-      $("adText").textContent = "Iklan selesai";
-      closeBtn.hidden = false;
-    }
-    closeBtn.onclick = () => { hideOverlay(); onDone && onDone(); };
+    state.freeHints++;
+    save();
+    $("waitText").textContent = "Siap! 1 petunjuk gratis untukmu";
+    closeBtn.textContent = "Ambil petunjuk";
+    closeBtn.className = "btn main";
+    closeBtn.onclick = () => { hideOverlay(); render(); };
   }, 1000);
-  closeBtn.onclick = () => { clearInterval(timer); hideOverlay(); onDone && onDone(); };
+  closeBtn.onclick = () => { clearInterval(timer); hideOverlay(); };
 }
 
-function showPanel(html, wire, isAd) {
+function showPanel(html, wire) {
   const o = $("overlay");
-  o.innerHTML = "<div class=\"panel" + (isAd ? " adpanel" : "") + "\">" + html + "</div>";
+  o.innerHTML = "<div class=\"panel\">" + html + "</div>";
   o.hidden = false;
   if (wire) wire();
   const btn = o.querySelector("button:not([hidden])");

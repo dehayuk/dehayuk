@@ -46,10 +46,10 @@ jobs:
       - name: Terbitkan sebagai Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: uji-${{ github.run_number }}
-          name: Tebak Kata uji ${{ github.run_number }}
+          tag_name: v0.1.${{ github.run_number }}
+          name: Tebak Kata 0.1.${{ github.run_number }}
           body: |
-            Versi uji untuk HP Android. Iklan masih mode uji (Test Ad).
+            Versi awal Tebak Kata untuk HP Android.
             Unduh tebak-kata.apk di bawah, lalu izinkan "instal dari sumber tidak dikenal".
           files: tebak-kata.apk
           make_latest: true
