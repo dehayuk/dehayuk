@@ -1,0 +1,1476 @@
+<!doctype html>
+<html lang="id">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E3534">
+<title>Balok Ria</title>
+<meta name="description" content="Balok Ria: seret balok warna-warni ke papan 8×8, penuhi baris atau kolom, dan kejar kombo. Ada Harian yang sama untuk semua pemain dan duel lewat WhatsApp. Gratis, langsung main di browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Font dimuat tanpa menahan tampilan pertama; bila gagal, font sistem tetap dipakai. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap"></noscript>
+<style>
+  :root {
+    color-scheme: dark;
+    --ground: #0E3534;
+    --board: #15504D;
+    --board-edge: #2A7A75;
+    --slot-edge: #3E8C86;
+    --tile: #F4C152;
+    --tile-shade: #C9952A;
+    --tile-ink: #3B2A05;
+    --ink: #EAF6F3;
+    --muted: #9EC6C0;
+    --good: #7FE0A3;
+    --bad: #FF7A70;
+    --well: #0B2B2A;
+    --k1: #F4C152; --k2: #5EC8F2; --k3: #FF7A70; --k4: #A98BFF;
+    --k5: #7FE0A3; --k6: #FF9F43; --k7: #FF6FB5;
+    --display: "Baloo 2", "Trebuchet MS", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --body: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --cell: 38px; --bs: 326px; --m: 20px; --rh: 110px;
+  }
+  [hidden] { display: none !important; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink); font-family: var(--body); font-size: 15px;
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; overscroll-behavior-y: contain;
+  }
+  button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; font-family: var(--body); }
+  button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  .wrap {
+    max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px;
+    padding: calc(10px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px));
+  }
+  section { display: flex; flex-direction: column; gap: 12px; }
+  #play { gap: 8px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .brand-box { display: flex; flex-direction: column; min-width: 0; }
+  .hub { color: var(--muted); font-size: 12px; font-weight: 800; text-decoration: none; padding: 2px 0; }
+  .brand { font-family: var(--display); font-weight: 800; font-size: 24px; line-height: 1; letter-spacing: .5px; }
+  .brand span { color: var(--tile); }
+  .head-right { display: flex; align-items: center; gap: 8px; }
+  .best {
+    display: flex; align-items: center; gap: 6px; background: var(--board); border: 1px solid var(--board-edge);
+    padding: 6px 12px; border-radius: 999px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .best.bump { animation: bump .45s ease-out; }
+  @keyframes bump { 40% { transform: scale(1.18); border-color: var(--tile); } }
+  .icon-btn {
+    min-width: 40px; min-height: 40px; border-radius: 999px; cursor: pointer; font-size: 17px; line-height: 1;
+    background: var(--board); border: 1px solid var(--board-edge); color: var(--ink);
+  }
+
+  /* Menu utama */
+  .hero {
+    background: var(--board); border: 1px solid var(--board-edge); border-radius: 14px; padding: 16px;
+    display: flex; gap: 14px; align-items: center;
+  }
+  .logo { display: grid; grid-template-columns: 26px 26px; gap: 4px; flex: none; }
+  .logo i { width: 26px; height: 26px; border-radius: 6px; background: var(--c); box-shadow: inset 0 2px 0 rgba(255,255,255,.35), inset 0 -3px 0 rgba(0,0,0,.25); }
+  .hero p { margin: 0; color: var(--muted); line-height: 1.45; }
+  .hero b { color: var(--ink); font-family: var(--display); font-size: 19px; display: block; line-height: 1.15; }
+  .stats { font-size: 12.5px; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; margin: 0; }
+  .modes { display: grid; gap: 10px; }
+  .mode {
+    display: grid; grid-template-columns: 1fr auto; grid-template-areas: "name state" "desc state";
+    gap: 2px 12px; align-items: center; text-align: left; cursor: pointer;
+    background: var(--board); border: 1px solid var(--board-edge); border-radius: 14px; padding: 14px 16px; color: var(--ink);
+  }
+  .mode-name { grid-area: name; font-family: var(--display); font-weight: 800; font-size: 21px; line-height: 1.1; }
+  .mode-desc { grid-area: desc; font-size: 12.5px; color: var(--muted); }
+  .mode-state {
+    grid-area: state; max-width: 140px; text-align: center; font-weight: 800; font-size: 12px;
+    background: var(--tile); color: var(--tile-ink); box-shadow: inset 0 -3px 0 var(--tile-shade);
+    padding: 7px 10px; border-radius: 9px; font-variant-numeric: tabular-nums;
+  }
+  .mode.primary { border-color: var(--tile-shade); box-shadow: 0 0 0 1px var(--tile-shade) inset; }
+  .mode.primary .mode-name { color: var(--tile); }
+  .mode.done .mode-state { background: transparent; box-shadow: none; color: var(--good); border: 1px solid var(--good); }
+  .home-foot { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .link-btn { background: none; border: 1px solid var(--board-edge); color: var(--muted); border-radius: 999px; padding: 8px 14px; font-weight: 800; font-size: 12.5px; cursor: pointer; min-height: 40px; }
+  .home-foot a { color: var(--muted); font-size: 12px; padding: 10px; }
+
+  /* Layar main */
+  .topbar { display: flex; align-items: center; gap: 8px; min-height: 40px; }
+  .back {
+    background: none; border: 1px solid var(--board-edge); color: var(--ink); border-radius: 8px;
+    min-height: 40px; padding: 8px 12px; font-weight: 800; font-size: 13px; cursor: pointer;
+  }
+  .chip {
+    font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--tile); border: 1px solid var(--tile-shade); padding: 1px 10px; border-radius: 6px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+  }
+  .target { margin-left: auto; color: var(--muted); font-size: 12.5px; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .scorebar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; min-height: 40px; }
+  .score { grid-column: 2; font-family: var(--display); font-weight: 800; font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .score.bump { animation: bump .3s ease-out; }
+  .combo { grid-column: 3; justify-self: end; display: flex; flex-direction: column; align-items: center; gap: 3px; font-weight: 800; font-size: 12.5px; color: var(--tile); visibility: hidden; }
+  .combo.on { visibility: visible; }
+  .pips { display: flex; gap: 4px; }
+  .pips i { width: 8px; height: 8px; border-radius: 50%; background: var(--tile); }
+  .pips i.off { background: transparent; box-shadow: inset 0 0 0 1.5px var(--slot-edge); }
+  .lines-now { grid-column: 1; font-size: 12.5px; color: var(--muted); font-weight: 800; font-variant-numeric: tabular-nums; }
+
+  .stage { position: relative; width: var(--bs); height: var(--bs); margin: 0 auto; }
+  .stage.shake { animation: shake .2s linear; }
+  @keyframes shake { 0%,100%{transform:translate(0,0)} 20%{transform:translate(-4px,2px)} 40%{transform:translate(4px,-2px)} 60%{transform:translate(-4px,-1px)} 80%{transform:translate(3px,2px)} }
+  .board {
+    display: grid; grid-template-columns: repeat(8, var(--cell)); grid-auto-rows: var(--cell); gap: 2px; padding: 4px;
+    width: var(--bs); height: var(--bs); background: var(--well); border-radius: 12px;
+    box-shadow: 0 0 0 1px var(--board-edge); touch-action: none; cursor: default;
+  }
+  .c { border-radius: 5px; background: var(--board); }
+  .k1 { --col: var(--k1); } .k2 { --col: var(--k2); } .k3 { --col: var(--k3); } .k4 { --col: var(--k4); }
+  .k5 { --col: var(--k5); } .k6 { --col: var(--k6); } .k7 { --col: var(--k7); }
+  .c.f, .pc i { background: var(--col); box-shadow: inset 0 2px 0 rgba(255,255,255,.38), inset 0 -3px 0 rgba(0,0,0,.24); }
+  .c.g { background: var(--col); opacity: .42; }
+  .c.hl { box-shadow: inset 0 0 0 2px #fff, 0 0 8px rgba(255,255,255,.55); }
+  .c.cur { box-shadow: inset 0 0 0 2px var(--tile); }
+  .c.x { animation: boom .28s ease-in both; animation-delay: var(--d, 0ms); }
+  @keyframes boom { 0%, 22% { background: #fff; transform: scale(1); opacity: 1; } 100% { background: #fff; transform: scale(0) rotate(30deg); opacity: 0; } }
+  .c.dead { animation: grey .18s ease-out both; animation-delay: var(--d, 0ms); }
+  @keyframes grey { to { background: #3F5957; } }
+  .fx { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+  .float {
+    position: absolute; transform: translate(-50%, -50%); font-family: var(--display); font-weight: 800; font-size: 22px;
+    color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.35); animation: rise .8s ease-out forwards; white-space: nowrap;
+  }
+  @keyframes rise { from { opacity: 1; transform: translate(-50%, -50%); } to { opacity: 0; transform: translate(-50%, calc(-50% - 46px)); } }
+  .badge {
+    position: absolute; left: 50%; top: 38%; transform: translate(-50%, -50%); text-align: center; white-space: nowrap;
+    font-family: var(--display); font-weight: 800; font-size: 38px; line-height: 1; color: var(--bc, #3FD6C6);
+    text-shadow: 0 3px 0 rgba(0,0,0,.4); animation: badge 1s ease-out forwards;
+  }
+  .badge small { display: block; font-size: 22px; color: #fff; margin-top: 4px; }
+  @keyframes badge {
+    0% { transform: translate(-50%,-50%) scale(.6); opacity: 0; } 15% { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
+    25% { transform: translate(-50%,-50%) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%,-60%) scale(1); }
+  }
+  .banner {
+    position: absolute; left: 50%; top: -6px; transform: translate(-50%, -100%); background: var(--tile); color: var(--tile-ink);
+    font-family: var(--display); font-weight: 800; font-size: 17px; padding: 4px 14px; border-radius: 999px; white-space: nowrap;
+    box-shadow: inset 0 -3px 0 var(--tile-shade); animation: banner 2.2s ease-out forwards;
+  }
+  @keyframes banner { 0% { opacity: 0; transform: translate(-50%, -60%) scale(.7); } 12% { opacity: 1; transform: translate(-50%, -100%) scale(1.08); } 20% { transform: translate(-50%, -100%) scale(1); } 85% { opacity: 1; } 100% { opacity: 0; } }
+
+  .rack { display: flex; justify-content: center; width: var(--bs); margin: 0 auto; touch-action: none; }
+  .slot {
+    flex: 1 1 0; height: var(--rh); display: grid; place-items: center; padding: 0; cursor: grab;
+    background: none; border: 0; border-radius: 12px; touch-action: none;
+  }
+  .slot.sel { background: rgba(244, 193, 82, .12); box-shadow: inset 0 0 0 2px var(--tile); }
+  .slot.nofit .pc { opacity: .3; }
+  .slot.lifting .pc { opacity: 0; }
+  .slot.in .pc { animation: dealIn .22s ease-out both; }
+  @keyframes dealIn { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .pc { position: relative; width: calc(var(--w) * var(--m)); height: calc(var(--h) * var(--m)); pointer-events: none; }
+  .pc i { position: absolute; left: calc(var(--x) * var(--m)); top: calc(var(--y) * var(--m)); width: calc(var(--m) - 2px); height: calc(var(--m) - 2px); border-radius: 22%; }
+  .drag { position: fixed; left: 0; top: 0; z-index: 40; pointer-events: none; will-change: transform; transform-origin: 50% 50%; }
+  .drag.back { transition: transform .15s ease-in; }
+  .hint { font-size: 12.5px; color: var(--muted); text-align: center; margin: -4px 0 0; }
+
+  #fxc { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 35; }
+  .confetti { position: fixed; top: -14px; width: 9px; height: 13px; border-radius: 2px; z-index: 50; pointer-events: none; animation: fall 1.5s ease-in forwards; }
+  @keyframes fall { to { transform: translateY(105vh) rotate(540deg); opacity: .7; } }
+
+  /* Panel */
+  .overlay { position: fixed; inset: 0; background: rgba(5, 20, 20, .88); display: grid; place-items: center; padding: 16px; z-index: 60; overflow-y: auto; }
+  .panel {
+    width: 100%; max-width: 380px; background: var(--board); border: 1px solid var(--board-edge); border-radius: 16px;
+    padding: 22px 18px; text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center;
+    animation: slideUp .28s ease-out;
+  }
+  @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .panel h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 28px; line-height: 1.1; color: var(--tile); }
+  .panel p { margin: 0; color: var(--muted); line-height: 1.45; }
+  .panel b { color: var(--ink); }
+  .big { font-family: var(--display); font-weight: 800; font-size: 44px; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; }
+  .facts div { background: var(--ground); border: 1px solid var(--board-edge); border-radius: 10px; padding: 8px 4px; font-size: 11.5px; color: var(--muted); }
+  .facts b { display: block; font-size: 18px; font-family: var(--display); }
+  .col { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+  .row { display: flex; gap: 8px; width: 100%; }
+  .row .btn { flex: 1; }
+  .btn {
+    border: 1px solid var(--board-edge); background: var(--ground); color: var(--ink); border-radius: 10px;
+    padding: 11px 8px; font-weight: 800; font-size: 14px; cursor: pointer; line-height: 1.2; min-height: 44px;
+  }
+  .btn.main { background: var(--tile); color: var(--tile-ink); border: 0; box-shadow: inset 0 -4px 0 var(--tile-shade); font-family: var(--display); font-size: 20px; }
+  .help { text-align: left; margin: 0; padding-left: 20px; color: var(--ink); line-height: 1.5; display: flex; flex-direction: column; gap: 6px; }
+  .help li::marker { color: var(--tile); }
+  .versus { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; width: 100%; }
+  .versus .side { background: var(--ground); border: 1px solid var(--board-edge); border-radius: 12px; padding: 10px 6px; min-width: 0; }
+  .versus .side.win { border-color: var(--good); box-shadow: 0 0 0 1px var(--good); }
+  .versus .who { font-weight: 800; overflow-wrap: anywhere; }
+  .versus .pts { font-family: var(--display); font-weight: 800; font-size: 24px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .versus .side.win .pts { color: var(--good); }
+  .versus .vs { font-family: var(--display); font-weight: 800; color: var(--tile); }
+  .name-input {
+    width: 100%; padding: 10px 12px; border-radius: 10px; text-align: center; border: 1px solid var(--board-edge);
+    background: var(--ground); color: var(--ink); font-family: var(--body); font-weight: 800; font-size: 18px; user-select: text; -webkit-user-select: text;
+  }
+  .toast {
+    position: fixed; left: 50%; top: calc(62px + env(safe-area-inset-top, 0px)); transform: translateX(-50%);
+    background: var(--ink); color: var(--ground); font-weight: 800; font-size: 13px; padding: 8px 14px; border-radius: 999px;
+    z-index: 70; max-width: calc(100% - 32px); text-align: center; pointer-events: none;
+  }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stage.shake, .best.bump, .score.bump, .slot.in .pc, .panel, .c.x, .c.dead { animation: none; }
+    .c.dead { background: #3F5957; }
+    .confetti { display: none; }
+    .drag.back { transition: none; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand-box">
+      <a class="hub" href="/">‹ Dehayuk</a>
+      <div class="brand">Balok<span>Ria</span></div>
+    </div>
+    <div class="head-right">
+      <div class="best" id="bestBox" title="Skor terbaik">🏆 <span id="best">0</span></div>
+      <button class="icon-btn" id="btnSound" type="button" aria-label="Matikan suara" title="Suara">🔊</button>
+    </div>
+  </header>
+
+  <section id="home">
+    <div class="hero">
+      <div class="logo" aria-hidden="true"><i style="--c:var(--k1)"></i><i style="--c:var(--k2)"></i><i style="--c:var(--k7)"></i><i style="--c:var(--k5)"></i></div>
+      <p><b>Susun balok, ledakkan baris!</b>Seret balok ke papan. Penuhi satu baris atau kolom, lalu kejar kombo sepanjang mungkin.</p>
+    </div>
+    <div class="modes">
+      <button class="mode primary" id="modeEndless" type="button">
+        <span class="mode-name">Main Santai</span>
+        <span class="mode-desc">Tanpa batas waktu. Kejar skor tertinggimu.</span>
+        <span class="mode-state" id="stEndless">Main</span>
+      </button>
+      <button class="mode" id="modeDaily" type="button">
+        <span class="mode-name">Harian</span>
+        <span class="mode-desc">Balok yang sama untuk semua pemain hari ini. Adu skor di grup!</span>
+        <span class="mode-state" id="stDaily">Siap dimainkan</span>
+      </button>
+      <button class="mode" id="modeDuel" type="button">
+        <span class="mode-name">Duel</span>
+        <span class="mode-desc">Tantang teman lewat WhatsApp dengan urutan balok yang sama persis.</span>
+        <span class="mode-state" id="stDuel">Tantang</span>
+      </button>
+    </div>
+    <p class="stats" id="stats"></p>
+    <div class="home-foot">
+      <button class="link-btn" id="btnHelp" type="button">❓ Cara main</button>
+      <button class="link-btn" id="btnVibe" type="button">📳 Getar: nyala</button>
+    </div>
+    <div class="home-foot"><a href="/privasi/" target="_blank" rel="noopener">Privasi</a></div>
+  </section>
+
+  <section id="play" hidden>
+    <div class="topbar">
+      <button class="back" id="btnMenu" type="button">‹ Menu</button>
+      <span class="chip" id="modeChip">Santai</span>
+      <span class="target" id="target"></span>
+      <button class="icon-btn" id="btnRestart" type="button" aria-label="Mulai ulang" title="Mulai ulang">↻</button>
+    </div>
+    <div class="scorebar">
+      <span class="lines-now" id="linesNow">0 baris</span>
+      <div class="score" id="score" aria-label="Skor">0</div>
+      <div class="combo" id="comboBox"><span id="comboText">Kombo x1</span><span class="pips" id="pips"><i></i><i></i><i></i></span></div>
+    </div>
+    <div class="stage" id="stage">
+      <div class="board" id="board" aria-label="Papan 8 kali 8"></div>
+      <div class="fx" id="fx"></div>
+    </div>
+    <div class="rack" id="rack" aria-label="Balok yang bisa dipasang"></div>
+    <p class="hint" id="hint" hidden>Seret balok ke papan, atau ketuk balok lalu ketuk kotak.</p>
+  </section>
+</div>
+
+<canvas id="fxc" aria-hidden="true"></canvas>
+<div class="drag" id="drag" hidden></div>
+<div class="overlay" id="overlay" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<div class="sr" id="sr" aria-live="polite"></div>
+
+<script>
+/*CORE:BEGIN*/
+// Aturan murni Balok Ria: tanpa DOM, bisa diuji di Node.
+const GameCore = (() => {
+  const N = 8;
+  const GUARD_AFTER = 40;   // penjaga keadilan Main Santai baru aktif setelah rak ke-40
+  const GUARD_TRIES = 12;
+  const DAILY_SALT = 0xB10C;
+  const DAILY_LAUNCH = "2026-09-26"; // Harian #1 (hari rilis)
+
+  // Generator acak mulberry32, sama dengan NalarGame.
+  function rng(seed) {
+    return function () {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  // Versi yang menyimpan keadaannya di g.rs, supaya permainan bisa dilanjutkan setelah disimpan.
+  function next(g) {
+    const s = g.rs = (g.rs + 0x6D2B79F5) | 0;
+    let t = Math.imul(s ^ s >>> 15, 1 | s);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
+
+  // ---------- Bentuk balok ----------
+  function norm(cs) {
+    const mr = Math.min(...cs.map((p) => p[0])), mc = Math.min(...cs.map((p) => p[1]));
+    return cs.map(([r, c]) => [r - mr, c - mc]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  }
+  const keyOf = (cs) => cs.map((p) => p.join(",")).join(";");
+  const rot = (cs) => norm(cs.map(([r, c]) => [c, -r]));
+  const flip = (cs) => norm(cs.map(([r, c]) => [r, -c]));
+  function orients(cs, mirror) {
+    const out = [], seen = new Set();
+    for (const base of mirror ? [norm(cs), flip(cs)] : [norm(cs)]) {
+      let x = base;
+      for (let k = 0; k < 4; k++) {
+        const key = keyOf(x);
+        if (!seen.has(key)) { seen.add(key); out.push(x); }
+        x = rot(x);
+      }
+    }
+    return out;
+  }
+  const line = (n) => Array.from({ length: n }, (_, i) => [0, i]);
+  const rect = (h, w) => { const a = []; for (let r = 0; r < h; r++) for (let c = 0; c < w; c++) a.push([r, c]); return a; };
+  // [keluarga, sel, bobot per arah, mudah, warna, pakai cermin]
+  const FAMILIES = [
+    ["dot", [[0, 0]], 2, true, 1],
+    ["i2", line(2), 3, true, 2],
+    ["i3", line(3), 3, true, 2],
+    ["i4", line(4), 2, false, 2],
+    ["i5", line(5), 1, false, 2],
+    ["o2", rect(2, 2), 3, true, 3],
+    ["o3", rect(3, 3), 1, false, 3],
+    ["r23", rect(2, 3), 1, false, 3],
+    ["l3", [[0, 0], [1, 0], [1, 1]], 2, true, 5],
+    ["l4", [[0, 0], [1, 0], [2, 0], [2, 1]], 1, false, 6, true],
+    ["t4", [[0, 0], [0, 1], [0, 2], [1, 1]], 1, false, 7],
+    ["sz", [[0, 1], [0, 2], [1, 0], [1, 1]], 1, false, 4, true],
+    ["l5", [[0, 0], [1, 0], [2, 0], [2, 1], [2, 2]], 1, false, 5]
+  ];
+  const PIECES = [];
+  for (const [fam, cells, w, easy, color, mirror] of FAMILIES) {
+    for (const cs of orients(cells, mirror)) {
+      PIECES.push({
+        id: PIECES.length, fam, cells: cs, w, easy, color,
+        h: Math.max(...cs.map((p) => p[0])) + 1, wd: Math.max(...cs.map((p) => p[1])) + 1
+      });
+    }
+  }
+  const EASY = PIECES.filter((p) => p.easy);
+  const sumW = (list) => list.reduce((s, p) => s + p.w, 0);
+  const TOTAL_W = sumW(PIECES), EASY_W = sumW(EASY);
+
+  function pick(g, easy) {
+    const pool = easy ? EASY : PIECES;
+    let x = next(g) * (easy ? EASY_W : TOTAL_W);
+    for (const p of pool) { x -= p.w; if (x < 0) return p.id; }
+    return pool[pool.length - 1].id;
+  }
+
+  // ---------- Papan ----------
+  function fits(board, p, r, c) {
+    if (r < 0 || c < 0 || r + p.h > N || c + p.wd > N) return false;
+    for (const [dr, dc] of p.cells) if (board[(r + dr) * N + c + dc] !== 0) return false;
+    return true;
+  }
+  function fitsAnywhere(board, p) {
+    for (let r = 0; r + p.h <= N; r++) for (let c = 0; c + p.wd <= N; c++) if (fits(board, p, r, c)) return true;
+    return false;
+  }
+  function fullLines(board) {
+    const rows = [], cols = [];
+    for (let i = 0; i < N; i++) {
+      let rf = true, cf = true;
+      for (let j = 0; j < N; j++) {
+        if (!board[i * N + j]) rf = false;
+        if (!board[j * N + i]) cf = false;
+      }
+      if (rf) rows.push(i);
+      if (cf) cols.push(i);
+    }
+    return { rows, cols };
+  }
+  function lineCells(rows, cols) {
+    const set = new Set();
+    for (const r of rows) for (let c = 0; c < N; c++) set.add(r * N + c);
+    for (const c of cols) for (let r = 0; r < N; r++) set.add(r * N + c);
+    return set;
+  }
+  // Baris/kolom yang akan meledak bila balok ditaruh di (r,c). Dipakai untuk sorotan saat menyeret.
+  function previewLines(board, p, r, c) {
+    if (!fits(board, p, r, c)) return { rows: [], cols: [] };
+    const b = board.slice();
+    for (const [dr, dc] of p.cells) b[(r + dr) * N + c + dc] = p.color;
+    return fullLines(b);
+  }
+
+  // ---------- Permainan ----------
+  function anyFits(g) {
+    return g.rack.some((id) => id != null && fitsAnywhere(g.board, PIECES[id]));
+  }
+  function deal(g) {
+    g.rackNo++;
+    const easy = g.rackNo <= 2;
+    // Harian murni mengikuti seed. Main Santai dan Duel: setelah rak ke-40, rak yang sama sekali tidak muat diundi ulang.
+    const guard = g.guard && g.rackNo > GUARD_AFTER;
+    let rack = null;
+    for (let t = 0; t <= GUARD_TRIES; t++) {
+      rack = [pick(g, easy), pick(g, easy), pick(g, easy)];
+      if (!guard || rack.some((id) => fitsAnywhere(g.board, PIECES[id]))) break;
+    }
+    g.rack = rack;
+  }
+  function newGame(seed, kind) {
+    const g = {
+      v: 1, seed: seed >>> 0, kind: kind || "endless", rs: seed | 0,
+      board: new Array(N * N).fill(0), rack: [null, null, null], rackNo: 0,
+      score: 0, lines: 0, combo: 0, miss: 0, bestCombo: 0, placed: 0, perfects: 0,
+      over: false, guard: kind !== "daily"
+    };
+    deal(g);
+    g.over = !anyFits(g);
+    return g;
+  }
+  // Menaruh balok dari rak (slot 0..2) dengan sel kiri-atas di (r,c). Mengembalikan null bila tidak sah.
+  function place(g, slot, r, c) {
+    if (!g || g.over) return null;
+    const id = g.rack[slot];
+    if (id == null) return null;
+    const p = PIECES[id];
+    if (!fits(g.board, p, r, c)) return null;
+    const cells = [];
+    for (const [dr, dc] of p.cells) { const i = (r + dr) * N + c + dc; g.board[i] = p.color; cells.push(i); }
+    const colors = g.board.slice();
+    g.rack[slot] = null;
+    g.placed++;
+    const { rows, cols } = fullLines(g.board);
+    const L = rows.length + cols.length;
+    const cleared = [...lineCells(rows, cols)];
+    for (const i of cleared) g.board[i] = 0;
+    let mult = 0, lineScore = 0, bonus = 0, perfect = false;
+    if (L > 0) {
+      mult = 1 + g.combo;
+      lineScore = 10 * L * (L + 1) / 2 * mult;
+      g.combo++;
+      g.miss = 0;
+      if (g.combo > g.bestCombo) g.bestCombo = g.combo;
+      g.lines += L;
+      perfect = g.board.every((v) => v === 0);
+      if (perfect) { bonus = 300 * mult; g.perfects++; }
+    } else {
+      g.miss++;
+      if (g.miss >= 3) { g.combo = 0; g.miss = 0; }
+    }
+    const gained = p.cells.length + lineScore + bonus;
+    g.score += gained;
+    let dealt = false;
+    if (g.rack.every((x) => x == null)) { deal(g); dealt = true; }
+    g.over = !anyFits(g);
+    return { id, slot, r, c, cells, colors, rows, cols, cleared, lines: L, mult, lineScore, bonus, perfect, gained, combo: g.combo, dealt, over: g.over };
+  }
+  function isValid(g) {
+    return !!g && g.v === 1 && Array.isArray(g.board) && g.board.length === N * N &&
+      g.board.every((v) => Number.isInteger(v) && v >= 0 && v <= 7) &&
+      Array.isArray(g.rack) && g.rack.length === 3 &&
+      g.rack.every((id) => id === null || (Number.isInteger(id) && id >= 0 && id < PIECES.length)) &&
+      Number.isInteger(g.rs) && Number.isInteger(g.score) && typeof g.over === "boolean";
+  }
+
+  // ---------- Tanggal, Harian, Duel, teks bagikan ----------
+  function dateKey(d) {
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function dailySeed(key) {
+    let h = 2166136261;
+    for (const ch of key) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+    return h >>> 1;
+  }
+  function dailyGameSeed(key) { return (dailySeed(key) ^ DAILY_SALT) >>> 0; }
+  function dailyNumber(key) {
+    const [y1, m1, d1] = DAILY_LAUNCH.split("-").map(Number);
+    const [y2, m2, d2] = key.split("-").map(Number);
+    // Dihitung dari tanggal kalender, jadi tiap hari punya nomor sendiri.
+    return Math.round((new Date(y2, m2 - 1, d2) - new Date(y1, m1 - 1, d1)) / 86400000) + 1;
+  }
+  function prevDay(key) {
+    const [y, m, d] = key.split("-").map(Number);
+    return dateKey(new Date(y, m - 1, d - 1));
+  }
+  const fmt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  function cleanName(s) { return String(s || "").replace(/[^\p{L}\p{N} ._-]/gu, "").trim().slice(0, 12); }
+  function encodeDuel(d) {
+    const json = JSON.stringify({ v: 1, s: d.s >>> 0, n: cleanName(d.n), p: d.p });
+    return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+  function decodeDuel(code) {
+    try {
+      const o = JSON.parse(decodeURIComponent(escape(atob(String(code).replace(/-/g, "+").replace(/_/g, "/")))));
+      if (!o || o.v !== 1) return null;
+      if (!Number.isInteger(o.s) || o.s < 0 || o.s > 0xFFFFFFFF) return null;
+      if (!Number.isInteger(o.p) || o.p < 0 || o.p > 99999999) return null;
+      const n = cleanName(o.n);
+      return n ? { s: o.s, n, p: o.p } : null;
+    } catch (e) { return null; }
+  }
+  function dailyShare(o) {
+    const filled = Math.min(10, Math.floor(o.score / 500));
+    const bar = "🟩".repeat(filled) + "⬜".repeat(10 - filled);
+    return "Balok Ria Harian #" + o.number + "\n🧱 Skor " + fmt(o.score) + "\n📏 " + o.lines + " baris · 🔥 kombo x" + o.bestCombo +
+      "\n" + bar + "\n🔥 " + o.streak + " hari beruntun\n" + o.url;
+  }
+
+  return {
+    N, GUARD_AFTER, PIECES, TOTAL_W, EASY_W, rng, next, fits, fitsAnywhere, fullLines, previewLines, anyFits,
+    deal, newGame, place, isValid, dateKey, dailySeed, dailyGameSeed, dailyNumber, prevDay, fmt, cleanName,
+    encodeDuel, decodeDuel, dailyShare
+  };
+})();
+/*CORE:END*/
+
+// ================= Antarmuka =================
+const STORE_KEY = "balok-ria.v1";
+const HOME_URL = "https://dehayuk.netlify.app/balok-ria/";
+const { PIECES, fmt } = GameCore;
+const COLORS = [null, "#F4C152", "#5EC8F2", "#FF7A70", "#A98BFF", "#7FE0A3", "#FF9F43", "#FF6FB5"];
+const GAP = 2, PAD = 4, LIFT = 1.6;
+const RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const $ = (id) => document.getElementById(id);
+
+let S = {
+  best: 0, games: 0, totalLines: 0, daily: null, streak: { last: null, count: 0 },
+  settings: { mute: false, vibrate: true }, badges: [], name: "", runs: {},
+  duelW: 0, duelL: 0, duelD: 0, pendingDuel: null, duelDone: []
+};
+try {
+  const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+  if (saved && typeof saved.best === "number") {
+    S = Object.assign(S, saved);
+    S.settings = Object.assign({ mute: false, vibrate: true }, saved.settings || {});
+    S.streak = Object.assign({ last: null, count: 0 }, saved.streak || {});
+    if (!S.runs || typeof S.runs !== "object") S.runs = {};
+    if (!Array.isArray(S.badges)) S.badges = [];
+    if (!Array.isArray(S.duelDone)) S.duelDone = [];
+  }
+} catch (e) {}
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch (e) {} }
+
+const today = () => GameCore.dateKey(new Date());
+function streakNow() {
+  const t = today();
+  return S.streak.last === t || S.streak.last === GameCore.prevDay(t) ? S.streak.count : 0;
+}
+function shareUrl() {
+  const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  return /^https?:$/.test(location.protocol) && !local ? location.origin + location.pathname : HOME_URL;
+}
+
+// ---------- Suara dan getar ----------
+let actx = null, master = null;
+function audio() {
+  if (!actx) {
+    actx = new (window.AudioContext || window.webkitAudioContext)();
+    master = actx.createGain();
+    master.gain.value = 0.9;
+    master.connect(actx.destination);
+  }
+  if (actx.state === "suspended") actx.resume();
+  return actx;
+}
+function beep(freq, dur, type, vol, delay) {
+  if (S.settings.mute) return;
+  try {
+    const a = audio();
+    const t = a.currentTime + (delay || 0);
+    const osc = a.createOscillator(), gain = a.createGain();
+    osc.type = type || "triangle";
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol || 0.06, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(gain); gain.connect(master);
+    osc.start(t); osc.stop(t + dur + 0.02);
+  } catch (e) {}
+}
+const sfx = {
+  place() { beep(220, 0.05, "triangle", 0.12); },
+  bad() { beep(110, 0.16, "square", 0.035); },
+  // Nada dasar naik satu semitone per tingkat kombo: kombo panjang terdengar makin tinggi.
+  clear(level, lines) {
+    const base = 440 * Math.pow(2, Math.min(level - 1, 14) / 12);
+    const steps = lines >= 3 ? [0, 4, 7, 12, 16] : [0, 4, 7, 12];
+    steps.forEach((s, i) => beep(base * Math.pow(2, s / 12), 0.14, "triangle", 0.06, i * 0.055));
+  },
+  perfect() { [523, 659, 784, 1047, 1319].forEach((f, i) => beep(f, i === 4 ? 0.45 : 0.16, "triangle", 0.07, i * 0.1)); },
+  record() { [784, 988, 1175, 1568].forEach((f, i) => beep(f, 0.12, "square", 0.03, i * 0.07)); },
+  over() { [392, 330, 262].forEach((f, i) => beep(f, 0.22, "triangle", 0.06, i * 0.14)); },
+  tap() { beep(620, 0.04, "triangle", 0.035); }
+};
+function buzz(pattern) {
+  try { if (S.settings.vibrate && navigator.vibrate) navigator.vibrate(pattern); } catch (e) {}
+}
+function confetti() {
+  if (RM) return;
+  const colors = ["#F4C152", "#7FE0A3", "#FF7A70", "#EAF6F3", "#5EC8F2", "#FF6FB5"];
+  for (let i = 0; i < 28; i++) {
+    const c = document.createElement("i");
+    c.className = "confetti";
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.background = colors[i % colors.length];
+    c.style.animationDelay = Math.random() * 0.4 + "s";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 2200);
+  }
+}
+
+// ---------- Partikel (satu kanvas, rAF hanya selama ada partikel) ----------
+const cv = $("fxc");
+const ctx = cv.getContext ? cv.getContext("2d") : null;
+let parts = [], praf = 0, dpr = 1;
+function sizeCanvas() {
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = Math.round(innerWidth * dpr);
+  cv.height = Math.round(innerHeight * dpr);
+}
+function burst(x, y, color) {
+  if (RM || !ctx) return;
+  const n = 4 + Math.floor(Math.random() * 3);
+  for (let k = 0; k < n && parts.length < 150; k++) {
+    const a = Math.random() * Math.PI * 2, s = 1.5 + Math.random() * 4;
+    parts.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 2.5, life: 1, sz: 3 + Math.random() * 4, col: color });
+  }
+  if (!praf) praf = requestAnimationFrame(tickParts);
+}
+function tickParts() {
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, innerWidth, innerHeight);
+  for (const p of parts) {
+    p.x += p.vx; p.y += p.vy; p.vy += 0.28; p.life -= 0.028;
+    ctx.globalAlpha = Math.max(0, p.life);
+    ctx.fillStyle = p.col;
+    ctx.fillRect(p.x - p.sz / 2, p.y - p.sz / 2, p.sz, p.sz);
+  }
+  parts = parts.filter((p) => p.life > 0);
+  ctx.globalAlpha = 1;
+  praf = parts.length ? requestAnimationFrame(tickParts) : 0;
+  if (!praf) ctx.clearRect(0, 0, innerWidth, innerHeight);
+}
+
+// ---------- Ukuran papan ----------
+let cell = 38, pitch = 40, mini = 20;
+function layout() {
+  const W = document.documentElement.clientWidth || innerWidth, H = innerHeight;
+  const avail = Math.min(W - 24, W * 0.92, 420, (H - 186) / 1.36);
+  cell = Math.max(26, Math.floor((avail - 2 * PAD - 7 * GAP) / 8));
+  pitch = cell + GAP;
+  const bs = cell * 8 + 7 * GAP + 2 * PAD;
+  mini = Math.max(12, Math.floor(Math.min(cell * 0.55, (bs / 3 - 10) / 5)));
+  const root = document.documentElement.style;
+  root.setProperty("--cell", cell + "px");
+  root.setProperty("--bs", bs + "px");
+  root.setProperty("--m", mini + "px");
+  root.setProperty("--rh", (mini * 5 + 10) + "px");
+  sizeCanvas();
+}
+
+// ---------- Papan DOM: 64 div, hanya className yang berubah ----------
+const boardEl = $("board"), rackEl = $("rack"), stageEl = $("stage"), fxEl = $("fx"), dragEl = $("drag");
+const cellEls = [], cellCls = new Array(64).fill("");
+for (let i = 0; i < 64; i++) {
+  const d = document.createElement("div");
+  d.dataset.i = i;
+  boardEl.appendChild(d);
+  cellEls.push(d);
+}
+function setCls(i, k) { if (cellCls[i] !== k) { cellCls[i] = k; cellEls[i].className = k; } }
+let fxCells = null, fxTimer = 0;
+function baseCls(i) { const v = run.g.board[i]; return v ? "c f k" + v : "c"; }
+function paint(extra) {
+  for (let i = 0; i < 64; i++) {
+    if (fxCells && fxCells.has(i)) continue;
+    let k = baseCls(i);
+    if (extra) {
+      if (extra.ghost && extra.ghost.has(i)) k = "c g k" + extra.color;
+      if (extra.hl && extra.hl.has(i)) k += " hl";
+      if (extra.cur === i) k += " cur";
+    }
+    setCls(i, k);
+  }
+}
+function flushFx() {
+  if (fxTimer) { clearTimeout(fxTimer); fxTimer = 0; }
+  fxCells = null;
+}
+// Pratinjau: bayangan balok di titik tempel dan sorotan baris/kolom yang akan meledak.
+function preview(id, r, c, cur) {
+  if (!run) return;
+  if (id == null) return paint(cur != null ? { cur } : null);
+  const p = PIECES[id];
+  if (!GameCore.fits(run.g.board, p, r, c)) return paint(cur != null ? { cur } : null);
+  const ghost = new Set(p.cells.map(([dr, dc]) => (r + dr) * 8 + c + dc));
+  const { rows, cols } = GameCore.previewLines(run.g.board, p, r, c);
+  const hl = new Set();
+  for (const rr of rows) for (let k = 0; k < 8; k++) hl.add(rr * 8 + k);
+  for (const cc of cols) for (let k = 0; k < 8; k++) hl.add(k * 8 + cc);
+  paint({ ghost, color: p.color, hl, cur });
+}
+
+function pieceHTML(id) {
+  const p = PIECES[id];
+  let h = "<div class=\"pc k" + p.color + "\" style=\"--w:" + p.wd + ";--h:" + p.h + "\">";
+  for (const [r, c] of p.cells) h += "<i style=\"--x:" + c + ";--y:" + r + "\"></i>";
+  return h + "</div>";
+}
+let sel = null;
+function renderRack(fresh) {
+  const g = run.g;
+  let h = "";
+  for (let i = 0; i < 3; i++) {
+    const id = g.rack[i];
+    const cls = "slot" + (sel === i ? " sel" : "") + (id != null && !GameCore.fitsAnywhere(g.board, PIECES[id]) ? " nofit" : "") + (fresh ? " in" : "");
+    const label = id == null ? "Kosong" : "Balok " + (i + 1) + ", " + PIECES[id].cells.length + " kotak";
+    h += "<button class=\"" + cls + "\" type=\"button\" data-i=\"" + i + "\" aria-label=\"" + label + "\"" + (id == null ? " disabled" : "") + ">" + (id == null ? "" : pieceHTML(id)) + "</button>";
+  }
+  rackEl.innerHTML = h;
+}
+
+// ---------- Tampilan skor ----------
+function renderHud() {
+  const g = run.g;
+  $("score").textContent = fmt(g.score);
+  $("linesNow").textContent = g.lines + " baris";
+  const cb = $("comboBox");
+  cb.classList.toggle("on", g.combo > 0);
+  $("comboText").textContent = "Kombo x" + g.combo;
+  const left = 3 - g.miss;
+  [...$("pips").children].forEach((el, k) => el.classList.toggle("off", k >= left));
+  $("pips").setAttribute("aria-label", "Kombo bertahan " + (left - 1) + " kali lagi tanpa ledakan");
+  $("best").textContent = fmt(S.best);
+}
+function bump(el) { el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+function say(msg) { $("sr").textContent = msg; }
+
+// ---------- Efek ----------
+function cellCenter(i) { return [PAD + (i & 7) * pitch + cell / 2, PAD + (i >> 3) * pitch + cell / 2]; }
+function floatText(x, y, text, color) {
+  const el = document.createElement("div");
+  el.className = "float";
+  el.style.left = x + "px"; el.style.top = y + "px";
+  if (color) el.style.color = color;
+  el.textContent = text;
+  fxEl.appendChild(el);
+  setTimeout(() => el.remove(), 850);
+}
+function comboColor(m) { return m >= 6 ? "#FF5A4E" : m >= 4 ? "#F4C152" : "#3FD6C6"; }
+function showBadge(title, sub, color) {
+  fxEl.querySelectorAll(".badge").forEach((b) => b.remove());
+  const el = document.createElement("div");
+  el.className = "badge";
+  el.style.setProperty("--bc", color);
+  el.innerHTML = title + (sub ? "<small>" + sub + "</small>" : "");
+  fxEl.appendChild(el);
+  setTimeout(() => el.remove(), 1050);
+}
+function banner(text) {
+  const el = document.createElement("div");
+  el.className = "banner";
+  el.textContent = text;
+  fxEl.appendChild(el);
+  setTimeout(() => el.remove(), 2300);
+}
+const praise = (n) => n >= 5 ? "Dahsyat!" : ["", "", "Mantap!", "Keren!", "Luar biasa!"][n];
+const BADGES = [
+  ["p1000", "🏅 Skor 1.000 pertama!", (g) => g.score >= 1000],
+  ["c5", "🏅 Kombo x5 pertama!", (g) => g.combo >= 5],
+  ["clean", "🏅 Papan Bersih pertama!", (g, res) => res && res.perfect],
+  ["p10000", "🏅 Tembus 10.000 poin!", (g) => g.score >= 10000],
+  ["g100", "🏅 100 permainan!", () => S.games >= 100]
+];
+function checkBadges(res, g) {
+  for (const [id, text, test] of BADGES) {
+    if (!S.badges.includes(id) && test(g, res)) { S.badges.push(id); later(() => toast(text), 500); }
+  }
+}
+
+// ---------- Permainan berjalan ----------
+let run = null, busy = false;
+// Timer milik permainan berjalan; semuanya dibatalkan saat ganti permainan atau kembali ke menu.
+let timers = [];
+function later(fn, ms) {
+  const id = setTimeout(() => { timers = timers.filter((t) => t !== id); fn(); }, ms);
+  timers.push(id);
+  return id;
+}
+function stopRunTimers() {
+  timers.forEach(clearTimeout);
+  timers = [];
+  flushFx();
+  cancelDrag();
+}
+const canPlay = () => !!run && !busy && !run.g.over;
+function newSeed() { return (Date.now() ^ Math.floor(Math.random() * 4294967296)) >>> 0; }
+function newRun(kind, seed, extra) {
+  return Object.assign({ kind, g: GameCore.newGame(seed, kind), bestAtStart: S.best, recordShown: false }, extra || {});
+}
+function saveRun() {
+  if (!run) return;
+  if (run.g.over) delete S.runs[run.kind]; else S.runs[run.kind] = run;
+  save();
+}
+function openRun(r) {
+  stopRunTimers();
+  run = r;
+  sel = null; busy = false; kcur = null;
+  $("home").hidden = true;
+  $("play").hidden = false;
+  const chip = r.kind === "daily" ? (r.practice ? "Latihan Harian" : "Harian #" + GameCore.dailyNumber(r.date)) : r.kind === "duel" ? "Duel" : "Santai";
+  $("modeChip").textContent = chip;
+  $("target").textContent = r.kind === "duel" ? "Lawan: " + fmt(r.duel.p) : "";
+  // Harian resmi dan Duel tidak bisa diulang dari awal (supaya adil).
+  $("btnRestart").hidden = !(r.kind === "endless" || r.practice);
+  $("hint").hidden = S.games > 0 || r.g.placed > 0;
+  fxEl.innerHTML = "";
+  for (let i = 0; i < 64; i++) cellEls[i].style.removeProperty("--d");
+  cellCls.fill("");
+  layout();
+  paint();
+  renderRack(true);
+  renderHud();
+  saveRun();
+  enterScreen();
+  if (r.g.over) gameOver();
+}
+
+function doPlace(slot, r, c) {
+  if (!canPlay()) return false;
+  flushFx();
+  const g = run.g;
+  const res = GameCore.place(g, slot, r, c);
+  if (!res) return false;
+  sel = null;
+  $("hint").hidden = true;
+  sfx.place();
+  buzz(10);
+  const cur = run;
+  // Sel yang meledak: kilat putih lalu mengecil, bertahap dari tengah garis ke luar.
+  if (res.lines) {
+    fxCells = new Set(res.cleared);
+    const br = boardEl.getBoundingClientRect();
+    let sx = 0, sy = 0;
+    for (const i of res.cleared) {
+      const rr = i >> 3, cc = i & 7;
+      let dist = 9;
+      if (res.rows.includes(rr)) dist = Math.min(dist, Math.abs(cc - 3.5));
+      if (res.cols.includes(cc)) dist = Math.min(dist, Math.abs(rr - 3.5));
+      cellEls[i].style.setProperty("--d", Math.floor(dist) * 15 + "ms");
+      cellCls[i] = "c f k" + res.colors[i] + " x";
+      cellEls[i].className = cellCls[i];
+      const [x, y] = cellCenter(i);
+      sx += x; sy += y;
+      burst(br.left + x, br.top + y, COLORS[res.colors[i]]);
+    }
+    fxTimer = setTimeout(() => { fxCells = null; fxTimer = 0; if (run === cur) paint(); }, 380);
+    const n = res.cleared.length;
+    floatText(sx / n, sy / n, "+" + fmt(res.lineScore));
+    sfx.clear(res.mult, res.lines);
+    buzz([20, 30, 20]);
+    if (res.perfect) {
+      showBadge("PAPAN BERSIH!", "+" + fmt(res.bonus), "#F4C152");
+      later(() => sfx.perfect(), 250);
+      buzz([40, 40, 80]);
+      confetti();
+    } else if (res.mult >= 2) {
+      showBadge("KOMBO x" + res.mult + "!", praise(res.lines), comboColor(res.mult));
+    } else if (res.lines >= 2) {
+      showBadge(praise(res.lines), "", "#fff");
+    }
+    if (res.lines >= 3 && !RM) { stageEl.classList.remove("shake"); void stageEl.offsetWidth; stageEl.classList.add("shake"); }
+    say((res.lines === 1 ? "1 baris meledak" : res.lines + " baris meledak") + ", tambah " + res.gained + " poin");
+  }
+  paint();
+  bump($("score"));
+  if (g.score > S.best) {
+    S.best = g.score;
+    if (run.bestAtStart > 0 && !run.recordShown) {
+      run.recordShown = true;
+      banner("Rekor baru!");
+      later(() => sfx.record(), res.lines ? 350 : 0);
+      bump($("bestBox"));
+    }
+  }
+  renderHud();
+  renderRack(res.dealt);
+  checkBadges(res, g);
+  if (res.over) {
+    // Hasil dicatat SEKARANG, sebelum animasi; keluar mendadak tidak bisa menghapus atau mengulang hasil.
+    cancelDrag();
+    finalize(cur);
+    later(() => { if (run === cur && cur.g.over) gameOver(); }, res.lines ? 420 : 150);
+  } else saveRun();
+  return true;
+}
+
+// ---------- Seret dan lepas ----------
+let drag = null, dragRaf = 0, backTimer = 0, kcur = null;
+// Batalkan seretan yang sedang berjalan (game selesai, mulai ulang, atau keluar).
+function cancelDrag() {
+  if (dragRaf) { cancelAnimationFrame(dragRaf); dragRaf = 0; }
+  const d = drag;
+  drag = null;
+  if (d) { try { d.slot.releasePointerCapture(d.pid); } catch (e) {} }
+  hideDrag();
+}
+function hideDrag() {
+  if (backTimer) { clearTimeout(backTimer); backTimer = 0; }
+  dragEl.hidden = true;
+  dragEl.classList.remove("back");
+  dragEl.innerHTML = "";
+  rackEl.querySelectorAll(".lifting").forEach((s) => s.classList.remove("lifting"));
+}
+rackEl.addEventListener("pointerdown", (e) => {
+  const slot = e.target.closest(".slot");
+  if (!slot || !canPlay() || drag || (e.button && e.button > 0)) return;
+  const i = +slot.dataset.i, id = run.g.rack[i];
+  if (id == null) return;
+  e.preventDefault();
+  hideDrag();
+  if (!S.settings.mute) { try { audio(); } catch (err) {} }
+  try { slot.setPointerCapture(e.pointerId); } catch (err) {}
+  const br = boardEl.getBoundingClientRect(); // diukur sekali per seretan
+  drag = { i, id, p: PIECES[id], pid: e.pointerId, x0: e.clientX, y0: e.clientY, x: e.clientX, y: e.clientY,
+    moved: false, mouse: e.pointerType === "mouse", bx: br.left + PAD, by: br.top + PAD, slot, anchor: null, akey: -2 };
+  dragEl.style.setProperty("--m", pitch + "px");
+  dragEl.innerHTML = pieceHTML(id);
+  dragEl.hidden = false;
+  slot.classList.add("lifting");
+  moveDrag();
+});
+// Didengar di document: bila slot diganti saat menyeret, lepas jari tetap tertangkap.
+document.addEventListener("pointermove", (e) => {
+  if (!drag || e.pointerId !== drag.pid) return;
+  drag.x = e.clientX; drag.y = e.clientY;
+  if (!drag.moved && Math.hypot(drag.x - drag.x0, drag.y - drag.y0) > 8) drag.moved = true;
+  if (!dragRaf) dragRaf = requestAnimationFrame(() => { dragRaf = 0; moveDrag(); });
+});
+document.addEventListener("pointerup", (e) => endDrag(e, false));
+document.addEventListener("pointercancel", (e) => endDrag(e, true));
+document.addEventListener("lostpointercapture", (e) => { if (drag && e.pointerId === drag.pid) endDrag(e, true); });
+function moveDrag() {
+  if (!drag) return;
+  const p = drag.p;
+  const pw = p.wd * pitch - GAP, ph = p.h * pitch - GAP;
+  const left = drag.x - pw / 2;
+  // Di layar sentuh balok melayang 1,6 kotak di atas jari, supaya tidak tertutup jempol.
+  const top = drag.mouse ? drag.y - ph / 2 : drag.y - LIFT * cell - ph;
+  dragEl.style.transform = "translate3d(" + left + "px," + top + "px,0)";
+  const r = Math.round((top - drag.by) / pitch), c = Math.round((left - drag.bx) / pitch);
+  const ok = drag.moved && GameCore.fits(run.g.board, p, r, c);
+  const key = ok ? r * 8 + c : -1;
+  if (key !== drag.akey) {
+    drag.akey = key;
+    drag.anchor = ok ? [r, c] : null;
+    preview(ok ? drag.id : null, r, c);
+  }
+}
+function endDrag(e, cancel) {
+  if (!drag || e.pointerId !== drag.pid) return;
+  const d = drag;
+  drag = null;
+  if (dragRaf) { cancelAnimationFrame(dragRaf); dragRaf = 0; }
+  if (!d.moved) {
+    // Ketukan: pilih balok (cara cadangan tanpa menyeret).
+    hideDrag();
+    paint();
+    if (!cancel) selectSlot(sel === d.i ? null : d.i);
+    return;
+  }
+  if (!cancel && d.anchor && canPlay()) {
+    hideDrag();
+    doPlace(d.i, d.anchor[0], d.anchor[1]);
+    return;
+  }
+  // Tidak muat: balok terbang kembali ke rak.
+  paint();
+  sfx.bad();
+  const rect = d.slot.getBoundingClientRect();
+  const pw = d.p.wd * pitch - GAP, ph = d.p.h * pitch - GAP;
+  const x = rect.left + rect.width / 2 - pw / 2, y = rect.top + rect.height / 2 - ph / 2;
+  dragEl.classList.add("back");
+  dragEl.style.transform = "translate3d(" + x + "px," + y + "px,0) scale(" + (mini / pitch) + ")";
+  backTimer = setTimeout(hideDrag, RM ? 0 : 160);
+}
+rackEl.addEventListener("click", (e) => {
+  // Klik dari keyboard (Enter/Spasi) saja; ketukan jari/mouse sudah ditangani pointerup.
+  if (e.detail !== 0) return;
+  const slot = e.target.closest(".slot");
+  if (!slot || !canPlay()) return;
+  const i = +slot.dataset.i;
+  selectSlot(sel === i ? null : i);
+  if (sel != null && !kcur) kcur = [0, 0];
+  showKeyPreview();
+});
+function selectSlot(i) {
+  if (i != null && (!run || run.g.rack[i] == null)) i = null;
+  sel = i;
+  renderRack(false);
+  if (i != null) { sfx.tap(); say("Balok " + (i + 1) + " dipilih. Ketuk kotak di papan untuk menaruh."); }
+  showKeyPreview();
+}
+function showKeyPreview() {
+  if (!run || busy) return;
+  if (sel == null || !kcur) return paint();
+  preview(run.g.rack[sel], kcur[0], kcur[1], kcur[0] * 8 + kcur[1]);
+}
+// Ketuk kotak papan untuk menaruh balok yang dipilih (sel kiri-atas balok).
+boardEl.addEventListener("click", (e) => {
+  if (!canPlay() || sel == null) return;
+  const el = e.target.closest("[data-i]");
+  if (!el) return;
+  const i = +el.dataset.i;
+  if (!doPlace(sel, i >> 3, i & 7)) { sfx.bad(); buzz(15); toast("Tidak muat di situ"); }
+});
+boardEl.addEventListener("pointermove", (e) => {
+  if (e.pointerType !== "mouse" || !canPlay() || sel == null || drag) return;
+  const el = e.target.closest("[data-i]");
+  if (!el) return;
+  const i = +el.dataset.i;
+  preview(run.g.rack[sel], i >> 3, i & 7);
+});
+boardEl.addEventListener("pointerleave", () => { if (run && !busy && !drag) showKeyPreview(); });
+
+document.addEventListener("keydown", (e) => {
+  if ($("play").hidden || !$("overlay").hidden || !canPlay() || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (/^[123]$/.test(e.key)) { e.preventDefault(); selectSlot(+e.key - 1); if (sel != null && !kcur) kcur = [0, 0]; return showKeyPreview(); }
+  if (e.key === "Escape" && sel != null) { e.preventDefault(); return selectSlot(null); }
+  if (sel == null) return;
+  const mv = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] }[e.key];
+  if (mv) {
+    e.preventDefault();
+    kcur = kcur || [0, 0];
+    kcur = [Math.max(0, Math.min(7, kcur[0] + mv[0])), Math.max(0, Math.min(7, kcur[1] + mv[1]))];
+    return showKeyPreview();
+  }
+  if ((e.key === "Enter" || e.key === " ") && kcur && document.activeElement && !document.activeElement.closest(".slot")) {
+    e.preventDefault();
+    if (!doPlace(sel, kcur[0], kcur[1])) { sfx.bad(); toast("Tidak muat di situ"); }
+  }
+});
+
+// ---------- Selesai ----------
+// Mencatat hasil satu kali, langsung saat permainan berakhir (sinkron, sebelum animasi apa pun).
+function finalize(r) {
+  if (!r || r.finalized || !r.g.over) return;
+  r.finalized = true;
+  const g = r.g;
+  S.games++;
+  S.totalLines += g.lines;
+  if (g.score > S.best) S.best = g.score;
+  // Rekor hanya bila memang ada skor lama yang dikalahkan.
+  const record = r.bestAtStart > 0 && g.score > r.bestAtStart;
+  const first = r.bestAtStart === 0 && g.score > 0;
+  let official = false;
+  if (r.kind === "daily" && !r.practice) {
+    const already = S.daily && S.daily.date === r.date && S.daily.done;
+    if (!already) {
+      official = true;
+      S.daily = { date: r.date, score: g.score, lines: g.lines, bestCombo: g.bestCombo, done: true };
+      if (S.streak.last !== r.date) {
+        S.streak.count = S.streak.last === GameCore.prevDay(r.date) ? S.streak.count + 1 : 1;
+        S.streak.last = r.date;
+      }
+    }
+  }
+  let verdict = 0;
+  if (r.kind === "duel") {
+    verdict = g.score > r.duel.p ? 1 : g.score < r.duel.p ? -1 : 0;
+    if (verdict > 0) S.duelW++; else if (verdict < 0) S.duelL++; else S.duelD++;
+    if (S.pendingDuel === r.duel.code) S.pendingDuel = null;
+    // Link duel yang sudah dimainkan diingat, supaya tidak bisa diulang sampai menang.
+    S.duelDone = S.duelDone.filter((x) => x.code !== r.duel.code)
+      .concat([{ code: r.duel.code, n: r.duel.n, p: r.duel.p, score: g.score }]).slice(-20);
+  }
+  checkBadges(null, g);
+  r.result = { kind: r.kind, seed: g.seed, score: g.score, lines: g.lines, bestCombo: g.bestCombo, placed: g.placed,
+    record, first, official, practice: !!r.practice, date: r.date, duel: r.duel, verdict, replyTo: r.replyTo || "" };
+  delete S.runs[r.kind];
+  save();
+}
+// Bagian tampilan akhir permainan; hasilnya sudah dicatat oleh finalize().
+function gameOver() {
+  const r = run;
+  if (!r || busy || !r.g.over) return;
+  finalize(r);
+  busy = true;
+  sel = null;
+  cancelDrag();
+  flushFx();
+  paint();
+  // Kotak kosong berubah abu-abu dari bawah ke atas.
+  for (let i = 0; i < 64; i++) {
+    if (r.g.board[i]) continue;
+    cellEls[i].style.setProperty("--d", (7 - (i >> 3)) * 50 + "ms");
+    setCls(i, "c dead");
+  }
+  renderRack(false);
+  sfx.over();
+  buzz([30, 40, 30]);
+  renderHud();
+  last = r.result;
+  later(() => {
+    if (run !== r) return;
+    if (last.record) { confetti(); sfx.record(); }
+    showResult();
+  }, RM ? 150 : 650);
+}
+let last = null;
+function factsHTML(o) {
+  return "<div class=\"facts\"><div><b>" + o.lines + "</b>baris</div><div><b>x" + o.bestCombo + "</b>kombo terbaik</div><div><b>" + o.placed + "</b>balok</div></div>";
+}
+function showResult() {
+  const o = last;
+  if (!o) return;
+  const home = () => { hideOverlay(); goHome(); };
+  if (o.kind === "daily") {
+    const d = S.daily && S.daily.date === o.date ? S.daily : null;
+    showPanel(
+      "<h2>" + (o.practice ? "Latihan selesai" : "Harian #" + GameCore.dailyNumber(o.date) + " selesai!") + "</h2>" +
+      "<div class=\"big\">" + fmt(o.score) + "</div>" + factsHTML(o) +
+      (o.practice && d ? "<p>Hasil resmi hari ini: <b>" + fmt(d.score) + "</b>. Latihan tidak mengubahnya.</p>" : "<p>🔥 " + streakNow() + " hari beruntun. Balok besok berbeda lagi!</p>") +
+      "<div class=\"col\"><button class=\"btn main\" id=\"rShare\" type=\"button\">Bagikan hasil</button>" +
+      "<div class=\"row\"><button class=\"btn\" id=\"rHome\" type=\"button\">Kembali</button><button class=\"btn\" id=\"rPractice\" type=\"button\">Latihan lagi</button></div></div>",
+      () => {
+        $("rShare").onclick = shareDaily;
+        $("rHome").onclick = home;
+        $("rPractice").onclick = () => { hideOverlay(); startPractice(); };
+      }, goHome);
+    return;
+  }
+  if (o.kind === "duel") {
+    const d = o.duel;
+    const title = o.verdict > 0 ? "Kamu menang!" : o.verdict < 0 ? esc(d.n) + " menang!" : "Seri!";
+    showPanel(
+      "<h2>" + title + "</h2>" +
+      "<div class=\"versus\"><div class=\"side" + (o.verdict > 0 ? " win" : "") + "\"><div class=\"who\">Kamu</div><div class=\"pts\">" + fmt(o.score) + "</div></div>" +
+      "<span class=\"vs\">VS</span><div class=\"side" + (o.verdict < 0 ? " win" : "") + "\"><div class=\"who\">" + esc(d.n) + "</div><div class=\"pts\">" + fmt(d.p) + "</div></div></div>" +
+      factsHTML(o) + "<p>Balasan memakai urutan balok baru, jadi adil untuk kalian berdua.</p>" +
+      "<div class=\"col\"><button class=\"btn main\" id=\"rReply\" type=\"button\">Balas tantangan</button>" +
+      "<div class=\"row\"><button class=\"btn\" id=\"rHome\" type=\"button\">Kembali</button><button class=\"btn\" id=\"rAgain\" type=\"button\">Main Santai</button></div></div>",
+      () => {
+        $("rReply").onclick = () => startReply(d.n);
+        $("rHome").onclick = home;
+        $("rAgain").onclick = () => { hideOverlay(); startEndless(true); };
+      }, goHome);
+    return;
+  }
+  const title = o.record ? "Rekor baru!" : o.first ? "Skor pertamamu!" : "Permainan selesai";
+  if (o.replyTo) {
+    // Balasan duel: skor dari seed baru dikirim sebagai tantangan baru ke penantang.
+    showPanel(
+      "<h2>" + title + "</h2>" +
+      "<div class=\"big\">" + fmt(o.score) + "</div><p>Kirim skor ini sebagai balasan untuk <b>" + esc(o.replyTo) + "</b>.</p>" + factsHTML(o) +
+      "<div class=\"col\"><button class=\"btn main\" id=\"rDuel\" type=\"button\">Kirim balasan</button>" +
+      "<div class=\"row\"><button class=\"btn\" id=\"rHome\" type=\"button\">Kembali</button><button class=\"btn\" id=\"rAgain\" type=\"button\">Main lagi</button></div></div>",
+      () => {
+        $("rDuel").onclick = () => challenge(o);
+        $("rHome").onclick = home;
+        $("rAgain").onclick = () => { hideOverlay(); startEndless(true); };
+      }, goHome);
+    return;
+  }
+  showPanel(
+    "<h2>" + title + "</h2>" +
+    "<div class=\"big\">" + fmt(o.score) + "</div><p>Skor terbaik: <b>" + fmt(S.best) + "</b></p>" + factsHTML(o) +
+    "<div class=\"col\"><button class=\"btn main\" id=\"rAgain\" type=\"button\">Main lagi</button>" +
+    "<div class=\"row\"><button class=\"btn\" id=\"rHome\" type=\"button\">Kembali</button><button class=\"btn\" id=\"rDuel\" type=\"button\">Tantang teman</button></div></div>",
+    () => {
+      $("rAgain").onclick = () => { hideOverlay(); startEndless(true); };
+      $("rHome").onclick = home;
+      $("rDuel").onclick = () => challenge(o);
+    }, goHome);
+}
+
+// ---------- Bagikan ----------
+function shareText(text) {
+  if (navigator.share) navigator.share({ text }).catch((e) => { if (!e || e.name !== "AbortError") copyText(text, true); });
+  else copyText(text, true);
+}
+function copyText(text, wa) {
+  const done = () => {
+    toast("Tersalin. Tempel di WhatsApp!");
+    if (wa) { try { window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener"); } catch (e) {} }
+  };
+  const fallback = () => {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) { toast("Gagal menyalin"); }
+    ta.remove();
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(fallback);
+  else fallback();
+}
+function shareDaily() {
+  const d = S.daily;
+  if (!d || !d.done) return toast("Selesaikan Harian dulu, ya");
+  shareText(GameCore.dailyShare({ number: GameCore.dailyNumber(d.date), score: d.score, lines: d.lines, bestCombo: d.bestCombo, streak: Math.max(1, streakNow()), url: shareUrl() }));
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
+}
+// Link duel memuat seed permainan tadi, jadi temanmu mendapat urutan balok yang sama persis.
+function challenge(o) {
+  if (!S.name) return askName(() => challenge(o));
+  const code = GameCore.encodeDuel({ s: o.seed, n: S.name, p: o.score });
+  const text = (o.replyTo ? "Balasan untukmu, " + o.replyTo + "! " : "") + "Aku dapat " + fmt(o.score) + " poin di Balok Ria! 🧱\nUrutan baloknya sama persis buatmu. Berani kalahkan aku?\n👉 " + shareUrl() + "#d=" + code;
+  shareText(text);
+  showResult();
+}
+function askName(then) {
+  showPanel(
+    "<h2>Siapa namamu?</h2><p>Nama ini muncul di tantangan untuk temanmu.</p>" +
+    "<input class=\"name-input\" id=\"nameIn\" maxlength=\"12\" autocomplete=\"nickname\" placeholder=\"misal: Andi\">" +
+    "<div class=\"row\"><button class=\"btn\" id=\"nBack\" type=\"button\">Batal</button><button class=\"btn main\" id=\"nOk\" type=\"button\">Lanjut</button></div>",
+    () => {
+      const inp = $("nameIn");
+      const ok = () => {
+        const n = GameCore.cleanName(inp.value);
+        if (!n) { toast("Tulis namamu dulu"); return inp.focus(); }
+        S.name = n; save(); then();
+      };
+      $("nOk").onclick = ok;
+      $("nBack").onclick = () => (last && busy ? showResult() : hideOverlay());
+      inp.onkeydown = (e) => { if (e.key === "Enter") ok(); };
+      setTimeout(() => inp.focus(), 50);
+    }, last && busy ? goHome : null);
+}
+
+// ---------- Mode ----------
+function startEndless(fresh) {
+  const r = S.runs.endless;
+  if (!fresh && r && GameCore.isValid(r.g) && !r.g.over) return openRun(r);
+  openRun(newRun("endless", newSeed()));
+}
+function startDaily() {
+  const t = today();
+  const d = S.daily && S.daily.date === t && S.daily.done ? S.daily : null;
+  if (d) return dailyDonePanel();
+  const r = S.runs.daily;
+  if (r && r.date === t && !r.practice && GameCore.isValid(r.g) && !r.g.over) return openRun(r);
+  openRun(newRun("daily", GameCore.dailyGameSeed(t), { date: t, practice: false }));
+}
+function startPractice() {
+  const t = today();
+  openRun(newRun("daily", GameCore.dailyGameSeed(t), { date: t, practice: true }));
+}
+function dailyDonePanel() {
+  const d = S.daily;
+  showPanel(
+    "<h2>Harian #" + GameCore.dailyNumber(d.date) + " selesai ✓</h2><div class=\"big\">" + fmt(d.score) + "</div>" +
+    "<p>" + d.lines + " baris · kombo terbaik x" + d.bestCombo + " · 🔥 " + streakNow() + " hari beruntun</p>" +
+    "<p>Balok baru muncul besok. Mau latihan dengan balok hari ini? Hasil resmi tidak berubah.</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"dShare\" type=\"button\">Bagikan hasil</button>" +
+    "<div class=\"row\"><button class=\"btn\" id=\"dClose\" type=\"button\">Tutup</button><button class=\"btn\" id=\"dPractice\" type=\"button\">Latihan</button></div></div>",
+    () => {
+      $("dShare").onclick = shareDaily;
+      $("dClose").onclick = hideOverlay;
+      $("dPractice").onclick = () => { hideOverlay(); startPractice(); };
+    });
+}
+const duelDoneOf = (code) => S.duelDone.find((x) => x.code === code) || null;
+// Balas tantangan: permainan Santai baru dengan seed baru; skornya dikirim sebagai tantangan baru.
+function startReply(name) {
+  hideOverlay();
+  openRun(newRun("endless", newSeed(), { replyTo: GameCore.cleanName(name) }));
+}
+function showDuelDone(d) {
+  const v = d.score > d.p ? "Kamu menang" : d.score < d.p ? esc(d.n) + " menang" : "Seri";
+  showPanel(
+    "<h2>Sudah dimainkan</h2><p>Tantangan dari <b>" + esc(d.n) + "</b> ini sudah kamu mainkan: <b>" + fmt(d.score) + "</b> lawan <b>" + fmt(d.p) + "</b>. " + v + ".</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"xReply\" type=\"button\">Balas tantangan</button><button class=\"btn\" id=\"xClose\" type=\"button\">Tutup</button></div>",
+    () => {
+      $("xReply").onclick = () => startReply(d.n);
+      $("xClose").onclick = () => { hideOverlay(); renderHome(); };
+    });
+}
+function startDuel(inv) {
+  const done = duelDoneOf(inv.code);
+  if (done) return showDuelDone(done);
+  const r = S.runs.duel;
+  if (r && r.duel && r.duel.code === inv.code && GameCore.isValid(r.g) && !r.g.over) return openRun(r);
+  openRun(newRun("duel", inv.s, { duel: { n: inv.n, p: inv.p, code: inv.code } }));
+}
+function showInvite(inv) {
+  showPanel(
+    "<h2>Ada tantangan!</h2><p><b>" + esc(inv.n) + "</b> menantang kamu! Skor " + esc(inv.n) + ": <b>" + fmt(inv.p) + "</b>.</p>" +
+    "<p>Urutan baloknya sama persis dengan punya " + esc(inv.n) + ". Bisa kalahkan?</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"iGo\" type=\"button\">Terima tantangan</button><button class=\"btn\" id=\"iLater\" type=\"button\">Nanti saja</button></div>",
+    () => {
+      $("iGo").onclick = () => { hideOverlay(); startDuel(inv); };
+      $("iLater").onclick = () => { hideOverlay(); renderHome(); };
+    });
+}
+function openDuelMenu() {
+  const inv = S.pendingDuel ? GameCore.decodeDuel(S.pendingDuel) : null;
+  if (inv) return showInvite(Object.assign(inv, { code: S.pendingDuel }));
+  showPanel(
+    "<h2>Duel</h2><p>Main Santai sampai selesai, lalu tekan <b>Tantang teman</b>. Temanmu akan mendapat urutan balok yang sama persis denganmu.</p>" +
+    (S.duelW + S.duelL + S.duelD ? "<p>Menang " + S.duelW + " · Kalah " + S.duelL + " · Seri " + S.duelD + "</p>" : "") +
+    "<div class=\"col\"><button class=\"btn main\" id=\"uGo\" type=\"button\">Main Santai</button><button class=\"btn\" id=\"uClose\" type=\"button\">Tutup</button></div>",
+    () => {
+      $("uGo").onclick = () => { hideOverlay(); startEndless(false); };
+      $("uClose").onclick = hideOverlay;
+    });
+}
+function readDuelHash() {
+  const m = /^#d=([A-Za-z0-9_-]+)$/.exec(location.hash || "");
+  if (!/^#d=/.test(location.hash || "")) return;
+  try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  const inv = m ? GameCore.decodeDuel(m[1]) : null;
+  if (!inv) { toast("Link tantangan tidak valid, minta tantangan baru."); return; }
+  inv.code = m[1];
+  if (!$("play").hidden) goHome();
+  const done = duelDoneOf(inv.code);
+  if (!done) { S.pendingDuel = inv.code; save(); }
+  renderHome();
+  if (done) showDuelDone(done); else showInvite(inv);
+}
+function showHelp() {
+  showPanel(
+    "<h2>Cara main</h2><ol class=\"help\">" +
+    "<li>Seret balok dari bawah ke papan. Balok tidak bisa diputar.</li>" +
+    "<li>Penuhi satu <b>baris</b> atau <b>kolom</b> untuk meledakkannya.</li>" +
+    "<li>Ledakkan beberapa garis sekaligus untuk poin jauh lebih besar.</li>" +
+    "<li><b>Kombo</b>: meledak berturut-turut melipatgandakan poin. Kombo bertahan 2 kali menaruh tanpa ledakan (lihat 3 titik).</li>" +
+    "<li><b>Papan Bersih</b>: kosongkan seluruh papan untuk bonus besar.</li>" +
+    "<li>Permainan selesai bila tidak ada balok yang muat.</li>" +
+    "<li>Sulit menyeret? Ketuk balok, lalu ketuk kotak papan. Di komputer: tombol 1–3, panah, Enter.</li></ol>" +
+    "<button class=\"btn main\" id=\"hOk\" type=\"button\">Siap!</button>",
+    () => { $("hOk").onclick = hideOverlay; });
+}
+
+// ---------- Menu utama ----------
+function renderHome() {
+  $("best").textContent = fmt(S.best);
+  const r = S.runs.endless;
+  $("stEndless").textContent = r && r.g && !r.g.over ? "Lanjutkan · " + fmt(r.g.score) : "Main";
+  const t = today();
+  const d = S.daily && S.daily.date === t && S.daily.done ? S.daily : null;
+  const dr = S.runs.daily;
+  $("modeDaily").classList.toggle("done", !!d);
+  $("stDaily").textContent = d ? "Selesai ✓ · " + fmt(d.score) : dr && dr.date === t && !dr.practice && !dr.g.over ? "Lanjutkan" : "#" + GameCore.dailyNumber(t) + " · Main";
+  const inv = S.pendingDuel ? GameCore.decodeDuel(S.pendingDuel) : null;
+  $("stDuel").textContent = inv ? "Ditantang " + inv.n + "!" : S.duelW + S.duelL + S.duelD ? "Menang " + S.duelW + " · Kalah " + S.duelL : "Tantang";
+  const st = streakNow();
+  $("stats").textContent = S.games ? "Main " + fmt(S.games) + " kali · " + fmt(S.totalLines) + " baris diledakkan" + (st ? " · 🔥 " + st + " hari" : "") : "Selamat datang! Coba Main Santai dulu.";
+  renderToggles();
+}
+function renderToggles() {
+  $("btnSound").textContent = S.settings.mute ? "🔇" : "🔊";
+  $("btnSound").setAttribute("aria-label", S.settings.mute ? "Nyalakan suara" : "Matikan suara");
+  $("btnVibe").textContent = "📳 Getar: " + (S.settings.vibrate ? "nyala" : "mati");
+}
+function goHome() {
+  stopRunTimers();
+  if (run && !run.g.over) saveRun();
+  run = null; busy = false; sel = null;
+  fxEl.innerHTML = "";
+  $("play").hidden = true;
+  $("home").hidden = false;
+  renderHome();
+}
+
+// ---------- Panel, tombol Back, pesan ----------
+let backArmed = false, overlayBack = null;
+function enterScreen() {
+  if (backArmed) return;
+  try { history.pushState({ balok: 1 }, ""); backArmed = true; } catch (e) {}
+}
+function showPanel(html, wire, onBack) {
+  const o = $("overlay");
+  o.innerHTML = "<div class=\"panel\" role=\"dialog\" aria-modal=\"true\">" + html + "</div>";
+  o.hidden = false;
+  overlayBack = onBack || null;
+  enterScreen();
+  if (wire) wire();
+  const btn = o.querySelector("button");
+  if (btn && !o.querySelector("input")) btn.focus();
+}
+function hideOverlay() { $("overlay").hidden = true; $("overlay").innerHTML = ""; overlayBack = null; }
+// Back menutup panel atau kembali ke menu; tidak pernah keluar dari situs saat sedang main.
+window.addEventListener("popstate", () => {
+  backArmed = false;
+  if (!$("overlay").hidden) {
+    const after = overlayBack;
+    hideOverlay();
+    if (after) after();
+    else if (!$("play").hidden) enterScreen();
+    return;
+  }
+  if (!$("play").hidden) goHome();
+});
+window.addEventListener("hashchange", readDuelHash);
+let toastTimer = 0;
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; }, 2000);
+}
+
+$("modeEndless").onclick = () => startEndless(false);
+$("modeDaily").onclick = startDaily;
+$("modeDuel").onclick = openDuelMenu;
+$("btnHelp").onclick = showHelp;
+$("btnMenu").onclick = goHome;
+$("btnRestart").onclick = () => {
+  if (!run || busy) return;
+  showPanel(
+    "<h2>Mulai ulang?</h2><p>Permainan ini tidak akan disimpan.</p>" +
+    "<div class=\"row\"><button class=\"btn\" id=\"qNo\" type=\"button\">Lanjut main</button><button class=\"btn main\" id=\"qYes\" type=\"button\">Mulai ulang</button></div>",
+    () => {
+      $("qNo").onclick = hideOverlay;
+      $("qYes").onclick = () => { hideOverlay(); if (!run) return; if (run.practice) startPractice(); else startEndless(true); };
+    });
+};
+$("btnSound").onclick = () => {
+  S.settings.mute = !S.settings.mute;
+  save();
+  renderToggles();
+  if (!S.settings.mute) sfx.tap();
+};
+$("btnVibe").onclick = () => {
+  S.settings.vibrate = !S.settings.vibrate;
+  save();
+  renderToggles();
+  buzz(20);
+};
+let resizeRaf = 0;
+window.addEventListener("resize", () => {
+  if (resizeRaf) return;
+  resizeRaf = requestAnimationFrame(() => { resizeRaf = 0; layout(); });
+});
+document.addEventListener("visibilitychange", () => { if (document.hidden && run) saveRun(); });
+
+layout();
+renderHome();
+readDuelHash();
+</script>
+</html>
