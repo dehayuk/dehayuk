@@ -31,17 +31,43 @@ jobs:
       - run: npm run build
       - run: npx cap sync android
 
-      - name: Build debug APK
+      # Kunci tanda tangan tetap diambil dari GitHub Secrets (KEYSTORE_BASE64, KEYSTORE_PASSWORD).
+      # Dengan kunci yang sama di setiap build, APK baru bisa memperbarui yang lama tanpa menghapus progres.
+      - name: Siapkan kunci tanda tangan
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/nalargame.p12"
+            echo "KEYSTORE_FILE=$RUNNER_TEMP/nalargame.p12" >> "$GITHUB_ENV"
+          else
+            echo "::warning::Secret KEYSTORE_BASE64 belum diisi, APK dibuat sebagai versi uji (debug)."
+          fi
+
+      - name: Build APK
         working-directory: android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          VERSION_CODE: ${{ github.run_number }}
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
-          cp app/build/outputs/apk/debug/app-debug.apk ../nalargame.apk
+          if [ -n "$KEYSTORE_FILE" ]; then
+            ./gradlew assembleRelease bundleRelease --no-daemon
+            cp app/build/outputs/apk/release/app-release.apk ../nalargame.apk
+            cp app/build/outputs/bundle/release/app-release.aab ../nalargame.aab
+          else
+            ./gradlew assembleDebug --no-daemon
+            cp app/build/outputs/apk/debug/app-debug.apk ../nalargame.apk
+          fi
 
+      # Berkas .aab untuk diunggah ke Play Console hanya disimpan di sini, tidak diterbitkan umum.
       - uses: actions/upload-artifact@v4
         with:
-          name: nalargame.apk
-          path: nalargame.apk
+          name: nalargame-app
+          path: |
+            nalargame.apk
+            nalargame.aab
+          if-no-files-found: warn
 
       - name: Terbitkan sebagai Release
         uses: softprops/action-gh-release@v2

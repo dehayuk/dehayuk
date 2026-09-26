@@ -7,8 +7,9 @@ android {
         applicationId "com.nalargame.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        // Nomor versi naik otomatis di setiap build GitHub, agar APK baru bisa memperbarui yang lama.
+        versionCode ((System.getenv("VERSION_CODE") ?: "1") as Integer)
+        versionName "1.0." + (System.getenv("VERSION_CODE") ?: "0")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,10 +17,25 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // Kunci tanda tangan tetap. Berkas dan kata sandinya dipasok GitHub Actions dari Secrets,
+    // tidak pernah disimpan di repo. Tanpa Secrets, build rilis tidak ditandatangani.
+    signingConfigs {
+        release {
+            def keystorePath = System.getenv("KEYSTORE_FILE")
+            if (keystorePath) {
+                storeFile file(keystorePath)
+                storeType "pkcs12"
+                storePassword System.getenv("KEYSTORE_PASSWORD")
+                keyAlias "nalargame"
+                keyPassword System.getenv("KEYSTORE_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (System.getenv("KEYSTORE_FILE")) signingConfig signingConfigs.release
         }
     }
 }
