@@ -1,11 +1,15 @@
 # Membuat APK di server GitHub setiap kali ada perubahan, agar laptop tidak perlu Android SDK.
-# Hasilnya diunduh dari tab Actions -> run terbaru -> bagian Artifacts -> tebak-kata-apk.
+# Setiap APK diterbitkan sebagai Release, sehingga siapa pun bisa mengunduh tanpa akun GitHub:
+# https://github.com/socialiam/tebak-kata/releases/latest/download/tebak-kata.apk
 name: Build APK
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -32,8 +36,20 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
+          cp app/build/outputs/apk/debug/app-debug.apk ../tebak-kata.apk
 
       - uses: actions/upload-artifact@v4
         with:
           name: tebak-kata-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: tebak-kata.apk
+
+      - name: Terbitkan sebagai Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: uji-${{ github.run_number }}
+          name: Tebak Kata uji ${{ github.run_number }}
+          body: |
+            Versi uji untuk HP Android. Iklan masih mode uji (Test Ad).
+            Unduh tebak-kata.apk di bawah, lalu izinkan "instal dari sumber tidak dikenal".
+          files: tebak-kata.apk
+          make_latest: true

@@ -106,6 +106,7 @@
   button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 
   .note { font-size: 12px; color: var(--muted); text-align: center; margin: 0; }
+  .note a { color: var(--tile); font-weight: 800; }
 
   .banner {
     position: fixed; left: 0; right: 0; bottom: 0;
@@ -171,6 +172,7 @@
 
   <p class="note">Ketuk huruf untuk mengisi, ketuk kotak untuk mengembalikan. Di komputer bisa langsung mengetik.</p>
   <p class="note" id="adStatus" hidden></p>
+  <p class="note" id="getApp"><a href="https://github.com/socialiam/tebak-kata/releases/latest/download/tebak-kata.apk">Unduh app Android (APK)</a></p>
 </div>
 
 <div class="banner"><b>UJI</b>Tempat banner AdMob. Iklan asli hanya tampil di app Android.</div>
@@ -439,6 +441,7 @@ function errorText(e) { return (e && (e.message || e.code)) || String(e); }
 
 async function initNativeAds() {
   const inApp = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform();
+  if (inApp) $("getApp").hidden = true;
   if (!NativeAds) {
     if (inApp) adStatus("plugin tidak ditemukan, iklan tiruan yang dipakai");
     return;
