@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.nalargame.app"
+    namespace = "com.dehayuk.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.nalargame.app"
+        applicationId "com.dehayuk.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         // Nomor versi naik otomatis di setiap build GitHub, agar APK baru bisa memperbarui yang lama.

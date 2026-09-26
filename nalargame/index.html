@@ -50,6 +50,8 @@
   header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .brand { font-family: var(--display); font-weight: 800; font-size: 26px; line-height: 1; letter-spacing: .5px; }
   .brand span { color: var(--tile); }
+  .brand-wrap { display: flex; flex-direction: column; gap: 2px; }
+  .hub-link { color: var(--muted); font-size: 12px; font-weight: 800; text-decoration: none; }
   .coins {
     display: flex; align-items: center; gap: 6px;
     background: var(--board); border: 1px solid var(--board-edge);
@@ -283,7 +285,7 @@
 
 <div class="wrap">
   <header>
-    <div class="brand">Nalar<span>Game</span></div>
+    <div class="brand-wrap"><a class="hub-link" href="/">‹ Dehayuk</a><div class="brand">Nalar<span>Game</span></div></div>
     <div class="head-right">
       <button class="icon-btn" id="btnSound" type="button" aria-label="Matikan suara" title="Suara">🔊</button>
       <div class="coins" id="coinBox" title="Koin"><i class="coin-dot"></i><span id="coins">0</span></div>
@@ -395,7 +397,7 @@
 
 <div class="getapp" id="getApp">
   <div class="getapp-text"><b>Main lebih seru di app</b><span>Gratis · khusus HP Android</span></div>
-  <a class="getapp-btn" href="https://github.com/dehayuk/tebak-kata/releases/latest/download/nalargame.apk">Pasang</a>
+  <a class="getapp-btn" href="https://github.com/dehayuk/tebak-kata/releases/latest/download/dehayuk.apk">Pasang</a>
   <button class="getapp-close" id="getAppClose" type="button" aria-label="Tutup">×</button>
 </div>
 

@@ -1,4 +1,4 @@
-package com.nalargame.app;
+package com.dehayuk.app;
 
 import com.getcapacitor.BridgeActivity;
 

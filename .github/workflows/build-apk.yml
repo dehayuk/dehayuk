@@ -1,6 +1,6 @@
 # Membuat APK di server GitHub setiap kali ada perubahan, agar laptop tidak perlu Android SDK.
 # Setiap APK diterbitkan sebagai Release, sehingga siapa pun bisa mengunduh tanpa akun GitHub:
-# https://github.com/dehayuk/tebak-kata/releases/latest/download/nalargame.apk
+# https://github.com/dehayuk/tebak-kata/releases/latest/download/dehayuk.apk
 name: Build APK
 
 on:
@@ -53,29 +53,29 @@ jobs:
           chmod +x gradlew
           if [ -n "$KEYSTORE_FILE" ]; then
             ./gradlew assembleRelease bundleRelease --no-daemon
-            cp app/build/outputs/apk/release/app-release.apk ../nalargame.apk
-            cp app/build/outputs/bundle/release/app-release.aab ../nalargame.aab
+            cp app/build/outputs/apk/release/app-release.apk ../dehayuk.apk
+            cp app/build/outputs/bundle/release/app-release.aab ../dehayuk.aab
           else
             ./gradlew assembleDebug --no-daemon
-            cp app/build/outputs/apk/debug/app-debug.apk ../nalargame.apk
+            cp app/build/outputs/apk/debug/app-debug.apk ../dehayuk.apk
           fi
 
       # Berkas .aab untuk diunggah ke Play Console hanya disimpan di sini, tidak diterbitkan umum.
       - uses: actions/upload-artifact@v4
         with:
-          name: nalargame-app
+          name: dehayuk-app
           path: |
-            nalargame.apk
-            nalargame.aab
+            dehayuk.apk
+            dehayuk.aab
           if-no-files-found: warn
 
       - name: Terbitkan sebagai Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v0.1.${{ github.run_number }}
-          name: NalarGame 0.1.${{ github.run_number }}
+          name: Dehayuk 0.1.${{ github.run_number }}
           body: |
-            Versi awal NalarGame untuk HP Android.
-            Unduh nalargame.apk di bawah, lalu izinkan "instal dari sumber tidak dikenal".
-          files: nalargame.apk
+            App Dehayuk untuk HP Android: NalarGame, Balok Ria, dan Pilah Kelereng dalam satu app.
+            Unduh dehayuk.apk di bawah, lalu izinkan "instal dari sumber tidak dikenal".
+          files: dehayuk.apk
           make_latest: true

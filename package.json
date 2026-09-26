@@ -1,8 +1,8 @@
 {
-  "name": "nalargame",
+  "name": "dehayuk",
   "version": "0.1.0",
   "private": true,
-  "description": "NalarGame, kumpulan game kata dengan iklan AdMob",
+  "description": "Dehayuk, kumpulan game ringan Indonesia (NalarGame, Balok Ria, Pilah Kelereng)",
   "scripts": {
     "build": "node scripts/build-www.js",
     "serve": "node server.js"

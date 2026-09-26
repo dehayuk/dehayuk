@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">NalarGame</string>
-    <string name="title_activity_main">NalarGame</string>
-    <string name="package_name">com.nalargame.app</string>
+    <string name="app_name">Dehayuk</string>
+    <string name="title_activity_main">Dehayuk</string>
+    <string name="package_name">com.dehayuk.app</string>
     <string name="admob_app_id">ca-app-pub-4794081394235829~6912879318</string>
-    <string name="custom_url_scheme">com.nalargame.app</string>
+    <string name="custom_url_scheme">com.dehayuk.app</string>
 </resources>
