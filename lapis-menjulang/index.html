@@ -1,0 +1,1929 @@
+<!doctype html>
+<html lang="id">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E3534">
+<title>Lapis Menjulang</title>
+<meta name="description" content="Lapis Menjulang: ketuk tepat waktu dan susun kue lapis setinggi langit. Tiap 10 lapis rasanya berganti dan punya ulah sendiri. Main sendiri, Harian yang sama untuk semua, tantang teman lewat WhatsApp, atau gantian berdua di satu HP. Gratis, langsung main di browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='57' rx='26' ry='5' fill='%23fff'/%3E%3Crect x='10' y='45' width='44' height='9' rx='4' fill='%235DB548'/%3E%3Crect x='13' y='36' width='39' height='9' rx='4' fill='%238A5536'/%3E%3Crect x='14' y='27' width='35' height='9' rx='4' fill='%23EDBE3A'/%3E%3Crect x='17' y='18' width='31' height='9' rx='4' fill='%23EE7FA8'/%3E%3Crect x='18' y='9' width='27' height='9' rx='4' fill='%235E3C73'/%3E%3Crect x='18' y='8' width='27' height='3' rx='1.5' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Font dimuat tanpa menahan tampilan pertama; bila gagal, font sistem tetap dipakai. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap"></noscript>
+<style>
+  :root {
+    color-scheme: dark;
+    --ground: #0E3534;
+    --board: #15504D;
+    --board-edge: #2A7A75;
+    --slot-edge: #3E8C86;
+    --tile: #F4C152;
+    --tile-shade: #C9952A;
+    --tile-ink: #3B2A05;
+    --ink: #EAF6F3;
+    --muted: #9EC6C0;
+    --good: #7FE0A3;
+    --bad: #FF7A70;
+    --well: #0B2B2A;
+    --r1: #5DB548; --r2: #8A5536; --r3: #EDBE3A; --r4: #EE7FA8; --r5: #5E3C73;
+    --display: "Baloo 2", "Trebuchet MS", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --body: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  [hidden] { display: none !important; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink); font-family: var(--body); font-size: 15px;
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; overscroll-behavior-y: contain;
+  }
+  body.playing { overflow: hidden; }
+  button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; font-family: var(--body); }
+  button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  .wrap {
+    max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px;
+    padding: calc(10px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px));
+  }
+  section { display: flex; flex-direction: column; gap: 12px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .brand-box { display: flex; flex-direction: column; min-width: 0; }
+  .hub { color: var(--muted); font-size: 12px; font-weight: 800; text-decoration: none; padding: 2px 0; }
+  .brand { font-family: var(--display); font-weight: 800; font-size: 24px; line-height: 1; letter-spacing: .5px; white-space: nowrap; }
+  .brand span { color: var(--tile); }
+  .head-right { display: flex; align-items: center; gap: 8px; }
+  .best {
+    display: flex; align-items: center; gap: 6px; background: var(--board); border: 1px solid var(--board-edge);
+    padding: 6px 12px; border-radius: 999px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .best.bump { animation: bump .45s ease-out; }
+  @keyframes bump { 40% { transform: scale(1.18); border-color: var(--tile); } }
+  .icon-btn {
+    min-width: 44px; min-height: 44px; border-radius: 999px; cursor: pointer; font-size: 17px; line-height: 1;
+    background: var(--board); border: 1px solid var(--board-edge); color: var(--ink);
+  }
+
+  /* Menu utama */
+  .hero {
+    background: var(--board); border: 1px solid var(--board-edge); border-radius: 14px; padding: 16px;
+    display: flex; gap: 14px; align-items: center;
+  }
+  .logo { position: relative; flex: none; width: 58px; height: 62px; }
+  .logo i { position: absolute; height: 10px; border-radius: 5px; background: var(--c); box-shadow: inset 0 3px 0 rgba(255,255,255,.3), inset 0 -2px 0 rgba(0,0,0,.25); }
+  .logo i:nth-child(1) { left: 4px; width: 48px; bottom: 7px; }
+  .logo i:nth-child(2) { left: 8px; width: 43px; bottom: 17px; }
+  .logo i:nth-child(3) { left: 8px; width: 38px; bottom: 27px; }
+  .logo i:nth-child(4) { left: 12px; width: 34px; bottom: 37px; }
+  .logo i:nth-child(5) { left: 13px; width: 30px; bottom: 47px; }
+  .logo i:nth-child(5)::after { content: ""; position: absolute; left: 1px; right: 1px; top: -2px; height: 4px; border-radius: 2px; background: #fff; }
+  .logo b { position: absolute; left: 0; bottom: 2px; width: 58px; height: 7px; border-radius: 50%; background: #F4F1EA; }
+  .hero p { margin: 0; color: var(--muted); line-height: 1.45; }
+  .hero strong { color: var(--ink); font-family: var(--display); font-size: 19px; display: block; line-height: 1.15; }
+  .stats { font-size: 12.5px; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; margin: 0; }
+  .modes { display: grid; gap: 10px; }
+  .mode {
+    display: grid; grid-template-columns: 1fr auto; grid-template-areas: "name state" "desc state";
+    gap: 2px 12px; align-items: center; text-align: left; cursor: pointer;
+    background: var(--board); border: 1px solid var(--board-edge); border-radius: 14px; padding: 14px 16px; color: var(--ink);
+  }
+  .mode-name { grid-area: name; font-family: var(--display); font-weight: 800; font-size: 21px; line-height: 1.1; }
+  .mode-desc { grid-area: desc; font-size: 12.5px; color: var(--muted); }
+  .mode-state {
+    grid-area: state; max-width: 140px; text-align: center; font-weight: 800; font-size: 12px;
+    background: var(--tile); color: var(--tile-ink); box-shadow: inset 0 -3px 0 var(--tile-shade);
+    padding: 7px 10px; border-radius: 9px; font-variant-numeric: tabular-nums;
+  }
+  .mode.primary { border-color: var(--tile-shade); box-shadow: 0 0 0 1px var(--tile-shade) inset; }
+  .mode.primary .mode-name { color: var(--tile); }
+  .mode.done .mode-state { background: transparent; box-shadow: none; color: var(--good); border: 1px solid var(--good); }
+  .home-foot { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
+  .link-btn { background: none; border: 1px solid var(--board-edge); color: var(--muted); border-radius: 999px; padding: 8px 11px; font-weight: 800; font-size: 12.5px; cursor: pointer; min-height: 44px; }
+  .home-foot a { color: var(--muted); font-size: 12px; padding: 12px; }
+
+  /* Layar main: kanvas memenuhi layar, HUD melayang di atasnya */
+  #play { position: fixed; inset: 0; z-index: 20; background: var(--ground); }
+  .stage { position: absolute; inset: 0; overflow: hidden; touch-action: none; cursor: pointer; }
+  .bg { position: absolute; inset: 0; background: linear-gradient(#173E35, #2D5F4B); }
+  #bgB { opacity: 0; }
+  .bg.glow { background: radial-gradient(ellipse 90% 70% at 50% -5%, rgba(255,214,150,.28), rgba(255,214,150,0)); }
+  #cv { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; }
+  .hud {
+    position: absolute; left: 0; right: 0; top: 0; pointer-events: none; display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: calc(8px + env(safe-area-inset-top, 0px)) calc(12px + env(safe-area-inset-right, 0px)) 0 calc(12px + env(safe-area-inset-left, 0px));
+  }
+  .hud-top { display: flex; align-items: center; gap: 8px; width: 100%; max-width: 480px; }
+  .hud-top button { pointer-events: auto; }
+  .back {
+    background: rgba(14, 53, 52, .72); border: 1px solid var(--board-edge); color: var(--ink); border-radius: 10px;
+    min-height: 44px; padding: 8px 12px; font-weight: 800; font-size: 13px; cursor: pointer;
+  }
+  .chip {
+    font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--tile); border: 1px solid var(--tile-shade); background: rgba(14, 53, 52, .6); padding: 1px 10px; border-radius: 6px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+  }
+  .hud .best { margin-left: auto; background: rgba(21, 80, 77, .8); padding: 6px 10px; font-size: 14px; }
+  .hud .icon-btn { background: rgba(21, 80, 77, .8); }
+  .floors {
+    font-family: var(--display); font-weight: 800; font-size: 60px; line-height: .95; margin-top: 4px; font-variant-numeric: tabular-nums;
+    text-shadow: 0 3px 0 rgba(0,0,0,.35), 0 0 18px rgba(0,0,0,.25);
+  }
+  .floors.bump { animation: pop .25s ease-out; }
+  @keyframes pop { 40% { transform: scale(1.14); } }
+  .floors-lbl { font-weight: 800; font-size: 12px; color: rgba(234, 246, 243, .8); letter-spacing: 1px; text-transform: uppercase; margin-top: -4px; }
+  .hud-row { display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px; background: rgba(8, 30, 30, .62); border: 1px solid rgba(255,255,255,.14);
+    border-radius: 999px; padding: 3px 10px; font-weight: 800; font-size: 12.5px; white-space: nowrap; font-variant-numeric: tabular-nums;
+  }
+  .pill .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--c, #fff); box-shadow: inset 0 2px 0 rgba(255,255,255,.35); }
+  .pill.gold .dot { box-shadow: 0 0 0 2px #FFD76A; }
+  .streak { color: var(--tile); }
+  .streak.hot { color: #fff; background: rgba(201, 149, 42, .75); border-color: var(--tile); }
+  .turn {
+    margin-top: 6px; padding: 6px 18px; border-radius: 999px; font-family: var(--display); font-weight: 800; font-size: 19px;
+    background: var(--pc, #E5484D); color: #fff; box-shadow: inset 0 -3px 0 rgba(0,0,0,.25), 0 3px 10px rgba(0,0,0,.3);
+    white-space: nowrap; max-width: 92%; overflow: hidden; text-overflow: ellipsis;
+  }
+  .turn.wait { animation: breathe .7s ease-in-out infinite alternate; }
+  @keyframes breathe { from { transform: scale(1); } to { transform: scale(1.07); } }
+  .duo-score { font-weight: 800; font-size: 12.5px; color: rgba(234,246,243,.85); margin-top: 2px; }
+  .tap-hint {
+    position: absolute; left: 50%; top: 58%; transform: translateX(-50%); pointer-events: none; text-align: center;
+    font-family: var(--display); font-weight: 800; font-size: 22px; color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.4);
+    background: rgba(8, 30, 30, .55); padding: 8px 18px; border-radius: 14px; white-space: nowrap;
+  }
+  .tap-hint small { display: block; font-family: var(--body); font-size: 12.5px; font-weight: 800; color: var(--muted); }
+  .tap-hint i { display: inline-block; font-style: normal; animation: tapf 1s ease-in-out infinite; }
+  @keyframes tapf { 50% { transform: translateY(5px) scale(.92); } }
+  .fx { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .float {
+    position: absolute; transform: translate(-50%, -50%); font-family: var(--display); font-weight: 800; font-size: 24px;
+    color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.4); animation: rise .85s ease-out forwards; white-space: nowrap;
+  }
+  @keyframes rise { from { opacity: 1; transform: translate(-50%, -50%) scale(.8); } 20% { transform: translate(-50%, -60%) scale(1.1); } to { opacity: 0; transform: translate(-50%, calc(-50% - 50px)); } }
+  .banner {
+    position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); background: var(--tile); color: var(--tile-ink);
+    font-family: var(--display); font-weight: 800; font-size: 18px; line-height: 1.15; padding: 8px 16px; border-radius: 14px; text-align: center;
+    box-shadow: inset 0 -3px 0 var(--tile-shade), 0 6px 18px rgba(0,0,0,.35); animation: banner 2.4s ease-out forwards; max-width: 88%;
+  }
+  .banner small { display: block; font-family: var(--body); font-size: 13px; font-weight: 800; opacity: .85; }
+  @keyframes banner { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.7); } 10% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); } 18% { transform: translate(-50%, -50%) scale(1); } 82% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -62%); } }
+  .confetti { position: fixed; top: -14px; width: 9px; height: 13px; border-radius: 2px; z-index: 80; pointer-events: none; animation: fall 1.5s ease-in forwards; }
+  @keyframes fall { to { transform: translateY(105vh) rotate(540deg); opacity: .7; } }
+
+  /* Panel */
+  .overlay { position: fixed; inset: 0; background: rgba(5, 20, 20, .86); display: grid; place-items: center; padding: 16px; z-index: 60; overflow-y: auto; }
+  .overlay.lock .panel { pointer-events: none; }
+  .panel {
+    width: 100%; max-width: 380px; background: var(--board); border: 1px solid var(--board-edge); border-radius: 16px;
+    padding: 22px 18px; text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center;
+    animation: slideUp .28s ease-out;
+  }
+  @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .panel h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 28px; line-height: 1.1; color: var(--tile); }
+  .panel h3 { margin: 4px 0 0; font-family: var(--display); font-weight: 800; font-size: 18px; color: var(--ink); }
+  .panel p { margin: 0; color: var(--muted); line-height: 1.45; }
+  .panel b { color: var(--ink); }
+  .big { font-family: var(--display); font-weight: 800; font-size: 48px; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .big small { font-size: 18px; color: var(--muted); }
+  .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; }
+  .facts div { background: var(--ground); border: 1px solid var(--board-edge); border-radius: 10px; padding: 8px 4px; font-size: 11.5px; color: var(--muted); }
+  .facts b { display: block; font-size: 18px; font-family: var(--display); line-height: 1.2; }
+  .col { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+  .row { display: flex; gap: 8px; width: 100%; }
+  .row .btn { flex: 1; }
+  .btn {
+    border: 1px solid var(--board-edge); background: var(--ground); color: var(--ink); border-radius: 10px;
+    padding: 11px 8px; font-weight: 800; font-size: 14px; cursor: pointer; line-height: 1.2; min-height: 44px;
+  }
+  .btn.main { background: var(--tile); color: var(--tile-ink); border: 0; box-shadow: inset 0 -4px 0 var(--tile-shade); font-family: var(--display); font-size: 20px; }
+  .help { text-align: left; margin: 0; padding-left: 20px; color: var(--ink); line-height: 1.5; display: flex; flex-direction: column; gap: 6px; }
+  .help li::marker { color: var(--tile); }
+  .rasa-list { display: grid; gap: 6px; width: 100%; text-align: left; font-size: 13px; }
+  .rasa-list div { display: flex; gap: 8px; align-items: center; color: var(--muted); }
+  .rasa-list i { flex: none; width: 26px; height: 12px; border-radius: 6px; background: var(--c); box-shadow: inset 0 3px 0 rgba(255,255,255,.3); }
+  .rasa-list b { color: var(--ink); }
+  .versus { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; width: 100%; }
+  .versus .side { background: var(--ground); border: 1px solid var(--board-edge); border-radius: 12px; padding: 10px 6px; min-width: 0; }
+  .versus .side.win { border-color: var(--good); box-shadow: 0 0 0 1px var(--good); }
+  .versus .who { font-weight: 800; overflow-wrap: anywhere; }
+  .versus .pts { font-family: var(--display); font-weight: 800; font-size: 26px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .versus .side.win .pts { color: var(--good); }
+  .versus .vs { font-family: var(--display); font-weight: 800; color: var(--tile); }
+  .name-input {
+    width: 100%; padding: 10px 12px; border-radius: 10px; text-align: center; border: 1px solid var(--board-edge);
+    background: var(--ground); color: var(--ink); font-family: var(--body); font-weight: 800; font-size: 18px; user-select: text; -webkit-user-select: text; min-height: 44px;
+  }
+  .player { width: 100%; display: flex; flex-direction: column; gap: 6px; background: var(--ground); border: 1px solid var(--board-edge); border-radius: 12px; padding: 10px; }
+  .player .name-input { border-color: var(--pc); box-shadow: inset 4px 0 0 var(--pc); }
+  .swatches { display: flex; gap: 4px; justify-content: center; }
+  .sw { width: 44px; height: 44px; border-radius: 50%; border: 3px solid transparent; background: var(--c); cursor: pointer; padding: 0; }
+  .sw[aria-pressed="true"] { border-color: #fff; box-shadow: 0 0 0 2px var(--c); }
+  .sw:disabled {
+    cursor: default; opacity: .55; border: 2px dashed rgba(255,255,255,.45);
+    background: linear-gradient(135deg, transparent 44%, #fff 44% 56%, transparent 56%), var(--c);
+  }
+  .seg { display: flex; width: 100%; border: 1px solid var(--board-edge); border-radius: 10px; overflow: hidden; }
+  .seg button { flex: 1; background: none; border: 0; color: var(--muted); font-weight: 800; font-size: 12.5px; padding: 8px 4px; min-height: 44px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--tile); color: var(--tile-ink); }
+  .board-list { width: 100%; display: grid; gap: 4px; font-size: 13px; }
+  .board-list div { display: flex; justify-content: space-between; background: var(--ground); border-radius: 8px; padding: 6px 10px; }
+  .jars { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; width: 100%; }
+  .jar { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; color: var(--muted); }
+  .jar i {
+    position: relative; width: 44px; height: 54px; border-radius: 10px 10px 14px 14px; border: 2px solid rgba(255,255,255,.35);
+    background: linear-gradient(to top, var(--c) 0 62%, rgba(255,255,255,.06) 62%);
+  }
+  .jar i::before { content: ""; position: absolute; left: 6px; right: 6px; top: -7px; height: 7px; border-radius: 3px 3px 0 0; background: #B98A5A; }
+  .jar.off i { background: rgba(255,255,255,.05); border-style: dashed; }
+  .jar.off i::after { content: "?"; position: absolute; inset: 0; display: grid; place-items: center; font-size: 20px; color: rgba(255,255,255,.35); }
+  .jar.gold i { border-color: #FFD76A; box-shadow: 0 0 10px rgba(255, 215, 106, .6); }
+  .jar.gold { color: #FFD76A; }
+  .badges { width: 100%; display: grid; gap: 6px; text-align: left; font-size: 13px; }
+  .badges div { background: var(--ground); border: 1px solid var(--board-edge); border-radius: 10px; padding: 8px 10px; color: var(--muted); }
+  .badges div.on { color: var(--ink); border-color: var(--tile-shade); }
+  .toast {
+    position: fixed; left: 50%; top: calc(62px + env(safe-area-inset-top, 0px)); transform: translateX(-50%);
+    background: var(--ink); color: var(--ground); font-weight: 800; font-size: 13px; padding: 8px 14px; border-radius: 999px;
+    z-index: 70; max-width: calc(100% - 32px); text-align: center; pointer-events: none;
+  }
+  body.playing .toast { top: auto; bottom: calc(28px + env(safe-area-inset-bottom, 0px)); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (max-width: 400px) {
+    .overlay { padding: 12px; }
+    .panel { padding: 20px 14px; }
+    .player { padding: 8px; }
+  }
+  @media (max-width: 370px) {
+    .brand { font-size: 21px; }
+    .hud .best { padding: 6px 8px; font-size: 13px; }
+    .chip { font-size: 12px; padding: 1px 7px; letter-spacing: .5px; }
+  }
+  @media (max-height: 600px) {
+    .floors { font-size: 44px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .best.bump, .floors.bump, .panel, .turn.wait, .tap-hint i { animation: none; }
+    .banner { animation-duration: 2.4s; animation-name: fadeOnly; }
+    @keyframes fadeOnly { 0%, 85% { opacity: 1; } 100% { opacity: 0; } }
+    .confetti { display: none; }
+  }
+</style>
+
+<div class="wrap" id="homeWrap">
+  <header>
+    <div class="brand-box">
+      <a class="hub" href="/">‹ Dehayuk</a>
+      <div class="brand">Lapis<span>Menjulang</span></div>
+    </div>
+    <div class="head-right">
+      <div class="best" id="bestBox" title="Skor terbaik">🏆 <span id="best">0</span></div>
+      <button class="icon-btn" id="btnSound" type="button" aria-label="Matikan suara" title="Suara">🔊</button>
+    </div>
+  </header>
+
+  <section id="home">
+    <div class="hero">
+      <div class="logo" aria-hidden="true"><b></b><i style="--c:var(--r1)"></i><i style="--c:var(--r2)"></i><i style="--c:var(--r3)"></i><i style="--c:var(--r4)"></i><i style="--c:var(--r5)"></i></div>
+      <p><strong>Susun kue lapis setinggi langit!</strong>Ketuk saat lapisan pas di atas kue. Yang meleset terpotong, jadi kue makin ramping.</p>
+    </div>
+    <div class="modes">
+      <button class="mode primary" id="modeSolo" type="button">
+        <span class="mode-name">Main Sendiri</span>
+        <span class="mode-desc">Tanpa batas. Tiap 10 lapis rasanya berganti.</span>
+        <span class="mode-state" id="stSolo">Main</span>
+      </button>
+      <button class="mode" id="modeDaily" type="button">
+        <span class="mode-name">Harian</span>
+        <span class="mode-desc" id="dailyDesc">Kue dan topping sama untuk semua pemain hari ini.</span>
+        <span class="mode-state" id="stDaily">Main</span>
+      </button>
+      <button class="mode" id="modeDuo" type="button">
+        <span class="mode-name">Gantian Berdua</span>
+        <span class="mode-desc">Satu HP, gantian tiap lapis. Yang bikin kue ambruk, kalah!</span>
+        <span class="mode-state" id="stDuo">Main</span>
+      </button>
+      <button class="mode" id="modeChal" type="button">
+        <span class="mode-name">Tantangan</span>
+        <span class="mode-desc">Kirim kuemu lewat WhatsApp. Temanmu harus lebih tinggi.</span>
+        <span class="mode-state" id="stChal">Tantang</span>
+      </button>
+    </div>
+    <p class="stats" id="stats"></p>
+    <div class="home-foot">
+      <button class="link-btn" id="btnHelp" type="button">❓ Cara main</button>
+      <button class="link-btn" id="btnJars" type="button">🍪 Toples</button>
+      <button class="link-btn" id="btnVibe" type="button">📳 Getar: nyala</button>
+    </div>
+    <div class="home-foot"><a href="/privasi/" target="_blank" rel="noopener">Privasi</a></div>
+  </section>
+</div>
+
+<section id="play" hidden>
+  <div class="stage" id="stage">
+    <div class="bg" id="bgA"></div><div class="bg" id="bgB"></div><div class="bg glow"></div>
+    <canvas id="cv" aria-label="Kue lapis. Ketuk di mana saja untuk menjatuhkan lapisan."></canvas>
+    <div class="fx" id="fx"></div>
+    <div class="tap-hint" id="tapHint" hidden><i>👆</i> Ketuk untuk mulai<small id="tapSub">Ketuk saat lapisan pas di atas kue</small></div>
+    <div class="hud">
+      <div class="hud-top">
+        <button class="back" id="btnMenu" type="button">‹ Menu</button>
+        <span class="chip" id="modeChip">Sendiri</span>
+        <div class="best" id="bestBox2" title="Skor terbaik">🏆 <span id="best2">0</span></div>
+        <button class="icon-btn" id="btnPause" type="button" aria-label="Jeda" title="Jeda">⏸</button>
+      </div>
+      <div class="floors" id="floors" aria-live="off">0</div>
+      <div class="floors-lbl">tingkat</div>
+      <div class="hud-row">
+        <span class="pill" id="rasaPill"><span class="dot" id="rasaDot"></span><span id="rasaName">Pandan</span></span>
+        <span class="pill streak" id="streakPill" hidden>✨ <span id="streakN">Pas x0</span></span>
+        <span class="pill" id="scorePill">Skor <span id="scoreN">0</span></span>
+      </div>
+      <div class="turn" id="turn" hidden>Giliran: Merah</div>
+      <div class="duo-score" id="duoScore" hidden></div>
+    </div>
+  </div>
+</section>
+
+<div class="overlay" id="overlay" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<div class="sr" id="sr" aria-live="polite"></div>
+
+<script>
+/*CORE:BEGIN*/
+// Aturan murni Lapis Menjulang: tanpa DOM, bisa diuji di Node.
+// Semua gerak dihitung dari waktu (detik), bukan dari jumlah frame, jadi adil di HP lambat maupun cepat.
+const GameCore = (() => {
+  const W = 360, CX = 180, BASE_W = 220, LH = 22, XMIN = -40, XMAX = 400;
+  const V0 = 170, DV = 4, VMAX = 420, DUO_BOOST = 40;
+  const REGROW = 8, REGROW_FROM = 3, CALM_STREAK = 3;
+  const SWAY_K = 0.3, SWAY_MAX = 12, SWAY_PERIOD = 1.8, SWAY_EASE = 0.5;
+  const THIN = 0.2, THIN_MAX = 12, THIN_SLOW = 0.85;
+  const KEJU_BACK = 0.22;
+  const MIN_OVERLAP = 1;          // sisa tumpuan di bawah 1 satuan dihitung meleset (remah, bukan lapisan)
+  const MAX_FLOORS = 999;
+  const DAILY_LAUNCH = "2026-09-26"; // Harian #1
+
+  // Tabel rasa: data saja, jadi rasa baru cukup ditambah di sini.
+  const RASA = [
+    { key: "pandan", name: "Pandan", motion: "linear", tip: "Santai dulu. Ketuk pas di atas kue!" },
+    { key: "cokelat", name: "Cokelat", motion: "sine", tip: "Pelan di tepi, ngebut di tengah!" },
+    { key: "keju", name: "Keju", motion: "zigzag", tip: "Awas balik arah!" },
+    { key: "stroberi", name: "Stroberi", motion: "linear", thin: true, tip: "Adonan lebih tipis, tapi lebih pelan." },
+    { key: "ketan", name: "Ketan Hitam", motion: "linear", sway: true, tip: "Kue bergoyang! Susun rapi supaya tenang." }
+  ];
+  const TOPPINGS = ["Meses warna", "Meses cokelat", "Keju parut", "Kacang cincang", "Kelapa parut", "Ceri merah"];
+
+  // Generator acak mulberry32, sama dengan game Dehayuk lainnya.
+  function rng(seed) {
+    return function () {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  // Pengaduk tiga bilangan: acak yang sama untuk (seed, tingkat, lintasan) di semua perangkat.
+  function mix(a, b, c) {
+    let h = (a >>> 0) ^ Math.imul((b + 0x9E3779B9) | 0, 0x85EBCA6B);
+    h = Math.imul(h ^ (h >>> 16), 0x7FEB352D);
+    h ^= Math.imul((c + 0x632BE5AB) | 0, 0xC2B2AE35);
+    h = Math.imul(h ^ (h >>> 15), 0x846CA68B);
+    return (h ^ (h >>> 16)) >>> 0;
+  }
+  const rnd = (a, b, c) => rng(mix(a, b, c))();
+
+  // ---------- Urutan rasa ----------
+  const orderCache = new Map();
+  function rasaOrder(seed, cycle) {
+    if (cycle <= 0) return [0, 1, 2, 3, 4];
+    const key = seed + ":" + cycle;
+    if (orderCache.has(key)) return orderCache.get(key);
+    const prev = rasaOrder(seed, cycle - 1);
+    const r = rng(mix(seed, 0x5A5A, cycle));
+    const o = [0, 1, 2, 3, 4];
+    for (let i = 4; i > 0; i--) { const j = Math.floor(r() * (i + 1)); const t = o[i]; o[i] = o[j]; o[j] = t; }
+    // Rasa pertama putaran baru tidak sama dengan rasa terakhir putaran sebelumnya.
+    if (o[0] === prev[4]) { const t = o[0]; o[0] = o[1]; o[1] = t; }
+    if (orderCache.size > 200) orderCache.clear();
+    orderCache.set(key, o);
+    return o;
+  }
+  // Tingkat n (mulai 1) → rasa, putaran, dan ruas 10-lapis ke berapa.
+  function rasaAt(seed, n) {
+    if (n < 1) return { rasa: -1, cycle: 0, seg: -1 };
+    const seg = Math.floor((n - 1) / 10), cycle = Math.floor(seg / 5);
+    return { rasa: rasaOrder(seed, cycle)[seg % 5], cycle, seg };
+  }
+
+  // ---------- Keadaan permainan ----------
+  function newGame(seed, opts) {
+    const duo = !!(opts && opts.duo);
+    return {
+      v: 1, seed: seed >>> 0, duo, v0: duo ? V0 + DUO_BOOST : V0,
+      layers: [{ x: CX, w: BASE_W, r: -1 }],
+      floors: 0, perfects: 0, streak: 0, bestStreak: 0, score: 0, offs: [], over: false
+    };
+  }
+  const scoreOf = (floors, perfects) => floors + 2 * perfects + 5 * Math.floor(floors / 10);
+  const speedAt = (v0, n) => Math.min(VMAX, v0 + DV * n);
+
+  // Lapisan yang sedang meluncur (tingkat berikutnya).
+  function spec(g) {
+    const n = g.layers.length, below = g.layers[n - 1];
+    const ra = rasaAt(g.seed, n), R = RASA[ra.rasa];
+    let w = below.w, v = speedAt(g.v0, n);
+    if (R.thin) { w = below.w - Math.min(below.w * THIN, THIN_MAX); v *= THIN_SLOW; }
+    let amp = 0;
+    if (R.sway && g.streak < CALM_STREAK) {
+      let s = 0;
+      for (const o of g.offs) s += o;
+      amp = Math.min(SWAY_MAX, SWAY_K * s);
+    }
+    const from = n % 2 ? -1 : 1; // tingkat ganjil datang dari kiri, genap dari kanan
+    // s0 = goyangan kue saat lapisan sebelumnya jatuh; goyangan baru bermula dari situ supaya kue tidak melompat ke tengah.
+    const s0 = Number.isFinite(g.s0) ? g.s0 : 0;
+    return { n, rasa: ra.rasa, cycle: ra.cycle, seg: ra.seg, w, v, from, cmin: XMIN + w / 2, cmax: XMAX - w / 2, amp, s0, below, motion: R.motion, seed: g.seed };
+  }
+  // Posisi tengah lapisan meluncur pada waktu t (detik sejak muncul).
+  function posAt(sp, t) {
+    const L = sp.cmax - sp.cmin, dir = -sp.from;
+    const start = sp.from < 0 ? sp.cmin : sp.cmax;
+    if (L <= 0) return start;
+    if (t < 0) t = 0;
+    if (sp.motion === "sine") {
+      // Cokelat: pelan di tepi, cepat di tengah; kecepatan rata-rata tetap v.
+      const A = L / 2, C = (sp.cmin + sp.cmax) / 2, om = Math.PI * sp.v / (2 * A);
+      return C - dir * A * Math.cos(om * t);
+    }
+    if (sp.motion === "zigzag") {
+      // Keju: tiap lintasan berbalik sekali di titik acak 35–65%, mundur sedikit, lalu lanjut.
+      const b = KEJU_BACK * L, P = L + 2 * b, dist = sp.v * t;
+      const k = Math.floor(dist / P), d = dist - k * P;
+      const a = (0.35 + 0.3 * rnd(sp.seed, sp.n, k)) * L;
+      const u = d <= a ? d : d <= a + b ? 2 * a - d : d - 2 * b;
+      return k % 2 ? start + dir * (L - u) : start + dir * u;
+    }
+    const d = (sp.v * t) % (2 * L);
+    return d <= L ? start + dir * d : start + dir * (2 * L - d);
+  }
+  // Titik balik Keju pada lintasan k (untuk uji dan tampilan).
+  function kejuTurn(sp, k) { return 0.35 + 0.3 * rnd(sp.seed, sp.n, k); }
+  // Goyangan kue Ketan: bermula dari goyangan terakhir (s0), lalu berpindah halus ke goyangan baru.
+  // Tampilan dan tabrakan memakai fungsi yang sama, jadi yang terlihat selalu yang dihitung.
+  function swayAt(sp, t) {
+    const s0 = sp.s0 || 0;
+    if (t <= 0) return s0;
+    const e = Math.min(1, t / SWAY_EASE), ease = e * e * (3 - 2 * e);
+    const rest = s0 * (1 - ease);
+    if (!sp.amp) return rest;
+    return rest + sp.amp * ease * Math.sin(2 * Math.PI * t / SWAY_PERIOD);
+  }
+  const r3 = (x) => Math.round(x * 1000) / 1000;
+
+  // Menjatuhkan lapisan pada waktu t. Mengembalikan hasil lengkap untuk efek tampilan.
+  function drop(g, t) {
+    if (!g || g.over) return null;
+    const sp = spec(g), below = sp.below;
+    const x = posAt(sp, t), sway = swayAt(sp, t);
+    const xt = x - sway; // posisi relatif terhadap kue (goyangan menggeser sasaran)
+    const off = xt - below.x, hw = sp.w / 2;
+    const bl = below.x - below.w / 2, br = below.x + below.w / 2;
+    const left = Math.max(xt - hw, bl), right = Math.min(xt + hw, br), ov = right - left;
+    const tol = sp.n <= 10 ? 5 : 3;
+    const res = { n: sp.n, rasa: sp.rasa, cycle: sp.cycle, x, xt, sway, w: sp.w, off, perfect: false, regrow: false,
+      cut: null, over: false, gained: 0, rasaDone: false, next: null };
+    let nx, nw;
+    if (Math.abs(off) <= tol) {
+      // Pas sempurna: menempel tepat, tanpa potongan. Adonan tipis Stroberi pun melebar penuh.
+      res.perfect = true;
+      nx = below.x; nw = below.w;
+      g.streak++; g.perfects++;
+      if (g.streak >= REGROW_FROM && nw < BASE_W) { nw = Math.min(BASE_W, nw + REGROW); res.regrow = true; }
+    } else if (ov < MIN_OVERLAP) {
+      g.over = true; g.streak = 0;
+      res.over = true;
+      return res;
+    } else {
+      nx = (left + right) / 2; nw = ov;
+      const l0 = xt - hw, r0 = xt + hw;
+      if (l0 < left - 0.01) res.cut = { x: (l0 + left) / 2, w: left - l0, side: -1 };
+      else if (r0 > right + 0.01) res.cut = { x: (right + r0) / 2, w: r0 - right, side: 1 };
+      g.streak = 0;
+    }
+    if (g.streak > g.bestStreak) g.bestStreak = g.streak;
+    g.layers.push({ x: r3(nx), w: r3(nw), r: sp.rasa });
+    g.s0 = r3(sway);
+    g.offs.push(r3(Math.abs(off)));
+    if (g.offs.length > 5) g.offs.shift();
+    const before = g.score;
+    g.floors = sp.n;
+    g.score = scoreOf(g.floors, g.perfects);
+    res.gained = g.score - before;
+    res.nx = nx; res.nw = nw;
+    res.rasaDone = sp.n % 10 === 0;
+    if (res.rasaDone) res.next = rasaAt(g.seed, sp.n + 1);
+    return res;
+  }
+  function isValid(g) {
+    if (!g || g.v !== 1 || !Array.isArray(g.layers) || g.layers.length < 1 || g.layers.length > MAX_FLOORS + 1) return false;
+    if (!Number.isInteger(g.seed) || g.seed < 0 || !Number.isFinite(g.v0)) return false;
+    if (!Array.isArray(g.offs) || typeof g.over !== "boolean") return false;
+    if (g.s0 !== undefined && (!Number.isFinite(g.s0) || Math.abs(g.s0) > SWAY_MAX)) return false;
+    for (const L of g.layers) if (!L || !Number.isFinite(L.x) || !Number.isFinite(L.w) || L.w <= 0 || L.w > BASE_W) return false;
+    return g.floors === g.layers.length - 1 && Number.isInteger(g.perfects) && Number.isInteger(g.streak);
+  }
+
+  // ---------- Tanggal, Harian, Tantangan, teks bagikan ----------
+  function dateKey(d) {
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function hashStr(s) {
+    let h = 2166136261;
+    for (const ch of s) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+    return h >>> 0;
+  }
+  // Seed Harian = hash('lapis-menjulang:' + YYYYMMDD)
+  function dailySeed(key) { return hashStr("lapis-menjulang:" + key.replace(/-/g, "")); }
+  function dailyNumber(key) {
+    const [y1, m1, d1] = DAILY_LAUNCH.split("-").map(Number);
+    const [y2, m2, d2] = key.split("-").map(Number);
+    return Math.round((new Date(y2, m2 - 1, d2) - new Date(y1, m1 - 1, d1)) / 86400000) + 1;
+  }
+  function prevDay(key) {
+    const [y, m, d] = key.split("-").map(Number);
+    return dateKey(new Date(y, m - 1, d - 1));
+  }
+  const toppingOf = (seed) => mix(seed, 0x70, 0x9) % TOPPINGS.length;
+  function cleanName(s) { return String(s || "").replace(/[^\p{L}\p{N} ._-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 12); }
+  function encodeDuel(d) {
+    const json = JSON.stringify({ v: 1, s: d.s >>> 0, f: d.f, n: cleanName(d.n) });
+    return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+  function decodeDuel(code) {
+    try {
+      const o = JSON.parse(decodeURIComponent(escape(atob(String(code).replace(/-/g, "+").replace(/_/g, "/")))));
+      if (!o || o.v !== 1) return null;
+      if (!Number.isInteger(o.s) || o.s < 0 || o.s > 0xFFFFFFFF) return null;
+      if (!Number.isInteger(o.f) || o.f < 1 || o.f > MAX_FLOORS) return null;
+      const n = cleanName(o.n);
+      return n ? { s: o.s, f: o.f, n } : null;
+    } catch (e) { return null; }
+  }
+  function dailyShare(o) {
+    return "Lapis Menjulang Harian #" + o.number + "\n🍰 Kue lapisku " + o.floors + " tingkat!\n✨ Pas sempurna " + o.perfects +
+      "x · sampai rasa " + o.rasaName + "\nBisa lebih tinggi? " + o.url;
+  }
+  function duoShare(o) {
+    return o.winner + " menang " + o.w + "–" + o.l + " lawan " + o.loser + " di Lapis Menjulang Dehayuk 🍰\n" + o.url;
+  }
+
+  return {
+    W, CX, BASE_W, LH, XMIN, XMAX, V0, DV, VMAX, DUO_BOOST, MAX_FLOORS, SWAY_MAX, RASA, TOPPINGS,
+    rng, mix, rasaOrder, rasaAt, newGame, scoreOf, speedAt, spec, posAt, kejuTurn, swayAt, drop, isValid,
+    dateKey, dailySeed, dailyNumber, prevDay, toppingOf, cleanName, encodeDuel, decodeDuel, dailyShare, duoShare
+  };
+})();
+/*CORE:END*/
+
+// ================= Antarmuka =================
+const STORE_KEY = "lapis-menjulang.v1";
+const HOME_URL = "https://dehayuk.netlify.app/lapis-menjulang/";
+const { RASA, LH } = GameCore;
+const RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+// Warna tiap rasa: sisi, muka atas, bayangan bawah, latar dapur (atas, bawah).
+const RC = [
+  { side: "#5DB548", top: "#9EDC7A", dark: "#357A27", bg: ["#173E35", "#2D5F4B"] },
+  { side: "#8A5536", top: "#B98260", dark: "#57311D", bg: ["#2D2019", "#58402F"] },
+  { side: "#EDBE3A", top: "#FFE07A", dark: "#B3861A", bg: ["#372D15", "#6A5427"] },
+  { side: "#EE7FA8", top: "#FFBBD4", dark: "#B94C78", bg: ["#3B1C2B", "#6B3650"] },
+  { side: "#5E3C73", top: "#9170A8", dark: "#382048", bg: ["#221931", "#46365C"] }
+];
+const SPONGE = { side: "#EFCB8A", top: "#FBE4B6", dark: "#C49A5A" };
+const PLAYER_COLORS = ["#E5484D", "#3E8BF0", "#2FA86B", "#F08A24", "#8E5CE0", "#E0529C"];
+
+let S = {
+  best: 0, games: 0, totalFloors: 0, daily: null, streak: { last: null, count: 0 },
+  settings: { mute: false, vibrate: true, handover: 700 }, badges: [], name: "", runs: {},
+  toples: [0, 0, 0, 0, 0], bestStreakEver: 0,
+  duo: { a: { n: "Merah", c: 0 }, b: { n: "Biru", c: 1 }, board: [], matches: 0 },
+  chalW: 0, chalL: 0, chalD: 0, pendingChal: null, chalDone: []
+};
+try {
+  const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+  if (saved && typeof saved.best === "number") {
+    S = Object.assign(S, saved);
+    S.settings = Object.assign({ mute: false, vibrate: true, handover: 700 }, saved.settings || {});
+    S.streak = Object.assign({ last: null, count: 0 }, saved.streak || {});
+    S.duo = Object.assign({ a: { n: "Merah", c: 0 }, b: { n: "Biru", c: 1 }, board: [], matches: 0 }, saved.duo || {});
+    if (!Array.isArray(S.duo.board)) S.duo.board = [];
+    if (!S.runs || typeof S.runs !== "object") S.runs = {};
+    if (!Array.isArray(S.badges)) S.badges = [];
+    if (!Array.isArray(S.chalDone)) S.chalDone = [];
+    if (!Array.isArray(S.toples) || S.toples.length !== 5) S.toples = [0, 0, 0, 0, 0];
+  }
+} catch (e) {}
+// Tiap permainan dimulai dengan Pandan: siapa pun yang pernah menyusun kue sudah mencapai rasa Pandan.
+if (S.totalFloors > 0 && !S.toples[0]) S.toples[0] = 1;
+// Tantangan lama dicatat per kode link; sekarang dicatat per seed kue supaya link tiruan tidak bisa dipakai berlatih.
+S.chalDone = S.chalDone.map((x) => {
+  if (!x || typeof x !== "object") return null;
+  if (!Number.isInteger(x.s)) { const d = GameCore.decodeDuel(x.code); if (!d) return null; x.s = d.s; }
+  if (x.done === undefined) x.done = true;
+  return x;
+}).filter(Boolean);
+// Sebelum menulis, catatan tab lain digabung dulu, supaya save() di tab lama tidak menimpa hasil tab yang lebih baru.
+function save() { mergeStored(); try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch (e) {} }
+// Menggabungkan catatan dari tab lain (atau simpanan yang lebih baru) sebelum memutuskan sesuatu yang hanya boleh sekali:
+// hasil resmi Harian, runtunan hari, dan tantangan yang sudah dimainkan tidak boleh tertimpa keadaan lama di memori.
+function mergeStored() {
+  let o = null;
+  try { o = JSON.parse(localStorage.getItem(STORE_KEY) || "null"); } catch (e) {}
+  if (!o || typeof o.best !== "number") return;
+  if (o.daily && o.daily.done && typeof o.daily.date === "string") {
+    const mine = S.daily && S.daily.done ? S.daily.date : "";
+    if (o.daily.date > mine || (o.daily.date === mine && !(S.daily && S.daily.done))) S.daily = o.daily;
+  }
+  if (o.streak && typeof o.streak.last === "string" && (!S.streak.last || o.streak.last > S.streak.last ||
+      (o.streak.last === S.streak.last && o.streak.count > S.streak.count))) S.streak = { last: o.streak.last, count: o.streak.count | 0 };
+  S.best = Math.max(S.best, o.best);
+  if (o.bestFloors > (S.bestFloors || 0)) S.bestFloors = o.bestFloors;
+  if (o.games > S.games) S.games = o.games;
+  if (o.totalFloors > S.totalFloors) S.totalFloors = o.totalFloors;
+  if (o.bestStreakEver > S.bestStreakEver) S.bestStreakEver = o.bestStreakEver;
+  if (Array.isArray(o.toples) && o.toples.length === 5) S.toples = S.toples.map((v, i) => Math.max(v, o.toples[i] | 0));
+  if (Array.isArray(o.badges)) for (const b of o.badges) if (!S.badges.includes(b)) S.badges.push(b);
+  if (Array.isArray(o.chalDone)) {
+    for (const x of o.chalDone) {
+      if (!x || !Number.isInteger(x.s)) continue;
+      const cur = S.chalDone.find((y) => y.s === x.s);
+      if (!cur) S.chalDone.push(x);
+      else if (x.done && !cur.done) Object.assign(cur, x);
+    }
+    S.chalDone = S.chalDone.slice(-60);
+  }
+}
+
+const today = () => GameCore.dateKey(new Date());
+function streakNow() {
+  const t = today();
+  return S.streak.last === t || S.streak.last === GameCore.prevDay(t) ? S.streak.count : 0;
+}
+function shareUrl() {
+  const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  return /^https?:$/.test(location.protocol) && !local ? location.origin + location.pathname : HOME_URL;
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
+}
+
+// ---------- Suara dan getar ----------
+let actx = null, master = null;
+function audio() {
+  if (!actx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) throw new Error("no audio");
+    actx = new AC();
+    master = actx.createGain();
+    master.gain.value = 0.9;
+    master.connect(actx.destination);
+  }
+  if (actx.state === "suspended") actx.resume();
+  return actx;
+}
+// Satu nada sintetis; f2 membuat nada meluncur (untuk bunyi "puk" dan jatuh).
+function tone(f1, f2, dur, type, vol, delay) {
+  if (S.settings.mute) return;
+  try {
+    const a = audio();
+    const t = a.currentTime + (delay || 0);
+    const osc = a.createOscillator(), gain = a.createGain();
+    osc.type = type || "triangle";
+    osc.frequency.setValueAtTime(f1, t);
+    if (f2 && f2 !== f1) osc.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(vol || 0.06, t + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(gain); gain.connect(master);
+    osc.start(t); osc.stop(t + dur + 0.03);
+  } catch (e) {}
+}
+const PENTA = [0, 2, 4, 7, 9];
+const sfx = {
+  puk() { tone(190, 70, 0.13, "sine", 0.22); tone(420, 200, 0.04, "triangle", 0.03); },
+  // Nada pentatonik naik mengikuti rentetan "Pas".
+  perfect(streak) {
+    const i = Math.min(streak - 1, 11);
+    const semi = 12 * Math.floor(i / 5) + PENTA[i % 5];
+    const f = 523.25 * Math.pow(2, semi / 12);
+    tone(f, f, 0.22, "triangle", 0.08);
+    tone(f * 2, f * 2, 0.12, "sine", 0.025, 0.03);
+  },
+  grow() { tone(660, 990, 0.18, "sine", 0.04, 0.05); },
+  jingle() { [523, 659, 784].forEach((f, i) => tone(f, f, 0.16, "triangle", 0.07, i * 0.11)); tone(1047, 1047, 0.3, "sine", 0.04, 0.33); },
+  creak() { tone(95, 70, 0.4, "sawtooth", 0.018); tone(140, 110, 0.3, "sawtooth", 0.01, 0.12); },
+  fall() { tone(420, 90, 0.6, "triangle", 0.07); },
+  clink() { tone(2093, 2093, 0.45, "sine", 0.05); tone(3136, 3136, 0.3, "sine", 0.025, 0.01); tone(2637, 2637, 0.35, "sine", 0.02, 0.09); },
+  record() { [784, 988, 1175, 1568].forEach((f, i) => tone(f, f, 0.12, "square", 0.03, i * 0.07)); },
+  win() { [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, f, i === 4 ? 0.4 : 0.15, "triangle", 0.07, i * 0.1)); },
+  tap() { tone(620, 620, 0.04, "triangle", 0.035); }
+};
+function buzz(pattern) {
+  try { if (S.settings.vibrate && navigator.vibrate) navigator.vibrate(pattern); } catch (e) {}
+}
+function confetti() {
+  if (RM) return;
+  const colors = ["#F4C152", "#7FE0A3", "#FF7A70", "#EAF6F3", "#EE7FA8", "#9170A8"];
+  for (let i = 0; i < 28; i++) {
+    const c = document.createElement("i");
+    c.className = "confetti";
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.background = colors[i % colors.length];
+    c.style.animationDelay = Math.random() * 0.4 + "s";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 2200);
+  }
+}
+
+// ---------- Kanvas ----------
+const cv = $("cv"), stageEl = $("stage"), fxEl = $("fx");
+const ctx = cv.getContext ? cv.getContext("2d") : null;
+let dpr = 1, cssW = 360, cssH = 640, sc = 1, ox = 0, LW = 360, LHt = 640, baseY = 500;
+let hudBottom = 0, tex = [], texSponge = null, texK = 0;
+// Latar dapur hangat digambar oleh CSS (dua lapisan yang bergantian memudar), bukan oleh kanvas:
+// gradasi layar penuh di kanvas terlalu mahal untuk HP murah tanpa GPU.
+let bgTimer = 0;
+function setBg(bg, fade) {
+  const a = $("bgA"), b = $("bgB"), css = "linear-gradient(" + bg[0] + ", " + bg[1] + ")";
+  clearTimeout(bgTimer);
+  if (!fade || RM) { a.style.background = css; b.style.transition = "none"; b.style.opacity = 0; return; }
+  b.style.transition = "none"; b.style.opacity = 0; b.style.background = css;
+  void b.offsetWidth;
+  b.style.transition = "opacity 1.1s ease"; b.style.opacity = 1;
+  bgTimer = setTimeout(() => { a.style.background = css; b.style.transition = "none"; b.style.opacity = 0; }, 1200);
+}
+function layout() {
+  cssW = stageEl.clientWidth || innerWidth;
+  cssH = stageEl.clientHeight || innerHeight;
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = Math.round(cssW * dpr);
+  cv.height = Math.round(cssH * dpr);
+  // Lebar logis 360 dipasang di tengah; di layar pendek diperkecil supaya tetap terlihat tinggi.
+  sc = Math.max(0.5, Math.min(cssW / 360, cssH / 560));
+  ox = (cssW - 360 * sc) / 2;
+  LW = cssW / sc; LHt = cssH / sc;
+  baseY = LHt * 0.8;
+  const k = sc * dpr;
+  if (Math.abs(k - texK) > 0.01) { texK = k; buildTextures(); }
+}
+// Batas bawah HUD dalam satuan logis: label garis tidak digambar di bawah HUD.
+function measureHud() {
+  const h = document.querySelector(".hud");
+  hudBottom = h ? (h.getBoundingClientRect().bottom - stageEl.getBoundingClientRect().top) / sc : 0;
+}
+// Tekstur tiap rasa digambar sekali ke kanvas kecil lalu direntang (hemat untuk HP murah).
+function makeTex(col) {
+  const k = texK, TH = Math.max(8, Math.ceil(LH * k)), TW = Math.max(256, Math.ceil(40 * k));
+  const t = document.createElement("canvas");
+  t.width = TW; t.height = TH;
+  const c = t.getContext("2d");
+  if (!c) return t;
+  const r = Math.min(7 * k, TH / 2);
+  const rr = () => { c.beginPath(); c.moveTo(r, 0); c.lineTo(TW - r, 0); c.quadraticCurveTo(TW, 0, TW, r); c.lineTo(TW, TH - r); c.quadraticCurveTo(TW, TH, TW - r, TH); c.lineTo(r, TH); c.quadraticCurveTo(0, TH, 0, TH - r); c.lineTo(0, r); c.quadraticCurveTo(0, 0, r, 0); c.closePath(); };
+  const g = c.createLinearGradient(0, 0, 0, TH);
+  g.addColorStop(0, col.top); g.addColorStop(0.26, col.top); g.addColorStop(0.3, col.side);
+  g.addColorStop(0.75, col.side); g.addColorStop(1, col.dark);
+  rr(); c.fillStyle = g; c.fill();
+  // Muka atas (kesan 2.5D) dan kilap lapisan gula.
+  c.fillStyle = "rgba(255,255,255,.28)"; c.fillRect(r, 1.2 * k, TW - 2 * r, 1.4 * k);
+  c.fillStyle = "rgba(0,0,0,.13)"; c.fillRect(0, TH * 0.28, TW, Math.max(1, 0.9 * k));
+  c.fillStyle = "rgba(255,255,255,.14)"; c.fillRect(r * 0.6, TH * 0.42, TW - 1.2 * r, 2 * k);
+  // Pori kue halus.
+  c.fillStyle = "rgba(0,0,0,.07)";
+  for (let i = 0; i < 26; i++) { const x = (i * 97 % TW), y = TH * (0.5 + ((i * 37) % 30) / 100); c.fillRect(x, y, 1.6 * k, 1.2 * k); }
+  return t;
+}
+function buildTextures() {
+  tex = RC.map(makeTex);
+  texSponge = makeTex(SPONGE);
+  // ImageBitmap jauh lebih cepat digambar berulang daripada kanvas (terutama di HP tanpa GPU).
+  if (!window.createImageBitmap) return;
+  const k = texK;
+  try {
+    tex.forEach((t, i) => createImageBitmap(t).then((b) => { if (texK === k) tex[i] = b; }).catch(() => {}));
+    createImageBitmap(texSponge).then((b) => { if (texK === k) texSponge = b; }).catch(() => {});
+  } catch (e) {}
+}
+function drawLayerTex(t, x, y, w, h) {
+  if (!t || w <= 0) return;
+  const k = texK, cap = Math.min(8, w / 2), capPx = Math.round(8 * k), TW = t.width, TH = t.height;
+  ctx.drawImage(t, 0, 0, capPx, TH, x - w / 2, y, cap, h);
+  if (w - 2 * cap > 0.2) ctx.drawImage(t, capPx, 0, TW - 2 * capPx, TH, x - w / 2 + cap, y, w - 2 * cap, h);
+  ctx.drawImage(t, TW - capPx, 0, capPx, TH, x + w / 2 - cap, y, cap, h);
+}
+const texOf = (r) => r < 0 ? texSponge : tex[r];
+
+// ---------- Permainan berjalan ----------
+let run = null, loopRaf = 0, lastNow = 0;
+let timers = [];
+// Timer milik permainan berjalan; semuanya dibatalkan saat ganti permainan atau kembali ke menu.
+function later(fn, ms) {
+  const tok = run && run.token;
+  const id = setTimeout(() => { timers = timers.filter((t) => t !== id); if (run && run.token === tok) fn(); }, ms);
+  timers.push(id);
+  return id;
+}
+function stopRunTimers() {
+  timers.forEach(clearTimeout);
+  timers = [];
+  if (loopRaf) { cancelAnimationFrame(loopRaf); loopRaf = 0; }
+}
+let tokenSeq = 0;
+function newSeed() { return (Date.now() ^ Math.floor(Math.random() * 4294967296)) >>> 0; }
+// Satu lembar permainan. v = efek visual yang tidak disimpan.
+function newRun(kind, seed, extra) {
+  return Object.assign({ kind, slot: kind, g: GameCore.newGame(seed, { duo: kind === "duo" }), bestAtStart: S.best, recordShown: false }, extra || {});
+}
+function prepRun(r) {
+  r.token = ++tokenSeq;
+  r.state = "ready"; r.lt = 0; r.lastDrop = 0;
+  r.fx = { crumbs: [], rings: [], squash: null, glow: null, dying: null, marker: 1 };
+  r.cam = camTarget(r.g);
+  r.lastCreak = 0;
+  if (r.topping == null) r.topping = GameCore.toppingOf(r.g.seed);
+  return r;
+}
+function bgOf(g) { const ra = GameCore.rasaAt(g.seed, g.layers.length).rasa; return RC[Math.max(0, ra)].bg; }
+function camTarget(g) { return Math.max(0, g.layers.length * LH - (baseY - LHt * 0.35)); }
+function saveRun() {
+  if (!run) return;
+  if (run.practice) return;
+  if (run.kind === "duo") {
+    if (!run.g.over) S.runs.duo = packRun(run);
+  } else if (run.g.over) delete S.runs[run.slot];
+  else S.runs[run.slot] = packRun(run);
+  if (run.kind === "chal" && !run.g.over) {
+    const e = chalDoneOf(run.g.seed);
+    if (e && !e.done) e.mine = run.g.floors;
+  }
+  save();
+}
+// Hanya data yang perlu; efek visual tidak ikut disimpan.
+function packRun(r) {
+  const o = {};
+  for (const k of ["kind", "slot", "g", "bestAtStart", "recordShown", "date", "practice", "chal", "duo", "replyTo"]) if (r[k] !== undefined) o[k] = r[k];
+  return JSON.parse(JSON.stringify(o));
+}
+
+function openRun(r) {
+  stopRunTimers();
+  hideOverlay();
+  run = prepRun(r);
+  $("homeWrap").hidden = true;
+  $("play").hidden = false;
+  document.body.classList.add("playing");
+  const chip = r.kind === "daily" ? (r.practice ? "Latihan Harian" : "Harian #" + GameCore.dailyNumber(r.date)) :
+    r.kind === "chal" ? "Tantangan" : r.kind === "duo" ? "Gantian · Ronde " + r.duo.round : "Sendiri";
+  $("modeChip").textContent = chip;
+  $("bestBox2").hidden = $("scorePill").hidden = r.kind === "duo";
+  $("turn").hidden = $("duoScore").hidden = r.kind !== "duo";
+  fxEl.innerHTML = "";
+  layout();
+  run.cam = camTarget(run.g);
+  setBg(bgOf(run.g), false);
+  renderHud();
+  measureHud();
+  const fresh = run.g.floors === 0;
+  showTapHint(fresh ? "Ketuk untuk mulai" : "Ketuk untuk lanjut", r.kind === "duo" ? "Giliran " + esc(duoName(playerOf(run.g.layers.length))) + " duluan" : fresh ? "Ketuk saat lapisan pas di atas kue" : "Tingkat " + run.g.floors + " · lapisan mulai dari tepi");
+  if (fresh) later(() => banner("Rasa " + RASA[GameCore.rasaAt(run.g.seed, 1).rasa].name, RASA[0].tip), 150);
+  saveRun();
+  enterScreen();
+  ensureLoop();
+  $("btnMenu").blur();
+}
+function showTapHint(title, sub) {
+  $("tapHint").hidden = false;
+  $("tapHint").firstChild.nextSibling.textContent = " " + title;
+  $("tapSub").innerHTML = sub;
+}
+
+// ---------- HUD ----------
+function renderHud() {
+  const g = run.g;
+  $("floors").textContent = g.floors;
+  $("scoreN").textContent = fmt(g.score);
+  const sp = GameCore.spec(g);
+  const R = RASA[sp.rasa];
+  $("rasaName").textContent = R.name + (sp.cycle > 0 ? " ★" : "");
+  $("rasaDot").style.setProperty("--c", RC[sp.rasa].side);
+  $("rasaPill").classList.toggle("gold", sp.cycle > 0);
+  $("streakPill").hidden = g.streak < 2;
+  $("streakN").textContent = "Pas x" + g.streak;
+  $("streakPill").classList.toggle("hot", g.streak >= 3);
+  $("best2").textContent = fmt(S.best);
+  $("best").textContent = fmt(S.best);
+  if (run.kind === "duo") {
+    const d = run.duo, p = playerOf(g.layers.length);
+    const t = $("turn");
+    t.style.setProperty("--pc", PLAYER_COLORS[d.c[p]]);
+    t.textContent = (run.state === "wait" ? "Oper ke " : "Giliran: ") + d.n[p];
+    t.classList.toggle("wait", run.state === "wait");
+    $("duoScore").textContent = d.n[0] + " " + d.wins[0] + " – " + d.wins[1] + " " + d.n[1] + " · menang 2 ronde, juara";
+  }
+}
+function bump(el) { el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+function say(msg) { $("sr").textContent = msg; }
+// Koordinat logis kanvas → piksel CSS di dalam panggung.
+const toCss = (x, y) => [ox + x * sc, y * sc];
+const sy = (wy) => baseY - (wy - run.cam);
+function floatText(x, y, text, color) {
+  const [px, py] = toCss(x, y);
+  const el = document.createElement("div");
+  el.className = "float";
+  el.style.left = Math.max(40, Math.min(cssW - 40, px)) + "px"; el.style.top = py + "px";
+  if (color) el.style.color = color;
+  el.textContent = text;
+  fxEl.appendChild(el);
+  setTimeout(() => el.remove(), 900);
+}
+function banner(text, sub) {
+  fxEl.querySelectorAll(".banner").forEach((b) => b.remove());
+  const el = document.createElement("div");
+  el.className = "banner";
+  el.innerHTML = esc(text) + (sub ? "<small>" + esc(sub) + "</small>" : "");
+  fxEl.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+
+// ---------- Mode berdua ----------
+const duoName = (p) => run && run.duo ? run.duo.n[p] : "";
+// Pemain untuk tingkat n: bergantian, dimulai oleh pemain pembuka ronde.
+function playerOf(n) { return run && run.duo ? (run.duo.starter + n - 1) % 2 : 0; }
+
+// ---------- Ketukan ----------
+function onTap(ts) {
+  if (!run || !$("overlay").hidden) return;
+  const now = performance.now();
+  if (run.state === "ready") {
+    run.state = "play";
+    $("tapHint").hidden = true;
+    lastNow = now;
+    if (!S.settings.mute) { try { audio(); } catch (e) {} }
+    return;
+  }
+  if (run.state !== "play" || run.g.over) return;
+  if (now - run.lastDrop < 90) return;
+  // Ketukan dihitung pada saat jari menyentuh layar (timeStamp), mundur maksimal 50 ms, supaya WebView yang lambat tetap adil.
+  let when = typeof ts === "number" && ts > 0 && Math.abs(now - ts) < 1000 ? ts : now;
+  const delta = Math.max(-50, Math.min(50, when - lastNow));
+  const t = Math.max(0, run.lt + delta / 1000);
+  doDrop(t);
+}
+function doDrop(t) {
+  const r = run, g = r.g;
+  const sp = GameCore.spec(g);
+  const res = GameCore.drop(g, t);
+  if (!res) return;
+  r.lastDrop = performance.now();
+  const yTop = sy((res.n + 1) * LH);
+  if (res.over) {
+    // Hasil dicatat SEKARANG, sebelum animasi; keluar mendadak tidak bisa menghapus atau mengulang hasil.
+    addCrumb(r, res.x, res.n * LH, res.w, res.rasa, res.x < sp.below.x + res.sway ? -1 : 1, true);
+    if (r.kind === "duo") finalizeRound(r); else finalize(r);
+    r.state = "dying";
+    r.fx.dying = { t0: performance.now(), dir: res.x < sp.below.x + res.sway ? -1 : 1, from: Math.max(1, g.layers.length - 3) };
+    sfx.fall();
+    buzz([40, 60, 90]);
+    say("Kue ambruk di tingkat " + (res.n) + ".");
+    $("tapHint").hidden = true;
+    later(() => { sfx.clink(); buzz(20); }, RM ? 200 : 950);
+    later(() => { if (r.kind === "duo") showRoundResult(); else showResult(); }, RM ? 450 : 1450);
+    return;
+  }
+  sfx.puk();
+  buzz(res.perfect ? [12, 30, 12] : 10);
+  r.fx.squash = { k: res.n, t0: performance.now() };
+  if (res.cut) addCrumb(r, res.cut.x + res.sway, res.n * LH, res.cut.w, res.rasa, res.cut.side, false);
+  const midX = res.nx + res.sway;
+  if (res.perfect) {
+    r.fx.rings.push({ x: midX, y: res.n * LH + LH / 2, w: res.nw, t0: performance.now() });
+    if (r.fx.rings.length > 6) r.fx.rings.shift();
+    sfx.perfect(g.streak);
+    floatText(midX, yTop - 10, g.streak >= 2 ? "Pas x" + g.streak + "!" : "Pas!", g.streak >= 3 ? "#FFE07A" : "#fff");
+    if (res.regrow) { r.fx.glow = { k: res.n, t0: performance.now() }; later(() => sfx.grow(), 60); }
+  }
+  // Rekor: hanya bila mengalahkan skor lama yang lebih dari 0.
+  if (r.kind !== "duo" && g.score > S.best) {
+    S.best = g.score;
+    if (r.bestAtStart > 0 && !r.recordShown) {
+      r.recordShown = true;
+      later(() => { banner("Rekor baru!"); sfx.record(); bump($("bestBox2")); }, 250);
+    }
+  }
+  if (g.bestStreak > S.bestStreakEver) S.bestStreakEver = g.bestStreak;
+  noteToples({ rasa: res.rasa, cycle: res.cycle }, 600);
+  if (res.rasaDone) onRasaChange(r, res);
+  checkBadges(r);
+  bump($("floors"));
+  r.lt = 0;
+  if (r.kind === "duo" && S.settings.handover > 0) {
+    r.state = "wait";
+    later(() => { if (run.state === "wait") { run.state = "play"; lastNow = performance.now(); renderHud(); } }, S.settings.handover);
+  }
+  renderHud();
+  if (res.n % 10 === 0) say(res.n + " tingkat. Skor " + g.score + ".");
+  saveRun();
+}
+// Catat Toples: rasa yang pernah dicapai; versi emas bila dicapai di putaran kedua dan seterusnya.
+// Dipanggil untuk tiap tingkat yang berhasil disusun, jadi Pandan (tingkat 1–10) pun ikut tercatat.
+function noteToples(ra, delay) {
+  if (!ra || ra.rasa < 0) return;
+  const lvl = ra.cycle > 0 ? 2 : 1;
+  if (S.toples[ra.rasa] >= lvl) return;
+  S.toples[ra.rasa] = lvl;
+  const nm = RASA[ra.rasa].name;
+  later(() => toast((lvl === 2 ? "🌟 Toples emas: " : "🍪 Toples baru: ") + nm + "!"), delay);
+}
+function onRasaChange(r, res) {
+  const nx = res.next, R = RASA[nx.rasa];
+  noteToples(nx, 1400);
+  setBg(RC[nx.rasa].bg, true);
+  banner("Rasa " + R.name + (nx.cycle > 0 ? " ★" : ""), (nx.cycle > 0 && nx.seg % 5 === 0 ? "Putaran " + (nx.cycle + 1) + "! " : "") + R.tip);
+  floatText(res.nx + res.sway, sy((res.n + 1) * LH) - 34, "+5 rasa!", "#FFE07A");
+  later(() => sfx.jingle(), 120);
+}
+function addCrumb(r, x, wy, w, rasa, side, whole) {
+  const cr = r.fx.crumbs;
+  if (cr.length >= 10) cr.shift();
+  cr.push({ x, y: wy, w, rasa, vx: side * (whole ? 70 : 55 + Math.random() * 40), vy: whole ? 60 : 90, rot: 0, vr: side * (whole ? 1.6 : 2.5 + Math.random() * 2), whole });
+}
+
+// ---------- Lencana ----------
+const BADGES = [
+  ["pas10", "✨ 10x Pas berturut-turut", () => S.bestStreakEver >= 10],
+  ["ketan", "🟣 Sampai Rasa Ketan Hitam", () => S.toples[4] > 0],
+  ["f60", "🏙️ Kue 60 tingkat", (r) => r && r.kind !== "duo" && r.g.floors >= 60],
+  ["duo5", "👨‍👩‍👧 5 pertandingan Gantian", () => S.duo.matches >= 5]
+];
+function checkBadges(r) {
+  for (const [id, text, test] of BADGES) {
+    if (!S.badges.includes(id) && test(r)) {
+      S.badges.push(id);
+      later(() => { toast("🏅 Lencana baru: " + text.replace(/^\S+\s/, "") + "!"); sfx.record(); }, 700);
+    }
+  }
+}
+
+// ---------- Gambar ----------
+// Memastikan loop gambar berjalan (dipanggil saat panel ditutup, lanjut dari jeda, dan membuka permainan).
+function ensureLoop() {
+  if (loopRaf || !run || $("play").hidden) return;
+  lastNow = performance.now();
+  loopRaf = requestAnimationFrame(frame);
+}
+const overlayEl = $("overlay");
+function frame(now) {
+  loopRaf = 0;
+  if (!run) return;
+  // Di balik panel (jeda, kartu hasil) layar tidak berubah: berhenti menggambar supaya baterai HP murah hemat.
+  const dyingDone = run.state === "dying" && (!run.fx.dying || now - run.fx.dying.t0 > 2200);
+  // Frame terakhir tetap digambar sekali, supaya kue terlihat di balik panel.
+  if (overlayEl.hidden || !(run.state === "ready" || dyingDone)) loopRaf = requestAnimationFrame(frame);
+  const dt = Math.max(0, Math.min(0.05, (now - lastNow) / 1000));
+  lastNow = now;
+  const r = run;
+  if (r.state === "play") r.lt += dt;
+  // Kamera naik halus: lapisan aktif sekitar 35% dari atas.
+  const ct = camTarget(r.g);
+  r.cam += (ct - r.cam) * (RM ? 1 : 1 - Math.exp(-dt * 6));
+  for (const c of r.fx.crumbs) { c.vy -= 900 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.rot += c.vr * dt; }
+  r.fx.crumbs = r.fx.crumbs.filter((c) => sy(c.y) < LHt + 80);
+  draw(now);
+}
+function draw(now) {
+  if (!ctx) return;
+  const r = run, g = r.g, c = ctx;
+  const sp = r.g.over ? null : GameCore.spec(g);
+  const tNow = r.lt;
+  // Goyangan Ketan: sama persis dengan yang dipakai untuk menghitung jatuhnya lapisan.
+  const sway = sp ? GameCore.swayAt(sp, tNow) : 0;
+  if (sp && sp.amp >= 8 && r.state === "play" && now - r.lastCreak > 1800) { r.lastCreak = now; sfx.creak(); }
+  // Latar dapur ada di CSS; kanvas cukup dibersihkan.
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  c.clearRect(0, 0, cssW, cssH);
+  c.setTransform(dpr * sc, 0, 0, dpr * sc, dpr * ox, 0);
+  const xl = -ox / sc, xr = xl + LW;
+  // Ubin dinding samar yang bergerak pelan (paralaks), memberi rasa naik. Garis 1 px berupa kotak isi: jauh lebih murah dari stroke.
+  c.fillStyle = "rgba(255,255,255,.045)";
+  const tile = 44, px = 1 / sc, off = ((r.cam * 0.35) % tile + tile) % tile;
+  for (let y = off - tile, row = Math.floor(r.cam * 0.35 / tile); y < LHt; y += tile, row--) {
+    c.fillRect(xl, y, LW, px);
+    const shift = (row & 1) ? tile / 2 : 0;
+    for (let x = Math.floor((xl - shift) / tile) * tile + shift; x < xr; x += tile) c.fillRect(x, y + px, px, tile - px);
+  }
+  // Garis tingkat tiap 10 di sisi kiri.
+  c.font = "800 11px Nunito, system-ui, sans-serif"; c.textBaseline = "middle";
+  const k0 = Math.max(10, Math.floor((r.cam + baseY - LHt) / LH / 10) * 10), k1 = (r.cam + baseY) / LH + 10;
+  for (let k = k0; k <= k1; k += 10) {
+    const y = sy(k * LH);
+    if (y < 0 || y > LHt) continue;
+    c.fillStyle = "rgba(255,255,255,.18)"; c.fillRect(xl + 6, y - 0.5, 14, 1);
+    c.fillStyle = "rgba(255,255,255,.4)"; c.fillText(String(k), xl + 23, y);
+  }
+  // Garis rekor dan garis tantangan.
+  let pin = 0;
+  if (r.kind === "chal" && r.chal) pin = drawLine(r.chal.f, "Kue " + r.chal.n + " · " + r.chal.f, "rgba(255,255,255,.85)", xl, xr, pin);
+  if (r.kind !== "duo" && S.best > 0 && r.bestFloorLine) pin = drawLine(r.bestFloorLine, "Rekormu · " + r.bestFloorLine, "rgba(244,193,82,.8)", xl, xr, pin);
+  // Meja, piring, dan cangkir teh berasap.
+  const plateY = sy(0);
+  if (plateY < LHt + 20) {
+    const tY = plateY + 9;
+    const tg = c.createLinearGradient(0, tY, 0, tY + 90);
+    tg.addColorStop(0, "#8A5A34"); tg.addColorStop(1, "#4A2E1B");
+    c.fillStyle = tg; c.fillRect(xl, tY, LW, LHt - tY + 40);
+    c.fillStyle = "rgba(255,230,190,.25)"; c.fillRect(xl, tY, LW, 2);
+    c.fillStyle = "rgba(0,0,0,.25)"; c.beginPath(); c.ellipse(180, tY + 3, 158, 7, 0, 0, Math.PI * 2); c.fill();
+    c.fillStyle = "#D9D3C7"; c.beginPath(); c.ellipse(180, plateY + 4, 152, 8, 0, 0, Math.PI * 2); c.fill();
+    c.fillStyle = "#F7F4EE"; c.beginPath(); c.ellipse(180, plateY + 1.5, 148, 6.5, 0, 0, Math.PI * 2); c.fill();
+    drawCup(c, xr - 34, tY, now);
+  }
+  // Lapisan kue: hanya yang terlihat di layar (maksimal sekitar 30).
+  const n = g.layers.length;
+  const kLo = Math.max(0, Math.floor((baseY - LHt + r.cam) / LH) - 1);
+  const kHi = Math.min(n - 1, Math.ceil((baseY + r.cam) / LH));
+  const dy = r.fx.dying;
+  // Bayangan lembut di sisi kue.
+  for (let k = kLo; k <= kHi; k++) {
+    const L = g.layers[k];
+    const f = n > 1 ? k / (n - 1) : 0;
+    let x = L.x + sway * f, y = sy((k + 1) * LH), h = LH, w = L.w, rot = 0;
+    if (dy && k >= dy.from) {
+      // Lapisan teratas tergelincir pelan saat kue ambruk.
+      const p = Math.max(0, Math.min(1, (now - dy.t0 - (n - 1 - k) * 110) / (RM ? 1 : 950)));
+      const e = p * p;
+      x += dy.dir * e * 230; y += e * 260; rot = dy.dir * e * 1.3;
+    }
+    const gl = r.fx.glow;
+    if (gl && gl.k === k) {
+      const p = Math.max(0, (now - gl.t0) / 600);
+      if (p < 1) {
+        c.fillStyle = "rgba(127,224,163," + (0.55 * (1 - p)).toFixed(3) + ")";
+        roundRect(c, x - w / 2 - 6 * (1 - p) - 3, y - 3, w + 12 * (1 - p) + 6, h + 6, 9); c.fill();
+      } else r.fx.glow = null;
+    }
+    const sq = r.fx.squash;
+    if (sq && sq.k === k && !RM) {
+      const p = Math.max(0, Math.min(1, (now - sq.t0) / 150));
+      const s = 1 - 0.2 * (1 - p);
+      w = w * (1 + 0.05 * (1 - p)); y = y + h * (1 - s); h = h * s;
+      if (p >= 1) r.fx.squash = null;
+    }
+    if (rot) {
+      c.save(); c.translate(x, y + h / 2); c.rotate(rot); drawLayerTex(texOf(L.r), 0, -h / 2, w, h); c.restore();
+    } else drawLayerTex(texOf(L.r), x, y, w, h);
+  }
+  // Lapisan teratas: lapisan gula dan topping.
+  if (!dy && kHi === n - 1) {
+    const L = g.layers[n - 1];
+    drawTopping(c, L.x + sway, sy(n * LH), L.w, n - 1, g.seed);
+  }
+  // Lapisan yang sedang meluncur.
+  if (sp && r.state !== "dying") {
+    const x = GameCore.posAt(sp, tNow), y = sy((sp.n + 1) * LH);
+    c.globalAlpha = r.state === "wait" ? 0.6 : 1;
+    drawLayerTex(tex[sp.rasa], x, y, sp.w, LH);
+    c.globalAlpha = 1;
+    // Penanda giliran (mode berdua): segitiga warna pemain.
+    if (r.kind === "duo") {
+      c.fillStyle = PLAYER_COLORS[r.duo.c[playerOf(sp.n)]];
+      c.beginPath(); c.moveTo(x - 7, y - 12); c.lineTo(x + 7, y - 12); c.lineTo(x, y - 4); c.closePath(); c.fill();
+    }
+  }
+  // Remah yang terpotong jatuh berputar.
+  for (const cr of r.fx.crumbs) {
+    const y = sy(cr.y + LH);
+    c.save(); c.translate(cr.x, y + LH / 2); c.rotate(cr.rot);
+    drawLayerTex(texOf(cr.rasa), 0, -LH / 2, cr.w, LH);
+    c.restore();
+  }
+  // Cincin kilau "Pas".
+  if (r.fx.rings.length) {
+    r.fx.rings = r.fx.rings.filter((q) => now - q.t0 < 520);
+    for (const q of r.fx.rings) {
+      const p = Math.max(0, (now - q.t0) / 520), y = sy(q.y);
+      c.strokeStyle = "rgba(255,240,180," + (1 - p).toFixed(3) + ")"; c.lineWidth = 3 * (1 - p) + 0.5;
+      c.beginPath(); c.ellipse(q.x, y, q.w / 2 + 8 + 30 * p, 10 + 22 * p, 0, 0, Math.PI * 2); c.stroke();
+      c.fillStyle = "rgba(255,255,255," + (1 - p).toFixed(3) + ")";
+      for (let i = 0; i < 8; i++) {
+        const a = i / 8 * Math.PI * 2, rx = q.w / 2 + 12 + 44 * p, ry = 14 + 30 * p;
+        c.fillRect(q.x + Math.cos(a) * rx - 1.5, y + Math.sin(a) * ry - 1.5, 3, 3);
+      }
+    }
+  }
+}
+// Garis putus-putus di tingkat f. Garis tidak pernah digambar di bawah HUD; bila sasaran masih di atas layar
+// atau tertutup HUD, labelnya disematkan tepat di bawah HUD dengan tanda ▲. pin = jumlah label yang sudah disematkan.
+function drawLine(f, label, color, xl, xr, pin) {
+  const c = ctx, y = sy((f + 1) * LH), top = hudBottom + 4;
+  if (y > LHt + 10) return pin;
+  c.save();
+  c.font = "800 11px Nunito, system-ui, sans-serif"; c.textBaseline = "middle";
+  if (y >= hudBottom) {
+    c.strokeStyle = color; c.lineWidth = 1.5; c.setLineDash([6, 6]);
+    c.beginPath(); c.moveTo(xl, y); c.lineTo(xr, y); c.stroke();
+    c.setLineDash([]);
+  }
+  let ly = y - 18, text = label;
+  if (y - 20 < hudBottom) { ly = top + pin * 19; text = "▲ " + label; pin++; }
+  const tw = c.measureText(text).width + 14, x = xr - tw - 8;
+  c.fillStyle = "rgba(8,30,30,.78)"; roundRect(c, x, ly, tw, 15, 7); c.fill();
+  c.fillStyle = color; c.fillText(text, x + 7, ly + 7.5);
+  c.restore();
+  return pin;
+}
+function roundRect(c, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r);
+  c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath();
+}
+function drawCup(c, x, tY, now) {
+  c.fillStyle = "#F2EEE6";
+  roundRect(c, x - 13, tY - 20, 26, 20, 5); c.fill();
+  c.strokeStyle = "#F2EEE6"; c.lineWidth = 3;
+  c.beginPath(); c.arc(x + 14, tY - 11, 5, -Math.PI / 2, Math.PI / 2); c.stroke();
+  c.fillStyle = "#C9A77F"; c.fillRect(x - 11, tY - 19, 22, 3);
+  c.fillStyle = "#DCD5C8"; c.beginPath(); c.ellipse(x + 1, tY - 1, 20, 3, 0, 0, Math.PI * 2); c.fill();
+  // Uap teh.
+  if (RM) return;
+  c.strokeStyle = "rgba(255,255,255,.22)"; c.lineWidth = 2.2; c.lineCap = "round";
+  for (let i = 0; i < 2; i++) {
+    const t = now / 1000 + i * 1.3;
+    c.beginPath();
+    for (let s = 0; s <= 10; s++) {
+      const yy = tY - 24 - s * 3.2, xx = x - 4 + i * 8 + Math.sin(t * 2 + s * 0.6) * 3;
+      if (s === 0) c.moveTo(xx, yy); else c.lineTo(xx, yy);
+    }
+    c.stroke();
+  }
+  c.lineCap = "butt";
+}
+// Topping hari ini/permainan ini ditaburkan di lapisan teratas.
+const TOP_STYLE = [
+  { cols: ["#FF6FB5", "#5EC8F2", "#F4C152", "#7FE0A3", "#FFFFFF"], shape: "bar" },
+  { cols: ["#4A2A18", "#6B3D22"], shape: "bar" },
+  { cols: ["#FFE07A", "#F7D25A"], shape: "shred" },
+  { cols: ["#D9B98A", "#B98F5E"], shape: "dot" },
+  { cols: ["#FFFFFF", "#F2EEE6"], shape: "shred" },
+  { cols: ["#E5484D"], shape: "cherry" }
+];
+function drawTopping(c, x, y, w, k, seed) {
+  // Lapisan gula putih dengan tetesan.
+  c.fillStyle = "rgba(255,250,242,.95)";
+  roundRect(c, x - w / 2 + 1, y - 1.5, w - 2, 5, 2.5); c.fill();
+  const rnd = GameCore.rng(GameCore.mix(seed, k, 7));
+  const drips = Math.max(1, Math.floor(w / 40));
+  for (let i = 0; i < drips; i++) {
+    const dx = x - w / 2 + 6 + rnd() * Math.max(1, w - 12), dh = 3 + rnd() * 6;
+    roundRect(c, dx - 2.5, y + 1, 5, dh, 2.5); c.fill();
+  }
+  const st = TOP_STYLE[run && run.topping != null ? run.topping : 0];
+  if (st.shape === "cherry") {
+    c.fillStyle = "#E5484D"; c.beginPath(); c.arc(x, y - 5, 5, 0, Math.PI * 2); c.fill();
+    c.fillStyle = "rgba(255,255,255,.6)"; c.fillRect(x - 2.5, y - 8, 2, 2);
+    c.strokeStyle = "#357A27"; c.lineWidth = 1.5; c.beginPath(); c.moveTo(x, y - 9); c.quadraticCurveTo(x + 2, y - 15, x + 6, y - 16); c.stroke();
+    return;
+  }
+  const count = Math.floor(w / 9);
+  for (let i = 0; i < count; i++) {
+    const px = x - w / 2 + 4 + rnd() * Math.max(1, w - 8), py = y - 1 + rnd() * 3;
+    c.fillStyle = st.cols[Math.floor(rnd() * st.cols.length)];
+    if (st.shape === "dot") c.fillRect(px - 1.2, py - 1.2, 2.6, 2.4);
+    else if (st.shape === "shred") c.fillRect(px - 2, py - 0.6, 4, 1.3);
+    else { c.save(); c.translate(px, py); c.rotate(rnd() * 3); c.fillRect(-2, -0.7, 4, 1.5); c.restore(); }
+  }
+}
+
+// ---------- Selesai ----------
+// Mencatat hasil satu kali, langsung saat permainan berakhir (sinkron, sebelum animasi apa pun).
+function finalize(r) {
+  if (!r || r.finalized || !r.g.over) return;
+  r.finalized = true;
+  const g = r.g;
+  S.games++;
+  S.totalFloors += g.floors;
+  if (g.score > S.best) S.best = g.score;
+  if (!S.bestFloors || g.floors > S.bestFloors) S.bestFloors = g.floors;
+  const record = r.bestAtStart > 0 && g.score > r.bestAtStart;
+  const first = r.bestAtStart === 0 && g.score > 0;
+  const lastRasa = GameCore.rasaAt(g.seed, g.layers.length);
+  let official = false;
+  if (r.kind === "daily" && !r.practice) {
+    // Baca ulang simpanan: tab lain mungkin sudah mencatat hasil resmi hari ini.
+    mergeStored();
+    const already = S.daily && S.daily.date === r.date && S.daily.done;
+    if (already) r.practice = true; // percobaan kedua hanya dihitung latihan
+    else {
+      official = true;
+      S.daily = { date: r.date, floors: g.floors, score: g.score, perfects: g.perfects, rasa: lastRasa.rasa, done: true };
+      if (S.streak.last !== r.date) {
+        S.streak.count = S.streak.last === GameCore.prevDay(r.date) ? S.streak.count + 1 : 1;
+        S.streak.last = r.date;
+      }
+    }
+  }
+  let verdict = 0;
+  if (r.kind === "chal") {
+    mergeStored();
+    verdict = recordChal({ s: g.seed, n: r.chal.n, f: r.chal.f, code: r.chal.code }, g.floors);
+  }
+  checkBadges(r);
+  r.result = { kind: r.kind, seed: g.seed, floors: g.floors, score: g.score, perfects: g.perfects, bestStreak: g.bestStreak,
+    rasa: lastRasa.rasa, cycle: lastRasa.cycle, record, first, official, practice: !!r.practice, date: r.date, chal: r.chal, verdict, replyTo: r.replyTo || "" };
+  delete S.runs[r.slot];
+  save();
+}
+// Satu ronde berdua selesai: skor pertandingan dicatat langsung, dan ronde berikutnya sudah disiapkan di simpanan.
+function finalizeRound(r) {
+  if (!r || r.finalized || !r.g.over) return;
+  r.finalized = true;
+  const d = r.duo, loser = playerOf(r.g.layers.length), winner = 1 - loser;
+  d.wins[winner]++;
+  const matchOver = d.wins[winner] >= 2;
+  r.roundResult = { loser, winner, floors: r.g.floors, matchOver, wins: d.wins.slice() };
+  if (matchOver) {
+    S.duo.matches++;
+    const nm = d.n[winner], key = nm.toLowerCase();
+    const row = S.duo.board.find((x) => x.k === key);
+    if (row) { row.w++; row.n = nm; } else S.duo.board.push({ k: key, n: nm, w: 1 });
+    S.duo.board.sort((a, b) => b.w - a.w);
+    S.duo.board = S.duo.board.slice(0, 12);
+    delete S.runs.duo;
+    checkBadges(r);
+  } else {
+    const nd = JSON.parse(JSON.stringify(d));
+    nd.round++; nd.starter = 1 - d.starter;
+    S.runs.duo = packRun({ kind: "duo", slot: "duo", g: GameCore.newGame(newSeed(), { duo: true }), duo: nd, bestAtStart: 0 });
+  }
+  save();
+}
+
+let last = null;
+// Tombol di kartu hasil dikunci 400 ms supaya ketukan beruntun tidak langsung memulai ulang.
+let lockUntil = 0;
+function lockPanel() {
+  lockUntil = performance.now() + 400;
+  const o = $("overlay");
+  o.classList.add("lock");
+  setTimeout(() => o.classList.remove("lock"), 400);
+}
+const guard = (fn) => () => { if (performance.now() >= lockUntil) fn(); };
+function factsHTML(o) {
+  return "<div class=\"facts\"><div><b>" + fmt(o.score) + "</b>skor</div><div><b>" + o.perfects + "x</b>pas sempurna</div><div><b>" + esc(RASA[Math.max(0, o.rasa)].name) + "</b>rasa terakhir</div></div>";
+}
+function showResult() {
+  const o = run && run.result;
+  if (!o) return;
+  last = o;
+  const home = () => { hideOverlay(); goHome(); };
+  // Kembang api dan fanfare hanya sekali per hasil (bukan lagi saat kembali dari Tantang teman atau Batal).
+  const party = !o.celebrated;
+  o.celebrated = true;
+  if (o.record && party) { confetti(); }
+  if (o.kind === "daily") {
+    const d = S.daily && S.daily.date === o.date ? S.daily : null;
+    showPanel(
+      "<h2>" + (o.practice ? "Latihan selesai" : "Harian #" + GameCore.dailyNumber(o.date) + " selesai!") + "</h2>" +
+      "<div class=\"big\">" + o.floors + " <small>tingkat</small></div>" + factsHTML(o) +
+      (o.practice && d ? "<p>Hasil resmi hari ini: <b>" + d.floors + " tingkat</b>. Latihan tidak mengubahnya.</p>" : "<p>🔥 " + streakNow() + " hari beruntun. Kue besok berbeda lagi!</p>") +
+      "<div class=\"col\"><button class=\"btn main\" id=\"rShare\" type=\"button\">Bagikan hasil</button>" +
+      "<div class=\"row\"><button class=\"btn\" id=\"rHome\" type=\"button\">Kembali</button><button class=\"btn\" id=\"rPractice\" type=\"button\">Latihan lagi</button></div></div>",
+      () => {
+        $("rShare").onclick = guard(shareDaily);
+        $("rHome").onclick = guard(home);
+        $("rPractice").onclick = guard(startPractice);
+      }, goHome);
+    lockPanel();
+    return;
+  }
+  if (o.kind === "chal") {
+    const d = o.chal;
+    const title = o.verdict > 0 ? "Kamu menang!" : o.verdict < 0 ? esc(d.n) + " menang!" : "Seri!";
+    if (o.verdict > 0 && party) { confetti(); sfx.win(); }
+    showPanel(
+      "<h2>" + title + "</h2>" +
+      "<div class=\"versus\"><div class=\"side" + (o.verdict > 0 ? " win" : "") + "\"><div class=\"who\">Kamu</div><div class=\"pts\">" + o.floors + "</div></div>" +
+      "<span class=\"vs\">VS</span><div class=\"side" + (o.verdict < 0 ? " win" : "") + "\"><div class=\"who\">" + esc(d.n) + "</div><div class=\"pts\">" + d.f + "</div></div></div>" +
+      factsHTML(o) + "<p>Balasan memakai kue baru, jadi adil untuk kalian berdua.</p>" +
+      "<div class=\"col\"><button class=\"btn main\" id=\"rReply\" type=\"button\">Balas tantangan</button>" +
+      "<div class=\"row\"><button class=\"btn\" id=\"rHome\" type=\"button\">Kembali</button><button class=\"btn\" id=\"rAgain\" type=\"button\">Main Sendiri</button></div></div>",
+      () => {
+        $("rReply").onclick = guard(() => startReply(d.n));
+        $("rHome").onclick = guard(home);
+        $("rAgain").onclick = guard(() => startSolo(true));
+      }, goHome);
+    lockPanel();
+    return;
+  }
+  const title = o.record ? "Rekor baru!" : o.first ? "Kue pertamamu!" : "Kue ambruk!";
+  if (o.record && party) sfx.record();
+  const sub = o.replyTo ? "<p>Kirim kue ini sebagai balasan untuk <b>" + esc(o.replyTo) + "</b>.</p>" : "<p>Skor terbaik: <b>" + fmt(S.best) + "</b></p>";
+  showPanel(
+    "<h2>" + title + "</h2>" +
+    "<div class=\"big\">" + o.floors + " <small>tingkat</small></div>" + sub + factsHTML(o) +
+    "<div class=\"col\">" + (o.replyTo ? "<button class=\"btn main\" id=\"rDuel\" type=\"button\">Kirim balasan</button>" : "<button class=\"btn main\" id=\"rAgain\" type=\"button\">Main lagi</button>") +
+    "<div class=\"row\"><button class=\"btn\" id=\"rHome\" type=\"button\">Kembali</button>" +
+    (o.replyTo ? "<button class=\"btn\" id=\"rAgain\" type=\"button\">Main lagi</button>" : "<button class=\"btn\" id=\"rDuel\" type=\"button\">Tantang teman</button>") + "</div></div>",
+    () => {
+      $("rAgain").onclick = guard(() => startSolo(true));
+      $("rHome").onclick = guard(home);
+      $("rDuel").onclick = guard(() => challenge(o));
+    }, goHome);
+  lockPanel();
+}
+function showRoundResult() {
+  const r = run;
+  if (!r || !r.roundResult) return;
+  const rr = r.roundResult, d = r.duo;
+  const wn = esc(d.n[rr.winner]), ln = esc(d.n[rr.loser]);
+  const sideHTML = (p) => "<div class=\"side" + (p === rr.winner ? " win" : "") + "\"><div class=\"who\" style=\"color:" + PLAYER_COLORS[d.c[p]] + "\">" + esc(d.n[p]) + "</div><div class=\"pts\">" + rr.wins[p] + "</div></div>";
+  const vs = "<div class=\"versus\">" + sideHTML(0) + "<span class=\"vs\">–</span>" + sideHTML(1) + "</div>";
+  if (rr.matchOver) {
+    if (!rr.celebrated) { rr.celebrated = true; confetti(); sfx.win(); }
+    showPanel(
+      "<h2>" + wn + " menang!</h2>" + vs +
+      "<p><b>" + ln + "</b> membuat kue ambruk di tingkat " + (rr.floors + 1) + ". Skor akhir " + rr.wins[rr.winner] + "–" + rr.wins[rr.loser] + ".</p>" +
+      boardHTML() +
+      "<div class=\"col\"><button class=\"btn main\" id=\"mAgain\" type=\"button\">Main lagi</button>" +
+      "<div class=\"row\"><button class=\"btn\" id=\"mHome\" type=\"button\">Kembali</button><button class=\"btn\" id=\"mShare\" type=\"button\">Bagikan</button></div></div>",
+      () => {
+        $("mAgain").onclick = guard(() => startDuoMatch());
+        $("mHome").onclick = guard(() => { hideOverlay(); goHome(); });
+        $("mShare").onclick = guard(() => shareText(GameCore.duoShare({ winner: d.n[rr.winner], loser: d.n[rr.loser], w: rr.wins[rr.winner], l: rr.wins[rr.loser], url: shareUrl() })));
+      }, goHome);
+  } else {
+    showPanel(
+      "<h2>Ronde untuk " + wn + "!</h2>" + vs +
+      "<p><b>" + ln + "</b> membuat kue ambruk di tingkat " + (rr.floors + 1) + ". Siapa duluan menang 2 ronde, dialah juaranya.</p>" +
+      "<div class=\"col\"><button class=\"btn main\" id=\"mNext\" type=\"button\">Ronde " + (d.round + 1) + "</button>" +
+      "<button class=\"btn\" id=\"mHome\" type=\"button\">Kembali</button></div>",
+      () => {
+        $("mNext").onclick = guard(() => { const s = S.runs.duo; if (s && GameCore.isValid(s.g)) openRun(s); else startDuoMatch(); });
+        $("mHome").onclick = guard(() => { hideOverlay(); goHome(); });
+      }, goHome);
+  }
+  lockPanel();
+}
+function boardHTML() {
+  if (!S.duo.board.length) return "";
+  return "<h3>Papan keluarga</h3><div class=\"board-list\">" + S.duo.board.slice(0, 5).map((x, i) =>
+    "<div><span>" + (i + 1) + ". " + esc(x.n) + "</span><b>" + x.w + " menang</b></div>").join("") + "</div>";
+}
+
+// ---------- Bagikan ----------
+function shareText(text) {
+  if (navigator.share) navigator.share({ text }).catch((e) => { if (!e || e.name !== "AbortError") copyText(text, true); });
+  else copyText(text, true);
+}
+function copyText(text, wa) {
+  const done = () => {
+    toast("Tersalin. Tempel di WhatsApp!");
+    if (wa) { try { window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener"); } catch (e) {} }
+  };
+  const fallback = () => {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) { toast("Gagal menyalin"); }
+    ta.remove();
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(fallback);
+  else fallback();
+}
+function shareDaily() {
+  const d = S.daily;
+  if (!d || !d.done) return toast("Selesaikan Harian dulu, ya");
+  shareText(GameCore.dailyShare({ number: GameCore.dailyNumber(d.date), floors: d.floors, perfects: d.perfects, rasaName: RASA[Math.max(0, d.rasa)].name, url: shareUrl() }));
+}
+// Link tantangan memuat seed kue tadi, jadi temanmu mendapat kue yang sama persis.
+function challenge(o) {
+  if (o.floors < 1) return toast("Susun minimal 1 tingkat dulu, ya");
+  if (!S.name) return askName(() => challenge(o));
+  const code = GameCore.encodeDuel({ s: o.seed, f: Math.max(1, o.floors), n: S.name });
+  const text = (o.replyTo ? "Balasan untukmu, " + o.replyTo + "! " : "") + "Kue lapisku " + o.floors + " tingkat di Lapis Menjulang! 🍰\nKuenya sama persis buatmu. Bisa lebih tinggi?\n👉 " + shareUrl() + "#t=" + code;
+  shareText(text);
+  showResult();
+}
+function askName(then) {
+  showPanel(
+    "<h2>Siapa namamu?</h2><p>Nama ini muncul di tantangan untuk temanmu.</p>" +
+    "<input class=\"name-input\" id=\"nameIn\" maxlength=\"12\" autocomplete=\"nickname\" placeholder=\"misal: Andi\">" +
+    "<div class=\"row\"><button class=\"btn\" id=\"nBack\" type=\"button\">Batal</button><button class=\"btn main\" id=\"nOk\" type=\"button\">Lanjut</button></div>",
+    () => {
+      const inp = $("nameIn");
+      const ok = () => {
+        const n = GameCore.cleanName(inp.value);
+        if (!n) { toast("Tulis namamu dulu"); return inp.focus(); }
+        S.name = n; save(); then();
+      };
+      $("nOk").onclick = ok;
+      $("nBack").onclick = () => (run && run.result ? showResult() : hideOverlay());
+      inp.onkeydown = (e) => { if (e.key === "Enter") ok(); };
+      setTimeout(() => inp.focus(), 50);
+    }, run && run.result ? goHome : null);
+}
+
+// ---------- Mode ----------
+function withLines(r) {
+  // Garis rekor: tingkat terbaik sebelum permainan ini.
+  r.bestFloorLine = S.bestFloors || 0;
+  return r;
+}
+function resumeOk(r) { return r && GameCore.isValid(r.g) && !r.g.over; }
+function startSolo(fresh) {
+  const r = S.runs.solo;
+  if (!fresh && resumeOk(r)) return openRun(withLines(Object.assign({}, r, { topping: GameCore.toppingOf(r.g.seed) })));
+  const seed = newSeed();
+  openRun(withLines(newRun("solo", seed, { topping: GameCore.toppingOf(seed) })));
+}
+function startDaily() {
+  mergeStored();
+  const t = today();
+  const d = S.daily && S.daily.date === t && S.daily.done ? S.daily : null;
+  if (d) return dailyDonePanel();
+  const r = S.runs.daily;
+  const seed = GameCore.dailySeed(t);
+  if (resumeOk(r) && r.date === t) return openRun(withLines(Object.assign({}, r, { topping: GameCore.toppingOf(seed) })));
+  openRun(withLines(newRun("daily", seed, { date: t, practice: false, topping: GameCore.toppingOf(seed) })));
+}
+function startPractice() {
+  const t = today(), seed = GameCore.dailySeed(t);
+  openRun(withLines(newRun("daily", seed, { slot: "practice", date: t, practice: true, topping: GameCore.toppingOf(seed) })));
+}
+function dailyDonePanel() {
+  const d = S.daily;
+  showPanel(
+    "<h2>Harian #" + GameCore.dailyNumber(d.date) + " selesai ✓</h2><div class=\"big\">" + d.floors + " <small>tingkat</small></div>" +
+    "<p>Skor " + fmt(d.score) + " · pas sempurna " + d.perfects + "x · 🔥 " + streakNow() + " hari beruntun</p>" +
+    "<p>Kue baru muncul besok. Mau latihan dengan kue hari ini? Hasil resmi tidak berubah.</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"dShare\" type=\"button\">Bagikan hasil</button>" +
+    "<div class=\"row\"><button class=\"btn\" id=\"dClose\" type=\"button\">Tutup</button><button class=\"btn\" id=\"dPractice\" type=\"button\">Latihan</button></div></div>",
+    () => {
+      $("dShare").onclick = shareDaily;
+      $("dClose").onclick = hideOverlay;
+      $("dPractice").onclick = startPractice;
+    });
+}
+// ---------- Gantian berdua ----------
+function openDuoSetup() {
+  const saved = S.runs.duo;
+  const st = { a: Object.assign({}, S.duo.a), b: Object.assign({}, S.duo.b), hand: S.settings.handover };
+  const html = () =>
+    "<h2>Gantian Berdua</h2><p>Satu HP, gantian tiap lapis. Yang membuat kue ambruk <b>kalah ronde</b>. Menang 2 ronde, juara!</p>" +
+    ["a", "b"].map((k, i) => "<div class=\"player\" style=\"--pc:" + PLAYER_COLORS[st[k].c] + "\">" +
+      "<input class=\"name-input\" id=\"pn" + k + "\" maxlength=\"12\" value=\"" + esc(st[k].n) + "\" aria-label=\"Nama pemain " + (i + 1) + "\">" +
+      "<div class=\"swatches\">" + PLAYER_COLORS.map((col, ci) => "<button class=\"sw\" type=\"button\" data-p=\"" + k + "\" data-c=\"" + ci + "\" style=\"--c:" + col + "\" aria-label=\"Warna " + (ci + 1) + (st[k === "a" ? "b" : "a"].c === ci ? ", dipakai pemain lain\" aria-disabled=\"true\" title=\"Dipakai pemain lain\" disabled" : "\"") + " aria-pressed=\"" + (st[k].c === ci) + "\"></button>").join("") + "</div></div>").join("") +
+    "<div class=\"seg\" role=\"group\" aria-label=\"Jeda oper HP\"><button type=\"button\" id=\"h7\" aria-pressed=\"" + (st.hand > 0) + "\">Oper HP (jeda 0,7 dtk)</button><button type=\"button\" id=\"h0\" aria-pressed=\"" + (st.hand === 0) + "\">Duduk berdampingan</button></div>" +
+    boardHTML() +
+    "<div class=\"col\"><button class=\"btn main\" id=\"dGo\" type=\"button\">Mulai</button>" +
+    (resumeOk(saved) ? "<button class=\"btn\" id=\"dResume\" type=\"button\">Lanjutkan ronde " + saved.duo.round + " (" + esc(saved.duo.n[0]) + " " + saved.duo.wins[0] + "–" + saved.duo.wins[1] + " " + esc(saved.duo.n[1]) + ")</button>" : "") +
+    "<button class=\"btn\" id=\"dClose\" type=\"button\">Tutup</button></div>";
+  const wire = () => {
+    const keep = () => { st.a.n = $("pna").value; st.b.n = $("pnb").value; };
+    document.querySelectorAll(".sw").forEach((b) => b.onclick = () => { keep(); st[b.dataset.p].c = +b.dataset.c; rerender(); });
+    $("h7").onclick = () => { keep(); st.hand = 700; rerender(); };
+    $("h0").onclick = () => { keep(); st.hand = 0; rerender(); };
+    $("dGo").onclick = () => {
+      keep();
+      const a = GameCore.cleanName(st.a.n) || "Merah", b = GameCore.cleanName(st.b.n) || "Biru";
+      if (a.toLowerCase() === b.toLowerCase()) { toast("Nama kedua pemain harus berbeda"); return; }
+      S.duo.a = { n: a, c: st.a.c }; S.duo.b = { n: b, c: st.b.c };
+      S.settings.handover = st.hand;
+      save();
+      startDuoMatch();
+    };
+    if ($("dResume")) $("dResume").onclick = () => { S.settings.handover = st.hand; save(); openRun(S.runs.duo); };
+    $("dClose").onclick = () => { hideOverlay(); renderHome(); };
+  };
+  const rerender = () => {
+    const o = $("overlay");
+    o.querySelector(".panel").innerHTML = html();
+    wire();
+  };
+  showPanel(html(), wire);
+}
+function startDuoMatch() {
+  const duo = { n: [S.duo.a.n, S.duo.b.n], c: [S.duo.a.c, S.duo.b.c], wins: [0, 0], round: 1, starter: 0 };
+  const seed = newSeed();
+  openRun(newRun("duo", seed, { duo, bestAtStart: 0, topping: GameCore.toppingOf(seed) }));
+}
+
+// ---------- Tantangan ----------
+// Tantangan dicatat per seed kue, bukan per teks link: link tiruan (nama beda huruf, kunci tambahan) tetap kue yang sama.
+const chalDoneOf = (seed) => S.chalDone.find((x) => x.s === seed) || null;
+// Seed Harian kemarin, hari ini, dan besok tidak boleh dipakai sebagai tantangan (itu jalan pintas berlatih Harian).
+function isDailySeed(seed) {
+  const t = today(), tm = GameCore.dateKey(new Date(Date.now() + 86400000));
+  return [GameCore.prevDay(t), t, tm].some((k) => GameCore.dailySeed(k) === seed);
+}
+// Mencatat hasil satu tantangan sekali saja; mengembalikan 1 menang, -1 kalah, 0 seri.
+function recordChal(c, floors) {
+  const verdict = floors > c.f ? 1 : floors < c.f ? -1 : 0;
+  const cur = chalDoneOf(c.s);
+  if (cur && cur.done) return verdict;
+  if (verdict > 0) S.chalW++; else if (verdict < 0) S.chalL++; else S.chalD++;
+  const pend = S.pendingChal ? GameCore.decodeDuel(S.pendingChal) : null;
+  if (pend && pend.s === c.s) S.pendingChal = null;
+  S.chalDone = S.chalDone.filter((x) => x.s !== c.s).concat([{ s: c.s, code: c.code, n: c.n, f: c.f, mine: floors, done: true }]).slice(-60);
+  if (S.runs.chal && S.runs.chal.g && S.runs.chal.g.seed === c.s) delete S.runs.chal;
+  return verdict;
+}
+// Balas tantangan: permainan Sendiri baru dengan seed baru; hasilnya dikirim sebagai tantangan baru.
+function startReply(name) {
+  hideOverlay();
+  const seed = newSeed();
+  openRun(withLines(newRun("solo", seed, { replyTo: GameCore.cleanName(name), topping: GameCore.toppingOf(seed) })));
+}
+function showChalDone(d) {
+  const v = d.mine > d.f ? "Kamu menang" : d.mine < d.f ? esc(d.n) + " menang" : "Seri";
+  showPanel(
+    "<h2>Sudah dimainkan</h2><p>Tantangan dari <b>" + esc(d.n) + "</b> ini sudah kamu mainkan: <b>" + d.mine + "</b> lawan <b>" + d.f + "</b> tingkat. " + v + ".</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"xReply\" type=\"button\">Balas tantangan</button><button class=\"btn\" id=\"xClose\" type=\"button\">Tutup</button></div>",
+    () => {
+      $("xReply").onclick = () => startReply(d.n);
+      $("xClose").onclick = () => { hideOverlay(); renderHome(); };
+    });
+}
+function startChal(inv) {
+  mergeStored();
+  if (isDailySeed(inv.s)) {
+    if (S.pendingChal === inv.code) S.pendingChal = null;
+    save(); hideOverlay(); renderHome();
+    return toast("Link tantangan tidak valid. Minta link baru, ya.");
+  }
+  const r = S.runs.chal, e = chalDoneOf(inv.s);
+  if (resumeOk(r) && r.chal && r.g.seed === inv.s && !(e && e.done)) return openRun(withLines(Object.assign({}, r, { topping: GameCore.toppingOf(r.g.seed) })));
+  if (e && !e.done) {
+    // Sudah pernah dimulai lalu ditinggal atau tertimpa: hasilnya tingkat yang sempat dicapai.
+    recordChal(e, e.mine | 0);
+    save();
+    return showChalDone(chalDoneOf(inv.s));
+  }
+  if (e) return showChalDone(e);
+  // Tantangan lain yang masih berjalan ditutup dulu dengan tingkat yang sudah dicapai, supaya tidak bisa diulang dari awal.
+  if (r && r.chal && r.g && r.g.seed !== inv.s) recordChal({ s: r.g.seed, n: r.chal.n, f: r.chal.f, code: r.chal.code }, r.g.floors | 0);
+  S.chalDone = S.chalDone.concat([{ s: inv.s, code: inv.code, n: inv.n, f: inv.f, mine: 0, done: false }]).slice(-60);
+  save();
+  openRun(withLines(newRun("chal", inv.s, { chal: { n: inv.n, f: inv.f, code: inv.code }, topping: GameCore.toppingOf(inv.s) })));
+}
+function showInvite(inv) {
+  showPanel(
+    "<h2>Ada tantangan!</h2><p><b>" + esc(inv.n) + "</b> menyusun kue <b>" + inv.f + " tingkat</b>. Kamu dapat kue yang sama persis.</p>" +
+    "<p>Susun lebih tinggi dari garis <b>Kue " + esc(inv.n) + "</b> untuk menang. Hanya satu kesempatan!</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"iGo\" type=\"button\">Terima tantangan</button><button class=\"btn\" id=\"iLater\" type=\"button\">Nanti saja</button></div>",
+    () => {
+      $("iGo").onclick = () => startChal(inv);
+      $("iLater").onclick = () => { hideOverlay(); renderHome(); };
+    });
+}
+function openChalMenu() {
+  const inv = S.pendingChal ? GameCore.decodeDuel(S.pendingChal) : null;
+  if (inv) return showInvite(Object.assign(inv, { code: S.pendingChal }));
+  showPanel(
+    "<h2>Tantangan</h2><p>Main Sendiri sampai kue ambruk, lalu tekan <b>Tantang teman</b>. Temanmu mendapat kue yang sama persis dan harus menyusun lebih tinggi.</p>" +
+    (S.chalW + S.chalL + S.chalD ? "<p>Menang " + S.chalW + " · Kalah " + S.chalL + " · Seri " + S.chalD + "</p>" : "") +
+    "<div class=\"col\"><button class=\"btn main\" id=\"uGo\" type=\"button\">Main Sendiri</button><button class=\"btn\" id=\"uClose\" type=\"button\">Tutup</button></div>",
+    () => {
+      $("uGo").onclick = () => startSolo(false);
+      $("uClose").onclick = hideOverlay;
+    });
+}
+function readChalHash() {
+  const h = location.hash || "";
+  if (!/^#t=/.test(h)) return;
+  const m = /^#t=([A-Za-z0-9_-]+)$/.exec(h);
+  try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  const inv = m ? GameCore.decodeDuel(m[1]) : null;
+  if (!inv || isDailySeed(inv.s)) { toast("Link tantangan tidak valid atau sudah diubah. Minta link baru, ya."); return; }
+  inv.code = m[1];
+  if (!$("play").hidden) goHome(true);
+  mergeStored();
+  const e = chalDoneOf(inv.s), done = e && e.done ? e : null;
+  if (!done) { S.pendingChal = inv.code; save(); }
+  renderHome();
+  if (done) showChalDone(done); else showInvite(inv);
+}
+
+// ---------- Panel info ----------
+function showHelp() {
+  showPanel(
+    "<h2>Cara main</h2><ol class=\"help\">" +
+    "<li>Selapis kue meluncur bolak-balik. <b>Ketuk di mana saja</b> untuk menjatuhkannya.</li>" +
+    "<li>Bagian yang meleset <b>terpotong</b>, jadi kue makin ramping. Meleset total? Kue ambruk.</li>" +
+    "<li><b>Pas sempurna</b> tidak terpotong. Mulai 3x pas berturut-turut, kue <b>melebar lagi</b>.</li>" +
+    "<li>Skor: tingkat + 2 per pas + 5 tiap rasa selesai.</li>" +
+    "<li>Di komputer: tombol Spasi atau Enter. P untuk jeda.</li></ol>" +
+    "<h3>Tiap 10 lapis, rasa berganti</h3><div class=\"rasa-list\">" +
+    RASA.map((R, i) => "<div><i style=\"--c:" + RC[i].side + "\"></i><span><b>" + R.name + "</b>: " + esc(R.tip) + "</span></div>").join("") +
+    "</div><p>Setelah Ketan Hitam, urutan rasa diacak dan makin cepat.</p>" +
+    "<button class=\"btn main\" id=\"hOk\" type=\"button\">Siap!</button>",
+    () => { $("hOk").onclick = hideOverlay; });
+}
+function showJars() {
+  const jars = RASA.map((R, i) => {
+    const lv = S.toples[i];
+    return "<div class=\"jar" + (lv === 0 ? " off" : lv === 2 ? " gold" : "") + "\"><i style=\"--c:" + RC[i].side + "\"></i>" + (lv ? esc(R.name.split(" ")[0]) : "???") + "</div>";
+  }).join("");
+  const got = S.toples.filter((x) => x > 0).length, gold = S.toples.filter((x) => x === 2).length;
+  showPanel(
+    "<h2>Toples Rasa</h2><p>Tiap rasa yang pernah kamu capai masuk toples. Capai lagi di putaran kedua (tingkat 51+) untuk versi <b>emas</b>.</p>" +
+    "<div class=\"jars\">" + jars + "</div><p>" + got + "/5 rasa · " + gold + "/5 emas</p>" +
+    "<h3>Lencana</h3><div class=\"badges\">" + BADGES.map(([id, text]) => "<div class=\"" + (S.badges.includes(id) ? "on" : "") + "\">" + (S.badges.includes(id) ? "🏅 " : "🔒 ") + text.replace(/^\S+\s/, "") + "</div>").join("") + "</div>" +
+    "<button class=\"btn main\" id=\"jOk\" type=\"button\">Tutup</button>",
+    () => { $("jOk").onclick = hideOverlay; });
+}
+function showPause() {
+  if (!run || run.state === "dying" || run.g.over) return;
+  if (run.state === "play" || run.state === "wait") run.state = "ready";
+  saveRun();
+  const canRestart = run.kind === "solo" || run.practice;
+  showPanel(
+    "<h2>Jeda</h2><p>Tingkat <b>" + run.g.floors + "</b> · skor <b>" + fmt(run.g.score) + "</b></p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"pGo\" type=\"button\">Lanjut</button>" +
+    "<div class=\"row\"><button class=\"btn\" id=\"pHome\" type=\"button\">Menu</button>" + (canRestart ? "<button class=\"btn\" id=\"pRestart\" type=\"button\">Mulai ulang</button>" : "") + "</div></div>",
+    () => {
+      $("pGo").onclick = () => { hideOverlay(); resumeReady(); };
+      $("pHome").onclick = () => { hideOverlay(); goHome(); };
+      if (canRestart) $("pRestart").onclick = () => { hideOverlay(); if (run && run.practice) startPractice(); else startSolo(true); };
+    }, resumeReady);
+}
+function resumeReady() {
+  if (!run || run.g.over) return;
+  run.state = "ready";
+  showTapHint("Ketuk untuk lanjut", "Lapisan meluncur lagi dari posisinya");
+  renderHud();
+  ensureLoop();
+}
+
+// ---------- Menu utama ----------
+function renderHome() {
+  $("best").textContent = fmt(S.best);
+  const r = S.runs.solo;
+  $("stSolo").textContent = resumeOk(r) ? "Lanjutkan · " + r.g.floors : "Main";
+  const t = today();
+  const d = S.daily && S.daily.date === t && S.daily.done ? S.daily : null;
+  const dr = S.runs.daily;
+  $("modeDaily").classList.toggle("done", !!d);
+  $("stDaily").textContent = d ? "Selesai ✓ · " + d.floors : resumeOk(dr) && dr.date === t ? "Lanjutkan" : "#" + GameCore.dailyNumber(t) + " · Main";
+  $("dailyDesc").textContent = "Kue sama untuk semua pemain. Topping hari ini: " + GameCore.TOPPINGS[GameCore.toppingOf(GameCore.dailySeed(t))] + ".";
+  $("stDuo").textContent = resumeOk(S.runs.duo) ? "Lanjutkan" : S.duo.matches ? S.duo.matches + " laga" : "Main";
+  const inv = S.pendingChal ? GameCore.decodeDuel(S.pendingChal) : null;
+  $("stChal").textContent = inv ? "Ditantang " + inv.n + "!" : S.chalW + S.chalL + S.chalD ? "Menang " + S.chalW + " · Kalah " + S.chalL : "Tantang";
+  const st = streakNow();
+  $("stats").textContent = S.games ? "Main " + fmt(S.games) + " kali · " + fmt(S.totalFloors) + " lapis disusun · toples " + S.toples.filter((x) => x).length + "/5" + (st ? " · 🔥 " + st + " hari" : "") : "Selamat datang! Coba Main Sendiri dulu.";
+  renderToggles();
+}
+function renderToggles() {
+  $("btnSound").textContent = S.settings.mute ? "🔇" : "🔊";
+  $("btnSound").setAttribute("aria-label", S.settings.mute ? "Nyalakan suara" : "Matikan suara");
+  $("btnVibe").textContent = "📳 Getar: " + (S.settings.vibrate ? "nyala" : "mati");
+}
+// keepBack = true bila layar berikutnya (panel undangan) memakai entri riwayat yang sama.
+function goHome(keepBack) {
+  stopRunTimers();
+  if (run && !run.g.over) saveRun();
+  run = null;
+  fxEl.innerHTML = "";
+  $("play").hidden = true;
+  $("homeWrap").hidden = false;
+  document.body.classList.remove("playing");
+  renderHome();
+  if (keepBack !== true) releaseBack();
+}
+
+// ---------- Panel, tombol Back, pesan ----------
+let backArmed = false, overlayBack = null, ignorePop = false, releaseTimer = 0;
+function enterScreen() {
+  if (backArmed) return;
+  try { history.pushState({ lapis: 1 }, ""); backArmed = true; } catch (e) {}
+}
+// Kembali ke menu lewat tombol di layar: entri riwayat milik layar main/panel dilepas,
+// supaya tombol Back HP berikutnya langsung bekerja (tidak perlu ditekan dua kali).
+// Ditunda sebentar: bila layar lain langsung dibuka, entrinya dipakai ulang.
+function releaseBack() {
+  clearTimeout(releaseTimer);
+  releaseTimer = setTimeout(() => {
+    if (!backArmed || !$("play").hidden || !$("overlay").hidden) return;
+    backArmed = false; ignorePop = true;
+    try { history.back(); } catch (e) { ignorePop = false; }
+  }, 0);
+}
+function showPanel(html, wire, onBack) {
+  const o = $("overlay");
+  o.innerHTML = "<div class=\"panel\" role=\"dialog\" aria-modal=\"true\">" + html + "</div>";
+  o.hidden = false;
+  overlayBack = onBack || null;
+  enterScreen();
+  if (wire) wire();
+  const btn = o.querySelector(".btn.main") || o.querySelector("button");
+  if (btn && !o.querySelector("input:not(.name-input)") && !o.querySelector("#nameIn")) btn.focus({ preventScroll: true });
+}
+function hideOverlay() {
+  $("overlay").hidden = true; $("overlay").innerHTML = ""; overlayBack = null;
+  if ($("play").hidden) releaseBack(); else ensureLoop();
+}
+// Back menutup panel atau kembali ke menu; tidak pernah keluar dari situs saat sedang main.
+window.addEventListener("popstate", () => {
+  backArmed = false;
+  if (ignorePop) {
+    // Ini hasil releaseBack sendiri. Bila sementara itu layar baru terbuka, pasang lagi entrinya.
+    ignorePop = false;
+    if (!$("play").hidden || !$("overlay").hidden) enterScreen();
+    return;
+  }
+  if (!$("overlay").hidden) {
+    const after = overlayBack;
+    hideOverlay();
+    if (after) after();
+    if (!$("play").hidden) enterScreen();
+    return;
+  }
+  if (!$("play").hidden) goHome();
+});
+window.addEventListener("hashchange", readChalHash);
+// Tab lain menyimpan sesuatu: gabungkan supaya hasil sekali-main tidak tertimpa.
+window.addEventListener("storage", (e) => {
+  if (e.key !== STORE_KEY) return;
+  mergeStored();
+  if ($("play").hidden) renderHome();
+});
+let toastTimer = 0;
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; }, 2200);
+}
+
+// ---------- Masukan ----------
+stageEl.addEventListener("pointerdown", (e) => {
+  if (e.target.closest("button")) return;
+  if (e.button !== undefined && e.button > 0) return;
+  e.preventDefault();
+  onTap(e.timeStamp);
+});
+stageEl.addEventListener("contextmenu", (e) => e.preventDefault());
+document.addEventListener("keydown", (e) => {
+  if ($("play").hidden || !$("overlay").hidden || e.repeat) return;
+  if (e.key === " " || e.key === "Enter" || e.key === "Spacebar") { e.preventDefault(); onTap(e.timeStamp); }
+  else if (e.key === "p" || e.key === "P" || e.key === "Escape") { e.preventDefault(); showPause(); }
+});
+$("modeSolo").onclick = () => startSolo(false);
+$("modeDaily").onclick = startDaily;
+$("modeDuo").onclick = openDuoSetup;
+$("modeChal").onclick = openChalMenu;
+$("btnHelp").onclick = showHelp;
+$("btnJars").onclick = showJars;
+$("btnMenu").onclick = goHome;
+$("btnPause").onclick = () => { $("btnPause").blur(); showPause(); };
+$("btnSound").onclick = () => {
+  S.settings.mute = !S.settings.mute;
+  save();
+  renderToggles();
+  if (!S.settings.mute) sfx.tap();
+};
+$("btnVibe").onclick = () => {
+  S.settings.vibrate = !S.settings.vibrate;
+  save();
+  renderToggles();
+  buzz(20);
+};
+let resizeRaf = 0;
+window.addEventListener("resize", () => {
+  if (resizeRaf) return;
+  resizeRaf = requestAnimationFrame(() => {
+    resizeRaf = 0;
+    if (!run) return;
+    layout(); measureHud();
+    // Mengubah ukuran kanvas menghapus isinya; bila loop sedang berhenti di balik panel, gambar sekali lagi.
+    if (!loopRaf && !$("play").hidden) draw(performance.now());
+  });
+});
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden || !run) return;
+  if (run.state === "play" || run.state === "wait") showPause();
+  else saveRun();
+});
+
+renderHome();
+readChalHash();
+</script>
+</html>

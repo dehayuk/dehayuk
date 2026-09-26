@@ -1,0 +1,2119 @@
+<!doctype html>
+<html lang="id">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E3534">
+<title>Jatuh Buah</title>
+<meta name="description" content="Jatuh Buah: jatuhkan buah Nusantara ke dalam bakul, satukan yang kembar sampai jadi durian sang raja buah. Ada Harian yang sama untuk semua pemain dan tantangan lewat WhatsApp. Gratis, langsung main di browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Font dimuat tanpa menahan tampilan pertama; bila gagal, font sistem tetap dipakai. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap"></noscript>
+<style>
+  :root {
+    color-scheme: dark;
+    --ground: #0E3534;
+    --board: #15504D;
+    --board-edge: #2A7A75;
+    --slot-edge: #3E8C86;
+    --tile: #F4C152;
+    --tile-shade: #C9952A;
+    --tile-ink: #3B2A05;
+    --ink: #EAF6F3;
+    --muted: #9EC6C0;
+    --good: #7FE0A3;
+    --bad: #FF7A70;
+    --well: #0B2B2A;
+    --rattan: #C8955A;
+    --rattan-dark: #9A6A36;
+    --display: "Baloo 2", "Trebuchet MS", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --body: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  [hidden] { display: none !important; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink); font-family: var(--body); font-size: 15px;
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; overscroll-behavior-y: contain;
+  }
+  button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; font-family: var(--body); }
+  button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  canvas:focus { outline: none; }
+  .wrap {
+    max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px;
+    padding: calc(10px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px));
+  }
+  body.playing .wrap { gap: 6px; padding: calc(10px + env(safe-area-inset-top, 0px)) calc(8px + env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) calc(8px + env(safe-area-inset-left, 0px)); }
+  body.playing header { padding: 0 8px; }
+  body.playing .topbar, body.playing #ladder, body.playing .targetbar { margin: 0 8px; }
+  body.playing .toast { top: auto; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); }
+  section { display: flex; flex-direction: column; gap: 12px; }
+  #play { gap: 6px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .brand-box { display: flex; flex-direction: column; min-width: 0; }
+  .hub { color: var(--muted); font-size: 12px; font-weight: 800; text-decoration: none; line-height: 16px; padding: 14px 18px 14px 0; margin: -14px 0 -12px; align-self: flex-start; }
+  .brand { font-family: var(--display); font-weight: 800; font-size: 24px; line-height: 1; letter-spacing: .5px; white-space: nowrap; }
+  .brand span { color: var(--tile); }
+  .head-right { display: flex; align-items: center; gap: 8px; }
+  .best {
+    display: flex; align-items: center; gap: 6px; background: var(--board); border: 1px solid var(--board-edge);
+    padding: 6px 12px; border-radius: 999px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .best.bump { animation: bump .45s ease-out; }
+  @keyframes bump { 40% { transform: scale(1.18); border-color: var(--tile); } }
+  .icon-btn {
+    min-width: 44px; min-height: 44px; border-radius: 999px; cursor: pointer; font-size: 17px; line-height: 1;
+    background: var(--board); border: 1px solid var(--board-edge); color: var(--ink);
+  }
+
+  /* Menu utama */
+  .hero {
+    background: var(--board); border: 1px solid var(--board-edge); border-radius: 14px; padding: 14px 16px;
+    display: flex; gap: 14px; align-items: center;
+  }
+  .logo { position: relative; width: 64px; height: 62px; flex: none; }
+  .logo .bk {
+    position: absolute; left: 2px; right: 2px; bottom: 0; height: 34px; border-radius: 6px 6px 26px 26px;
+    background: repeating-linear-gradient(90deg, rgba(0,0,0,.18) 0 4px, transparent 4px 8px), repeating-linear-gradient(0deg, #D9A866 0 5px, #B88246 5px 10px);
+    box-shadow: inset 0 3px 0 rgba(255,255,255,.25), inset 0 -4px 0 rgba(0,0,0,.2);
+  }
+  .logo img { position: absolute; }
+  .logo .l1 { width: 46px; height: 46px; left: 5px; top: -2px; }
+  .logo .l2 { width: 26px; height: 26px; right: -4px; top: 14px; }
+  .hero p { margin: 0; color: var(--muted); line-height: 1.45; }
+  .hero b { color: var(--ink); font-family: var(--display); font-size: 19px; display: block; line-height: 1.15; margin-bottom: 2px; }
+  .stats { font-size: 12.5px; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; margin: 0; }
+  .modes { display: grid; gap: 10px; }
+  .mode {
+    display: grid; grid-template-columns: 1fr auto; grid-template-areas: "name state" "desc state";
+    gap: 2px 12px; align-items: center; text-align: left; cursor: pointer; min-height: 64px;
+    background: var(--board); border: 1px solid var(--board-edge); border-radius: 14px; padding: 12px 16px; color: var(--ink);
+  }
+  .mode-name { grid-area: name; font-family: var(--display); font-weight: 800; font-size: 21px; line-height: 1.1; }
+  .mode-desc { grid-area: desc; font-size: 12.5px; color: var(--muted); }
+  .mode-state {
+    grid-area: state; max-width: 140px; text-align: center; font-weight: 800; font-size: 12px;
+    background: var(--tile); color: var(--tile-ink); box-shadow: inset 0 -3px 0 var(--tile-shade);
+    padding: 7px 10px; border-radius: 9px; font-variant-numeric: tabular-nums;
+  }
+  .mode.primary { border-color: var(--tile-shade); box-shadow: 0 0 0 1px var(--tile-shade) inset; }
+  .mode.primary .mode-name { color: var(--tile); }
+  .mode.done .mode-state { background: transparent; box-shadow: none; color: var(--good); border: 1px solid var(--good); }
+  .kebun { background: var(--well); border: 1px solid var(--board-edge); border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+  .kebun-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 12.5px; color: var(--muted); font-weight: 800; }
+  .kebun-head b { font-family: var(--display); font-size: 16px; color: var(--ink); }
+  .home-foot { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .link-btn { background: none; border: 1px solid var(--board-edge); color: var(--muted); border-radius: 999px; padding: 8px 14px; font-weight: 800; font-size: 12.5px; cursor: pointer; min-height: 44px; }
+  .home-foot a { color: var(--muted); font-size: 12px; line-height: 16px; padding: 14px 16px; display: inline-block; }
+
+  /* Tangga buah: 11 buah kecil, yang belum tercapai berupa bayangan kelabu */
+  .ladder { display: flex; justify-content: space-between; align-items: center; gap: 2px; }
+  .ladder img, .ladder i { width: calc((100% - 20px) / 11); max-width: 30px; aspect-ratio: 1; display: block; }
+  .ladder img { transition: filter .3s, opacity .3s, transform .3s; }
+  .ladder .off { filter: grayscale(1) brightness(.55) contrast(.7); opacity: .5; }
+  .ladder .top { transform: scale(1.18); filter: drop-shadow(0 0 4px rgba(244,193,82,.9)); }
+
+  /* Layar main */
+  .topbar { display: grid; grid-template-columns: 58px 1fr 58px; align-items: center; gap: 6px; min-height: 52px; }
+  .scorebox { display: flex; flex-direction: column; align-items: center; min-width: 0; }
+  .chip {
+    font-family: var(--display); font-weight: 600; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--tile); border: 1px solid var(--tile-shade); padding: 0 9px; border-radius: 6px; line-height: 18px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+  }
+  .score { font-family: var(--display); font-weight: 800; font-size: 32px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .score.bump { animation: bump .3s ease-out; }
+  .pause { width: 48px; height: 48px; border-radius: 12px; font-size: 18px; }
+  .nextbox {
+    justify-self: end; width: 56px; height: 52px; border-radius: 12px; background: var(--well); border: 1px solid var(--board-edge);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; position: relative;
+  }
+  .nextbox small { font-size: 9.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; line-height: 1; }
+  .nextbox img { width: 32px; height: 32px; }
+  .nextbox.gold { border-color: var(--tile); box-shadow: 0 0 10px rgba(244,193,82,.55); }
+  .targetbar { position: relative; height: 24px; border-radius: 999px; background: var(--well); border: 1px solid var(--board-edge); overflow: hidden; }
+  .targetbar i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: linear-gradient(90deg, var(--tile-shade), var(--tile)); transition: width .25s; }
+  .targetbar.won i { background: linear-gradient(90deg, #3FAF72, var(--good)); }
+  .targetbar span { position: relative; display: block; text-align: center; font-size: 12px; font-weight: 800; line-height: 22px; color: var(--ink); text-shadow: 0 1px 2px rgba(0,0,0,.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 10px; }
+
+  .stage { position: relative; margin: 0 auto; touch-action: none; background: var(--well) no-repeat center / 100% 100%; border-radius: 4px 4px 20px 20px; }
+  .stage canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; border-radius: 4px 4px 20px 20px; }
+  .stage.shake { animation: shake .22s linear; }
+  @keyframes shake { 0%,100%{transform:translate(0,0)} 20%{transform:translate(-4px,2px)} 40%{transform:translate(4px,-2px)} 60%{transform:translate(-3px,-1px)} 80%{transform:translate(3px,2px)} }
+  .fx { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+  .float {
+    position: absolute; transform: translate(-50%, -50%); font-family: var(--display); font-weight: 800; font-size: 20px;
+    color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.45); animation: rise .8s ease-out forwards; white-space: nowrap;
+  }
+  .float.gold { color: var(--tile); font-size: 24px; }
+  @keyframes rise { from { opacity: 1; transform: translate(-50%, -50%); } to { opacity: 0; transform: translate(-50%, calc(-50% - 44px)); } }
+  .badge {
+    position: absolute; left: 50%; top: 36%; transform: translate(-50%, -50%); text-align: center; white-space: nowrap;
+    font-family: var(--display); font-weight: 800; font-size: 38px; line-height: 1; color: var(--bc, #F4C152);
+    text-shadow: 0 3px 0 rgba(0,0,0,.45); animation: badge 1.3s ease-out forwards;
+  }
+  .badge small { display: block; font-size: 20px; color: #fff; margin-top: 4px; }
+  @keyframes badge {
+    0% { transform: translate(-50%,-50%) scale(.6); opacity: 0; } 12% { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
+    22% { transform: translate(-50%,-50%) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%,-60%) scale(1); }
+  }
+  .banner {
+    position: absolute; left: 50%; top: 16%; transform: translate(-50%, -50%); background: var(--tile); color: var(--tile-ink);
+    font-family: var(--display); font-weight: 800; font-size: 18px; padding: 3px 14px; border-radius: 999px; white-space: nowrap;
+    box-shadow: inset 0 -3px 0 var(--tile-shade), 0 4px 10px rgba(0,0,0,.35); animation: banner 1.4s ease-out forwards;
+  }
+  @keyframes banner { 0% { opacity: 0; transform: translate(-50%, -30%) scale(.7); } 12% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); } 20% { transform: translate(-50%, -50%) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; } }
+  .hint { position: absolute; left: 50%; bottom: 14%; transform: translateX(-50%); width: 80%; text-align: center; font-size: 13px; font-weight: 800; color: var(--ink); background: rgba(11,43,42,.82); border: 1px solid var(--board-edge); border-radius: 12px; padding: 8px 10px; pointer-events: none; }
+  .uji { position: absolute; left: 6px; top: 6px; font: 12px/1.35 ui-monospace, monospace; color: #fff; background: rgba(0,0,0,.65); padding: 6px 8px; border-radius: 6px; pointer-events: none; white-space: pre; z-index: 5; }
+
+  .confetti { position: fixed; top: -14px; width: 9px; height: 13px; border-radius: 2px; z-index: 50; pointer-events: none; animation: fall 1.6s ease-in forwards; }
+  @keyframes fall { to { transform: translateY(105vh) rotate(540deg); opacity: .7; } }
+
+  /* Panel */
+  .overlay { position: fixed; inset: 0; background: rgba(5, 20, 20, .88); display: grid; place-items: center; padding: 16px; z-index: 60; overflow-y: auto; }
+  .panel {
+    width: 100%; max-width: 380px; background: var(--board); border: 1px solid var(--board-edge); border-radius: 16px;
+    padding: 20px 16px; text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center;
+    animation: slideUp .28s ease-out;
+  }
+  @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .panel h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 27px; line-height: 1.1; color: var(--tile); }
+  .panel p { margin: 0; color: var(--muted); line-height: 1.45; }
+  .panel b { color: var(--ink); }
+  .panel .ladder { width: 100%; background: var(--well); border-radius: 12px; padding: 8px 6px; }
+  .big { font-family: var(--display); font-weight: 800; font-size: 44px; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; }
+  .facts div { background: var(--ground); border: 1px solid var(--board-edge); border-radius: 10px; padding: 8px 4px; font-size: 11.5px; color: var(--muted); }
+  .facts b { display: block; font-size: 17px; font-family: var(--display); line-height: 1.2; }
+  .col { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+  .row { display: flex; gap: 8px; width: 100%; }
+  .row .btn { flex: 1; }
+  .btn {
+    border: 1px solid var(--board-edge); background: var(--ground); color: var(--ink); border-radius: 10px;
+    padding: 11px 8px; font-weight: 800; font-size: 14px; cursor: pointer; line-height: 1.2; min-height: 46px;
+  }
+  .btn.main { background: var(--tile); color: var(--tile-ink); border: 0; box-shadow: inset 0 -4px 0 var(--tile-shade); font-family: var(--display); font-size: 20px; }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .btn.on { border-color: var(--tile); color: var(--tile); }
+  .help { text-align: left; margin: 0; padding-left: 20px; color: var(--ink); line-height: 1.5; display: flex; flex-direction: column; gap: 6px; }
+  .help li::marker { color: var(--tile); }
+  .skins { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; }
+  .skin { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: 12px; min-height: 84px; cursor: pointer;
+    background: var(--ground); border: 1px solid var(--board-edge); color: var(--ink); font-weight: 800; font-size: 12.5px; }
+  .skin i { width: 44px; height: 30px; border-radius: 4px 4px 16px 16px; display: block; }
+  .skin.sel { border-color: var(--tile); box-shadow: 0 0 0 1px var(--tile) inset; color: var(--tile); }
+  .skin:disabled { cursor: default; color: var(--muted); }
+  .skin:disabled i { filter: grayscale(.8) brightness(.6); }
+  .versus { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; width: 100%; }
+  .versus .side { background: var(--ground); border: 1px solid var(--board-edge); border-radius: 12px; padding: 10px 6px; min-width: 0; }
+  .versus .side.win { border-color: var(--good); box-shadow: 0 0 0 1px var(--good); }
+  .versus .who { font-weight: 800; overflow-wrap: anywhere; }
+  .versus .pts { font-family: var(--display); font-weight: 800; font-size: 24px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .versus .side.win .pts { color: var(--good); }
+  .versus .vs { font-family: var(--display); font-weight: 800; color: var(--tile); }
+  .name-input {
+    width: 100%; padding: 10px 12px; border-radius: 10px; text-align: center; border: 1px solid var(--board-edge);
+    background: var(--ground); color: var(--ink); font-family: var(--body); font-weight: 800; font-size: 18px; user-select: text; -webkit-user-select: text;
+  }
+  .toast {
+    position: fixed; left: 50%; top: calc(62px + env(safe-area-inset-top, 0px)); transform: translateX(-50%);
+    background: var(--ink); color: var(--ground); font-weight: 800; font-size: 13px; padding: 8px 14px; border-radius: 999px;
+    z-index: 70; max-width: calc(100% - 32px); text-align: center; pointer-events: none;
+  }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stage.shake, .best.bump, .score.bump, .panel, .badge, .banner, .float { animation-duration: .01s; }
+    .badge, .banner { animation: none; opacity: 1; }
+    .float { animation: none; opacity: 0; }
+    .confetti { display: none; }
+    .ladder img { transition: none; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand-box">
+      <a class="hub" href="/">‹ Dehayuk</a>
+      <div class="brand">Jatuh<span>Buah</span></div>
+    </div>
+    <div class="head-right">
+      <div class="best" id="bestBox" title="Skor terbaik">🏆 <span id="best">0</span></div>
+      <button class="icon-btn" id="btnSound" type="button" aria-label="Matikan suara" title="Suara">🔊</button>
+    </div>
+  </header>
+
+  <section id="home">
+    <div class="hero">
+      <div class="logo" aria-hidden="true"><img class="l1" id="logo1" alt=""><div class="bk"></div><img class="l2" id="logo2" alt=""></div>
+      <p><b>Satukan buah kembar, raih durian!</b>Jatuhkan buah ke bakul. Dua buah yang sama bersentuhan jadi buah yang lebih besar.</p>
+    </div>
+    <div class="modes">
+      <button class="mode primary" id="modeBebas" type="button">
+        <span class="mode-name">Main Bebas</span>
+        <span class="mode-desc">Urutan buah baru tiap main. Kejar skor tertinggimu.</span>
+        <span class="mode-state" id="stBebas">Main</span>
+      </button>
+      <button class="mode" id="modeDaily" type="button">
+        <span class="mode-name">Harian</span>
+        <span class="mode-desc">Urutan buah sama untuk semua pemain hari ini. Adu skor di grup!</span>
+        <span class="mode-state" id="stDaily">Main</span>
+      </button>
+      <button class="mode" id="modeDuel" type="button">
+        <span class="mode-name">Tantangan</span>
+        <span class="mode-desc">Kirim link ke teman lewat WhatsApp dengan urutan buah yang sama.</span>
+        <span class="mode-state" id="stDuel">Tantang</span>
+      </button>
+    </div>
+    <div class="kebun" aria-label="Kebunmu: buah yang pernah kamu buat">
+      <div class="kebun-head"><b>Kebunmu</b><span id="kebunInfo">Belum ada durian</span></div>
+      <div class="ladder" id="kebunRow"></div>
+    </div>
+    <p class="stats" id="stats"></p>
+    <div class="home-foot">
+      <button class="link-btn" id="btnHelp" type="button">❓ Cara main</button>
+      <button class="link-btn" id="btnSettings" type="button">⚙️ Pengaturan</button>
+    </div>
+    <div class="home-foot"><a href="/privasi/" target="_blank" rel="noopener">Privasi</a></div>
+  </section>
+
+  <section id="play" hidden>
+    <div class="topbar">
+      <button class="icon-btn pause" id="btnPause" type="button" aria-label="Jeda" title="Jeda">❚❚</button>
+      <div class="scorebox">
+        <span class="chip" id="modeChip">Bebas</span>
+        <div class="score" id="score" aria-label="Skor">0</div>
+      </div>
+      <div class="nextbox" id="nextBox" title="Buah berikutnya"><small>Berikut</small><img id="nextImg" alt="Buah berikutnya"></div>
+    </div>
+    <div class="targetbar" id="targetBar" hidden><i id="targetFill"></i><span id="targetText"></span></div>
+    <div class="stage" id="stage">
+      <canvas id="cv" tabindex="0" aria-label="Bakul. Geser jari untuk membidik, angkat jari untuk menjatuhkan buah. Di papan ketik: panah kiri kanan dan Spasi."></canvas>
+      <div class="fx" id="fx"></div>
+      <div class="hint" id="hint" hidden>Geser jari untuk membidik,<br>angkat untuk menjatuhkan buah</div>
+    </div>
+    <div class="ladder" id="ladder" aria-label="Tangga buah"></div>
+  </section>
+</div>
+
+<div class="overlay" id="overlay" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<div class="sr" id="sr" aria-live="polite"></div>
+
+<script>
+/*CORE:BEGIN*/
+// Aturan murni Jatuh Buah: fisika lingkaran, antrean buah, skor, Harian, tantangan.
+// Tanpa DOM, jadi bisa diuji di Node. Semua ukuran dalam satuan papan (lebar dalam bakul = 360).
+const GameCore = (() => {
+  const W = 360, H = 520, LOSE_Y = 70, STEP = 1 / 120, GRAV = 1800;
+  const REST = 0.15, REST_MIN_V = 60, FRIC = 0.4, DAMP = 0.999, ADAMP = 0.998, VMAX = 2500;
+  const SLEEP_V = 6, SLEEP_T = 0.5, COOLDOWN = 0.45, CHAIN_WIN = 0.8;
+  const AGE_MIN = 1.2, GRACE = 2.0, CAP = 60, FULL_T = 5, CELL = 144, GC = 3, GR = 4;
+  const MERGE_GAP = 1, DURIAN_PTS = 500, GOLD_P = 1 / 40, ITER = 6, MAX_SCORE = 5000000;
+  // Batas masuk akal untuk skor di link tantangan (permainan nyata sekitar 2-15 ribu); MAX_SCORE hanya untuk simpanan.
+  const DUEL_MAX = 300000;
+  const DAILY_LAUNCH = "2026-09-26"; // Harian #1
+  // Tangga buah: jari-jari (satuan papan) dan poin saat buah itu tercipta dari leburan.
+  const FRUITS = [
+    { name: "Ceri", r: 13, pts: 1, juice: "#FF4D5E" },
+    { name: "Rambutan", r: 17, pts: 3, juice: "#FF6B6B" },
+    { name: "Duku", r: 21, pts: 6, juice: "#F6E3B0" },
+    { name: "Salak", r: 26, pts: 10, juice: "#F7EBD2" },
+    { name: "Jeruk", r: 31, pts: 15, juice: "#FFA630" },
+    { name: "Mangga", r: 37, pts: 21, juice: "#FFD23F" },
+    { name: "Manggis", r: 43, pts: 28, juice: "#F6F0F4" },
+    { name: "Nanas", r: 50, pts: 36, juice: "#FFE066" },
+    { name: "Pepaya", r: 57, pts: 45, juice: "#FF8C42" },
+    { name: "Nangka", r: 64, pts: 55, juice: "#F9C846" },
+    { name: "Durian", r: 72, pts: 100, juice: "#F2E394" }
+  ];
+  const WEIGHTS = [30, 28, 22, 12, 8]; // hanya level 0-4 yang dijatuhkan
+
+  // Generator mulberry32; keadaannya disimpan di g.rs supaya permainan bisa dilanjutkan.
+  function rng(seed) {
+    return function () {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function next(g) {
+    const s = g.rs = (g.rs + 0x6D2B79F5) | 0;
+    let t = Math.imul(s ^ s >>> 15, 1 | s);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
+  function pickLevel(g, skip) {
+    let tot = 0;
+    for (let l = 0; l < 5; l++) if (l !== skip) tot += WEIGHTS[l];
+    let x = next(g) * tot;
+    for (let l = 0; l < 5; l++) { if (l === skip) continue; x -= WEIGHTS[l]; if (x < 0) return l; }
+    return skip === 4 ? 3 : 4;
+  }
+  // Satu buah antrean. Tidak pernah tiga level sama berturut-turut: bila terjadi, diundi ulang sekali tanpa level itu.
+  function drawItem(g) {
+    let l = pickLevel(g, -1);
+    if (l === g.h1 && l === g.h2) l = pickLevel(g, l);
+    g.h2 = g.h1; g.h1 = l;
+    return { l, g: next(g) < GOLD_P ? 1 : 0 };
+  }
+
+  // ---------- Keadaan permainan ----------
+  function shell(seed, kind, opt) {
+    const cap = (opt && opt.cap) || CAP, M = cap + 4;
+    const F = () => new Float64Array(M), U = () => new Uint8Array(M);
+    return {
+      v: 1, kind: kind || "bebas", seed: seed >>> 0, rs: seed | 0, h1: -1, h2: -1, cur: null, nxt: null,
+      t: 0, score: 0, chain: 0, lastMergeT: -9, maxChain: 0, top: -1, seen: 0, durians: 0, lebur: 0,
+      drops: 0, merges: 0, golds: 0, dangerT: 0, capT: 0, nextDropAt: 0, over: false, reason: "",
+      cap, M, iter: ITER, live: 0, uidSeq: 0, noLose: false, ev: [], impact: 0,
+      x: F(), y: F(), vx: F(), vy: F(), wv: F(), an: F(), r: F(), ag: F(), st: F(), bt: F(), px: F(), py: F(), mv: F(),
+      lv: new Int8Array(M), ch: new Int16Array(M), gd: U(), al: U(), sl: U(), mg: U(), uid: new Int32Array(M),
+      gc: new Int32Array(GC * GR), gs: new Int32Array(GC * GR + 1), gf: new Int32Array(GC * GR), gi: new Int32Array(M), go: new Int32Array(M),
+      ma: new Int32Array(M), mb: new Int32Array(M), pa: new Int32Array(M * 24), pb: new Int32Array(M * 24), pk: new Float64Array(M * 24)
+    };
+  }
+  function newGame(seed, kind, opt) {
+    const g = shell(seed, kind, opt);
+    g.cur = drawItem(g);
+    g.nxt = drawItem(g);
+    return g;
+  }
+  function spawn(g, l, x, y, vx, vy, gold, merged) {
+    let i = 0;
+    while (i < g.M && g.al[i]) i++;
+    if (i >= g.M) return -1;
+    g.x[i] = x; g.y[i] = y; g.px[i] = x; g.py[i] = y; g.mv[i] = 999; g.vx[i] = vx; g.vy[i] = vy; g.wv[i] = 0; g.an[i] = 0;
+    g.r[i] = FRUITS[l].r; g.lv[i] = l; g.gd[i] = gold ? 1 : 0; g.al[i] = 1; g.sl[i] = 0; g.st[i] = 0;
+    g.ag[i] = 0; g.bt[i] = g.t; g.mg[i] = merged ? 1 : 0; g.ch[i] = 0; g.uid[i] = ++g.uidSeq;
+    g.live++;
+    g.seen |= 1 << l;
+    if (l > g.top) g.top = l;
+    return i;
+  }
+  const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+  function canDrop(g) {
+    if (g.over) return "over";
+    if (g.live >= g.cap) return "full";
+    if (g.t < g.nextDropAt - 1e-9) return "wait";
+    return "ok";
+  }
+  // Menjatuhkan buah saat ini di x (satuan papan). force = abaikan jeda (hanya untuk uji beban).
+  function drop(g, x, force) {
+    const s = canDrop(g);
+    if (s === "over" || s === "full" || (s === "wait" && !force)) return s;
+    const it = g.cur, r = FRUITS[it.l].r;
+    spawn(g, it.l, clamp(+x || 0, r, W - r), r, 0, 0, it.g, 0);
+    g.drops++;
+    g.cur = g.nxt;
+    g.nxt = drawItem(g);
+    g.nextDropAt = g.t + COOLDOWN;
+    return "ok";
+  }
+
+  // ---------- Fisika ----------
+  // Larik aktif untuk langkah yang sedang berjalan (diikat sekali per langkah, tanpa alokasi).
+  let X, Y, VX, VY, WV, AN, R, LV, AL, SL, ST, MV, MA, MB, GS, GI, PA, PB, PK, pN = 0, mN = 0, impact = 0;
+  const PAIR_MARGIN = 6;
+  function bind(g) {
+    X = g.x; Y = g.y; VX = g.vx; VY = g.vy; WV = g.wv; AN = g.an; R = g.r; LV = g.lv; AL = g.al; SL = g.sl; ST = g.st; MV = g.mv;
+    MA = g.ma; MB = g.mb; GS = g.gs; GI = g.gi; PA = g.pa; PB = g.pb; PK = g.pk;
+  }
+  const speed2 = (i) => VX[i] * VX[i] + VY[i] * VY[i];
+  function wake(i) { SL[i] = 0; ST[i] = 0; }
+  function collide(i, j) {
+    const dx = X[j] - X[i], dy = Y[j] - Y[i], rs = R[i] + R[j];
+    const d2 = dx * dx + dy * dy, near = rs + 2;
+    if (d2 >= near * near) return;
+    if (LV[i] === LV[j] && d2 < (rs + MERGE_GAP) * (rs + MERGE_GAP)) {
+      // Dua buah kembar melebur begitu BERSENTUHAN (celah di bawah 1 satuan), bukan menunggu tumpang tindih dalam:
+      // sentuhan diam selalu dikoreksi tiap langkah, jadi tumpang tindih dalam tak pernah terjadi.
+      // Keduanya langsung ditandai mati, sehingga tiap buah melebur paling banyak sekali per langkah.
+      AL[i] = 0; AL[j] = 0; MA[mN] = i; MB[mN] = j; mN++;
+      return;
+    }
+    let si = SL[i], sj = SL[j];
+    if (si && sj) return;
+    if (d2 >= rs * rs) {
+      // Hampir bersentuhan: tetangga yang benar-benar bergerak membangunkan yang tidur (misal penyangganya bergeser).
+      if (si && MV[j] > SLEEP_V) wake(i); else if (sj && MV[i] > SLEEP_V) wake(j);
+      return;
+    }
+    let d = Math.sqrt(d2), nx = 0, ny = 1;
+    if (d > 1e-9) { nx = dx / d; ny = dy / d; } else d = 0;
+    const ov = rs - d;
+    let vn = (VX[j] - VX[i]) * nx + (VY[j] - VY[i]) * ny;
+    if (si || sj) {
+      // Buah tidur dianggap diam selama sentuhannya ringan; benturan nyata (tekanan dalam atau tetangga yang
+      // benar-benar bergerak cepat) membangunkannya. Sisa kecepatan di tumpukan yang diam tidak dihitung.
+      if (ov > 1 || MV[si ? j : i] > 30) { if (si) wake(i); if (sj) wake(j); si = sj = 0; }
+    }
+    const mi = si ? 0 : 1 / (R[i] * R[i]), mj = sj ? 0 : 1 / (R[j] * R[j]), ms = mi + mj;
+    if (ms === 0) return;
+    let c = ov * 0.7;
+    if (c > 8) c = 8;
+    c /= ms;
+    X[i] -= nx * c * mi; Y[i] -= ny * c * mi; X[j] += nx * c * mj; Y[j] += ny * c * mj;
+    if (vn < 0) {
+      if (-vn > impact) impact = -vn;
+      const e = vn < -REST_MIN_V ? REST : 0, jn = -(1 + e) * vn / ms;
+      VX[i] -= nx * jn * mi; VY[i] -= ny * jn * mi; VX[j] += nx * jn * mj; VY[j] += ny * jn * mj;
+      // Gesekan pada titik sentuh, termasuk putaran buah (buah bisa menggelinding jatuh dari puncak tumpukan).
+      const tx = -ny, ty = nx;
+      const vt = (VX[j] - VX[i]) * tx + (VY[j] - VY[i]) * ty - WV[j] * R[j] - WV[i] * R[i];
+      let jt = -vt / (3 * ms);
+      const lim = FRIC * jn;
+      if (jt > lim) jt = lim; else if (jt < -lim) jt = -lim;
+      VX[i] -= tx * jt * mi; VY[i] -= ty * jt * mi; VX[j] += tx * jt * mj; VY[j] += ty * jt * mj;
+      WV[i] -= 2 * jt * mi / R[i]; WV[j] -= 2 * jt * mj / R[j];
+    }
+  }
+  function addPair(i, j) {
+    if (SL[i] && SL[j]) return;
+    const dx = X[j] - X[i], dy = Y[j] - Y[i], rr = R[i] + R[j] + PAIR_MARGIN;
+    if (dx * dx + dy * dy >= rr * rr || pN >= PA.length) return;
+    // Kunci urutan: pasangan paling bawah lebih dulu (tumpukan diselesaikan dari dasar bakul ke atas).
+    const low = Y[i] > Y[j] ? Y[i] : Y[j];
+    PK[pN] = (4095 - Math.max(0, Math.min(4095, (low * 4) | 0))) * 8192 + pN;
+    PA[pN] = i; PB[pN] = j; pN++;
+  }
+  function cellPairs(i, cx, cy) {
+    if (cx < 0 || cx >= GC || cy >= GR) return;
+    const c = cy * GC + cx, e = GS[c + 1];
+    for (let b = GS[c]; b < e; b++) addPair(i, GI[b]);
+  }
+  function wallHit(i, nx, ny) {
+    const vn = VX[i] * nx + VY[i] * ny;
+    if (vn <= 0) return;
+    if (vn > impact) impact = vn;
+    const jn = (1 + (vn > REST_MIN_V ? REST : 0)) * vn;
+    VX[i] -= nx * jn; VY[i] -= ny * jn;
+    const tx = -ny, ty = nx;
+    let jt = -(VX[i] * tx + VY[i] * ty + WV[i] * R[i]) / 3;
+    const lim = FRIC * jn;
+    if (jt > lim) jt = lim; else if (jt < -lim) jt = -lim;
+    VX[i] += tx * jt; VY[i] += ty * jt; WV[i] += 2 * jt / R[i];
+  }
+  function mergePair(g, i, j) {
+    const L = g.lv[i], mi = R[i] * R[i], mj = R[j] * R[j], m = mi + mj;
+    const x = (X[i] * mi + X[j] * mj) / m, y = (Y[i] * mi + Y[j] * mj) / m;
+    const vx = (VX[i] + VX[j]) * 0.25, vy = (VY[i] + VY[j]) * 0.25;
+    const gold = g.gd[i] || g.gd[j];
+    g.live -= 2;
+    // Rantai hanya untuk leburan BERUNTUN sungguhan: induknya baru saja lahir dari leburan (umur < 800 ms),
+    // dan rantainya diwarisi dari induk itu. Leburan biasa atau rantai lain yang kebetulan bersamaan mulai dari 1.
+    const ci = g.mg[i] && g.ag[i] < CHAIN_WIN + 1e-9 ? g.ch[i] : 0, cj = g.mg[j] && g.ag[j] < CHAIN_WIN + 1e-9 ? g.ch[j] : 0;
+    g.chain = Math.max(ci, cj) + 1;
+    g.lastMergeT = g.t;
+    if (g.chain > g.maxChain) g.maxChain = g.chain;
+    const mult = Math.min(3, 1 + 0.25 * (g.chain - 1));
+    let lv, base, boom = false, newTop = false;
+    if (L >= 10) {
+      // Dua durian bersentuhan: keduanya lenyap dengan pesta besar.
+      lv = 10; base = DURIAN_PTS; boom = true; g.lebur++;
+    } else {
+      lv = L + 1; base = FRUITS[lv].pts;
+      const r = FRUITS[lv].r;
+      newTop = lv > g.top;
+      const k = spawn(g, lv, clamp(x, r, W - r), Math.min(y, H - r), vx, vy, 0, 1);
+      if (k >= 0) g.ch[k] = g.chain;
+      if (lv === 10) g.durians++;
+    }
+    const pts = Math.round(base * mult * (gold ? 2 : 1));
+    g.score += pts;
+    g.merges++;
+    if (gold) g.golds++;
+    g.ev.push({ lv, x, y, pts, chain: g.chain, mult, gold: !!gold, boom, newTop });
+  }
+  function step(g) {
+    if (g.over) return;
+    bind(g);
+    const M = g.M, dt = STEP, PX = g.px, PY = g.py;
+    impact = 0; mN = 0;
+    // 1) Euler semi-implisit untuk buah yang bangun.
+    for (let i = 0; i < M; i++) {
+      if (!AL[i]) continue;
+      g.ag[i] += dt;
+      PX[i] = X[i]; PY[i] = Y[i];
+      if (SL[i]) continue;
+      let vx = VX[i] * DAMP, vy = (VY[i] + GRAV * dt) * DAMP;
+      const s2 = vx * vx + vy * vy;
+      if (s2 > VMAX * VMAX) { const k = VMAX / Math.sqrt(s2); vx *= k; vy *= k; }
+      VX[i] = vx; VY[i] = vy; WV[i] *= ADAMP;
+      X[i] += vx * dt; Y[i] += vy * dt; AN[i] += WV[i] * dt;
+    }
+    // 2) Kisi ruang 3x4 (sel 144) dibangun ulang ke larik yang sudah disiapkan.
+    const cnt = g.gc, fill = g.gf, cellOf = g.go;
+    cnt.fill(0);
+    for (let i = 0; i < M; i++) {
+      if (!AL[i]) continue;
+      let cx = (X[i] / CELL) | 0, cy = Y[i] > 0 ? (Y[i] / CELL) | 0 : 0;
+      if (cx < 0) cx = 0; else if (cx >= GC) cx = GC - 1;
+      if (cy >= GR) cy = GR - 1;
+      const c = cy * GC + cx;
+      cellOf[i] = c; cnt[c]++;
+    }
+    GS[0] = 0;
+    for (let c = 0; c < GC * GR; c++) { GS[c + 1] = GS[c] + cnt[c]; fill[c] = GS[c]; }
+    for (let i = 0; i < M; i++) if (AL[i]) GI[fill[cellOf[i]]++] = i;
+    // 3) Pasangan calon dikumpulkan sekali dari kisi (sel sendiri + 4 tetangga ke depan, tanpa ganda).
+    pN = 0;
+    for (let c = 0; c < GC * GR; c++) {
+      const cx = c % GC, cy = (c / GC) | 0, e = GS[c + 1];
+      for (let a = GS[c]; a < e; a++) {
+        const i = GI[a];
+        for (let b = a + 1; b < e; b++) addPair(i, GI[b]);
+        cellPairs(i, cx + 1, cy); cellPairs(i, cx - 1, cy + 1); cellPairs(i, cx, cy + 1); cellPairs(i, cx + 1, cy + 1);
+      }
+    }
+    PK.subarray(0, pN).sort();
+    // 4) Beberapa putaran: lantai dan dinding dulu, lalu pasangan dari bawah ke atas (koreksi posisi + impuls).
+    for (let it = 0; it < g.iter; it++) {
+      for (let i = 0; i < M; i++) {
+        if (!AL[i] || SL[i]) continue;
+        const r = R[i];
+        if (X[i] < r) { X[i] = r; wallHit(i, -1, 0); } else if (X[i] > W - r) { X[i] = W - r; wallHit(i, 1, 0); }
+        if (Y[i] > H - r) { Y[i] = H - r; wallHit(i, 0, 1); }
+      }
+      for (let k = 0; k < pN; k++) {
+        const q = PK[k] % 8192, i = PA[q], j = PB[q];
+        if (AL[i] && AL[j]) collide(i, j);
+      }
+    }
+    // Pembatas terakhir: tak ada buah yang tertinggal di luar dinding.
+    for (let i = 0; i < M; i++) {
+      if (!AL[i]) continue;
+      const r = R[i];
+      if (X[i] < r) X[i] = r; else if (X[i] > W - r) X[i] = W - r;
+      if (Y[i] > H - r) Y[i] = H - r;
+    }
+    // 5) Buah hasil leburan muncul SETELAH seluruh putaran tabrakan.
+    if (mN) {
+      const n = mN;
+      for (let k = 0; k < n; k++) mergePair(g, MA[k], MB[k]);
+      for (let i = 0; i < M; i++) if (AL[i]) { SL[i] = 0; ST[i] = 0; }
+    }
+    // 6) Tidur, garis bibir, bakul sesak.
+    let danger = false, live = 0;
+    for (let i = 0; i < M; i++) {
+      if (!AL[i]) continue;
+      live++;
+      if (!SL[i]) {
+        // Kecepatan diukur dari gerak nyata selama langkah ini (setelah koreksi), bukan sisa kecepatan
+        // yang terus dibatalkan tumpukan: buah yang terjepit diam tetap bisa tidur.
+        const mx = X[i] - PX[i], my = Y[i] - PY[i], m2 = mx * mx + my * my;
+        MV[i] = Math.sqrt(m2) / dt;
+        if (m2 < SLEEP_V * SLEEP_V * dt * dt) {
+          ST[i] += dt;
+          if (ST[i] >= SLEEP_T) { SL[i] = 1; VX[i] = 0; VY[i] = 0; WV[i] = 0; MV[i] = 0; }
+          else if (ST[i] >= SLEEP_T * 0.5) WV[i] *= 0.8; // putaran sisa diredam, wajah berhenti bergoyang
+        } else ST[i] = 0;
+      }
+      if (g.ag[i] >= AGE_MIN && Y[i] - R[i] < LOSE_Y) danger = true;
+    }
+    g.live = live;
+    if (impact > g.impact) g.impact = impact;
+    g.dangerT = danger && !g.noLose ? g.dangerT + dt : 0;
+    g.capT = live >= g.cap && !g.noLose ? g.capT + dt : 0;
+    g.t += dt;
+    if (g.dangerT >= GRACE - 1e-9) { g.over = true; g.reason = "luber"; }
+    else if (g.capT >= FULL_T) { g.over = true; g.reason = "sesak"; }
+  }
+
+  // ---------- Simpan dan lanjutkan ----------
+  const rd = (v) => Math.round(v * 100) / 100;
+  function snapshot(g) {
+    const b = [];
+    for (let i = 0; i < g.M; i++) {
+      if (!g.al[i]) continue;
+      b.push([rd(g.x[i]), rd(g.y[i]), rd(g.vx[i]), rd(g.vy[i]), rd(g.wv[i]), rd(g.an[i] % (Math.PI * 2)), g.lv[i], g.gd[i], rd(g.ag[i])]);
+    }
+    return {
+      v: 1, kind: g.kind, seed: g.seed, rs: g.rs, h1: g.h1, h2: g.h2, cur: g.cur, nxt: g.nxt, t: rd(g.t), score: g.score,
+      chain: g.chain, lastMergeT: rd(g.lastMergeT), maxChain: g.maxChain, top: g.top, seen: g.seen, durians: g.durians,
+      lebur: g.lebur, drops: g.drops, merges: g.merges, golds: g.golds, nextDropAt: rd(g.nextDropAt), cap: g.cap, over: g.over, reason: g.reason,
+      dangerT: rd(g.dangerT), capT: rd(g.capT), b
+    };
+  }
+  const isInt = (v, a, b) => Number.isInteger(v) && v >= a && v <= b;
+  const isNum = (v) => typeof v === "number" && isFinite(v);
+  const okItem = (it) => !!it && isInt(it.l, 0, 4) && (it.g === 0 || it.g === 1);
+  function restore(o) {
+    try {
+      if (!o || o.v !== 1 || !Array.isArray(o.b) || !isInt(o.cap, 1, 200) || o.b.length > o.cap) return null;
+      if (!isInt(o.seed, 0, 0xFFFFFFFF) || !Number.isInteger(o.rs) || !okItem(o.cur) || !okItem(o.nxt)) return null;
+      if (![o.t, o.lastMergeT, o.nextDropAt].every(isNum) || !isInt(o.score, 0, MAX_SCORE) || !isInt(o.top, -1, 10)) return null;
+      const g = shell(o.seed, o.kind, { cap: o.cap });
+      g.rs = o.rs; g.h1 = isInt(o.h1, -1, 4) ? o.h1 : -1; g.h2 = isInt(o.h2, -1, 4) ? o.h2 : -1;
+      g.cur = { l: o.cur.l, g: o.cur.g }; g.nxt = { l: o.nxt.l, g: o.nxt.g };
+      g.t = o.t; g.score = o.score; g.lastMergeT = o.lastMergeT; g.nextDropAt = o.nextDropAt;
+      // Waktu tenggang bibir dan hitungan sesak ikut dilanjutkan: muat ulang halaman tidak memberi tenggang baru.
+      g.dangerT = isNum(o.dangerT) ? clamp(o.dangerT, 0, GRACE) : 0;
+      g.capT = isNum(o.capT) ? clamp(o.capT, 0, FULL_T) : 0;
+      for (const k of ["chain", "maxChain", "durians", "lebur", "drops", "merges", "golds"]) g[k] = isInt(o[k], 0, 1e9) ? o[k] : 0;
+      for (const e of o.b) {
+        if (!Array.isArray(e) || e.length < 9 || !isInt(e[6], 0, 10) || !e.slice(0, 6).every(isNum) || !isNum(e[8])) return null;
+        const r = FRUITS[e[6]].r;
+        const i = spawn(g, e[6], clamp(e[0], r, W - r), Math.min(e[1], H - r), clamp(e[2], -VMAX, VMAX), clamp(e[3], -VMAX, VMAX), e[7] === 1, 0);
+        g.wv[i] = clamp(e[4], -200, 200); g.an[i] = e[5]; g.ag[i] = Math.max(0, e[8]); g.bt[i] = g.t - 10;
+      }
+      g.top = Math.max(g.top, o.top);
+      g.seen |= isInt(o.seen, 0, 2047) ? o.seen : 0;
+      g.over = o.over === true; g.reason = o.reason === "sesak" ? "sesak" : o.over ? "luber" : "";
+      return g;
+    } catch (e) { return null; }
+  }
+
+  // ---------- Tanggal, Harian, tantangan, teks bagikan ----------
+  function dateKey(d) {
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function hashStr(s) {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+    return h >>> 0;
+  }
+  // Seed Harian = hash('jatuh-buah:' + YYYYMMDD): semua pemain mendapat urutan buah yang sama hari itu.
+  function dailySeed(key) { return hashStr("jatuh-buah:" + key.replace(/-/g, "")); }
+  function dailyNumber(key) {
+    const [y1, m1, d1] = DAILY_LAUNCH.split("-").map(Number);
+    const [y2, m2, d2] = key.split("-").map(Number);
+    return Math.round((new Date(y2, m2 - 1, d2) - new Date(y1, m1 - 1, d1)) / 86400000) + 1;
+  }
+  function prevDay(key) {
+    const [y, m, d] = key.split("-").map(Number);
+    return dateKey(new Date(y, m - 1, d - 1));
+  }
+  const fmt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  function cleanName(s) { return String(s || "").replace(/[^\p{L}\p{N} ._-]/gu, "").trim().slice(0, 12); }
+  const duelCheck = (s, sc, n) => hashStr("jb|" + s + "|" + sc + "|" + n) & 0xFFFF;
+  function encodeDuel(d) {
+    const n = cleanName(d.n), s = d.s >>> 0, sc = d.sc;
+    const json = JSON.stringify({ v: 1, s, sc, n, c: duelCheck(s, sc, n) });
+    return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+  // Link tantangan diperiksa ketat: angka mustahil atau link yang diubah tangan ditolak.
+  function decodeDuel(code) {
+    try {
+      if (!/^[A-Za-z0-9_-]{8,200}$/.test(String(code))) return null;
+      const o = JSON.parse(decodeURIComponent(escape(atob(String(code).replace(/-/g, "+").replace(/_/g, "/")))));
+      if (!o || o.v !== 1 || !isInt(o.s, 0, 0xFFFFFFFF) || !isInt(o.sc, 0, DUEL_MAX)) return null;
+      const n = cleanName(o.n);
+      if (!n || n !== o.n || o.c !== duelCheck(o.s, o.sc, n)) return null;
+      return { s: o.s, sc: o.sc, n };
+    } catch (e) { return null; }
+  }
+  function shareText(o) {
+    const top = FRUITS[Math.max(0, Math.min(10, o.top))].name;
+    return (o.number ? "Jatuh Buah Harian #" + o.number : "Jatuh Buah") + "\n🥭 Buah tertinggi: " + top +
+      "\n⭐ " + fmt(o.score) + " poin · rantai terpanjang " + o.chain + "\n" +
+      (o.number ? "Urutan buahnya sama untuk semua." : "Urutan buahnya sama buatmu.") + " Coba kalahkan aku!\n" + o.url;
+  }
+
+  return {
+    W, H, LOSE_Y, STEP, CAP, COOLDOWN, DUEL_MAX, CHAIN_WIN, AGE_MIN, GRACE, FULL_T, FRUITS, WEIGHTS, MAX_SCORE, DURIAN_PTS,
+    rng, next, drawItem, newGame, spawn, canDrop, drop, step, snapshot, restore,
+    dateKey, hashStr, dailySeed, dailyNumber, prevDay, fmt, cleanName, encodeDuel, decodeDuel, shareText
+  };
+})();
+/*CORE:END*/
+
+// ================= Antarmuka =================
+const STORE_KEY = "jatuh-buah.v1";
+const HOME_URL = "https://dehayuk.netlify.app/jatuh-buah/";
+const { FRUITS, fmt } = GameCore;
+const STEP = GameCore.STEP;
+const RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const UJI = /(^|[?&])uji=1(&|$)/.test(location.search.slice(1));
+const $ = (id) => document.getElementById(id);
+const TAU = Math.PI * 2;
+// Kanvas logis: bakul 360x520 + dinding 12 di kiri-kanan, bibir atas 6, lantai 14.
+const WALL = 12, TOPM = 6, LW = 360 + 2 * WALL, LH = TOPM + 520 + 14, PADF = 1.36;
+const SKINS = [
+  { id: "anyaman", name: "Anyaman", need: 0, a: "#D9A866", b: "#A8733C", c: "#F0C98A", in1: "#154542", in2: "#0A2826" },
+  { id: "tampah", name: "Tampah", need: 8000, a: "#EAD08E", b: "#C4A15A", c: "#FAE6B4", in1: "#1C4032", in2: "#0E2A20" },
+  { id: "besek", name: "Besek", need: 15000, a: "#D2D2A0", b: "#9FA266", c: "#EEF0C8", in1: "#16394A", in2: "#0A2330" }
+];
+
+let S = {
+  best: 0, games: 0, merges: 0, daily: null, streak: { last: null, count: 0 },
+  settings: { mute: false, vibrate: true, hemat: false, skin: "anyaman" }, badges: [], name: "", runs: {},
+  kebun: { top: -1, durian: 0, lebur: 0 }, duelW: 0, duelL: 0, duelD: 0, pendingDuel: null, duelDone: [], helped: false
+};
+try {
+  const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+  if (saved && typeof saved.best === "number") {
+    S = Object.assign(S, saved);
+    S.settings = Object.assign({ mute: false, vibrate: true, hemat: false, skin: "anyaman" }, saved.settings || {});
+    S.streak = Object.assign({ last: null, count: 0 }, saved.streak || {});
+    S.kebun = Object.assign({ top: -1, durian: 0, lebur: 0 }, saved.kebun || {});
+    if (!S.runs || typeof S.runs !== "object") S.runs = {};
+    if (!Array.isArray(S.badges)) S.badges = [];
+    if (!Array.isArray(S.duelDone)) S.duelDone = [];
+  }
+} catch (e) {}
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch (e) {} }
+
+const today = () => GameCore.dateKey(new Date());
+function streakNow() {
+  const t = today();
+  return S.streak.last === t || S.streak.last === GameCore.prevDay(t) ? S.streak.count : 0;
+}
+function shareUrl() {
+  const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  return /^https?:$/.test(location.protocol) && !local ? location.origin + location.pathname : HOME_URL;
+}
+const skinOf = () => SKINS.find((s) => s.id === S.settings.skin && S.best >= s.need) || SKINS[0];
+
+// ---------- Suara (WebAudio) dan getar ----------
+let actx = null, master = null;
+function audio() {
+  if (!actx) {
+    actx = new (window.AudioContext || window.webkitAudioContext)();
+    master = actx.createGain();
+    master.gain.value = 0.9;
+    master.connect(actx.destination);
+  }
+  if (actx.state === "suspended") actx.resume();
+  return actx;
+}
+function tone(freq, dur, type, vol, delay, toFreq) {
+  if (S.settings.mute) return;
+  try {
+    const a = audio();
+    const t = a.currentTime + (delay || 0);
+    const osc = a.createOscillator(), gain = a.createGain();
+    osc.type = type || "sine";
+    osc.frequency.setValueAtTime(freq, t);
+    if (toFreq) osc.frequency.exponentialRampToValueAtTime(toFreq, t + dur);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.linearRampToValueAtTime(vol || 0.06, t + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(gain); gain.connect(master);
+    osc.start(t); osc.stop(t + dur + 0.03);
+  } catch (e) {}
+}
+const sfx = {
+  drop() { tone(700, 0.06, "sine", 0.05, 0, 420); },
+  bounce(v) { const k = Math.min(1, v / 1500); tone(150 + 120 * k, 0.07, "sine", 0.03 + 0.07 * k, 0, 90); },
+  // Nada naik per langkah rantai: 330 Hz x 1,12^k.
+  merge(k) { const f = 330 * Math.pow(1.12, Math.min(k, 14)); tone(f, 0.13, "sine", 0.09); tone(f * 2, 0.08, "sine", 0.03, 0.03); },
+  top() { [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.16, "triangle", 0.06, i * 0.07)); },
+  durian() { tone(120, 0.45, "sine", 0.3, 0, 38); tone(80, 0.5, "sine", 0.22, 0.12, 30); [392, 523, 659, 784, 1047].forEach((f, i) => tone(f, 0.2, "triangle", 0.05, 0.25 + i * 0.08)); },
+  beat() { tone(70, 0.12, "sine", 0.16, 0, 45); tone(66, 0.1, "sine", 0.11, 0.17, 42); },
+  over() { [392, 330, 262, 196].forEach((f, i) => tone(f, 0.24, "triangle", 0.06, i * 0.14)); },
+  record() { [784, 988, 1175, 1568].forEach((f, i) => tone(f, 0.12, "square", 0.03, i * 0.07)); },
+  bad() { tone(140, 0.14, "square", 0.03); },
+  tap() { tone(620, 0.04, "triangle", 0.035); }
+};
+function buzz(p) { try { if (S.settings.vibrate && navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+function confetti(n) {
+  if (RM) return;
+  const colors = ["#F4C152", "#7FE0A3", "#FF7A70", "#EAF6F3", "#9BCB3C", "#FF9F2E"];
+  for (let i = 0; i < (n || 30); i++) {
+    const c = document.createElement("i");
+    c.className = "confetti";
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.background = colors[i % colors.length];
+    c.style.animationDelay = Math.random() * 0.4 + "s";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 2300);
+  }
+}
+
+// ---------- Gambar buah (jalur kanvas asli, dirender sekali per level) ----------
+function circ(c, x, y, r) { c.beginPath(); c.arc(x, y, r, 0, TAU); }
+function fillBody(c, R, a, b, d) {
+  const gr = c.createRadialGradient(-R * .35, -R * .42, R * .08, 0, 0, R * 1.02);
+  gr.addColorStop(0, a); gr.addColorStop(.55, b); gr.addColorStop(1, d);
+  c.fillStyle = gr; circ(c, 0, 0, R); c.fill();
+}
+function star(c, x, y, ro, ri, n) {
+  c.beginPath();
+  for (let k = 0; k < n * 2; k++) {
+    const a = -Math.PI / 2 + k * Math.PI / n, rr = k & 1 ? ri : ro;
+    c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
+  }
+  c.closePath();
+}
+function clipBody(c, R) { c.save(); circ(c, 0, 0, R * .985); c.clip(); }
+function stem(c, R, len, w) {
+  c.strokeStyle = "#6B4A2A"; c.lineWidth = R * (w || .1); c.lineCap = "round";
+  c.beginPath(); c.moveTo(0, -R * .84); c.lineTo(R * .06, -R * (.84 + len)); c.stroke();
+}
+function leaf(c, x, y, rx, ry, rot, col) {
+  c.fillStyle = col || "#4FA33A"; c.beginPath(); c.ellipse(x, y, rx, ry, rot, 0, TAU); c.fill();
+  c.strokeStyle = "rgba(255,255,255,.3)"; c.lineWidth = ry * .25; c.beginPath();
+  c.moveTo(x - Math.cos(rot) * rx * .8, y - Math.sin(rot) * rx * .8); c.lineTo(x + Math.cos(rot) * rx * .8, y + Math.sin(rot) * rx * .8); c.stroke();
+}
+const ART = [
+  (c, R) => { // Ceri kersen
+    c.strokeStyle = "#5C8A2E"; c.lineWidth = R * .13; c.lineCap = "round";
+    c.beginPath(); c.moveTo(0, -R * .75); c.quadraticCurveTo(R * .02, -R * 1.12, R * .38, -R * 1.3); c.stroke();
+    leaf(c, R * .66, -R * 1.14, R * .28, R * .13, -.45, "#6DBE45");
+    fillBody(c, R, "#FF9A9A", "#E0283A", "#961024");
+  },
+  (c, R) => { // Rambutan: rambut pendek berujung hijau
+    const n = 28;
+    c.lineCap = "round";
+    for (let k = 0; k < n; k++) {
+      const a = k / n * TAU, ca = Math.cos(a), sa = Math.sin(a), b = a + .38;
+      const x2 = Math.cos(b) * R * 1.22, y2 = Math.sin(b) * R * 1.22;
+      c.strokeStyle = "#C81E2E"; c.lineWidth = R * .11;
+      c.beginPath(); c.moveTo(ca * R * .7, sa * R * .7); c.quadraticCurveTo(ca * R * 1.12, sa * R * 1.12, x2, y2); c.stroke();
+      c.fillStyle = "#8BC34A"; circ(c, x2, y2, R * .065); c.fill();
+    }
+    fillBody(c, R * .9, "#FF7C7C", "#D8323A", "#8A1320");
+  },
+  (c, R) => { // Duku: kuning pucat dengan mahkota kecil
+    fillBody(c, R, "#FFF3CF", "#EACB86", "#B48644");
+    c.fillStyle = "rgba(150,100,40,.28)";
+    for (let k = 3; k < 30; k++) { const a = k * 2.39996, d = R * .92 * Math.sqrt(k / 30); circ(c, Math.cos(a) * d, Math.sin(a) * d, R * .03); c.fill(); }
+    c.fillStyle = "#7E5A30"; star(c, 0, -R * .84, R * .22, R * .09, 5); c.fill();
+    c.fillStyle = "#5A3E1E"; circ(c, 0, -R * .84, R * .06); c.fill();
+  },
+  (c, R) => { // Salak: cokelat bersisik segitiga
+    c.fillStyle = "#4E2A12"; c.beginPath(); c.moveTo(-R * .16, -R * .9); c.lineTo(0, -R * 1.22); c.lineTo(R * .16, -R * .9); c.fill();
+    fillBody(c, R, "#B98050", "#7A4A2A", "#43230F");
+    clipBody(c, R);
+    const s = R * .3;
+    for (let row = -4; row <= 4; row++) for (let col = -4; col <= 4; col++) {
+      const x = col * s + (row & 1 ? s / 2 : 0), y = row * s * .78;
+      c.fillStyle = "rgba(55,26,8,.5)";
+      c.beginPath(); c.moveTo(x - s * .32, y + s * .24); c.lineTo(x, y - s * .3); c.lineTo(x + s * .32, y + s * .24); c.closePath(); c.fill();
+      c.strokeStyle = "rgba(255,214,170,.28)"; c.lineWidth = R * .025;
+      c.beginPath(); c.moveTo(x - s * .32, y + s * .24); c.lineTo(x, y - s * .3); c.stroke();
+    }
+    c.restore();
+  },
+  (c, R) => { // Jeruk: pori-pori halus dan daun
+    fillBody(c, R, "#FFD08A", "#F7931E", "#BD5C08");
+    c.fillStyle = "rgba(180,80,0,.28)";
+    for (let k = 1; k < 52; k++) { const a = k * 2.39996, d = R * .94 * Math.sqrt(k / 52); circ(c, Math.cos(a) * d, Math.sin(a) * d, R * .028); c.fill(); }
+    c.fillStyle = "#6B4A2A"; circ(c, 0, -R * .9, R * .08); c.fill();
+    leaf(c, R * .3, -R * 1.02, R * .3, R * .12, -.35);
+  },
+  (c, R) => { // Mangga: hijau ke kuning, sedikit lonjong
+    stem(c, R, .22, .09);
+    leaf(c, -R * .28, -R * 1.02, R * .32, R * .12, .4, "#3F8F33");
+    const gr = c.createLinearGradient(-R * .8, R * .8, R * .7, -R * .8);
+    gr.addColorStop(0, "#3C9637"); gr.addColorStop(.42, "#9BCB3C"); gr.addColorStop(.72, "#FFD23F"); gr.addColorStop(1, "#FF9A2E");
+    c.fillStyle = gr; c.save(); c.rotate(-.55); c.beginPath(); c.ellipse(0, 0, R, R * .94, 0, 0, TAU); c.fill(); c.restore();
+  },
+  (c, R) => { // Manggis: ungu tua dengan kelopak hijau
+    fillBody(c, R, "#A65596", "#5B1F4A", "#2A0A20");
+    for (let k = -2; k <= 2; k++) {
+      const th = k * .62;
+      c.save(); c.translate(Math.sin(th) * R * .26, -R * .72 + (1 - Math.cos(th)) * R * .12); c.rotate(th);
+      c.fillStyle = "#4E8A3A"; c.beginPath(); c.ellipse(0, -R * .08, R * .12, R * .2, 0, 0, TAU); c.fill();
+      c.fillStyle = "rgba(255,255,255,.18)"; c.beginPath(); c.ellipse(-R * .03, -R * .12, R * .04, R * .11, 0, 0, TAU); c.fill();
+      c.restore();
+    }
+    c.fillStyle = "#6B4A2A"; c.fillRect(-R * .05, -R * 1.08, R * .1, R * .26);
+  },
+  (c, R) => { // Nanas: kisi wajik dan mahkota daun
+    for (let k = -3; k <= 3; k++) {
+      const th = k * .34, bx = k * R * .1, len = R * (.62 - Math.abs(k) * .06);
+      c.fillStyle = k & 1 ? "#5DBB4A" : "#3F9A3A";
+      c.beginPath(); c.moveTo(bx - R * .13, -R * .72); c.lineTo(bx + Math.sin(th) * len, -R * .72 - Math.cos(th) * len); c.lineTo(bx + R * .13, -R * .72); c.closePath(); c.fill();
+    }
+    fillBody(c, R, "#FFEA8C", "#F2C230", "#B8840F");
+    clipBody(c, R);
+    const s = R * .34;
+    c.strokeStyle = "rgba(150,95,10,.55)"; c.lineWidth = R * .045;
+    for (let k = -7; k <= 7; k++) {
+      c.beginPath(); c.moveTo(k * s - R * 1.5, -R * 1.5); c.lineTo(k * s + R * 1.5, R * 1.5); c.stroke();
+      c.beginPath(); c.moveTo(k * s + R * 1.5, -R * 1.5); c.lineTo(k * s - R * 1.5, R * 1.5); c.stroke();
+    }
+    c.fillStyle = "rgba(170,110,10,.6)";
+    for (let a = -7; a <= 7; a++) for (let b = -7; b <= 7; b++) {
+      const x = (a + b) * s / 2, y = (b - a) * s / 2;
+      if (x * x + y * y < R * R) { circ(c, x, y, R * .04); c.fill(); }
+    }
+    c.restore();
+  },
+  (c, R) => { // Pepaya: jingga dengan tepi hijau
+    fillBody(c, R, "#8FCB58", "#4E8F36", "#2E5E1E");
+    fillBody(c, R * .84, "#FFC795", "#F58A3C", "#CC5A18");
+    c.save(); circ(c, 0, 0, R * .84); c.clip();
+    c.strokeStyle = "rgba(190,70,10,.35)"; c.lineWidth = R * .05; c.lineCap = "round";
+    for (let k = -2; k <= 2; k++) { if (!k) continue; c.beginPath(); c.ellipse(0, 0, Math.abs(k) * R * .36, R * .95, 0, 0, TAU); c.stroke(); }
+    c.restore();
+    c.fillStyle = "#4E8F36"; c.fillRect(-R * .06, -R * 1.08, R * .12, R * .2);
+  },
+  (c, R) => { // Nangka: hijau kekuningan berbintil
+    fillBody(c, R, "#EDE77A", "#B8C23A", "#6A7618");
+    clipBody(c, R);
+    const s = R * .2;
+    for (let row = -6; row <= 6; row++) for (let col = -6; col <= 6; col++) {
+      const x = col * s + (row & 1 ? s / 2 : 0), y = row * s * .87;
+      if (x * x + y * y > R * R * 1.05) continue;
+      c.fillStyle = "rgba(78,90,12,.42)"; circ(c, x, y, s * .34); c.fill();
+      c.fillStyle = "rgba(255,255,210,.22)"; circ(c, x - s * .1, y - s * .1, s * .13); c.fill();
+    }
+    c.restore();
+    c.fillStyle = "#6B4A2A"; c.fillRect(-R * .06, -R * 1.1, R * .12, R * .22);
+  },
+  (c, R) => { // Durian: duri segitiga di sekeliling dan tangkai
+    const n = 22;
+    c.lineJoin = "round";
+    for (let k = 0; k < n; k++) {
+      const a = k / n * TAU, h = TAU / n * .45;
+      c.fillStyle = "#6F7D1F"; c.strokeStyle = "rgba(40,50,0,.45)"; c.lineWidth = R * .02;
+      c.beginPath();
+      c.moveTo(Math.cos(a - h) * R * .8, Math.sin(a - h) * R * .8);
+      c.lineTo(Math.cos(a) * R * 1.13, Math.sin(a) * R * 1.13);
+      c.lineTo(Math.cos(a + h) * R * .8, Math.sin(a + h) * R * .8);
+      c.closePath(); c.fill(); c.stroke();
+    }
+    fillBody(c, R * .9, "#CCD95E", "#8A9A2E", "#4C5814");
+    clipBody(c, R * .9);
+    const s = R * .27;
+    for (let row = -4; row <= 4; row++) for (let col = -4; col <= 4; col++) {
+      const x = col * s + (row & 1 ? s / 2 : 0), y = row * s * .87;
+      c.fillStyle = "rgba(60,70,8,.45)";
+      c.beginPath(); c.moveTo(x - s * .18, y + s * .14); c.lineTo(x, y - s * .2); c.lineTo(x + s * .18, y + s * .14); c.closePath(); c.fill();
+    }
+    c.restore();
+    c.strokeStyle = "#5E3F20"; c.lineWidth = R * .14; c.lineCap = "round";
+    c.beginPath(); c.moveTo(0, -R * .82); c.lineTo(R * .05, -R * 1.2); c.stroke();
+  }
+];
+const BODYR = [1, .9, 1, 1, 1, 1, 1, 1, 1, 1, .9];
+const RING = [0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0]; // mata bercincin putih untuk buah berkulit gelap
+function shadeAndFace(c, R, squint, ring) {
+  let gr = c.createRadialGradient(-R * .25, -R * .3, R * .45, 0, 0, R);
+  gr.addColorStop(0, "rgba(0,0,0,0)"); gr.addColorStop(1, "rgba(0,0,0,.2)");
+  c.fillStyle = gr; circ(c, 0, 0, R); c.fill();
+  c.fillStyle = "rgba(255,255,255,.4)"; c.beginPath(); c.ellipse(-R * .42, -R * .46, R * .2, R * .11, -.75, 0, TAU); c.fill();
+  // Wajah lucu: dua mata titik; memicing saat melebur.
+  const ex = R * .3, ey = R * .12, er = Math.max(1.5, R * .09), ink = "#2A1A10";
+  c.lineCap = "round";
+  if (R > 15) {
+    c.fillStyle = "rgba(255,110,130,.38)";
+    for (const s of [-1, 1]) { c.beginPath(); c.ellipse(s * R * .54, ey + R * .2, R * .12, R * .075, 0, 0, TAU); c.fill(); }
+  }
+  for (const s of [-1, 1]) {
+    const x = s * ex;
+    if (ring) { c.fillStyle = "rgba(255,255,255,.95)"; circ(c, x, ey, er * 1.55); c.fill(); }
+    if (squint) {
+      c.strokeStyle = ink; c.lineWidth = er * .85;
+      c.beginPath(); c.moveTo(x - er * 1.15, ey + er * .45); c.quadraticCurveTo(x, ey - er * 1.3, x + er * 1.15, ey + er * .45); c.stroke();
+    } else {
+      c.fillStyle = ink; circ(c, x, ey, er); c.fill();
+      c.fillStyle = "#fff"; circ(c, x - er * .32, ey - er * .36, er * .38); c.fill();
+    }
+  }
+  const mouth = ring ? "#FFD6DE" : ink;
+  c.strokeStyle = mouth; c.fillStyle = mouth; c.lineWidth = Math.max(1, R * (ring ? .06 : .045));
+  if (squint) { c.beginPath(); c.arc(0, ey + R * .15, R * .1, 0, Math.PI); c.closePath(); c.fill(); }
+  else { c.beginPath(); c.arc(0, ey + R * .15, R * .075, .15 * Math.PI, .85 * Math.PI); c.stroke(); }
+}
+function drawFruit(c, lv, R, squint) {
+  ART[lv](c, R);
+  shadeAndFace(c, R * BODYR[lv], squint, RING[lv]);
+}
+function newCanvas(w, h) { const cv = document.createElement("canvas"); cv.width = w; cv.height = h; return cv; }
+function ctx2d(cv) { try { return cv.getContext("2d"); } catch (e) { return null; } }
+function makeSprite(lv, squint, k) {
+  const P = FRUITS[lv].r * PADF, px = Math.max(4, Math.ceil(2 * P * k));
+  const cv = newCanvas(px, px), c = ctx2d(cv);
+  if (!c) return null;
+  c.setTransform(px / (2 * P), 0, 0, px / (2 * P), px / 2, px / 2);
+  drawFruit(c, lv, FRUITS[lv].r, squint);
+  return cv;
+}
+// Ikon kecil untuk DOM (tangga buah, kebun, panel). Semua buah digambar sama besar agar mudah dikenali.
+const ICONS = [];
+function buildIcons() {
+  for (let lv = 0; lv < 11; lv++) {
+    let url = "";
+    try {
+      const cv = newCanvas(72, 72), c = ctx2d(cv);
+      if (c) {
+        const P = FRUITS[lv].r * PADF;
+        c.setTransform(72 / (2 * P), 0, 0, 72 / (2 * P), 36, 36);
+        drawFruit(c, lv, FRUITS[lv].r, false);
+        url = cv.toDataURL("image/png");
+      }
+    } catch (e) {}
+    ICONS[lv] = url || "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+  }
+}
+function ladderHTML(mask, top) {
+  let h = "";
+  for (let lv = 0; lv < 11; lv++) {
+    const on = mask & (1 << lv);
+    h += "<img src=\"" + ICONS[lv] + "\" alt=\"" + FRUITS[lv].name + (on ? "" : " (belum)") + "\" title=\"" + FRUITS[lv].name + "\" class=\"" + (on ? "" : "off") + (lv === top ? " top" : "") + "\">";
+  }
+  return h;
+}
+
+// ---------- Bakul (latar yang digambar sekali per ukuran/kulit) ----------
+function rrect(c, x, y, w, h, r) {
+  c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r);
+  c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath();
+}
+function weave(c, sk, x0, y0, w, h) {
+  const s = sk.id === "besek" ? 8 : 6;
+  for (let y = y0; y < y0 + h; y += s) for (let x = x0; x < x0 + w; x += s) {
+    const odd = ((x - x0) / s + (y - y0) / s) & 1;
+    if (sk.id === "tampah") {
+      c.fillStyle = ((x + y) / s) % 3 < 1 ? sk.b : sk.a;
+      c.fillRect(x, y, s, s);
+      continue;
+    }
+    c.fillStyle = odd ? sk.b : sk.a; c.fillRect(x, y, s, s);
+    c.fillStyle = odd ? "rgba(255,255,255,.14)" : "rgba(255,255,255,.3)";
+    if (odd) c.fillRect(x + s * .35, y, s * .3, s); else c.fillRect(x, y + s * .35, s, s * .3);
+  }
+}
+let bgCv = null, bgCss = false;
+function buildBg(k) {
+  const sk = skinOf();
+  bgCv = newCanvas(Math.round(LW * k), Math.round(LH * k));
+  const c = ctx2d(bgCv);
+  if (!c) { bgCv = null; return; }
+  c.setTransform(k, 0, 0, k, 0, 0);
+  // Bagian dalam bakul
+  const gi = c.createLinearGradient(0, TOPM, 0, TOPM + 520);
+  gi.addColorStop(0, sk.in1); gi.addColorStop(1, sk.in2);
+  c.fillStyle = gi; c.fillRect(WALL, 0, 360, TOPM + 520);
+  c.save(); c.beginPath(); c.rect(WALL, 0, 360, TOPM + 520); c.clip();
+  c.strokeStyle = "rgba(255,255,255,.035)"; c.lineWidth = 7;
+  for (let x = -540; x < 400; x += 24) { c.beginPath(); c.moveTo(WALL + x, 0); c.lineTo(WALL + x + 540, 540); c.stroke(); }
+  for (let x = 0; x < 900; x += 24) { c.beginPath(); c.moveTo(WALL + x, 0); c.lineTo(WALL + x - 540, 540); c.stroke(); }
+  const sh = c.createLinearGradient(WALL, 0, WALL + 30, 0);
+  sh.addColorStop(0, "rgba(0,0,0,.35)"); sh.addColorStop(1, "rgba(0,0,0,0)");
+  c.fillStyle = sh; c.fillRect(WALL, 0, 30, 540);
+  const sh2 = c.createLinearGradient(LW - WALL, 0, LW - WALL - 30, 0);
+  sh2.addColorStop(0, "rgba(0,0,0,.35)"); sh2.addColorStop(1, "rgba(0,0,0,0)");
+  c.fillStyle = sh2; c.fillRect(LW - WALL - 30, 0, 30, 540);
+  const sh3 = c.createLinearGradient(0, TOPM + 520, 0, TOPM + 480);
+  sh3.addColorStop(0, "rgba(0,0,0,.35)"); sh3.addColorStop(1, "rgba(0,0,0,0)");
+  c.fillStyle = sh3; c.fillRect(WALL, TOPM + 480, 360, 40);
+  c.restore();
+  // Dinding dan lantai anyaman
+  c.save();
+  c.beginPath();
+  rrect(c, 0, 0, WALL, LH, 5);
+  rrect(c, LW - WALL, 0, WALL, LH, 5);
+  rrect(c, 0, TOPM + 520, LW, LH - TOPM - 520, 12);
+  c.clip("nonzero");
+  weave(c, sk, 0, 0, WALL, LH);
+  weave(c, sk, LW - WALL, 0, WALL, LH);
+  weave(c, sk, 0, TOPM + 520, LW, LH - TOPM - 520);
+  c.strokeStyle = "rgba(0,0,0,.28)"; c.lineWidth = 2;
+  c.beginPath(); c.moveTo(WALL, 0); c.lineTo(WALL, TOPM + 520); c.lineTo(LW - WALL, TOPM + 520); c.lineTo(LW - WALL, 0); c.stroke();
+  c.restore();
+  // Pinggir atas dinding (bibir anyaman)
+  c.fillStyle = sk.c;
+  c.beginPath(); rrect(c, -1, 0, WALL + 2, 8, 4); rrect(c, LW - WALL - 1, 0, WALL + 2, 8, 4); c.fill();
+  try { stageEl.style.backgroundImage = "url(" + bgCv.toDataURL("image/png") + ")"; bgCss = true; } catch (e) { bgCss = false; }
+}
+
+// ---------- Kanvas utama ----------
+const stageEl = $("stage"), fxEl = $("fx"), cv = $("cv");
+const ctx = ctx2d(cv);
+let scale = 0.85, dpr = 1, kpx = 1, sprites = [], autoHemat = false;
+const hemat = () => !!(S.settings.hemat || autoHemat);
+function buildSprites() {
+  sprites = [];
+  for (let lv = 0; lv < 11; lv++) { sprites.push(makeSprite(lv, false, kpx)); sprites.push(makeSprite(lv, true, kpx)); }
+}
+let lastBuiltK = 0, lastSkin = "";
+function layout() {
+  const W = document.documentElement.clientWidth || innerWidth, H = innerHeight || 640;
+  const maxW = Math.min(W, 480) - ($("play").hidden ? 32 : 16);
+  let availH = H * 0.62;
+  if (!$("play").hidden) availH = H - stageEl.getBoundingClientRect().top - 10 - $("ladder").offsetHeight - 6;
+  scale = Math.max(0.45, Math.min(maxW / LW, availH / LH, 1.3));
+  dpr = hemat() ? 1 : Math.min(2, window.devicePixelRatio || 1);
+  const cw = Math.round(LW * scale), ch = Math.round(LH * scale);
+  stageEl.style.width = cw + "px"; stageEl.style.height = ch + "px";
+  cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr);
+  kpx = cv.width / LW;
+  if (!ctx) return;
+  if (Math.abs(kpx - lastBuiltK) > 0.001 || lastSkin !== skinOf().id) {
+    lastBuiltK = kpx; lastSkin = skinOf().id;
+    buildSprites();
+    buildBg(kpx);
+  }
+}
+
+// ---------- Partikel (dibatasi 80, larik yang disiapkan sekali) ----------
+const PN = 80, pX = new Float32Array(PN), pY = new Float32Array(PN), pVX = new Float32Array(PN), pVY = new Float32Array(PN), pL = new Float32Array(PN), pS = new Float32Array(PN), pC = new Array(PN).fill("#fff");
+let pAlive = 0;
+function burst(x, y, color, n, power) {
+  if (RM || hemat() || !ctx) return;
+  for (let k = 0, i = 0; k < n && i < PN; i++) {
+    if (pL[i] > 0) continue;
+    const a = Math.random() * TAU, s = (120 + Math.random() * 260) * (power || 1);
+    pX[i] = x; pY[i] = y; pVX[i] = Math.cos(a) * s; pVY[i] = Math.sin(a) * s - 180;
+    pL[i] = 1; pS[i] = 2.5 + Math.random() * 3.5; pC[i] = color; k++;
+  }
+}
+
+// ---------- Permainan berjalan ----------
+let run = null, busy = false, paused = false, loopId = 0, lastTs = 0, acc = 0;
+let aimX = 180, aiming = false, aimPid = null, pendingDrop = false, slowUntil = 0, lastBounce = 0, lastBeat = 0;
+let timers = [];
+function later(fn, ms) {
+  const id = setTimeout(() => { timers = timers.filter((t) => t !== id); fn(); }, ms);
+  timers.push(id);
+  return id;
+}
+function stopLoop() { if (loopId) cancelAnimationFrame(loopId); loopId = 0; }
+function startLoop() { if (!loopId) { lastTs = 0; loopId = requestAnimationFrame(frame); } }
+function releaseAim() {
+  const pid = aimPid;
+  aiming = false; aimPid = null;
+  if (pid !== null) { try { cv.releasePointerCapture(pid); } catch (e) {} }
+}
+// Semua timer, animasi, dan sentuhan milik permainan berjalan dibatalkan saat ganti permainan atau keluar.
+function stopRunTimers() {
+  timers.forEach(clearTimeout);
+  timers = [];
+  stopLoop();
+  releaseAim();
+  pendingDrop = false; slowUntil = 0; acc = 0;
+  pL.fill(0);
+  fxEl.innerHTML = "";
+  stageEl.classList.remove("shake");
+}
+const canPlay = () => !!run && !busy && !paused && !run.g.over;
+function newSeed() { return (Date.now() ^ Math.floor(Math.random() * 4294967296)) >>> 0; }
+function newRun(slot, kind, seed, extra) {
+  return Object.assign({ slot, kind, g: GameCore.newGame(seed, kind), bestAtStart: S.best, recordShown: false, targetShown: false }, extra || {});
+}
+const META = ["slot", "kind", "practice", "date", "duel", "replyTo", "bestAtStart", "recordShown", "targetShown", "newBadges"];
+function saveRun() {
+  if (!run || run.uji) return;
+  if (run.g.over) delete S.runs[run.slot];
+  else {
+    const o = { g: GameCore.snapshot(run.g) };
+    for (const k of META) if (run[k] !== undefined) o[k] = run[k];
+    S.runs[run.slot] = o;
+  }
+  save();
+}
+function loadRun(slot) {
+  const o = S.runs[slot];
+  if (!o) return null;
+  const g = GameCore.restore(o.g);
+  if (!g) { delete S.runs[slot]; save(); return null; }
+  return Object.assign({}, o, { g, resumed: true });
+}
+function chipText(r) {
+  if (r.kind === "harian") return r.practice ? "Latihan Harian" : "Harian #" + GameCore.dailyNumber(r.date);
+  if (r.kind === "tantangan") return "Tantangan";
+  return r.uji ? "Uji beban" : "Bebas";
+}
+function openRun(r) {
+  stopRunTimers();
+  hideOverlay();
+  run = r; busy = false; paused = false;
+  run.g.iter = hemat() ? 4 : 6;
+  $("home").hidden = true;
+  $("play").hidden = false;
+  document.body.classList.add("playing");
+  $("modeChip").textContent = chipText(r);
+  $("targetBar").hidden = r.kind !== "tantangan";
+  $("hint").hidden = S.helped || r.g.drops > 0 || !!r.uji;
+  $("ladder").innerHTML = ladderHTML(r.g.seen, r.g.top);
+  hudSeen = -1;
+  aimX = 180;
+  perfSkip = 2; perfAcc = 0; perfN = 0; perfWork = 0;
+  layout();
+  renderHud();
+  render();
+  saveRun();
+  enterScreen();
+  try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); cv.focus({ preventScroll: true }); } catch (e) {}
+  if (r.g.over) { finalize(r); busy = true; last = r.result; showResult(); return; }
+  if (r.resumed) { r.resumed = false; pauseGame(true, true); return; }
+  startLoop();
+}
+
+// ---------- Tampilan skor ----------
+let hudSeen = -1, hudTop = -2;
+function renderHud() {
+  const g = run.g;
+  $("score").textContent = fmt(g.score);
+  $("best").textContent = fmt(S.best);
+  $("nextImg").src = ICONS[g.nxt.l];
+  $("nextImg").alt = "Berikutnya: " + FRUITS[g.nxt.l].name + (g.nxt.g ? " emas" : "");
+  $("nextBox").classList.toggle("gold", !!g.nxt.g);
+  if (hudSeen !== g.seen || hudTop !== g.top) {
+    hudSeen = g.seen; hudTop = g.top;
+    [...$("ladder").children].forEach((el, lv) => {
+      el.classList.toggle("off", !(g.seen & (1 << lv)));
+      el.classList.toggle("top", lv === g.top);
+    });
+  }
+  if (run.kind === "tantangan" && run.duel) {
+    const p = run.duel.sc, won = g.score > p;
+    $("targetFill").style.width = (p > 0 ? Math.min(100, g.score / p * 100) : 100) + "%";
+    $("targetBar").classList.toggle("won", won);
+    $("targetText").textContent = won ? "🎉 Skor " + run.duel.n + " terlampaui! (" + fmt(p) + ")" : "🎯 Target " + run.duel.n + ": " + fmt(p) + " · kurang " + fmt(p - g.score);
+  }
+}
+// Denyut kecil tanpa memaksa tata letak dihitung ulang (Web Animations bila ada).
+function bump(el) {
+  if (RM) return;
+  if (el.animate) { try { el.animate([{ transform: "scale(1)" }, { transform: "scale(1.16)", offset: .4 }, { transform: "scale(1)" }], { duration: 300, easing: "ease-out" }); return; } catch (e) {} }
+  el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
+}
+function say(msg) { $("sr").textContent = msg; }
+function toCss(x, y) { return [(WALL + x) * scale, (TOPM + y) * scale]; }
+function floatText(x, y, text, gold) {
+  if (RM) return;
+  const el = document.createElement("div");
+  el.className = "float" + (gold ? " gold" : "");
+  const [cx, cy] = toCss(x, y);
+  el.style.left = cx + "px"; el.style.top = cy + "px";
+  el.textContent = text;
+  fxEl.appendChild(el);
+  later(() => el.remove(), 850);
+}
+function showBadge(title, sub, color) {
+  fxEl.querySelectorAll(".badge").forEach((b) => b.remove());
+  const el = document.createElement("div");
+  el.className = "badge";
+  el.style.setProperty("--bc", color || "#F4C152");
+  el.innerHTML = title + (sub ? "<small>" + sub + "</small>" : "");
+  fxEl.appendChild(el);
+  later(() => el.remove(), 1350);
+}
+function banner(text) {
+  fxEl.querySelectorAll(".banner").forEach((b) => b.remove());
+  const el = document.createElement("div");
+  el.className = "banner";
+  el.textContent = text;
+  fxEl.appendChild(el);
+  later(() => el.remove(), 1450);
+}
+function shake() {
+  if (RM) return;
+  stageEl.classList.remove("shake"); void stageEl.offsetWidth; stageEl.classList.add("shake");
+}
+const BADGES = [
+  ["mangga", "🏅 Mangga pertamamu!", (g) => g.top >= 5],
+  ["nangka", "🏅 Nangka pertamamu!", (g) => g.top >= 9],
+  ["durian", "🏅 Durian pertamamu, sang raja buah!", (g) => g.top >= 10],
+  ["rantai8", "🏅 Rantai x8 pertama!", (g) => g.maxChain >= 8],
+  ["durian2", "🏅 Dua durian dalam satu permainan!", (g) => g.durians >= 2]
+];
+// Pesan lencana memakai timer sendiri (bukan timer permainan), jadi tidak ikut batal saat pemain langsung
+// menekan Main lagi atau Kembali. Lencana juga dicatat di permainan ini supaya tampil di panel hasil.
+let badgeDelay = 0, badgeUntil = 0;
+function checkBadges(g) {
+  if (!run || run.uji) return;
+  for (const [id, text, test] of BADGES) {
+    if (!S.badges.includes(id) && test(g)) {
+      S.badges.push(id);
+      (run.newBadges = run.newBadges || []).push(text);
+      const now = Date.now();
+      badgeDelay = Math.max(400, badgeUntil - now);
+      badgeUntil = now + badgeDelay + 1800;
+      setTimeout(() => toast(text), badgeDelay);
+    }
+  }
+}
+
+// ---------- Jatuhkan buah ----------
+function clampAim(x, lv) { const r = FRUITS[lv].r; return Math.max(r, Math.min(360 - r, x)); }
+function setAimFromClient(clientX) {
+  const rect = cv.getBoundingClientRect();
+  if (!rect.width) return;
+  aimX = (clientX - rect.left) / rect.width * LW - WALL;
+  if (run) aimX = clampAim(aimX, run.g.cur.l);
+}
+function requestDrop() {
+  if (!canPlay()) return;
+  const s = GameCore.canDrop(run.g);
+  if (s === "full") { pendingDrop = false; toast("Bakul penuh sesak! Tunggu buah melebur."); sfx.bad(); buzz(20); return; }
+  if (s === "wait") { pendingDrop = true; return; }
+  doDrop();
+}
+function doDrop() {
+  pendingDrop = false;
+  const g = run.g;
+  aimX = clampAim(aimX, g.cur.l);
+  if (GameCore.drop(g, aimX) !== "ok") return;
+  sfx.drop();
+  buzz(8);
+  if (!$("hint").hidden) { $("hint").hidden = true; S.helped = true; }
+  aimX = clampAim(aimX, g.cur.l);
+  renderHud();
+  saveRun();
+}
+cv.addEventListener("pointerdown", (e) => {
+  if (!canPlay() || aimPid !== null || (e.button && e.button > 0)) return;
+  e.preventDefault();
+  if (!S.settings.mute) { try { audio(); } catch (err) {} }
+  aimPid = e.pointerId; aiming = true;
+  try { cv.setPointerCapture(e.pointerId); } catch (err) {}
+  setAimFromClient(e.clientX);
+});
+// Didengar di document: angkat jari di luar papan tetap tertangkap.
+document.addEventListener("pointermove", (e) => {
+  if (aimPid === e.pointerId) { setAimFromClient(e.clientX); return; }
+  if (aimPid === null && e.pointerType === "mouse" && e.target === cv && canPlay()) setAimFromClient(e.clientX);
+});
+document.addEventListener("pointerup", (e) => {
+  if (aimPid === null || e.pointerId !== aimPid) return;
+  releaseAim();
+  requestDrop();
+});
+document.addEventListener("pointercancel", (e) => { if (aimPid !== null && e.pointerId === aimPid) releaseAim(); });
+cv.addEventListener("lostpointercapture", (e) => { if (aimPid !== null && e.pointerId === aimPid) { aiming = false; aimPid = null; } });
+cv.addEventListener("contextmenu", (e) => e.preventDefault());
+document.addEventListener("keydown", (e) => {
+  if ($("play").hidden || !$("overlay").hidden || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === "p" || e.key === "P" || e.key === "Escape") { e.preventDefault(); pauseGame(true); return; }
+  if (!canPlay()) return;
+  if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+    e.preventDefault();
+    aimX = clampAim(aimX + (e.key === "ArrowLeft" ? -12 : 12), run.g.cur.l);
+    return;
+  }
+  const onBtn = document.activeElement && document.activeElement.tagName === "BUTTON";
+  if (e.key === " " || e.key === "ArrowDown" || (e.key === "Enter" && !onBtn)) {
+    e.preventDefault();
+    if (!e.repeat) requestDrop();
+  }
+});
+
+// ---------- Putaran utama: langkah tetap 1/120 detik, paling banyak 4 langkah per bingkai ----------
+let perfAcc = 0, perfN = 0, perfSkip = 0, ujiMs = 0, ujiN = 0, ujiShow = "", ujiWork = 0, ujiF = 0, ujiDraw = 0;
+// Yang diukur adalah KERJA JavaScript per bingkai (langkah fisika + gambar), bukan jarak antar-bingkai:
+// HP dengan layar/penghemat baterai 30 Hz memberi bingkai tiap 33 ms padahal kerjanya ringan, dan itu sehat.
+let perfWork = 0;
+function perfWatch(dt, workMs) {
+  if (hemat() || run.uji) return;
+  if (perfSkip > 0) { perfSkip -= dt; return; }
+  if (dt >= 0.1) { perfAcc = 0; perfN = 0; perfWork = 0; return; }
+  perfAcc += dt; perfN++; perfWork += workMs;
+  if (perfAcc >= 2) {
+    // Rata-rata kerja di atas 14 ms per bingkai selama 2 detik: pindah ke mode hemat secara otomatis.
+    if (perfWork / perfN > 14) {
+      autoHemat = true;
+      run.g.iter = 4;
+      pL.fill(0);
+      layout();
+      toast("HP terasa berat, mode hemat dinyalakan");
+    }
+    perfAcc = 0; perfN = 0; perfWork = 0;
+  }
+}
+function frame(ts) {
+  loopId = 0;
+  if (!run || paused || busy) return;
+  const r = run, g = r.g, w0 = performance.now();
+  let dt = lastTs ? (ts - lastTs) / 1000 : 1 / 60;
+  lastTs = ts;
+  if (!(dt > 0)) dt = 0;
+  if (dt > 0.1) dt = 0.1;
+  const now = w0;
+  acc += dt * (now < slowUntil ? 0.35 : 1);
+  let steps = 0;
+  const t0 = UJI ? performance.now() : 0;
+  while (acc >= STEP && steps < 4 && !g.over) { GameCore.step(g); acc -= STEP; steps++; }
+  if (acc >= STEP) acc = 0; // utang waktu dibuang, langkah tidak pernah diperbesar
+  if (UJI && steps) { ujiMs += performance.now() - t0; ujiN += steps; }
+  handleEvents(r, now);
+  if (run !== r) return;
+  if (g.over) { endRun(r); return; }
+  if (pendingDrop && GameCore.canDrop(g) !== "wait") requestDrop();
+  // Detak jantung saat buah melewati bibir bakul.
+  if (g.dangerT > 0 && now - lastBeat > 620) { lastBeat = now; sfx.beat(); buzz(12); }
+  const d0 = UJI ? performance.now() : 0;
+  render(dt);
+  const w1 = performance.now();
+  if (UJI) { ujiDraw += w1 - d0; ujiWork += w1 - w0; ujiF++; }
+  perfWatch(dt, w1 - w0);
+  if (run !== r) return;
+  loopId = requestAnimationFrame(frame);
+}
+function handleEvents(r, now) {
+  const g = r.g;
+  if (g.impact > 160 && now - lastBounce > 60) { lastBounce = now; sfx.bounce(g.impact); }
+  g.impact = 0;
+  if (!g.ev.length) return;
+  let big = false;
+  for (const m of g.ev) {
+    const f = FRUITS[m.lv];
+    burst(m.x, m.y, f.juice, m.boom ? 40 : 6 + Math.min(6, m.lv), m.boom ? 1.8 : 0.6 + m.lv * 0.08);
+    sfx.merge(m.chain);
+    floatText(m.x, m.y - f.r * 0.4, "+" + fmt(m.pts), m.gold);
+    if (m.chain >= 3) banner("Rantai x" + m.chain + "!");
+    if (m.boom) {
+      if (!r.uji) S.kebun.lebur++;
+      showBadge("Durian dilebur!", "+" + fmt(m.pts), "#CCD95E");
+      sfx.durian(); buzz([40, 50, 90]); confetti(40); shake();
+      big = true;
+    } else if (m.lv === 10) {
+      if (!r.uji) S.kebun.durian++;
+      showBadge("Raja buah!", "Durian!", "#CCD95E");
+      sfx.durian(); buzz([40, 50, 90]); confetti(34); shake();
+      big = true;
+    } else if (m.newTop && m.lv >= 5) {
+      // Buah tertinggi baru di permainan ini: gerak lambat sejenak.
+      if (!RM) slowUntil = now + 250;
+      showBadge(f.name + "!", "", "#F4C152");
+      sfx.top(); buzz(25); shake();
+      big = true;
+    } else if (m.lv >= 5) buzz(10);
+    if (!r.uji && m.lv > S.kebun.top) { S.kebun.top = m.lv; big = true; }
+    say(f.name + (m.boom ? " dilebur" : " jadi") + ", tambah " + m.pts + " poin");
+  }
+  g.ev.length = 0;
+  bump($("score"));
+  if (!r.uji && g.score > S.best) {
+    S.best = g.score;
+    if (r.bestAtStart > 0 && !r.recordShown) { r.recordShown = true; banner("Rekor baru!"); later(() => sfx.record(), 200); bump($("bestBox")); }
+  }
+  if (r.kind === "tantangan" && r.duel && !r.targetShown && g.score > r.duel.sc) { r.targetShown = true; banner("Lewat skor " + r.duel.n + "!"); }
+  renderHud();
+  checkBadges(g);
+  if (big) saveRun();
+}
+
+// ---------- Gambar satu bingkai ----------
+function render(dt) {
+  if (!ctx || !run) return;
+  const g = run.g, k = kpx;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  if (bgCv && !bgCss) ctx.drawImage(bgCv, 0, 0);
+  const ox = k * WALL, oy = k * TOPM;
+  ctx.setTransform(k, 0, 0, k, ox, oy);
+  // Garis bibir bakul: berkedip merah saat bahaya.
+  const t = performance.now() / 1000;
+  if (g.dangerT > 0) {
+    const pulse = 0.55 + 0.45 * Math.sin(t * 14);
+    ctx.fillStyle = "rgba(255,90,80," + (0.1 + 0.12 * pulse) + ")";
+    ctx.fillRect(0, 0, 360, GameCore.LOSE_Y);
+    ctx.strokeStyle = "rgba(255,110,100," + (0.6 + 0.4 * pulse) + ")"; ctx.lineWidth = 3.5; ctx.setLineDash([]);
+  } else {
+    ctx.strokeStyle = "rgba(244,193,82,.5)"; ctx.lineWidth = 2; ctx.setLineDash([10, 8]);
+  }
+  ctx.beginPath(); ctx.moveTo(0, GameCore.LOSE_Y); ctx.lineTo(360, GameCore.LOSE_Y); ctx.stroke();
+  ctx.setLineDash([]);
+  // Buah bayangan dan garis bidik
+  if (!g.over && !busy) {
+    const it = g.cur, r = FRUITS[it.l].r, x = clampAim(aimX, it.l);
+    const state = GameCore.canDrop(g), ready = state === "ok";
+    ctx.strokeStyle = aiming ? "rgba(255,255,255,.55)" : "rgba(255,255,255,.22)"; ctx.lineWidth = aiming ? 2 : 1.5;
+    ctx.setLineDash([5, 7]);
+    ctx.beginPath(); ctx.moveTo(x, r * 2 + 6); ctx.lineTo(x, 520); ctx.stroke();
+    ctx.setLineDash([]);
+    const sp = sprites[it.l * 2];
+    if (sp) {
+      const p = ready ? 1 : Math.max(0, 1 - (g.nextDropAt - g.t) / GameCore.COOLDOWN);
+      ctx.globalAlpha = state === "full" ? 0.3 : ready ? 1 : 0.35 + 0.4 * p;
+      const P = r * PADF, s = ready ? 1 : 0.75 + 0.25 * p;
+      ctx.setTransform(k * s, 0, 0, k * s, ox + k * x, oy + k * r);
+      ctx.drawImage(sp, -P, -P, 2 * P, 2 * P);
+      if (it.g) goldRing(r, t);
+      ctx.globalAlpha = 1;
+      ctx.setTransform(k, 0, 0, k, ox, oy);
+      if (!ready && state === "wait") {
+        ctx.fillStyle = "rgba(0,0,0,.4)"; ctx.fillRect(x - r, r * 2 + 3, r * 2, 4);
+        ctx.fillStyle = "#F4C152"; ctx.fillRect(x - r, r * 2 + 3, r * 2 * p, 4);
+      }
+    }
+    if (state === "full") {
+      ctx.font = "800 20px " + getComputedStyle(document.body).fontFamily;
+      ctx.textAlign = "center"; ctx.fillStyle = "#FF7A70";
+      ctx.fillText("Bakul penuh sesak!", 180, GameCore.LOSE_Y + 26);
+    }
+  }
+  // Buah
+  for (let i = 0; i < g.M; i++) {
+    if (!g.al[i]) continue;
+    const lv = g.lv[i], r = g.r[i], age = g.ag[i];
+    let sx = 1, sy = 1, sq = 0;
+    if (g.mg[i] && age < 0.5) {
+      sq = 1;
+      if (age < 0.12) { const p = age / 0.12; sx = sy = 0.6 + 0.4 * (1 - (1 - p) * (1 - p)); }
+      else if (age < 0.36 && !RM) { const p = (age - 0.12) / 0.24, w = Math.sin(Math.PI * p) * (1 - p); sx = 1 + 0.18 * w; sy = 1 - 0.14 * w; }
+    }
+    const sp = sprites[lv * 2 + sq];
+    if (!sp) continue;
+    // Putaran fisik ditampilkan sebagai goyangan kecil, supaya wajah lucu tetap tegak saat menggelinding.
+    const a = RM ? 0 : 0.35 * Math.sin(g.an[i]), cs = Math.cos(a), sn = Math.sin(a), P = r * PADF, px = ox + k * g.x[i], py = oy + k * g.y[i];
+    ctx.setTransform(k * sx * cs, k * sy * sn, -k * sx * sn, k * sy * cs, px, py);
+    ctx.drawImage(sp, -P, -P, 2 * P, 2 * P);
+    if (g.gd[i]) { ctx.setTransform(k, 0, 0, k, px, py); goldRing(r, t); }
+  }
+  // Partikel sari buah
+  ctx.setTransform(k, 0, 0, k, ox, oy);
+  const d = dt || 0;
+  for (let i = 0; i < PN; i++) {
+    if (pL[i] <= 0) continue;
+    pVY[i] += 1400 * d; pX[i] += pVX[i] * d; pY[i] += pVY[i] * d; pL[i] -= d * 1.5;
+    if (pL[i] <= 0) continue;
+    ctx.globalAlpha = pL[i];
+    ctx.fillStyle = pC[i];
+    circ(ctx, pX[i], pY[i], pS[i]); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  if (g.over) { ctx.fillStyle = "rgba(8,24,24,.45)"; ctx.fillRect(-WALL, -TOPM, LW, LH); }
+  if (UJI && run.uji) {
+    const now = performance.now();
+    if (!render.u || now - render.u > 500) {
+      render.u = now;
+      ujiShow = "buah " + g.live + " / " + g.cap + "\nlangkah " + (ujiN ? (ujiMs / ujiN).toFixed(3) : "-") + " ms\nkerja JS " + (ujiF ? (ujiWork / ujiF).toFixed(2) : "-") + " ms (gambar " + (ujiF ? (ujiDraw / ujiF).toFixed(2) : "-") + ")\nbingkai " + (d ? (d * 1000).toFixed(1) : "-") + " ms" + (hemat() ? "\nmode hemat" : "");
+      ujiMs = 0; ujiN = 0; ujiWork = 0; ujiF = 0; ujiDraw = 0;
+      const el = $("ujiBox"); if (el) el.textContent = ujiShow;
+    }
+  }
+}
+function goldRing(r, t) {
+  ctx.strokeStyle = "#FFD84D"; ctx.lineWidth = 3;
+  circ(ctx, 0, 0, r + 1); ctx.stroke();
+  ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.lineWidth = 1;
+  circ(ctx, 0, 0, r + 3); ctx.stroke();
+  const a = t * 2.2, sx = Math.cos(a) * r * .75, sy = Math.sin(a) * r * .75;
+  ctx.fillStyle = "#fff"; star(ctx, sx, sy, r * .28, r * .07, 4); ctx.fill();
+}
+
+// ---------- Jeda ----------
+function pauseGame(showMenu, resumedRun) {
+  if (!run || run.g.over || busy) return;
+  paused = true;
+  stopLoop();
+  releaseAim();
+  pendingDrop = false;
+  saveRun();
+  if (showMenu) showPausePanel(resumedRun);
+}
+function resumeGame() {
+  if (!run || run.g.over || busy) return;
+  hideOverlay();
+  paused = false;
+  acc = 0;
+  perfSkip = 1;
+  startLoop();
+  try { cv.focus({ preventScroll: true }); } catch (e) {}
+}
+function canRestart(r) { return !!r && (r.kind === "bebas" || r.practice) && !r.uji; }
+function showPausePanel(resumedRun) {
+  const r = run;
+  showPanel(
+    "<h2>" + (resumedRun ? "Lanjutkan permainan?" : "Jeda") + "</h2>" +
+    "<p>Skor sekarang: <b>" + fmt(r.g.score) + "</b>" + (r.g.top >= 0 ? " · buah tertinggi <b>" + FRUITS[r.g.top].name + "</b>" : "") + "</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"pGo\" type=\"button\">Lanjutkan</button>" +
+    "<div class=\"row\">" + (canRestart(r) ? "<button class=\"btn\" id=\"pRestart\" type=\"button\">↻ Mulai ulang</button>" : "") +
+    "<button class=\"btn\" id=\"pHome\" type=\"button\">Menu utama</button></div>" +
+    "<button class=\"btn\" id=\"pSet\" type=\"button\">⚙️ Pengaturan</button></div>" +
+    (canRestart(r) ? "" : "<p style=\"font-size:12.5px\">" + (r.kind === "harian" ? "Harian resmi tidak bisa diulang, supaya adil untuk semua." : "Tantangan tidak bisa diulang, supaya adil.") + "</p>"),
+    () => {
+      $("pGo").onclick = resumeGame;
+      $("pHome").onclick = () => { hideOverlay(); goHome(); };
+      $("pSet").onclick = () => showSettings(() => showPausePanel(resumedRun));
+      if ($("pRestart")) $("pRestart").onclick = confirmRestart;
+    }, resumeGame);
+}
+function confirmRestart() {
+  showPanel(
+    "<h2>Mulai ulang?</h2><p>Permainan ini tidak akan disimpan.</p>" +
+    "<div class=\"row\"><button class=\"btn\" id=\"qNo\" type=\"button\">Batal</button><button class=\"btn main\" id=\"qYes\" type=\"button\">Mulai ulang</button></div>",
+    () => {
+      $("qNo").onclick = () => showPausePanel();
+      $("qYes").onclick = () => {
+        const r = run;
+        hideOverlay();
+        if (!r) return;
+        if (r.practice) startPractice(); else startBebas(true);
+      };
+    }, () => showPausePanel());
+}
+
+// ---------- Selesai ----------
+// Hasil dicatat SEKARANG, sinkron, sebelum animasi apa pun; keluar mendadak tidak bisa menghapus atau mengulang hasil.
+function finalize(r) {
+  if (!r || r.finalized || !r.g.over || r.uji) return;
+  r.finalized = true;
+  const g = r.g;
+  S.games++;
+  S.merges += g.merges;
+  if (g.top > S.kebun.top) S.kebun.top = g.top;
+  if (g.score > S.best) S.best = g.score;
+  const record = r.bestAtStart > 0 && g.score > r.bestAtStart;
+  const first = r.bestAtStart === 0 && g.score > 0;
+  let official = false;
+  if (r.kind === "harian" && !r.practice) {
+    const already = S.daily && S.daily.date === r.date && S.daily.done;
+    if (!already) {
+      official = true;
+      S.daily = { date: r.date, score: g.score, top: g.top, chain: g.maxChain, done: true };
+      if (S.streak.last !== r.date) {
+        S.streak.count = S.streak.last === GameCore.prevDay(r.date) ? S.streak.count + 1 : 1;
+        S.streak.last = r.date;
+      }
+    }
+  }
+  let verdict = 0;
+  if (r.kind === "tantangan" && r.duel) {
+    verdict = g.score > r.duel.sc ? 1 : g.score < r.duel.sc ? -1 : 0;
+    if (verdict > 0) S.duelW++; else if (verdict < 0) S.duelL++; else S.duelD++;
+    if (S.pendingDuel === r.duel.code) S.pendingDuel = null;
+    // Tantangan yang sudah dimainkan diingat, supaya tidak bisa diulang sampai menang.
+    S.duelDone = S.duelDone.filter((x) => x.code !== r.duel.code)
+      .concat([{ code: r.duel.code, n: r.duel.n, sc: r.duel.sc, score: g.score }]).slice(-30);
+  }
+  const newSkins = SKINS.filter((s) => s.need > 0 && r.bestAtStart < s.need && S.best >= s.need);
+  checkBadges(g);
+  r.result = {
+    kind: r.kind, seed: g.seed, score: g.score, top: g.top, seen: g.seen, chain: g.maxChain, durians: g.durians, lebur: g.lebur,
+    reason: g.reason, record, first, official, practice: !!r.practice, date: r.date, duel: r.duel, verdict, replyTo: r.replyTo || "",
+    newSkins: newSkins.map((s) => s.name), badges: (r.newBadges || []).slice()
+  };
+  delete S.runs[r.slot];
+  save();
+}
+let last = null;
+function endRun(r) {
+  if (r.uji) { r.g.over = false; return; }
+  finalize(r);
+  busy = true;
+  releaseAim();
+  pendingDrop = false;
+  render(0);
+  sfx.over();
+  buzz([30, 40, 60]);
+  showBadge(r.g.reason === "sesak" ? "Bakul sesak!" : "Bakul luber!", "", "#FF7A70");
+  say("Permainan selesai. Skor " + r.g.score);
+  last = r.result;
+  later(() => {
+    if (run !== r) return;
+    if (last.record) { confetti(); sfx.record(); }
+    showResult();
+  }, RM ? 200 : 1100);
+}
+function factsHTML(o) {
+  return "<div class=\"facts\"><div><b>" + FRUITS[Math.max(0, o.top)].name + "</b>buah tertinggi</div><div><b>x" + o.chain + "</b>rantai terpanjang</div><div><b>" + o.durians + "</b>durian</div></div>";
+}
+function reasonText(o) {
+  return o.reason === "sesak" ? "Bakul penuh sesak, tidak ada lagi buah yang bisa melebur." : "Tumpukan buah melewati bibir bakul.";
+}
+function skinNote(o) {
+  // Lencana yang diraih di permainan ini ikut tampil di panel hasil, supaya tidak terlewat.
+  const b = o.badges && o.badges.length ? "<p>" + o.badges.map(esc).join("<br>") + "</p>" : "";
+  return b + (o.newSkins && o.newSkins.length ? "<p>🎁 Bakul baru terbuka: <b>" + o.newSkins.join(", ") + "</b>. Pilih di Pengaturan.</p>" : "");
+}
+function showResult() {
+  const o = last;
+  if (!o) return;
+  const home = () => { hideOverlay(); goHome(); };
+  const lad = "<div class=\"ladder\">" + ladderHTML(o.seen, o.top) + "</div>";
+  if (o.kind === "harian") {
+    const d = S.daily && S.daily.date === o.date ? S.daily : null;
+    showPanel(
+      "<h2>" + (o.practice ? "Latihan selesai" : "Harian #" + GameCore.dailyNumber(o.date) + " selesai!") + "</h2>" +
+      "<p>" + reasonText(o) + "</p><div class=\"big\">" + fmt(o.score) + "</div>" + lad + factsHTML(o) +
+      (o.practice && d ? "<p>Hasil resmi hari ini: <b>" + fmt(d.score) + "</b>. Latihan tidak mengubahnya.</p>" : "<p>🔥 " + Math.max(1, streakNow()) + " hari beruntun. Urutan buah besok berbeda lagi!</p>") + skinNote(o) +
+      "<div class=\"col\"><button class=\"btn main\" id=\"rShare\" type=\"button\">Bagikan hasil</button>" +
+      "<div class=\"row\"><button class=\"btn\" id=\"rHome\" type=\"button\">Kembali</button><button class=\"btn\" id=\"rPractice\" type=\"button\">Latihan lagi</button></div></div>",
+      () => {
+        $("rShare").onclick = shareDaily;
+        $("rHome").onclick = home;
+        $("rPractice").onclick = () => { hideOverlay(); startPractice(); };
+      }, goHome);
+    return;
+  }
+  if (o.kind === "tantangan") {
+    const d = o.duel;
+    const title = o.verdict > 0 ? "Kamu menang dari " + esc(d.n) + "!" : o.verdict < 0 ? "Kamu kalah dari " + esc(d.n) : "Seri dengan " + esc(d.n) + "!";
+    showPanel(
+      "<h2>" + title + "</h2>" +
+      "<div class=\"versus\"><div class=\"side" + (o.verdict > 0 ? " win" : "") + "\"><div class=\"who\">Kamu</div><div class=\"pts\">" + fmt(o.score) + "</div></div>" +
+      "<span class=\"vs\">VS</span><div class=\"side" + (o.verdict < 0 ? " win" : "") + "\"><div class=\"who\">" + esc(d.n) + "</div><div class=\"pts\">" + fmt(d.sc) + "</div></div></div>" +
+      lad + factsHTML(o) + skinNote(o) + "<p>Balasanmu memakai urutan buah baru, jadi adil untuk kalian berdua.</p>" +
+      "<div class=\"col\"><button class=\"btn main\" id=\"rReply\" type=\"button\">Balas tantangan</button>" +
+      "<div class=\"row\"><button class=\"btn\" id=\"rHome\" type=\"button\">Kembali</button><button class=\"btn\" id=\"rAgain\" type=\"button\">Main Bebas</button></div></div>",
+      () => {
+        $("rReply").onclick = () => startReply(d.n, showResult);
+        $("rHome").onclick = home;
+        $("rAgain").onclick = () => { hideOverlay(); startBebas(false); };
+      }, goHome);
+    return;
+  }
+  const title = o.record ? "Rekor baru!" : o.first ? "Skor pertamamu!" : o.reason === "sesak" ? "Bakul penuh sesak!" : "Bakul luber!";
+  showPanel(
+    "<h2>" + title + "</h2>" + (o.record || o.first ? "<p>" + reasonText(o) + "</p>" : "") +
+    "<div class=\"big\">" + fmt(o.score) + "</div>" + lad + factsHTML(o) +
+    (o.replyTo ? "<p>Kirim skor ini sebagai balasan untuk <b>" + esc(o.replyTo) + "</b>.</p>" : "<p>Skor terbaik: <b>" + fmt(S.best) + "</b></p>") + skinNote(o) +
+    "<div class=\"col\"><button class=\"btn main\" id=\"rAgain\" type=\"button\">Main lagi</button>" +
+    "<div class=\"row\"><button class=\"btn\" id=\"rHome\" type=\"button\">Kembali</button><button class=\"btn\" id=\"rShare\" type=\"button\">" + (o.replyTo ? "Kirim balasan" : "Bagikan") + "</button></div></div>",
+    () => {
+      $("rAgain").onclick = () => { hideOverlay(); startBebas(true); };
+      $("rHome").onclick = home;
+      $("rShare").onclick = () => challenge(o);
+    }, goHome);
+}
+
+// ---------- Bagikan ----------
+function shareOut(text) {
+  if (navigator.share) navigator.share({ text }).catch((e) => { if (!e || e.name !== "AbortError") copyText(text, true); });
+  else copyText(text, true);
+}
+function copyText(text, wa) {
+  const done = () => {
+    toast("Tersalin. Tempel di WhatsApp!");
+    if (wa) { try { window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener"); } catch (e) {} }
+  };
+  const fallback = () => {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) { toast("Gagal menyalin"); }
+    ta.remove();
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(fallback);
+  else fallback();
+}
+function shareDaily() {
+  const d = S.daily;
+  if (!d || !d.done) return toast("Selesaikan Harian dulu, ya");
+  shareOut(GameCore.shareText({ number: GameCore.dailyNumber(d.date), top: d.top, score: d.score, chain: d.chain, url: shareUrl() }));
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
+}
+// Link tantangan memuat seed permainan tadi: temanmu mendapat urutan buah yang sama.
+function challenge(o) {
+  if (!S.name) return askName(() => challenge(o));
+  const code = GameCore.encodeDuel({ s: o.seed, sc: o.score, n: S.name });
+  let text = GameCore.shareText({ top: o.top, score: o.score, chain: o.chain, url: shareUrl() + "#t=" + code });
+  if (o.replyTo) text = "Balasan untukmu, " + o.replyTo + "!\n" + text;
+  shareOut(text);
+  showResult();
+}
+function askName(then) {
+  showPanel(
+    "<h2>Siapa namamu?</h2><p>Nama ini muncul di tantangan untuk temanmu.</p>" +
+    "<input class=\"name-input\" id=\"nameIn\" maxlength=\"12\" autocomplete=\"nickname\" placeholder=\"misal: Andi\" aria-label=\"Namamu\">" +
+    "<div class=\"row\"><button class=\"btn\" id=\"nBack\" type=\"button\">Batal</button><button class=\"btn main\" id=\"nOk\" type=\"button\">Lanjut</button></div>",
+    () => {
+      const inp = $("nameIn");
+      const ok = () => {
+        const n = GameCore.cleanName(inp.value);
+        if (!n) { toast("Tulis namamu dulu"); return inp.focus(); }
+        S.name = n; save(); then();
+      };
+      $("nOk").onclick = ok;
+      $("nBack").onclick = () => (last && busy ? showResult() : hideOverlay());
+      inp.onkeydown = (e) => { if (e.key === "Enter") ok(); };
+      setTimeout(() => inp.focus(), 50);
+    }, last && busy ? goHome : null);
+}
+
+// ---------- Mode ----------
+function startBebas(fresh) {
+  if (!fresh) { const r = loadRun("bebas"); if (r && !r.g.over) return openRun(r); }
+  delete S.runs.bebas;
+  openRun(newRun("bebas", "bebas", newSeed()));
+}
+function startDaily() {
+  const t = today();
+  const d = S.daily && S.daily.date === t && S.daily.done ? S.daily : null;
+  if (d) return dailyDonePanel();
+  const r = loadRun("harian");
+  if (r && r.date === t) return openRun(r);
+  openRun(newRun("harian", "harian", GameCore.dailySeed(t), { date: t, practice: false }));
+}
+function startPractice() {
+  const t = today();
+  openRun(newRun("latihan", "harian", GameCore.dailySeed(t), { date: t, practice: true }));
+}
+function dailyDonePanel() {
+  const d = S.daily;
+  showPanel(
+    "<h2>Harian #" + GameCore.dailyNumber(d.date) + " selesai ✓</h2><div class=\"big\">" + fmt(d.score) + "</div>" +
+    "<p>Buah tertinggi " + FRUITS[Math.max(0, d.top)].name + " · rantai x" + d.chain + " · 🔥 " + streakNow() + " hari beruntun</p>" +
+    "<p>Urutan buah baru muncul besok. Mau latihan dengan urutan hari ini? Hasil resmi tidak berubah.</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"dShare\" type=\"button\">Bagikan hasil</button>" +
+    "<div class=\"row\"><button class=\"btn\" id=\"dClose\" type=\"button\">Tutup</button><button class=\"btn\" id=\"dPractice\" type=\"button\">Latihan</button></div></div>",
+    () => {
+      $("dShare").onclick = shareDaily;
+      $("dClose").onclick = hideOverlay;
+      $("dPractice").onclick = () => { hideOverlay(); startPractice(); };
+    });
+}
+const duelDoneOf = (code) => S.duelDone.find((x) => x.code === code) || null;
+// Balas tantangan: permainan Bebas baru dengan seed BARU; skornya dikirim sebagai tantangan baru.
+// Bila ada permainan Bebas tersimpan yang belum selesai, pemain ditanya dulu: balasan memakai tempat yang sama.
+function startReply(name, back, sure) {
+  const saved = S.runs.bebas;
+  if (!sure && saved && saved.g && !saved.g.over) {
+    showPanel(
+      "<h2>Timpa permainan tersimpan?</h2><p>Permainan Bebas yang tersimpan (<b>" + fmt(saved.g.score || 0) + "</b> poin) akan hilang. Lanjut?</p>" +
+      "<div class=\"row\"><button class=\"btn\" id=\"cNo\" type=\"button\">Batal</button><button class=\"btn main\" id=\"cYes\" type=\"button\">Lanjut balas</button></div>",
+      () => {
+        $("cYes").onclick = () => startReply(name, back, true);
+        $("cNo").onclick = () => (back ? back() : (hideOverlay(), renderHome()));
+      }, back || null);
+    return;
+  }
+  hideOverlay();
+  delete S.runs.bebas;
+  openRun(newRun("bebas", "bebas", newSeed(), { replyTo: GameCore.cleanName(name) }));
+}
+function showDuelDone(d) {
+  const v = d.score > d.sc ? "Kamu menang" : d.score < d.sc ? "Kamu kalah" : "Seri";
+  showPanel(
+    "<h2>Sudah dimainkan</h2><p>Tantangan dari <b>" + esc(d.n) + "</b> ini sudah kamu mainkan: <b>" + fmt(d.score) + "</b> lawan <b>" + fmt(d.sc) + "</b>. " + v + ".</p>" +
+    "<p>Tantangan hanya bisa dimainkan sekali. Balas dengan urutan buah baru!</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"xReply\" type=\"button\">Balas tantangan</button><button class=\"btn\" id=\"xClose\" type=\"button\">Tutup</button></div>",
+    () => {
+      $("xReply").onclick = () => startReply(d.n, () => showDuelDone(d));
+      $("xClose").onclick = () => { hideOverlay(); renderHome(); };
+    });
+}
+function startDuel(inv) {
+  const done = duelDoneOf(inv.code);
+  if (done) return showDuelDone(done);
+  const r = loadRun("tantangan");
+  if (r && r.duel && r.duel.code === inv.code) return openRun(r);
+  if (r && r.duel) {
+    const d = r.duel, sc = r.g.score;
+    if (sc > d.sc) S.duelW++; else if (sc < d.sc) S.duelL++; else S.duelD++;
+    S.duelDone = S.duelDone.filter((x) => x.code !== d.code).concat([{ code: d.code, n: d.n, sc: d.sc, score: sc }]).slice(-30);
+    delete S.runs.tantangan;
+    save();
+  }
+  openRun(newRun("tantangan", "tantangan", inv.s, { duel: { n: inv.n, sc: inv.sc, code: inv.code } }));
+}
+function showInvite(inv) {
+  showPanel(
+    "<h2>Ada tantangan!</h2><p><b>" + esc(inv.n) + "</b> menantangmu dengan skor <b>" + fmt(inv.sc) + "</b>.</p>" +
+    "<p>Urutan buahnya sama dengan punya " + esc(inv.n) + ". Gerak buahnya bisa sedikit berbeda, jadi andalkan bidikanmu!</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"iGo\" type=\"button\">Terima tantangan</button><button class=\"btn\" id=\"iLater\" type=\"button\">Nanti saja</button></div>",
+    () => {
+      $("iGo").onclick = () => { hideOverlay(); startDuel(inv); };
+      $("iLater").onclick = () => { hideOverlay(); renderHome(); };
+    });
+}
+function openDuelMenu() {
+  const inv = S.pendingDuel ? GameCore.decodeDuel(S.pendingDuel) : null;
+  if (inv) return showInvite(Object.assign(inv, { code: S.pendingDuel }));
+  showPanel(
+    "<h2>Tantangan</h2><p>Main Bebas sampai selesai, lalu tekan <b>Bagikan</b>. Temanmu akan mendapat urutan buah yang sama denganmu.</p>" +
+    (S.duelW + S.duelL + S.duelD ? "<p>Menang " + S.duelW + " · Kalah " + S.duelL + " · Seri " + S.duelD + "</p>" : "") +
+    "<div class=\"col\"><button class=\"btn main\" id=\"uGo\" type=\"button\">Main Bebas</button><button class=\"btn\" id=\"uClose\" type=\"button\">Tutup</button></div>",
+    () => {
+      $("uGo").onclick = () => { hideOverlay(); startBebas(false); };
+      $("uClose").onclick = hideOverlay;
+    });
+}
+function readDuelHash() {
+  const h = location.hash || "";
+  if (!/^#t=/.test(h)) return;
+  try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  const m = /^#t=([A-Za-z0-9_-]+)$/.exec(h);
+  const inv = m ? GameCore.decodeDuel(m[1]) : null;
+  if (!$("play").hidden) goHome();
+  if (!inv) { showPanel("<h2>Link tidak valid</h2><p>Link tantangan ini rusak atau sudah diubah. Minta temanmu mengirim tantangan baru, ya.</p><button class=\"btn main\" id=\"bOk\" type=\"button\">Oke</button>", () => { $("bOk").onclick = hideOverlay; }); return; }
+  inv.code = m[1];
+  const done = duelDoneOf(inv.code);
+  if (!done) { S.pendingDuel = inv.code; save(); }
+  renderHome();
+  if (done) showDuelDone(done); else showInvite(inv);
+}
+function showHelp() {
+  showPanel(
+    "<h2>Cara main</h2><ol class=\"help\">" +
+    "<li>Geser jari di atas bakul untuk membidik, lalu <b>angkat jari</b> untuk menjatuhkan buah. Ketuk sekali juga bisa.</li>" +
+    "<li>Dua buah <b>kembar</b> yang bersentuhan melebur jadi buah berikutnya yang lebih besar.</li>" +
+    "<li>Buah hasil leburan yang langsung melebur lagi membentuk <b>rantai</b>: poinnya berlipat sampai x3.</li>" +
+    "<li>Jangan biarkan tumpukan melewati <b>garis bibir</b> bakul lebih dari 2 detik.</li>" +
+    "<li><b>Buah emas</b> kadang muncul: poinnya dobel saat dilebur.</li>" +
+    "<li>Di komputer: panah kiri/kanan untuk membidik, Spasi untuk menjatuhkan, P untuk jeda.</li></ol>" +
+    "<p>Tangga buah, dari kecil ke raja buah:</p><div class=\"ladder\">" + ladderHTML(2047, 10) + "</div>" +
+    "<button class=\"btn main\" id=\"hOk\" type=\"button\" style=\"width:100%\">Siap!</button>",
+    () => { $("hOk").onclick = hideOverlay; });
+}
+function showSettings(back) {
+  const skins = SKINS.map((s) => {
+    const open = S.best >= s.need, sel = skinOf().id === s.id;
+    return "<button class=\"skin" + (sel ? " sel" : "") + "\" type=\"button\" data-skin=\"" + s.id + "\"" + (open ? "" : " disabled") + " aria-pressed=\"" + sel + "\">" +
+      "<i style=\"background:repeating-linear-gradient(90deg,rgba(0,0,0,.18) 0 4px,transparent 4px 8px),repeating-linear-gradient(0deg," + s.a + " 0 5px," + s.b + " 5px 10px)\"></i>" +
+      s.name + (open ? "" : "<small>🔒 skor " + fmt(s.need) + "</small>") + "</button>";
+  }).join("");
+  showPanel(
+    "<h2>Pengaturan</h2><div class=\"col\">" +
+    "<button class=\"btn\" id=\"sVibe\" type=\"button\">📳 Getar: " + (S.settings.vibrate ? "nyala" : "mati") + "</button>" +
+    "<button class=\"btn" + (hemat() ? " on" : "") + "\" id=\"sHemat\" type=\"button\">🔋 Mode hemat: " + (S.settings.hemat ? "nyala" : autoHemat ? "otomatis nyala" : "mati") + "</button>" +
+    "<p style=\"font-size:12.5px\">Mode hemat membuat permainan lebih ringan untuk HP lama.</p></div>" +
+    "<p><b>Bakul</b></p><div class=\"skins\">" + skins + "</div>" +
+    "<button class=\"btn main\" id=\"sOk\" type=\"button\" style=\"width:100%\">Selesai</button>",
+    () => {
+      $("sVibe").onclick = () => { S.settings.vibrate = !S.settings.vibrate; save(); buzz(20); showSettings(back); };
+      $("sHemat").onclick = () => {
+        S.settings.hemat = !(S.settings.hemat || autoHemat);
+        autoHemat = false;
+        save();
+        if (run) run.g.iter = hemat() ? 4 : 6;
+        pL.fill(0);
+        layout(); if (run) render(0);
+        showSettings(back);
+      };
+      document.querySelectorAll("[data-skin]").forEach((b) => {
+        b.onclick = () => { S.settings.skin = b.dataset.skin; save(); layout(); if (run) render(0); sfx.tap(); showSettings(back); };
+      });
+      $("sOk").onclick = () => (back ? back() : hideOverlay());
+    }, back || null);
+}
+
+// ---------- Menu utama ----------
+function renderHome() {
+  $("best").textContent = fmt(S.best);
+  const r = S.runs.bebas;
+  $("stBebas").textContent = r && r.g && !r.g.over ? "Lanjutkan · " + fmt(r.g.score) : "Main";
+  const t = today();
+  const d = S.daily && S.daily.date === t && S.daily.done ? S.daily : null;
+  const dr = S.runs.harian;
+  $("modeDaily").classList.toggle("done", !!d);
+  $("stDaily").textContent = d ? "Selesai ✓ · " + fmt(d.score) : dr && dr.date === t ? "Lanjutkan" : "#" + GameCore.dailyNumber(t) + " · Main";
+  const inv = S.pendingDuel ? GameCore.decodeDuel(S.pendingDuel) : null;
+  $("stDuel").textContent = inv ? "Ditantang " + inv.n + "!" : S.duelW + S.duelL + S.duelD ? "Menang " + S.duelW + " · Kalah " + S.duelL : "Tantang";
+  let mask = 0;
+  for (let lv = 0; lv <= S.kebun.top; lv++) mask |= 1 << lv;
+  $("kebunRow").innerHTML = ladderHTML(mask, S.kebun.top);
+  $("kebunInfo").textContent = S.kebun.durian ? "Durian dibuat " + fmt(S.kebun.durian) + " · dilebur " + fmt(S.kebun.lebur) : S.kebun.top >= 0 ? "Tertinggi: " + FRUITS[S.kebun.top].name : "Belum ada buah";
+  const st = streakNow();
+  $("stats").textContent = S.games ? "Main " + fmt(S.games) + " kali · " + fmt(S.merges) + " kali melebur" + (st ? " · 🔥 " + st + " hari" : "") : "Selamat datang! Coba Main Bebas dulu.";
+  renderToggles();
+}
+function renderToggles() {
+  $("btnSound").textContent = S.settings.mute ? "🔇" : "🔊";
+  $("btnSound").setAttribute("aria-label", S.settings.mute ? "Nyalakan suara" : "Matikan suara");
+}
+function goHome() {
+  stopRunTimers();
+  if (run && !run.g.over) saveRun();
+  run = null; busy = false; paused = false;
+  $("play").hidden = true;
+  $("home").hidden = false;
+  document.body.classList.remove("playing");
+  renderHome();
+  settleBack();
+}
+
+// ---------- Panel, tombol Back, pesan ----------
+let backArmed = false, overlayBack = null;
+function enterScreen() {
+  if (backArmed) return;
+  try { history.pushState({ jb: 1 }, ""); backArmed = true; } catch (e) {}
+}
+function showPanel(html, wire, onBack) {
+  const o = $("overlay");
+  o.innerHTML = "<div class=\"panel\" role=\"dialog\" aria-modal=\"true\">" + html + "</div>";
+  o.hidden = false;
+  overlayBack = onBack || null;
+  enterScreen();
+  if (wire) wire();
+  const btn = o.querySelector("button:not([disabled])");
+  if (btn && !o.querySelector("input")) btn.focus();
+}
+function hideOverlay() { $("overlay").hidden = true; $("overlay").innerHTML = ""; overlayBack = null; settleBack(); }
+// Setelah kembali ke menu lewat tombol (bukan Back), entri riwayat milik layar main/panel masih tersisa, sehingga
+// Back berikutnya di menu "tidak terjadi apa-apa". Entri itu dibuang diam-diam, tapi hanya bila di detik yang sama
+// tidak ada layar atau panel baru yang dibuka.
+let skipPop = false;
+function settleBack() {
+  setTimeout(() => {
+    if (!backArmed || !$("play").hidden || !$("overlay").hidden) return;
+    backArmed = false; skipPop = true;
+    setTimeout(() => { skipPop = false; }, 600);
+    try { history.back(); } catch (e) { skipPop = false; }
+  }, 0);
+}
+// Back menutup panel atau kembali ke menu; tidak pernah keluar dari situs saat sedang main.
+window.addEventListener("popstate", () => {
+  if (skipPop) { skipPop = false; return; }
+  backArmed = false;
+  if (!$("overlay").hidden) {
+    const after = overlayBack;
+    hideOverlay();
+    if (after) after();
+    if (!$("play").hidden || !$("overlay").hidden) enterScreen();
+    return;
+  }
+  if (!$("play").hidden) goHome();
+});
+window.addEventListener("hashchange", readDuelHash);
+let toastTimer = 0;
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; }, 2200);
+}
+
+$("modeBebas").onclick = () => startBebas(false);
+$("modeDaily").onclick = startDaily;
+$("modeDuel").onclick = openDuelMenu;
+$("btnHelp").onclick = showHelp;
+$("btnSettings").onclick = () => showSettings(null);
+$("btnPause").onclick = () => pauseGame(true);
+$("btnSound").onclick = () => {
+  S.settings.mute = !S.settings.mute;
+  save();
+  renderToggles();
+  if (!S.settings.mute) sfx.tap();
+};
+let resizeRaf = 0;
+window.addEventListener("resize", () => {
+  if (resizeRaf) return;
+  resizeRaf = requestAnimationFrame(() => { resizeRaf = 0; layout(); if (run) render(0); });
+});
+// Pindah aplikasi: permainan dijeda dan disimpan (posisi buah dan antrean), lalu bisa dilanjutkan.
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden || !run) return;
+  if (!run.g.over && !paused && !busy) pauseGame(true); else saveRun();
+});
+window.addEventListener("pagehide", () => { if (run && !run.g.over) saveRun(); });
+
+// Halaman uji beban (?uji=1): buah acak dijatuhkan otomatis sampai batas bakul, waktu per langkah ditampilkan.
+function startUji() {
+  const r = newRun("uji", "bebas", 12345, { uji: true });
+  r.g.noLose = true;
+  openRun(r);
+  const box = document.createElement("div");
+  box.className = "uji"; box.id = "ujiBox"; box.textContent = "menyiapkan...";
+  stageEl.appendChild(box);
+  const rnd = GameCore.rng(777);
+  let n = 0;
+  const tick = () => {
+    if (run !== r) return;
+    if (r.g.live < r.g.cap && !paused) {
+      aimX = 20 + rnd() * 320;
+      if (GameCore.drop(r.g, aimX, true) === "ok") n++;
+    }
+    later(tick, 110);
+  };
+  tick();
+}
+
+buildIcons();
+$("logo1").src = ICONS[10];
+$("logo2").src = ICONS[1];
+$("ladder").innerHTML = ladderHTML(0, -1);
+layout();
+renderHome();
+readDuelHash();
+if (UJI) startUji();
+</script>
+</html>

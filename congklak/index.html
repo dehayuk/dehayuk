@@ -1,0 +1,2194 @@
+<!doctype html>
+<html lang="id">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E3534">
+<title>Congklak</title>
+<meta name="description" content="Congklak (Dakon), permainan biji dan lubang warisan nenek moyang. Lawan Komputer dari Mudah sampai Jago, main berdua bersama keluarga di satu HP, dan Tantangan Harian. Gratis, langsung main di browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Font dimuat tanpa menahan tampilan pertama; bila gagal, font sistem tetap dipakai. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap"></noscript>
+<style>
+  :root {
+    color-scheme: dark;
+    --ground: #0E3534;
+    --board: #15504D;
+    --board-edge: #2A7A75;
+    --slot-edge: #3E8C86;
+    --tile: #F4C152;
+    --tile-shade: #C9952A;
+    --tile-ink: #3B2A05;
+    --ink: #EAF6F3;
+    --muted: #9EC6C0;
+    --good: #7FE0A3;
+    --bad: #FF7A70;
+    --red: #FF7A70;
+    --blue: #5EC8F2;
+    --wood-dark: #5A3218;
+    --wood: #8A552A;
+    --wood-light: #A8703C;
+    --hole: #2B170A;
+    --display: "Baloo 2", "Trebuchet MS", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --body: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --ph: 48px; --sh: 70px; --bw: 320px; --bh: 500px; --hw: 86px; --sd: 10px;
+  }
+  [hidden] { display: none !important; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink); font-family: var(--body); font-size: 15px;
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; overscroll-behavior-y: contain;
+  }
+  html.playing, body.playing { overflow: hidden; }
+  button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; font-family: var(--body); }
+  button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  .wrap {
+    max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; min-height: 100%;
+    padding: calc(10px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px));
+  }
+  body.playing .wrap { height: 100vh; height: 100dvh; min-height: 0; padding-left: calc(10px + env(safe-area-inset-left, 0px)); padding-right: calc(10px + env(safe-area-inset-right, 0px)); gap: 8px; }
+  section { display: flex; flex-direction: column; gap: 12px; }
+  #play { gap: 6px; flex: 1; min-height: 0; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .brand-box { display: flex; flex-direction: column; min-width: 0; }
+  .hub { color: var(--muted); font-size: 12px; font-weight: 800; text-decoration: none; padding: 2px 0; }
+  .brand { font-family: var(--display); font-weight: 800; font-size: 24px; line-height: 1; letter-spacing: .5px; }
+  .brand span { color: var(--tile); }
+  .head-right { display: flex; align-items: center; gap: 8px; }
+  .best {
+    display: flex; align-items: center; gap: 6px; background: var(--board); border: 1px solid var(--board-edge);
+    padding: 6px 12px; border-radius: 999px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .best.bump { animation: bump .45s ease-out; }
+  @keyframes bump { 40% { transform: scale(1.18); border-color: var(--tile); } }
+  .icon-btn {
+    min-width: 44px; min-height: 44px; border-radius: 999px; cursor: pointer; font-size: 17px; line-height: 1;
+    background: var(--board); border: 1px solid var(--board-edge); color: var(--ink); padding: 0 8px;
+  }
+
+  /* Menu utama */
+  .hero {
+    background: var(--board); border: 1px solid var(--board-edge); border-radius: 14px; padding: 16px;
+    display: flex; gap: 14px; align-items: center;
+  }
+  .hero p { margin: 0; color: var(--muted); line-height: 1.45; }
+  .hero b { color: var(--ink); font-family: var(--display); font-size: 19px; display: block; line-height: 1.15; }
+  /* Ikon dakon kecil: perahu kayu dengan dua baris lubang dan lumbung di tiap ujung. */
+  .logo {
+    flex: none; width: 92px; height: 40px; border-radius: 50% / 40%; position: relative;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.08) 0 2px, transparent 2px 6px), linear-gradient(180deg, var(--wood-light), var(--wood) 55%, var(--wood-dark));
+    box-shadow: inset 0 2px 0 rgba(255,255,255,.18), 0 3px 0 rgba(0,0,0,.3);
+    display: grid; grid-template-columns: 14px repeat(4, 11px) 14px; grid-template-rows: 11px 11px; gap: 3px 4px; place-content: center;
+  }
+  .logo i { width: 11px; height: 11px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #F3E4C2 0 2px, transparent 2.5px), radial-gradient(circle at 68% 62%, #E9D3A8 0 2px, transparent 2.5px), radial-gradient(circle, #2B170A 55%, #4A2A12 100%); }
+  .logo i.st { grid-row: span 2; width: 14px; height: 25px; border-radius: 50%; }
+  .stats { font-size: 12.5px; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; margin: 0; }
+  .modes { display: grid; gap: 10px; }
+  .mode {
+    display: grid; grid-template-columns: 1fr auto; grid-template-areas: "name state" "desc state";
+    gap: 2px 12px; align-items: center; text-align: left; cursor: pointer;
+    background: var(--board); border: 1px solid var(--board-edge); border-radius: 14px; padding: 14px 16px; color: var(--ink);
+  }
+  .mode-name { grid-area: name; font-family: var(--display); font-weight: 800; font-size: 21px; line-height: 1.1; }
+  .mode-desc { grid-area: desc; font-size: 12.5px; color: var(--muted); }
+  .mode-state {
+    grid-area: state; max-width: 140px; text-align: center; font-weight: 800; font-size: 12px;
+    background: var(--tile); color: var(--tile-ink); box-shadow: inset 0 -3px 0 var(--tile-shade);
+    padding: 7px 10px; border-radius: 9px; font-variant-numeric: tabular-nums;
+  }
+  .mode.primary { border-color: var(--tile-shade); box-shadow: 0 0 0 1px var(--tile-shade) inset; }
+  .mode.primary .mode-name { color: var(--tile); }
+  .mode.done .mode-state { background: transparent; box-shadow: none; color: var(--good); border: 1px solid var(--good); }
+  .home-foot { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .link-btn { background: none; border: 1px solid var(--board-edge); color: var(--muted); border-radius: 999px; padding: 8px 14px; font-weight: 800; font-size: 12.5px; cursor: pointer; min-height: 44px; }
+  .home-foot a { color: var(--muted); font-size: 12px; padding: 10px; }
+
+  /* Layar main */
+  .topbar { display: flex; align-items: center; gap: 6px; min-height: 44px; }
+  .back {
+    background: none; border: 1px solid var(--board-edge); color: var(--ink); border-radius: 8px;
+    min-height: 44px; padding: 8px 12px; font-weight: 800; font-size: 13px; cursor: pointer; flex: none;
+  }
+  .chip {
+    font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--tile); border: 1px solid var(--tile-shade); padding: 1px 10px; border-radius: 6px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+  }
+  .tb-right { margin-left: auto; display: flex; gap: 6px; flex: none; }
+  .skip { background: var(--tile); color: var(--tile-ink); border: 0; box-shadow: inset 0 -3px 0 var(--tile-shade); border-radius: 999px; min-height: 44px; padding: 0 14px; font-weight: 800; font-size: 14px; cursor: pointer; }
+
+  .arena { flex: 1; min-height: 0; position: relative; display: grid; place-items: center; touch-action: none; }
+  .stagebox { position: relative; width: var(--bw); height: var(--bh); transition: transform .55s cubic-bezier(.3,.1,.2,1); }
+  .stagebox.flip { transform: rotate(180deg); }
+  /* Papan dakon: perahu kayu berukir, serat kayu dari gradien berulang. */
+  .dakon {
+    position: absolute; inset: 0; border-radius: 50% / calc(var(--sh) * 1.5);
+    background:
+      repeating-linear-gradient(90deg, rgba(0,0,0,.07) 0 2px, transparent 2px 7px),
+      repeating-linear-gradient(90deg, rgba(255,230,190,.05) 0 1px, transparent 1px 17px),
+      radial-gradient(ellipse at 30% 20%, rgba(255,220,170,.16), transparent 55%),
+      linear-gradient(90deg, #633719, var(--wood) 22%, var(--wood-light) 50%, var(--wood) 78%, #5C3216);
+    box-shadow: inset 0 0 0 2px rgba(255,214,160,.14), inset 0 -6px 14px rgba(0,0,0,.35), 0 8px 0 #3A1F0D, 0 14px 24px rgba(0,0,0,.45);
+  }
+  /* Saat papan diputar, tebal kayu tetap tampak di bawah. */
+  .stagebox.flip .dakon { box-shadow: inset 0 0 0 2px rgba(255,214,160,.14), inset 0 6px 14px rgba(0,0,0,.35), 0 -8px 0 #3A1F0D, 0 -14px 24px rgba(0,0,0,.45); }
+  .dakon::before { content: ""; position: absolute; inset: 7px; border-radius: inherit; border: 1.5px solid rgba(255,214,160,.16); pointer-events: none; }
+  .cols {
+    position: absolute; left: 10px; right: 10px; top: calc(var(--sh) + 11px); height: calc(var(--ph) * 7);
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(7, var(--ph)); column-gap: 6px;
+  }
+  .cols::before { content: ""; position: absolute; left: 50%; top: 4px; bottom: 4px; width: 3px; margin-left: -1.5px; border-radius: 3px; background: rgba(40,20,8,.45); box-shadow: 1px 0 0 rgba(255,220,170,.12); }
+  .col-glow { position: absolute; top: -4px; bottom: -4px; width: calc(50% - 3px); border-radius: 24px; pointer-events: none; opacity: 0; transition: opacity .25s; }
+  .col-glow.a { left: 0; box-shadow: 0 0 0 2px var(--red), 0 0 18px rgba(255,122,112,.5); background: rgba(255,122,112,.08); }
+  .col-glow.b { right: 0; box-shadow: 0 0 0 2px var(--blue), 0 0 18px rgba(94,200,242,.5); background: rgba(94,200,242,.08); }
+  .col-glow.on { opacity: 1; }
+  .pit {
+    position: relative; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0 4px;
+    background: none; border: 0; color: var(--ink); cursor: pointer; border-radius: 16px; min-width: 0;
+  }
+  .pit.b { flex-direction: row-reverse; }
+  .num {
+    display: inline-block; min-width: 28px; text-align: center; font-family: var(--display); font-weight: 800;
+    font-size: clamp(18px, calc(var(--ph) * .44), 26px); line-height: 1; color: #FFF3DC; text-shadow: 0 2px 0 rgba(0,0,0,.45);
+    font-variant-numeric: tabular-nums; transition: transform .45s;
+  }
+  .hole {
+    position: relative; flex: none; width: var(--hw); height: calc(var(--ph) - 8px); border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 38%, #1E0F05 0%, var(--hole) 50%, #4A2A12 100%);
+    box-shadow: inset 0 4px 7px rgba(0,0,0,.7), inset 0 -2px 3px rgba(255,210,150,.12), 0 1px 0 rgba(255,225,180,.18);
+  }
+  .pit.ok .hole { box-shadow: inset 0 4px 7px rgba(0,0,0,.7), 0 0 0 2px rgba(255,236,190,.55), 0 0 10px rgba(255,220,150,.35); }
+  @media (hover: hover) { .pit.ok:hover .hole { box-shadow: inset 0 4px 7px rgba(0,0,0,.7), 0 0 0 3px #FFE7B0, 0 0 12px rgba(255,220,150,.6); } }
+  .pit.dim .num { opacity: .45; }
+  .pit.flash .hole { animation: flash .45s ease-out; }
+  @keyframes flash { 30% { box-shadow: inset 0 4px 7px rgba(0,0,0,.5), 0 0 0 3px #fff, 0 0 18px #fff; } }
+  .pit.shake, .store.shake { animation: pshake .32s linear; }
+  @keyframes pshake { 0%,100% { translate: 0 0; } 20% { translate: -4px 1px; } 40% { translate: 4px -1px; } 60% { translate: -3px 0; } 80% { translate: 3px 1px; } }
+  .pit.hint .hole { animation: hint 1s ease-in-out infinite; }
+  @keyframes hint { 50% { box-shadow: inset 0 4px 7px rgba(0,0,0,.7), 0 0 0 4px var(--tile), 0 0 20px var(--tile); } }
+  /* Lubang hangus: tertutup papan gelap, dilewati semua taburan. */
+  .pit.burn .hole { background: repeating-linear-gradient(45deg, #1A110A 0 5px, #241710 5px 10px); box-shadow: inset 0 0 0 2px rgba(0,0,0,.5), 0 1px 0 rgba(255,225,180,.1); }
+  .pit.burn .hole::after { content: "hangus"; position: absolute; inset: 0; display: grid; place-items: center; font-size: 11px; font-weight: 800; color: rgba(255,230,200,.45); letter-spacing: .5px; }
+  .store {
+    position: absolute; left: 50%; width: calc(var(--bw) * .6); margin-left: calc(var(--bw) * -.3); height: calc(var(--sh) - 8px);
+    display: grid; place-items: center;
+  }
+  .store.sb { top: 12px; }
+  .store.sa { bottom: 12px; }
+  .store .hole { position: absolute; inset: 0; width: auto; height: auto; }
+  .store .num {
+    position: relative; font-size: clamp(24px, calc(var(--sh) * .42), 40px); border-radius: 999px;
+    background: rgba(30,14,4,.6); min-width: 1.75em; height: 1.75em; display: grid; place-items: center;
+  }
+  .store.on .hole { box-shadow: inset 0 4px 7px rgba(0,0,0,.7), 0 0 0 2px var(--c), 0 0 16px var(--c); }
+  .store.sa { --c: var(--red); }
+  .store.sb { --c: var(--blue); }
+  /* Biji: kerang/batu oval dengan sebaran acak ber-seed per lubang. */
+  .sd {
+    position: absolute; width: var(--sd); height: calc(var(--sd) * .72); margin: calc(var(--sd) * -.36) 0 0 calc(var(--sd) * -.5);
+    border-radius: 50%; transform: rotate(var(--r, 0deg)); pointer-events: none;
+    background: radial-gradient(ellipse at 34% 30%, #FFFBF1 0 16%, #EEDBB4 46%, #B08A5A 100%);
+    box-shadow: 0 1px 1.5px rgba(0,0,0,.6);
+  }
+  .sd::after { content: ""; position: absolute; left: 20%; right: 20%; top: 48%; height: 1px; background: rgba(95,62,30,.6); }
+  .sd.v1 { background: radial-gradient(ellipse at 34% 30%, #FFF6E6 0 16%, #E3C79A 48%, #9A7446 100%); }
+  .sd.v2 { background: radial-gradient(ellipse at 34% 30%, #F4F0E8 0 16%, #CFC6B6 48%, #857A6A 100%); }
+  .sd.v2::after { display: none; }
+  .sd.pop { animation: pop .2s ease-out; }
+  @keyframes pop { from { transform: rotate(var(--r)) scale(1.9); } }
+  .sd.fly { position: fixed; margin: 0; z-index: 36; left: 0; top: 0; will-change: transform; }
+
+  .pill {
+    position: absolute; z-index: 3; left: 50%; display: flex; align-items: center; justify-content: center;
+    min-height: 34px; max-width: calc(var(--bw) - 24px); padding: 0 14px; border-radius: 999px; white-space: nowrap;
+    background: #123F3D; border: 2px solid var(--board-edge); color: var(--muted); font-weight: 800; font-size: 14px;
+    transition: background .2s, border-color .2s, color .2s;
+  }
+  .pill .pin { display: flex; gap: 6px; align-items: baseline; overflow: hidden; text-overflow: ellipsis; transition: transform .45s; }
+  .pill b { font-family: var(--display); font-size: 16px; overflow: hidden; text-overflow: ellipsis; }
+  .pill em { font-style: normal; font-size: 13px; }
+  .pill.p0 { bottom: -22px; transform: translateX(-50%); }
+  .pill.p1 { top: -22px; transform: translateX(-50%); }
+  .pill.p0.on { background: var(--red); border-color: #FFB1A9; color: #3A0C07; }
+  .pill.p1.on { background: var(--blue); border-color: #B5E8FC; color: #06293A; }
+  .dots::after { content: ""; display: inline-block; width: 1.2em; text-align: left; animation: dots 1.2s steps(4) infinite; }
+  @keyframes dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
+  /* Berhadapan: HP di meja, pemain duduk di kiri dan kanan HP; tulisan menghadap masing-masing. */
+  .hadap .pill { writing-mode: vertical-rl; min-height: 0; min-width: 34px; max-width: none; max-height: calc(var(--bh) - 40px); padding: 14px 0; top: 50%; bottom: auto; }
+  .hadap .pill.p0 { left: -44px; transform: translateY(-50%); }
+  .hadap .pill.p1 { left: auto; right: -44px; transform: translateY(-50%) rotate(180deg); }
+  .hadap .pit.a .num, .hadap .store.sa .num { transform: rotate(90deg); }
+  .hadap .pit.b .num, .hadap .store.sb .num { transform: rotate(-90deg); }
+  .stagebox.flip .num, .stagebox.flip .pill .pin { transform: rotate(180deg); }
+  .hand {
+    position: fixed; left: 0; top: 0; z-index: 34; pointer-events: none; border-radius: 50%;
+    width: 56px; height: 56px; margin: -28px 0 0 -28px; border: 3px solid #FFE7B0;
+    box-shadow: 0 0 14px rgba(255,231,176,.8), inset 0 0 10px rgba(255,231,176,.35); transition: transform var(--hs, .12s) ease-out;
+  }
+  .hand b {
+    position: absolute; right: -12px; top: -12px; min-width: 26px; height: 26px; padding: 0 6px; border-radius: 13px;
+    background: var(--tile); color: var(--tile-ink); font-family: var(--display); font-size: 15px; line-height: 26px; text-align: center;
+    box-shadow: 0 2px 0 var(--tile-shade);
+  }
+  .hand.c0 { border-color: #FFC3BC; } .hand.c1 { border-color: #BDEBFD; }
+
+  #fx { position: fixed; inset: 0; pointer-events: none; z-index: 37; overflow: hidden; }
+  .float {
+    position: absolute; transform: translate(-50%, -50%); font-family: var(--display); font-weight: 800; font-size: 22px;
+    color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.45); animation: rise .95s ease-out forwards; white-space: nowrap;
+  }
+  .float.big { font-size: 30px; color: var(--tile); animation-duration: 1.25s; }
+  .float.tag { font-size: 17px; background: var(--tile); color: var(--tile-ink); padding: 2px 14px; border-radius: 999px; text-shadow: none; box-shadow: inset 0 -3px 0 var(--tile-shade); animation-duration: 1.2s; }
+  @keyframes rise { 0% { opacity: 0; transform: translate(-50%, -30%) scale(.7); } 15% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); } 70% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, calc(-50% - 44px)); } }
+  .confetti { position: fixed; top: -14px; width: 9px; height: 13px; border-radius: 2px; z-index: 50; pointer-events: none; animation: fall 1.6s ease-in forwards; }
+  @keyframes fall { to { transform: translateY(105vh) rotate(540deg); opacity: .7; } }
+
+  /* Panel */
+  .overlay { position: fixed; inset: 0; background: rgba(5, 20, 20, .88); display: grid; place-items: center; padding: 16px; z-index: 60; overflow-y: auto; }
+  .panel {
+    width: 100%; max-width: 380px; background: var(--board); border: 1px solid var(--board-edge); border-radius: 16px;
+    padding: 20px 16px; text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center;
+    animation: slideUp .28s ease-out;
+  }
+  @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .panel h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 27px; line-height: 1.1; color: var(--tile); }
+  .panel p { margin: 0; color: var(--muted); line-height: 1.45; }
+  .panel b { color: var(--ink); }
+  .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; }
+  .facts div { background: var(--ground); border: 1px solid var(--board-edge); border-radius: 10px; padding: 8px 4px; font-size: 11.5px; color: var(--muted); }
+  .facts b { display: block; font-size: 18px; font-family: var(--display); }
+  .col { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+  .row { display: flex; gap: 8px; width: 100%; }
+  .row .btn { flex: 1; }
+  .btn {
+    border: 1px solid var(--board-edge); background: var(--ground); color: var(--ink); border-radius: 10px;
+    padding: 11px 8px; font-weight: 800; font-size: 14px; cursor: pointer; line-height: 1.2; min-height: 44px;
+  }
+  .btn.main { background: var(--tile); color: var(--tile-ink); border: 0; box-shadow: inset 0 -4px 0 var(--tile-shade); font-family: var(--display); font-size: 20px; }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .versus { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; width: 100%; }
+  .versus .side { background: var(--ground); border: 1px solid var(--board-edge); border-radius: 12px; padding: 10px 6px; min-width: 0; }
+  .versus .side.win { border-color: var(--good); box-shadow: 0 0 0 1px var(--good); }
+  .versus .who { font-weight: 800; overflow-wrap: anywhere; font-size: 13.5px; }
+  .versus .pts { font-family: var(--display); font-weight: 800; font-size: 34px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .versus .side.win .pts { color: var(--good); }
+  .versus .vs { font-family: var(--display); font-weight: 800; color: var(--tile); }
+  .name-input {
+    width: 100%; padding: 10px 12px; border-radius: 10px; text-align: center; border: 1px solid var(--board-edge);
+    background: var(--ground); color: var(--ink); font-family: var(--body); font-weight: 800; font-size: 18px; user-select: text; -webkit-user-select: text; min-height: 44px;
+  }
+  .names { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+  .names label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 800; text-align: left; }
+  .names label.r { color: var(--red); } .names label.u { color: var(--blue); }
+  .levels { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+  .lvl { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 6px; }
+  .lvl b { font-family: var(--display); font-size: 20px; line-height: 1.1; }
+  .lvl small { font-size: 11.5px; color: var(--muted); font-weight: 600; }
+  .lvl.sel { border-color: var(--tile); box-shadow: 0 0 0 2px var(--tile) inset; }
+  .lvl.sel b { color: var(--tile); }
+  .seg { display: flex; width: 100%; border: 1px solid var(--board-edge); border-radius: 10px; overflow: hidden; }
+  .seg button { flex: 1; background: var(--ground); color: var(--muted); border: 0; border-right: 1px solid var(--board-edge); min-height: 44px; font-weight: 800; font-size: 13px; cursor: pointer; padding: 6px 4px; line-height: 1.15; }
+  .seg button:last-child { border-right: 0; }
+  .seg button[aria-pressed="true"] { background: var(--tile); color: var(--tile-ink); }
+  .setrow { display: flex; flex-direction: column; gap: 6px; width: 100%; text-align: left; }
+  .setrow > span { font-size: 12.5px; font-weight: 800; color: var(--muted); }
+  .toggle { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; }
+  .toggle small { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-top: 2px; }
+  .toggle i { flex: none; width: 46px; height: 26px; border-radius: 13px; background: #0B2B2A; border: 1px solid var(--board-edge); position: relative; }
+  .toggle i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--muted); transition: left .15s; }
+  .toggle[aria-pressed="true"] i { background: var(--tile-shade); }
+  .toggle[aria-pressed="true"] i::after { left: 23px; background: var(--tile); }
+  .note { font-size: 12.5px; }
+  .fam { font-family: var(--display); font-weight: 800; font-size: 20px; color: var(--ink); }
+  /* Bantuan: lima kartu bergambar */
+  .cards { display: flex; flex-direction: column; gap: 10px; width: 100%; text-align: left; }
+  .card { background: var(--ground); border: 1px solid var(--board-edge); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+  .card h3 { margin: 0; font-family: var(--display); font-size: 18px; color: var(--tile); line-height: 1.1; }
+  .card p { font-size: 13.5px; color: var(--ink); }
+  .demo { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .demo .arr { color: var(--tile); font-weight: 800; }
+  .mini { display: inline-flex; gap: 3px; padding: 4px 6px; border-radius: 12px; background: linear-gradient(180deg, var(--wood-light), var(--wood)); align-items: center; }
+  .mini.two { display: inline-grid; grid-auto-flow: column; grid-template-rows: auto auto; }
+  .mini i { width: 22px; height: 18px; border-radius: 50%; background: radial-gradient(ellipse, #1E0F05 40%, #4A2A12); color: #FFF3DC; font-style: normal; font-size: 11px; font-weight: 800; display: grid; place-items: center; }
+  .mini i.h { box-shadow: 0 0 0 2px var(--tile); }
+  .mini i.l { width: 30px; height: 40px; grid-row: span 2; }
+  .mini i.x { background: repeating-linear-gradient(45deg, #1A110A 0 3px, #2A1B10 3px 6px); }
+  .help-foot { font-size: 12.5px; }
+
+  .toast {
+    position: fixed; left: 50%; top: calc(62px + env(safe-area-inset-top, 0px)); transform: translateX(-50%);
+    background: var(--ink); color: var(--ground); font-weight: 800; font-size: 13px; padding: 8px 14px; border-radius: 999px;
+    z-index: 70; max-width: calc(100% - 32px); text-align: center; pointer-events: none;
+  }
+  .sr { position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .best.bump, .panel, .pit.flash .hole, .pit.shake, .store.shake, .sd.pop, .pit.hint .hole { animation: none; }
+    .confetti { display: none; }
+    .stagebox, .num, .pill .pin, .hand { transition: none; }
+    .float { animation-duration: 1.2s; animation-name: fade; }
+    @keyframes fade { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand-box">
+      <a class="hub" href="/">‹ Dehayuk</a>
+      <div class="brand">Cong<span>klak</span></div>
+    </div>
+    <div class="head-right">
+      <div class="best" id="bestBox" title="Kemenangan melawan Komputer">🏆 <span id="best">0</span></div>
+      <button class="icon-btn" id="btnSound" type="button" aria-label="Matikan suara" title="Suara">🔊</button>
+    </div>
+  </header>
+
+  <section id="home">
+    <div class="hero">
+      <div class="logo" aria-hidden="true"><i class="st"></i><i></i><i></i><i></i><i></i><i class="st"></i><i></i><i></i><i></i><i></i></div>
+      <p><b>Tabur, sambung, tembak!</b>Congklak (Dakon) warisan nenek moyang. Kumpulkan biji terbanyak di lumbungmu.</p>
+    </div>
+    <div class="modes">
+      <button class="mode primary" id="modeVs" type="button">
+        <span class="mode-name">Lawan Komputer</span>
+        <span class="mode-desc">Dari Mudah sampai Jago. Menang untuk membuka level berikutnya.</span>
+        <span class="mode-state" id="stVs">Main</span>
+      </button>
+      <button class="mode" id="modeDuo" type="button">
+        <span class="mode-name">Berdua di Satu HP</span>
+        <span class="mode-desc">Main bareng keluarga, gantian di satu HP. Tanpa internet.</span>
+        <span class="mode-state" id="stDuo">Main</span>
+      </button>
+      <button class="mode" id="modeDaily" type="button">
+        <span class="mode-name">Tantangan Hari Ini</span>
+        <span class="mode-desc">Papan acak yang sama untuk semua orang, lawan Komputer Sulit.</span>
+        <span class="mode-state" id="stDaily">Siap dimainkan</span>
+      </button>
+      <button class="mode" id="modeChal" type="button">
+        <span class="mode-name">Tantang Teman</span>
+        <span class="mode-desc">Kirim papan acak lewat WhatsApp. Siapa menang dengan selisih lebih besar?</span>
+        <span class="mode-state" id="stChal">Tantang</span>
+      </button>
+    </div>
+    <p class="stats" id="stats"></p>
+    <div class="home-foot">
+      <button class="link-btn" id="btnHelp" type="button">❓ Cara main</button>
+      <button class="link-btn" id="btnSet" type="button">⚙️ Pengaturan</button>
+    </div>
+    <div class="home-foot"><a href="/privasi/" target="_blank" rel="noopener">Privasi</a></div>
+  </section>
+
+  <section id="play" hidden>
+    <div class="topbar">
+      <button class="back" id="btnMenu" type="button">‹ Menu</button>
+      <span class="chip" id="modeChip">Sulit</span>
+      <div class="tb-right">
+        <button class="skip" id="btnSkip" type="button" hidden>Lewati ⏭</button>
+        <button class="icon-btn" id="btnHint" type="button" aria-label="Petunjuk" title="Petunjuk" hidden>💡</button>
+        <button class="icon-btn" id="btnPlaySet" type="button" aria-label="Pengaturan" title="Pengaturan">⚙️</button>
+        <button class="icon-btn" id="btnRestart" type="button" aria-label="Mulai ulang" title="Mulai ulang">↻</button>
+      </div>
+    </div>
+    <div class="arena" id="arena">
+      <div class="stagebox" id="stagebox">
+        <div class="dakon" id="board" role="group" aria-label="Papan congklak"></div>
+        <div class="pill p1" id="pillB"></div>
+        <div class="pill p0" id="pillA"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="hand" id="hand" hidden><b id="handN">0</b></div>
+<div id="fx" aria-hidden="true"></div>
+<div class="overlay" id="overlay" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<div class="sr" id="sr" aria-live="polite"></div>
+
+<script>
+/*CORE:BEGIN*/
+// Aturan murni Congklak "Aturan Dehayuk": tanpa DOM, bisa diuji di Node dan dijalankan di Web Worker.
+// Indeks papan: 0..6 = lubang A (a0..a6), 7 = lumbung A, 8..14 = lubang B (b0..b6), 15 = lumbung B.
+// Arah tabur = indeks naik (a0 -> a6 -> lumbung A -> b0 -> b6 -> lumbung B -> a0). Seberang lubang i = 14 - i.
+const GameCore = (() => {
+  const SA = 7, SB = 15, START = 7, TOTAL = 98, MAX_ROUNDS = 5;
+  const CAP = 1000;       // pengaman tabur bersambung tanpa akhir; dari 368 ribu giliran uji, terpanjang di bawah 500 biji
+  const TURN_CAP = 500;   // batas giliran per putaran (pengaman); sisa biji di lubang masuk lumbung pemiliknya
+  const RICH = 3;         // lubang seberang dianggap "kaya" (ancaman tembak) mulai 3 biji
+  // Main lagi maksimal EXTRA_CAP kali beruntun; langkah pembuka putaran tanpa main lagi. Tanpa ini yang
+  // mulai duluan hampir selalu menang (Sulit vs Sulit, 30 papan: 30-0). Dengan ini: 14-14, 2 seri.
+  const EXTRA_CAP = 2;
+  const DAILY_LAUNCH = "2026-09-26"; // Harian #1
+  const LEVELS = ["mudah", "sedang", "sulit", "jago"];
+  const NODE_BUDGET = { mudah: 2000, sedang: 20000, sulit: 30000, jago: 400000 };
+  const TIME_CAP = { mudah: 150, sedang: 150, sulit: 1500, jago: 350 };
+  const MAX_DEPTH = { mudah: 1, sedang: 3, sulit: 6, jago: 30 };
+  const SLACK = { sulit: 1.5, jago: 1 };  // variasi: langkah sejauh ini (dalam biji) dari yang terbaik boleh dipilih
+
+  const ownerOf = (i) => (i < 8 ? 0 : 1);
+  const isStore = (i) => i === SA || i === SB;
+  const opposite = (i) => 14 - i;
+
+  // Hasil sampingan giliran terakhir (dipakai tanpa membuat objek baru di pencarian AI).
+  let lastDrops = 0, lastRelays = 0, lastCapped = false;
+
+  // Satu giliran penuh dari lubang `pit`. b dimutasi. burn: bitmask lubang hangus.
+  // ev (opsional) diisi kejadian untuk animasi. Mengembalikan (tembak << 1) | mainLagi.
+  function sow(b, burn, side, pit, ev) {
+    const own = side ? SB : SA, skip = side ? SA : SB;
+    let hand = b[pit], pos = pit, drops = 0, relays = 0, extra = 0, tembak = 0;
+    lastCapped = false;
+    b[pit] = 0;
+    if (ev) ev.push({ k: "lift", at: pit, n: hand });
+    for (;;) {
+      while (hand > 0) {
+        pos = (pos + 1) & 15;
+        if (pos === skip || (burn >> pos) & 1) continue;
+        b[pos]++; hand--; drops++;
+        if (ev) ev.push({ k: "drop", at: pos, hand });
+      }
+      if (pos === own) { extra = 1; if (ev) ev.push({ k: "extra", at: pos }); break; }
+      if (b[pos] > 1) {
+        if (drops >= CAP) { lastCapped = true; if (ev) ev.push({ k: "cap", at: pos }); break; }
+        hand = b[pos]; b[pos] = 0; relays++;
+        if (ev) ev.push({ k: "relay", at: pos, n: hand });
+        continue;
+      }
+      if (ownerOf(pos) === side) {
+        const o = opposite(pos);
+        if (b[o] > 0) {
+          tembak = b[o] + 1;
+          if (ev) ev.push({ k: "tembak", at: pos, from: o, to: own, n: tembak });
+          b[own] += tembak; b[o] = 0; b[pos] = 0;
+        } else if (ev) ev.push({ k: "stop", at: pos });
+      } else if (ev) ev.push({ k: "stop", at: pos });
+      break;
+    }
+    lastDrops = drops; lastRelays = relays;
+    return (tembak << 1) | extra;
+  }
+
+  // Siapa jalan berikutnya: -1 bila semua lubang kosong (putaran selesai). Pemain tanpa biji dilewati.
+  function nextSide(b, side, extra) {
+    let sa = 0, sb = 0;
+    for (let k = 0; k < 7; k++) { sa += b[k]; sb += b[8 + k]; }
+    if (!sa && !sb) return -1;
+    let nx = extra ? side : 1 - side;
+    if (!(nx ? sb : sa)) nx = 1 - nx;
+    return nx;
+  }
+  function sideSum(b, side) { let s = 0; for (let k = 0; k < 7; k++) s += b[(side ? 8 : 0) + k]; return s; }
+  function legalMoves(g) {
+    const out = [];
+    if (!g || g.over || g.roundOver) return out;
+    for (let k = 0; k < 7; k++) { const i = (g.turn ? 8 : 0) + k; if (g.b[i] > 0) out.push(i); }
+    return out;
+  }
+
+  // ---------- Permainan ----------
+  function newGame(o) {
+    o = o || {};
+    const s = o.start || [7, 7, 7, 7, 7, 7, 7];
+    const b = new Array(16).fill(0);
+    for (let k = 0; k < 7; k++) { b[k] = s[k]; b[8 + k] = s[k]; }
+    const first = o.first ? 1 : 0;
+    return {
+      v: 1, b, burn: 0, turn: first, first, round: 1, maxRounds: o.multi ? MAX_ROUNDS : 1, rt: 0, moves: 0, fm: EXTRA_CAP,
+      over: false, roundOver: false, winner: -1, why: "", tembak: [0, 0], tembakSeeds: [0, 0], longest: [0, 0], extras: [0, 0], swept: null
+    };
+  }
+  function applyMove(g, pit, wantEvents) {
+    if (!g || g.over || g.roundOver) return null;
+    const side = g.turn;
+    if (!Number.isInteger(pit) || pit < 0 || pit > 15 || isStore(pit) || ownerOf(pit) !== side || !(g.b[pit] > 0)) return null;
+    const ev = wantEvents ? [] : null;
+    const code = sow(g.b, g.burn, side, pit, ev);
+    // fm = hitungan main lagi beruntun (langkah pembuka putaran mulai dari EXTRA_CAP).
+    const fm = Number.isInteger(g.fm) ? g.fm : 0, raw = !!(code & 1);
+    const extra = raw && fm < EXTRA_CAP, tembak = code >> 1;
+    if (raw && !extra && ev && ev[ev.length - 1].k === "extra") Object.assign(ev[ev.length - 1], { k: "noextra", open: g.rt === 0 });
+    g.fm = extra ? fm + 1 : 0;
+    g.moves++; g.rt++;
+    if (tembak) { g.tembak[side]++; g.tembakSeeds[side] += tembak; }
+    if (extra) g.extras[side]++;
+    if (lastRelays && lastDrops > g.longest[side]) g.longest[side] = lastDrops;
+    const res = { side, pit, extra, noExtra: raw && !extra, tembak, drops: lastDrops, relays: lastRelays, capped: lastCapped, events: ev, passed: false, passedOwn: false, roundOver: false, over: false };
+    let nx = nextSide(g.b, side, extra);
+    if (nx >= 0 && g.rt >= TURN_CAP) nx = -1;
+    if (nx < 0) endRound(g, ev);
+    else {
+      res.passed = nx !== (extra ? side : 1 - side);
+      res.passedOwn = res.passed && extra;
+      if (nx !== side) g.fm = 0;
+      if (res.passed && ev) ev.push({ k: "pass", side: 1 - nx });
+      g.turn = nx;
+    }
+    res.roundOver = g.roundOver; res.over = g.over;
+    return res;
+  }
+  function endRound(g, ev) {
+    const sa = sideSum(g.b, 0), sb = sideSum(g.b, 1);
+    g.swept = [sa, sb];
+    if (sa || sb) {
+      for (let k = 0; k < 7; k++) { g.b[k] = 0; g.b[8 + k] = 0; }
+      g.b[SA] += sa; g.b[SB] += sb;
+      if (ev) ev.push({ k: "sweep", a: sa, b: sb });
+    }
+    g.roundOver = true;
+    const a = g.b[SA], bb = g.b[SB];
+    if (g.round >= g.maxRounds) finish(g, a > bb ? 0 : bb > a ? 1 : 2, "putaran");
+    else if (a < START || bb < START) finish(g, a < START ? 1 : 0, "habis");
+  }
+  function finish(g, winner, why) { g.over = true; g.winner = winner; g.why = why; }
+  // Putaran baru: tiap pemain mengisi lubangnya 7 biji dari lumbung sendiri; yang tidak kebagian 7 menjadi hangus.
+  function refill(b, side) {
+    const st = side ? SB : SA, base = side ? 8 : 0;
+    let s = b[st], burn = 0, filled = 0;
+    for (let k = 0; k < 7; k++) {
+      if (s >= START) { b[base + k] = START; s -= START; filled++; }
+      else { b[base + k] = 0; burn |= 1 << (base + k); }
+    }
+    b[st] = s;
+    return { burn, filled };
+  }
+  function nextRound(g) {
+    if (!g || g.over || !g.roundOver) return null;
+    const ra = refill(g.b, 0), rb = refill(g.b, 1);
+    g.burn = ra.burn | rb.burn;
+    g.round++; g.rt = 0; g.fm = EXTRA_CAP; g.roundOver = false; g.swept = null;
+    g.turn = (g.first + g.round - 1) % 2;
+    if (!sideSum(g.b, g.turn)) g.turn = 1 - g.turn;
+    return { filled: [ra.filled, rb.filled] };
+  }
+  // Pratinjau isi ulang (untuk panel akhir putaran), tanpa mengubah permainan.
+  function refillPreview(g) {
+    const b = g.b.slice();
+    return [refill(b, 0).filled, refill(b, 1).filled];
+  }
+  // Terapkan satu kejadian animasi ke papan tampilan. Setelah semua kejadian, hasilnya sama dengan papan permainan.
+  function applyEvent(D, e) {
+    switch (e.k) {
+      case "lift": case "relay": D[e.at] = 0; break;
+      case "drop": D[e.at]++; break;
+      case "tembak": D[e.to] += e.n; D[e.from] = 0; D[e.at] = 0; break;
+      case "sweep": for (let k = 0; k < 7; k++) { D[k] = 0; D[8 + k] = 0; } D[SA] += e.a; D[SB] += e.b; break;
+    }
+    return D;
+  }
+  function total(b) { let s = 0; for (let i = 0; i < 16; i++) s += b[i]; return s; }
+  function isValid(g) {
+    if (!g || g.v !== 1 || !Array.isArray(g.b) || g.b.length !== 16) return false;
+    if (!g.b.every((x) => Number.isInteger(x) && x >= 0 && x <= TOTAL) || total(g.b) !== TOTAL) return false;
+    if (!Number.isInteger(g.burn) || (g.turn !== 0 && g.turn !== 1) || !Number.isInteger(g.round)) return false;
+    if (typeof g.over !== "boolean" || typeof g.roundOver !== "boolean") return false;
+    for (let i = 0; i < 16; i++) if (((g.burn >> i) & 1) && g.b[i]) return false;
+    if (!g.over && !g.roundOver && !sideSum(g.b, g.turn)) return false;
+    return Array.isArray(g.tembak) && Array.isArray(g.longest);
+  }
+
+  // ---------- Komputer: negamax alpha-beta dengan pendalaman bertahap ----------
+  const ABORT = { abort: true };
+  const MAXPLY = 34;
+  const KB = [], KN = [], KK = [], KP = [], KO = [], KF = [];
+  for (let p = 0; p < MAXPLY; p++) {
+    const row = [];
+    for (let k = 0; k < 7; k++) row.push(new Int16Array(16));
+    KB.push(row); KN.push(new Int8Array(7)); KK.push(new Int16Array(7)); KP.push(new Int8Array(7)); KO.push(new Int8Array(7)); KF.push(new Int8Array(7));
+  }
+  let nodes = 0, budget = 0, deadline = 0, single = true, simple = false;
+  const now = () => (typeof performance !== "undefined" && performance.now ? performance.now() : Date.now());
+
+  function evaluate(b, burn, side) {
+    const own = side ? SB : SA, oth = side ? SA : SB;
+    const v = b[own] - b[oth];
+    if (simple) return v;
+    const ob = side ? 8 : 0, tb = side ? 0 : 8;
+    let so = 0, st = 0, to = 0, tt = 0;
+    for (let k = 0; k < 7; k++) {
+      const i = ob + k, j = tb + k;
+      so += b[i]; st += b[j];
+      if (!b[i] && !((burn >> i) & 1) && b[14 - i] >= RICH) to++;
+      if (!b[j] && !((burn >> j) & 1) && b[14 - j] >= RICH) tt++;
+    }
+    return v + 0.25 * (so - st) + 0.5 * (to - tt);
+  }
+  // Akhir putaran di dalam pencarian: semua biji sudah di lumbung.
+  function terminal(b, side) {
+    const own = side ? b[SB] : b[SA], oth = side ? b[SA] : b[SB], d = own - oth;
+    if (single) return d + (d > 0 ? 500 : d < 0 ? -500 : 0);
+    return d + (own < START ? -500 : 0) + (oth < START ? 500 : 0);
+  }
+  // Isi anak-anak posisi: papan, giliran berikutnya, urutan (main lagi dulu, lalu tembak).
+  // fm seperti di applyMove; KF = fm untuk tiap anak.
+  function gen(b, burn, side, ply, fm) {
+    const base = side ? 8 : 0, cb = KB[ply], cn = KN[ply], ck = KK[ply], cp = KP[ply], ko = KO[ply], kf = KF[ply];
+    let n = 0;
+    for (let k = 0; k < 7; k++) {
+      const pit = base + k;
+      if (!b[pit]) continue;
+      const c = cb[n];
+      c.set(b);
+      const code = sow(c, burn, side, pit, null), ex = code & 1 && fm < EXTRA_CAP ? 1 : 0;
+      cn[n] = nextSide(c, side, ex);
+      kf[n] = ex ? fm + 1 : 0;
+      cp[n] = pit;
+      ck[n] = (ex ? 1000 : 0) + (code >> 1);
+      let q = n;
+      while (q > 0 && ck[ko[q - 1]] < ck[n]) { ko[q] = ko[q - 1]; q--; }
+      ko[q] = n;
+      n++;
+    }
+    return n;
+  }
+  function nega(b, burn, side, depth, alpha, beta, ply, fm) {
+    if ((++nodes & 511) === 0 && (nodes > budget || now() > deadline)) throw ABORT;
+    if (depth <= 0 || ply >= MAXPLY - 1) return evaluate(b, burn, side);
+    const n = gen(b, burn, side, ply, fm);
+    const cb = KB[ply], cn = KN[ply], ko = KO[ply], kf = KF[ply];
+    let best = -Infinity;
+    for (let q = 0; q < n; q++) {
+      const i = ko[q], nx = cn[i];
+      let v;
+      if (nx < 0) v = terminal(cb[i], side);
+      else if (nx === side) v = nega(cb[i], burn, side, depth - 1, alpha, beta, ply + 1, kf[i]);
+      else v = -nega(cb[i], burn, nx, depth - 1, -beta, -alpha, ply + 1, 0);
+      if (v > best) best = v;
+      if (v > alpha) alpha = v;
+      if (alpha >= beta) break;
+    }
+    return best;
+  }
+  // Nilai tiap langkah di akar. full = jendela penuh untuk semua langkah (nilai pasti, dipakai level Sedang).
+  // slack: langkah sedekat slack dari yang terbaik tetap dihitung pasti (untuk variasi).
+  function rootScores(b, burn, side, depth, full, prefer, fm, slack) {
+    const n = gen(b, burn, side, 0, fm);
+    const cb = KB[0], cn = KN[0], cp = KP[0], ko = Array.from(KO[0].slice(0, n));
+    if (prefer != null) { const at = ko.findIndex((i) => cp[i] === prefer); if (at > 0) ko.unshift(ko.splice(at, 1)[0]); }
+    const boards = ko.map((i) => Int16Array.from(cb[i])), nexts = ko.map((i) => cn[i]), pits = ko.map((i) => cp[i]), fms = ko.map((i) => KF[0][i]);
+    const out = [];
+    let alpha = -Infinity;
+    for (let q = 0; q < n; q++) {
+      const nx = nexts[q], a = full ? -Infinity : alpha - (slack || 0);
+      let v;
+      if (nx < 0) v = terminal(boards[q], side);
+      else if (nx === side) v = nega(boards[q], burn, side, depth - 1, a, Infinity, 1, fms[q]);
+      else v = -nega(boards[q], burn, nx, depth - 1, -Infinity, -a, 1, 0);
+      out.push({ pit: pits[q], v });
+      if (v > alpha) alpha = v;
+    }
+    return out;
+  }
+  function bestOf(sc) { let b = sc[0]; for (const s of sc) if (s.v > b.v) b = s; return b; }
+  // req: {b, burn, side, level, single, fm, det, r:[acak0, acak1, acak2]} -> {pit, depth, nodes}
+  // det = pasti (Harian, tantangan). Tanpa det, Sulit/Jago acak di antara langkah yang hampir sama bagus.
+  function think(req) {
+    const b = Int16Array.from(req.b), burn = req.burn | 0, side = req.side ? 1 : 0;
+    const level = LEVELS.includes(req.level) ? req.level : "sulit";
+    const r = req.r || [Math.random(), Math.random(), Math.random()];
+    const fm = Math.max(0, Math.min(EXTRA_CAP, req.fm | 0)), slack = req.det ? 0 : SLACK[level] || 0;
+    single = req.single !== false;
+    simple = level === "mudah";
+    nodes = 0; budget = NODE_BUDGET[level]; deadline = now() + TIME_CAP[level];
+    const legal = [];
+    for (let k = 0; k < 7; k++) if (b[(side ? 8 : 0) + k] > 0) legal.push((side ? 8 : 0) + k);
+    if (!legal.length) return { pit: -1, depth: 0, nodes: 0 };
+    if (legal.length === 1) return { pit: legal[0], depth: 0, nodes: 0 };
+    try {
+      if (level === "mudah") {
+        // Mudah: sering asal pilih, dan hanya melihat satu langkah tanpa memperhitungkan ancaman tembak.
+        if (r[0] < 0.35) return { pit: legal[Math.min(legal.length - 1, Math.floor(r[1] * legal.length))], depth: 0, nodes };
+        return { pit: bestOf(rootScores(b, burn, side, 1, true, null, fm)).pit, depth: 1, nodes };
+      }
+      if (level === "sedang") {
+        const sc = rootScores(b, burn, side, 3, true, null, fm).sort((x, y) => y.v - x.v);
+        const pick = r[0] < 0.1 && sc.length > 1 ? sc[1] : sc[0];
+        return { pit: pick.pit, depth: 3, nodes };
+      }
+    } catch (e) { if (e !== ABORT) throw e; }
+    let best = null, depth = 0, last = null;
+    for (let d = 1; d <= MAX_DEPTH[level] && d <= MAXPLY - 2; d++) {
+      try {
+        const sc = rootScores(b, burn, side, d, false, best ? best.pit : null, fm, slack), bb = bestOf(sc);
+        best = bb; depth = d; last = sc;
+        if (Math.abs(bb.v) >= 400) break;
+      } catch (e) { if (e !== ABORT) throw e; break; }
+    }
+    if (!best) best = { pit: legal[0] };
+    else if (slack && Math.abs(best.v) < 400) {
+      // "Lebih dari": nilai tepat di batas jendela hanya batas atas.
+      const near = last.filter((s) => s.v > best.v - slack || s === best);
+      best = near[Math.min(near.length - 1, Math.floor((r[2] == null ? r[0] : r[2]) * near.length))];
+    }
+    return { pit: best.pit, depth, nodes };
+  }
+
+  // ---------- Tanggal, Harian, tantangan, teks bagikan ----------
+  function rng(seed) {
+    return function () {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function hash(str) {
+    let h = 2166136261;
+    for (const ch of str) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+    return h >>> 0;
+  }
+  function dateKey(d) {
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function dailySeed(key) { return hash("congklak:" + key.replace(/-/g, "")); }
+  function dailyNumber(key) {
+    const [y1, m1, d1] = DAILY_LAUNCH.split("-").map(Number);
+    const [y2, m2, d2] = key.split("-").map(Number);
+    return Math.round((new Date(y2, m2 - 1, d2) - new Date(y1, m1 - 1, d1)) / 86400000) + 1;
+  }
+  function prevDay(key) { const [y, m, d] = key.split("-").map(Number); return dateKey(new Date(y, m - 1, d - 1)); }
+  // Papan awal acak yang adil: 6 perpindahan 1-2 biji di sisi yang sama, dicerminkan ke lawan. Tetap 49 per sisi, tak ada lubang kosong.
+  function perturb(seed) {
+    const r = rng(seed >>> 0), a = [7, 7, 7, 7, 7, 7, 7];
+    for (let m = 0; m < 6; m++) {
+      for (let t = 0; t < 40; t++) {
+        const i = Math.floor(r() * 7), j = Math.floor(r() * 7), k = 1 + Math.floor(r() * 2);
+        if (i !== j && a[i] - k >= 1) { a[i] -= k; a[j] += k; break; }
+      }
+    }
+    return a;
+  }
+  function validStart(a) { return Array.isArray(a) && a.length === 7 && a.every((x) => Number.isInteger(x) && x >= 1) && a.reduce((s, x) => s + x, 0) === 49; }
+  function cleanName(s) { return String(s || "").replace(/[^\p{L}\p{N} ._-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 12); }
+  function encodeDuel(d) {
+    const json = JSON.stringify({ v: 1, s: d.s >>> 0, m: d.m, n: cleanName(d.n) });
+    return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+  // Selisih satu putaran selalu genap (jumlah biji 98) dan paling besar 98; nilai lain pasti palsu.
+  function decodeDuel(code) {
+    try {
+      const o = JSON.parse(decodeURIComponent(escape(atob(String(code).replace(/-/g, "+").replace(/_/g, "/")))));
+      if (!o || o.v !== 1) return null;
+      if (!Number.isInteger(o.s) || o.s < 0 || o.s > 0xFFFFFFFF) return null;
+      if (!Number.isInteger(o.m) || Math.abs(o.m) > TOTAL || o.m % 2 !== 0) return null;
+      const n = cleanName(o.n);
+      return n ? { s: o.s, m: o.m, n } : null;
+    } catch (e) { return null; }
+  }
+  const signed = (m) => (m > 0 ? "+" + m : m < 0 ? "−" + Math.abs(m) : "0");
+  // Kalimat hasil dari sudut pandang pemain: "menang 56–42 lawan Komputer Sulit (selisih +14)".
+  function verdictText(a, b, opp) {
+    const m = a - b, sc = a + "–" + b;
+    if (m > 0) return "menang " + sc + " lawan " + opp + " (selisih " + signed(m) + ")";
+    if (m < 0) return (m >= -10 ? "kalah tipis " : "kalah ") + sc + " lawan " + opp + " (selisih " + signed(m) + ")";
+    return "seri " + sc + " lawan " + opp;
+  }
+  function dailyShare(o) {
+    return "Congklak Harian #" + o.number + "\n🐚 Aku " + verdictText(o.a, o.b, "Komputer Sulit") + "\n🎯 Tembak " + o.tembak + "x" +
+      (o.streak > 1 ? "\n🔥 " + o.streak + " hari beruntun" : "") + "\nBisa lebih besar? " + o.url;
+  }
+
+  // ---------- Uji mandiri (?uji=1 di browser, atau dari Node) ----------
+  function selfTest(games) {
+    const log = [], fails = [];
+    const ok = (c, name) => { (c ? log : fails).push(name); };
+    const blank = () => { const g = newGame(); g.b.fill(0); g.fm = 0; return g; };
+    let g, r;
+    // 1. Lumbung lawan dilewati
+    g = blank(); g.b[6] = 10; g.b[SB] = 88; g.b[SA] = 0;
+    r = applyMove(g, 6, true);
+    // 10 biji: lumbung A, b0..b6, lewati lumbung B, a0, a1 (kosong) -> tembak b5 yang baru berisi 1.
+    ok(g.b[SB] === 88 && r.drops === 10 && r.tembak === 2 && g.b[SA] === 3 && g.b[13] === 0 && [8, 9, 10, 11, 12, 14, 0].every((i) => g.b[i] === 1) && total(g.b) === 98, "lumbung lawan dilewati");
+    // 2. Biji terakhir di lumbung sendiri: main lagi
+    g = blank(); g.b[6] = 1; g.b[0] = 3; g.b[10] = 4; g.b[SB] = 90;
+    r = applyMove(g, 6, true);
+    ok(r.extra && g.turn === 0 && g.b[SA] === 1 && total(g.b) === 98, "main lagi di lumbung sendiri");
+    // 2b. Langkah pembuka putaran tidak dapat main lagi; main lagi paling banyak EXTRA_CAP kali beruntun
+    g = newGame(); r = applyMove(g, 0, true);
+    ok(!r.extra && r.noExtra && g.turn === 1 && g.b[SA] === 1 && r.events.some((e) => e.k === "noextra" && e.open), "langkah pembuka tanpa main lagi");
+    g = blank(); g.b[6] = 1; g.b[5] = 2; g.b[4] = 3; g.b[10] = 4; g.b[SB] = 88;
+    const e1 = applyMove(g, 6).extra, e2 = applyMove(g, 5).extra; r = applyMove(g, 4);
+    ok(EXTRA_CAP === 2 && e1 && e2 && !r.extra && r.noExtra && g.turn === 1 && g.b[SA] === 3 && g.fm === 0, "main lagi paling banyak 2 kali beruntun");
+    // 3. Tabur bersambung
+    g = blank(); g.b[0] = 2; g.b[2] = 3; g.b[11] = 5; g.b[SB] = 88;
+    r = applyMove(g, 0, true);
+    ok(r.relays === 1 && g.b[1] === 1 && g.b[2] === 0 && g.b[3] === 1 && g.b[6] === 1 && g.b[SA] === 0 && g.turn === 1, "tabur bersambung");
+    // 4. Tembak
+    g = blank(); g.b[0] = 1; g.b[13] = 5; g.b[9] = 2; g.b[SB] = 90;
+    r = applyMove(g, 0, true);
+    ok(r.tembak === 6 && g.b[SA] === 6 && g.b[13] === 0 && g.b[1] === 0 && g.tembak[0] === 1 && g.turn === 1, "tembak");
+    // 5. Berhenti di lubang lawan yang kosong
+    g = blank(); g.b[6] = 2; g.b[3] = 1; g.b[12] = 3; g.b[SB] = 92;
+    r = applyMove(g, 6, true);
+    ok(!r.extra && !r.tembak && g.b[8] === 1 && g.b[SA] === 1 && g.turn === 1, "berhenti di lubang lawan kosong");
+    // 6. Lewat bila tidak punya biji
+    g = blank(); g.b[0] = 2; g.b[SA] = 40; g.b[SB] = 56;
+    r = applyMove(g, 0, true);
+    ok(r.passed && g.turn === 0 && g.b[1] === 1 && g.b[2] === 1 && !g.roundOver, "giliran lewat bila tanpa biji");
+    // 7. Lubang hangus dilewati
+    g = blank(); g.burn = (1 << 1) | (1 << 9); g.b[0] = 2; g.b[12] = 4; g.b[SB] = 92;
+    r = applyMove(g, 0, true);
+    ok(g.b[1] === 0 && g.b[2] === 1 && g.b[3] === 1, "lubang hangus dilewati");
+    // 8. Isi ulang antar putaran dan kalah bila tak bisa mengisi
+    g = newGame({ multi: true }); g.b.fill(0); g.b[SA] = 60; g.b[SB] = 38; g.roundOver = true;
+    r = nextRound(g);
+    ok(r && g.round === 2 && g.b[SA] === 11 && g.b[SB] === 3 && g.b[13] === 0 && g.b[12] === 7 && ((g.burn >> 13) & 1) && ((g.burn >> 14) & 1) && !((g.burn >> 12) & 1) && g.turn === 1 && total(g.b) === 98, "isi ulang dan lubang hangus");
+    g = newGame({ multi: true }); g.b.fill(0); g.b[6] = 1; g.b[SA] = 92; g.b[SB] = 5;
+    r = applyMove(g, 6, true);
+    ok(g.over && g.winner === 0 && g.why === "habis", "kalah bila tak bisa mengisi satu lubang");
+    // 9. Kejadian animasi menghasilkan papan yang sama + invarian 98 biji + ribuan permainan acak
+    const R = rng(12345);
+    let errs = 0, moves = 0, capped = 0, maxDrops = 0, roundsTotal = 0, turnCap = 0, bad = 0;
+    for (let n = 0; n < (games || 1000); n++) {
+      g = newGame({ multi: n % 2 === 1, start: n % 3 === 0 ? perturb(n) : null });
+      let guard = 0;
+      while (!g.over && guard++ < 20000) {
+        if (g.roundOver) { nextRound(g); roundsTotal++; continue; }
+        const L = legalMoves(g);
+        if (!L.length) { errs++; break; }
+        const before = g.b.slice();
+        r = applyMove(g, L[Math.floor(R() * L.length)], true);
+        moves++;
+        if (!r) { errs++; break; }
+        if (r.capped) capped++;
+        if (r.drops > maxDrops) maxDrops = r.drops;
+        if (total(g.b) !== TOTAL) errs++;
+        const D = before.slice();
+        for (const e of r.events) applyEvent(D, e);
+        if (D.join() !== g.b.join()) bad++;
+        if (g.rt >= TURN_CAP) turnCap++;
+      }
+      if (!g.over) errs++;
+    }
+    ok(errs === 0, "invarian 98 biji dan semua permainan selesai (" + (games || 1000) + " permainan, " + moves + " langkah)");
+    ok(bad === 0, "kejadian animasi sama dengan papan akhir");
+    // 10. Harian
+    const s1 = dailySeed("2026-09-26"), a1 = perturb(s1);
+    ok(dailyNumber("2026-09-26") === 1 && dailyNumber("2026-09-27") === 2 && validStart(a1) && perturb(s1).join() === a1.join() && dailySeed("2026-09-27") !== s1, "harian tetap dan adil");
+    return { ok: fails.length === 0, passed: log, failed: fails, stats: { moves, capped, maxDrops, turnCap, roundsTotal } };
+  }
+
+  return {
+    SA, SB, TOTAL, START, CAP, EXTRA_CAP, TURN_CAP, MAX_ROUNDS, LEVELS, NODE_BUDGET, sow, nextSide, sideSum, legalMoves, newGame, applyMove, nextRound,
+    refillPreview, applyEvent, total, isValid, think, rng, hash, dateKey, dailySeed, dailyNumber, prevDay, perturb, validStart,
+    cleanName, encodeDuel, decodeDuel, signed, verdictText, dailyShare, selfTest, opposite, ownerOf, isStore
+  };
+})();
+/*CORE:END*/
+
+// Sumber inti untuk Web Worker (tanpa berkas tambahan).
+const CORE_SRC = (() => {
+  try {
+    const t = document.currentScript.textContent;
+    return t.split("/*CORE:" + "BEGIN*/")[1].split("/*CORE:" + "END*/")[0];
+  } catch (e) { return ""; }
+})();
+
+// ================= Antarmuka =================
+const STORE_KEY = "congklak.v1";
+const HOME_URL = "https://dehayuk.netlify.app/congklak/";
+const LV = GameCore.LEVELS;
+const LV_NAME = { mudah: "Mudah", sedang: "Sedang", sulit: "Sulit", jago: "Jago" };
+const SPEEDS = [320, 180, 90];
+const RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const $ = (id) => document.getElementById(id);
+const SA = 7, SB = 15;
+
+function freshLv() { const o = {}; for (const l of LV) o[l] = { w: 0, l: 0, d: 0, best: 0 }; return o; }
+let S = {
+  v: 1, games: 0, wins: 0,
+  settings: { mute: false, vibrate: true, speed: 1, seat: "hadap" },
+  lv: freshLv(), open: 1, multi: { mudah: false, sedang: false, sulit: false, jago: true }, lastLevel: "mudah",
+  duo: { a: "Merah", b: "Biru", multi: true }, family: [],
+  daily: null, streak: { last: null, count: 0 }, badges: [], name: "", runs: {},
+  chal: { w: 0, l: 0, d: 0 }, pendingChal: null, chalDone: []
+};
+try {
+  const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+  if (saved && saved.v === 1) {
+    const base = S;
+    S = Object.assign({}, base, saved);
+    S.settings = Object.assign({}, base.settings, saved.settings || {});
+    S.lv = Object.assign(freshLv(), saved.lv || {});
+    S.multi = Object.assign({}, base.multi, saved.multi || {});
+    S.duo = Object.assign({}, base.duo, saved.duo || {});
+    S.streak = Object.assign({ last: null, count: 0 }, saved.streak || {});
+    S.chal = Object.assign({ w: 0, l: 0, d: 0 }, saved.chal || {});
+    if (!S.runs || typeof S.runs !== "object") S.runs = {};
+    for (const k of ["badges", "family", "chalDone"]) if (!Array.isArray(S[k])) S[k] = [];
+    if (!Number.isInteger(S.open) || S.open < 1 || S.open > 3) S.open = 1;
+    if (!LV.includes(S.lastLevel)) S.lastLevel = "mudah";
+  }
+} catch (e) {}
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch (e) {} }
+
+const today = () => GameCore.dateKey(new Date());
+function streakNow() {
+  const t = today();
+  return S.streak.last === t || S.streak.last === GameCore.prevDay(t) ? S.streak.count : 0;
+}
+function shareUrl() {
+  const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  return /^https?:$/.test(location.protocol) && !local ? location.origin + location.pathname : HOME_URL;
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
+}
+
+// ---------- Suara (WebAudio) dan getar ----------
+let actx = null, master = null, lastTok = 0;
+function audio() {
+  if (!actx) {
+    actx = new (window.AudioContext || window.webkitAudioContext)();
+    master = actx.createGain();
+    master.gain.value = 0.9;
+    master.connect(actx.destination);
+  }
+  if (actx.state === "suspended") actx.resume();
+  return actx;
+}
+function tone(freq, dur, type, vol, delay, slideTo) {
+  if (S.settings.mute) return;
+  try {
+    const a = audio();
+    const t = a.currentTime + (delay || 0);
+    const osc = a.createOscillator(), gain = a.createGain();
+    osc.type = type || "sine";
+    osc.frequency.setValueAtTime(freq, t);
+    if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(vol || 0.06, t + 0.006);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(gain); gain.connect(master);
+    osc.start(t); osc.stop(t + dur + 0.03);
+  } catch (e) {}
+}
+// Tangga nada mirip slendro (lima nada, jarak sekitar 240 sen) untuk nada kemenangan ala gamelan.
+const SLENDRO = [0, 240, 480, 720, 960, 1200, 1440, 1680].map((c) => 293.66 * Math.pow(2, c / 1200));
+function gong(f, delay, vol) { tone(f, 0.7, "sine", vol || 0.09, delay); tone(f * 2.76, 0.25, "sine", (vol || 0.09) * 0.25, delay); tone(f * 5.4, 0.08, "triangle", 0.012, delay); }
+const sfx = {
+  // Ketukan kayu "tok": nada sedikit berubah tiap biji.
+  tok(i) {
+    const t = performance.now();
+    if (t - lastTok < 28) return;
+    lastTok = t;
+    if (i === SA || i === SB) { tone(300, 0.11, "sine", 0.16); tone(640, 0.05, "triangle", 0.035); return; }
+    const f = 560 + ((i * 53 + (t | 0)) % 7) * 26;
+    tone(f, 0.055, "sine", 0.17); tone(f * 2.3, 0.025, "triangle", 0.03);
+  },
+  relay() { tone(700, 0.08, "triangle", 0.06); tone(940, 0.1, "triangle", 0.05, 0.06); },
+  extra() { gong(SLENDRO[3], 0, 0.07); gong(SLENDRO[5], 0.1, 0.07); },
+  tembak() { tone(170, 0.32, "sine", 0.32, 0, 55); tone(95, 0.22, "triangle", 0.12); tone(1200, 0.05, "triangle", 0.03); },
+  bad() { tone(140, 0.12, "sine", 0.09); tone(120, 0.1, "sine", 0.05, 0.05); },
+  win() { [0, 1, 2, 3, 4, 5, 7].forEach((k, i) => gong(SLENDRO[k], i * 0.13, 0.08)); gong(SLENDRO[0], 0.95, 0.07); gong(SLENDRO[5], 0.95, 0.05); },
+  lose() { [5, 4, 2, 0].forEach((k, i) => tone(SLENDRO[k], 0.45, "sine", 0.06, i * 0.2)); },
+  draw() { gong(SLENDRO[2], 0, 0.07); gong(SLENDRO[2], 0.25, 0.06); },
+  tap() { tone(620, 0.04, "triangle", 0.035); },
+  turn() { tone(880, 0.05, "sine", 0.03); }
+};
+function buzz(p) { try { if (S.settings.vibrate && navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+function confetti() {
+  if (RM) return;
+  const colors = ["#F4C152", "#7FE0A3", "#FF7A70", "#EAF6F3", "#5EC8F2", "#E9D3A8"];
+  for (let i = 0; i < 32; i++) {
+    const c = document.createElement("i");
+    c.className = "confetti";
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.background = colors[i % colors.length];
+    c.style.animationDelay = Math.random() * 0.4 + "s";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 2300);
+  }
+}
+
+// ---------- Papan DOM ----------
+const boardEl = $("board"), stageEl = $("stagebox"), arenaEl = $("arena"), fxEl = $("fx"), handEl = $("hand");
+const pitEls = [], holeEls = [], numEls = [], shown = new Array(16).fill(-1), burnShown = new Array(16).fill(false);
+let D = new Array(16).fill(0);   // papan yang sedang ditampilkan (bisa tertinggal dari permainan saat animasi)
+(function buildBoard() {
+  const cols = document.createElement("div");
+  cols.className = "cols";
+  cols.innerHTML = "<div class=\"col-glow a\" id=\"glowA\"></div><div class=\"col-glow b\" id=\"glowB\"></div>";
+  const mk = (i) => {
+    const el = document.createElement(i === SA || i === SB ? "div" : "button");
+    const hole = document.createElement("div"), num = document.createElement("b");
+    hole.className = "hole"; num.className = "num";
+    if (i === SA || i === SB) { el.className = "store " + (i === SA ? "sa" : "sb"); el.append(hole, num); }
+    else {
+      el.type = "button";
+      const side = i < 8 ? 0 : 1, k = i % 8;
+      el.className = "pit " + (side ? "b" : "a");
+      el.dataset.i = i;
+      el.style.gridColumn = side ? 2 : 1;
+      el.style.gridRow = side ? 7 - k : k + 1;
+      el.append(num, hole);
+    }
+    pitEls[i] = el; holeEls[i] = hole; numEls[i] = num;
+    return el;
+  };
+  for (let i = 0; i < 7; i++) cols.appendChild(mk(i));
+  for (let i = 14; i >= 8; i--) cols.appendChild(mk(i));
+  boardEl.append(mk(SB), cols, mk(SA));
+})();
+// Posisi biji: acak tetapi tetap (ber-seed per lubang dan per biji), jadi biji lama tidak melompat.
+function seedPos(i, k) {
+  const r = GameCore.rng(GameCore.hash("sd" + i + ":" + k));
+  const store = i === SA || i === SB;
+  const ang = r() * Math.PI * 2, rad = Math.sqrt(k === 0 ? 0 : r()) * (store ? 0.8 : 0.72);
+  const x = 50 + Math.cos(ang) * rad * 44, y = 50 + Math.sin(ang) * rad * 40;
+  const v = r() < 0.18 ? 2 : r() < 0.5 ? 1 : 0;
+  return [x.toFixed(1), y.toFixed(1), Math.floor(r() * 180), v];
+}
+function renderPit(i, pop) {
+  const burned = !!run && ((run.g.burn >> i) & 1) === 1;
+  const n = burned ? 0 : D[i];
+  if (shown[i] === n && burnShown[i] === burned) return;
+  shown[i] = n;
+  if (burnShown[i] !== burned) { burnShown[i] = burned; pitEls[i].classList.toggle("burn", burned); }
+  numEls[i].textContent = burned ? "" : n;
+  const cap = i === SA || i === SB ? 40 : 12, want = Math.min(n, cap), box = holeEls[i];
+  let have = box.childElementCount;
+  while (have < want) {
+    const [x, y, rot, v] = seedPos(i, have);
+    const s = document.createElement("i");
+    s.className = "sd" + (v ? " v" + v : "") + (pop && have === want - 1 && !RM ? " pop" : "");
+    s.style.cssText = "left:" + x + "%;top:" + y + "%;--r:" + rot + "deg";
+    box.appendChild(s);
+    have++;
+  }
+  while (have > want) { box.lastChild.remove(); have--; }
+}
+function renderBoard() { for (let i = 0; i < 16; i++) renderPit(i, false); }
+function pitLabel(i) {
+  const g = run.g, side = i < 8 ? 0 : 1, k = i % 8;
+  if ((g.burn >> i) & 1) return "Lubang " + (k + 1) + " " + sideName(side) + ", hangus";
+  return "Lubang " + (k + 1) + " " + sideName(side) + ", " + D[i] + " biji";
+}
+function renderLabels() {
+  if (!run) return;
+  for (let i = 0; i < 15; i++) if (i !== SA) pitEls[i].setAttribute("aria-label", pitLabel(i));
+  pitEls[SA].setAttribute("aria-label", "Lumbung " + sideName(0) + ": " + D[SA] + " biji");
+  pitEls[SB].setAttribute("aria-label", "Lumbung " + sideName(1) + ": " + D[SB] + " biji");
+}
+
+// ---------- Permainan berjalan ----------
+let run = null, busy = false, thinking = false, token = 0, anim = null, hintPit = -1;
+let timers = [];
+function later(fn, ms) {
+  const tok = token;
+  const id = setTimeout(() => { timers = timers.filter((t) => t !== id); if (tok === token) fn(); }, ms);
+  timers.push(id);
+  return id;
+}
+// Membatalkan semua timer, animasi, dan pikiran komputer milik permainan sebelumnya.
+function stopRun() {
+  token++;
+  timers.forEach(clearTimeout);
+  timers = [];
+  if (anim && anim.raf) cancelAnimationFrame(anim.raf);
+  anim = null;
+  stopFlights();
+  busy = false; thinking = false; hintPit = -1;
+  handEl.hidden = true;
+  fxEl.innerHTML = "";
+  $("btnSkip").hidden = true;
+}
+const isHuman = (side) => !!run && (run.kind === "duo" || side === 0);
+const aiLevel = () => (run.kind === "vs" ? run.level : "sulit");
+function sideName(side) {
+  if (!run) return side ? "Biru" : "Merah";
+  if (run.kind === "duo") return run.names[side];
+  return side ? "Komputer" : "Kamu";
+}
+function oppTitle() { return "Komputer " + LV_NAME[aiLevel()]; }
+function newSeed() { return (Date.now() ^ Math.floor(Math.random() * 4294967296)) >>> 0; }
+function saveRun() {
+  if (!run) return;
+  if (run.g.over) delete S.runs[run.kind]; else S.runs[run.kind] = run;
+  save();
+}
+function seatMode() { return run && run.kind === "duo" ? S.settings.seat : "vs"; }
+function applySeat() {
+  const m = seatMode();
+  arenaEl.classList.toggle("hadap", m === "hadap");
+  stageEl.classList.toggle("flip", m === "gilir" && !!run && run.g.turn === 1 && !run.g.over);
+}
+function chipText() {
+  const r = run;
+  let t = r.kind === "vs" ? LV_NAME[r.level] : r.kind === "duo" ? "Berdua" : r.kind === "daily" ? (r.practice ? "Latihan Harian" : "Harian #" + GameCore.dailyNumber(r.date)) : r.chal ? "Tantangan " + r.chal.n : "Tantangan";
+  if (r.g.maxRounds > 1) t += " · Putaran " + r.g.round + "/" + r.g.maxRounds;
+  return t;
+}
+function openRun(r) {
+  stopRun();
+  run = r;
+  if (!Array.isArray(run.names)) run.names = ["Merah", "Biru"];
+  D = run.g.b.slice();
+  shown.fill(-1);
+  $("home").hidden = true;
+  $("play").hidden = false;
+  document.body.classList.add("playing");
+  document.documentElement.classList.add("playing");
+  $("modeChip").textContent = chipText();
+  applySeat();
+  layout();
+  renderBoard();
+  renderLabels();
+  renderTurn();
+  saveRun();
+  enterScreen();
+  later(step, 250);
+}
+// Menentukan langkah berikutnya setelah permainan diam: selesai, akhir putaran, komputer, atau menunggu pemain.
+function step() {
+  if (!run || busy || anim) return;
+  const g = run.g;
+  applySeat();
+  renderTurn();
+  if (g.over) return gameOver();
+  if (g.roundOver) return roundPanel();
+  if (!isHuman(g.turn)) return aiMove();
+  if (document.activeElement && document.activeElement.classList.contains("pit")) {
+    const L = GameCore.legalMoves(g);
+    if (L.length) pitEls[L[0]].focus();
+  }
+}
+function canHuman() { return !!run && !busy && !anim && !run.g.over && !run.g.roundOver && isHuman(run.g.turn) && $("overlay").hidden; }
+function renderTurn() {
+  if (!run) return;
+  const g = run.g, live = !g.over && !g.roundOver || !!anim;
+  // Saat animasi, sorotan mengikuti pihak yang sedang menabur (giliran di permainan sudah berpindah).
+  const cur = anim ? anim.res.side : g.turn;
+  const legal = new Set(canHuman() ? GameCore.legalMoves(g) : []);
+  for (let i = 0; i < 15; i++) {
+    if (i === SA) continue;
+    const el = pitEls[i], mine = !g.over && !g.roundOver && (i < 8 ? 0 : 1) === g.turn && isHuman(g.turn) && !busy && !anim;
+    el.classList.toggle("ok", legal.has(i));
+    el.classList.toggle("dim", mine && !legal.has(i));
+    el.classList.toggle("hint", i === hintPit);
+  }
+  $("glowA").classList.toggle("on", live && cur === 0);
+  $("glowB").classList.toggle("on", live && cur === 1);
+  pitEls[SA].classList.toggle("on", live && cur === 0);
+  pitEls[SB].classList.toggle("on", live && cur === 1);
+  for (const side of [0, 1]) {
+    const el = side ? $("pillB") : $("pillA"), on = live && cur === side;
+    let name = sideName(side), msg = "";
+    if (run.kind !== "duo") name = side ? "🤖 " + oppTitle() : "Kamu";
+    if (on) {
+      if (run.kind === "duo") msg = anim ? "menabur…" : "Giliranmu!";
+      else if (side === 0) msg = anim ? "menabur…" : "Giliranmu";
+      else msg = thinking ? "berpikir<span class=\"dots\"></span>" : anim ? "menabur…" : "";
+    }
+    el.className = "pill p" + side + (on ? " on" : "");
+    el.innerHTML = "<span class=\"pin\"><b>" + (run.kind === "duo" && on ? "Giliran: " : "") + esc(name) + "</b>" + (msg && !(run.kind === "duo" && msg === "Giliranmu!") ? "<em>" + msg + "</em>" : "") + "</span>";
+  }
+  const hintable = run.kind === "vs" && (run.level === "mudah" || run.level === "sedang");
+  $("btnHint").hidden = !hintable || !!anim;
+  $("btnHint").textContent = "💡" + (hintable ? " " + run.hints : "");
+  $("btnHint").disabled = !hintable || !run.hints || !canHuman();
+  $("btnRestart").hidden = !!anim || !(run.kind === "vs" || run.kind === "duo" || run.practice);
+  $("btnSkip").hidden = !anim;
+  $("btnPlaySet").hidden = !!anim;
+}
+function say(msg) { $("sr").textContent = msg; }
+
+// Pemain mengetuk lubang
+function tapPit(i) {
+  if (!run) return;
+  if (anim) { speedUp(); return; }
+  if (!canHuman()) return;
+  const g = run.g;
+  if (!GameCore.legalMoves(g).includes(i)) {
+    sfx.bad(); buzz(15);
+    shakeEl(pitEls[i]);
+    toast((i < 8 ? 0 : 1) !== g.turn ? "Itu lubang " + sideName(1 - g.turn) + ". Pilih lubang di sisimu." : (g.burn >> i) & 1 ? "Lubang hangus tidak bisa dimainkan." : "Lubang ini kosong. Pilih yang berisi biji.");
+    return;
+  }
+  doMove(i);
+}
+boardEl.addEventListener("click", (e) => {
+  const el = e.target.closest(".pit");
+  if (el) tapPit(+el.dataset.i);
+});
+function doMove(pit) {
+  const r = run, g = r.g, before = g.b.slice(), burnBefore = g.burn;
+  const res = GameCore.applyMove(g, pit, true);
+  if (!res) return false;
+  hintPit = -1;
+  // Hasil resmi dicatat SEKARANG, sebelum animasi: keluar mendadak tidak bisa menghapus atau mengulang hasil.
+  if (g.over) finalize(r);
+  saveRun();
+  D = before;
+  if (burnBefore !== g.burn) renderBoard();
+  busy = true;
+  say(sideName(res.side) + " memainkan lubang " + (pit % 8 + 1));
+  animate(res, () => {
+    busy = false;
+    D = g.b.slice();
+    renderBoard();
+    renderLabels();
+    handEl.hidden = true;
+    if (res.passedOwn && !g.roundOver && !g.over) {
+      const msg = sideName(res.side) + " tidak punya biji lagi, giliran pindah ke " + sideName(g.turn) + ".";
+      toast(msg); say(msg);
+    } else if (res.passed && !g.roundOver && !g.over) {
+      const who = sideName(1 - g.turn);
+      toast(who + " tidak punya biji. " + sideName(g.turn) + " main lagi.");
+      say(who + " tidak punya biji, giliran dilewati");
+    }
+    if (!g.over && !g.roundOver && isHuman(g.turn)) sfx.turn();
+    step();
+  });
+  return true;
+}
+
+// ---------- Animasi tabur (satu loop requestAnimationFrame per giliran) ----------
+function stepMs() { return RM ? 60 : SPEEDS[S.settings.speed] || 180; }
+function durOf(e) {
+  const s = stepMs();
+  switch (e.k) {
+    case "lift": return s * 1.4;
+    case "relay": case "noextra": return s * 2.4;
+    case "extra": return s * 3.2;
+    case "tembak": return s * 4.5;
+    case "stop": case "cap": return s * 1.6;
+    case "sweep": return s * 4;
+    case "pass": return 0;
+    default: return s;
+  }
+}
+function animate(res, done) {
+  anim = { res, ev: res.events, i: 0, acc: 0, wait: 0, fast: 1, drops: 0, last: 0, done, tok: token, raf: 0 };
+  handEl.className = "hand c" + res.side;
+  renderTurn();
+  anim.raf = requestAnimationFrame(frame);
+}
+function frame(ts) {
+  const a = anim;
+  if (!a || a.tok !== token) return;
+  const dt = a.last ? Math.min(100, ts - a.last) : 16;
+  a.last = ts;
+  // Tabur bersambung yang panjang makin cepat dengan sendirinya, supaya tidak membosankan.
+  a.acc += dt * Math.max(a.fast, a.drops > 80 ? 3.5 : a.drops > 30 ? 2 : 1);
+  while (a.i < a.ev.length && a.acc >= a.wait) {
+    a.acc -= a.wait;
+    const e = a.ev[a.i++];
+    showEvent(e, a);
+    a.wait = durOf(e);
+  }
+  if (a.i >= a.ev.length && a.acc >= a.wait) return endAnim();
+  a.raf = requestAnimationFrame(frame);
+}
+function endAnim() {
+  const a = anim;
+  if (!a) return;
+  if (a.raf) cancelAnimationFrame(a.raf);
+  anim = null;
+  a.done();
+}
+function skipAnim() {
+  const a = anim;
+  if (!a) return;
+  while (a.i < a.ev.length) GameCore.applyEvent(D, a.ev[a.i++]);
+  stopFlights();
+  endAnim();
+}
+function speedUp() { if (anim && anim.fast < 4) { anim.fast = 4; toast("Dipercepat ⏩"); } }
+function center(el) {
+  const r = el.getBoundingClientRect();
+  return [r.left + r.width / 2, r.top + r.height / 2];
+}
+function moveHand(i, n) {
+  const [x, y] = center(holeEls[i]);
+  const s = Math.max(40, Math.min(70, pitEls[i === SA || i === SB ? 0 : i].getBoundingClientRect().height * 1.05));
+  handEl.style.setProperty("--hs", Math.min(0.14, stepMs() / 1000 * 0.75 / (anim ? anim.fast : 1)) + "s");
+  handEl.style.width = handEl.style.height = s + "px";
+  handEl.style.margin = (-s / 2) + "px 0 0 " + (-s / 2) + "px";
+  handEl.style.transform = "translate(" + x + "px," + y + "px)";
+  $("handN").textContent = n;
+  $("handN").hidden = n <= 0;
+  if (handEl.hidden) { handEl.style.transition = "none"; handEl.hidden = false; void handEl.offsetWidth; handEl.style.transition = ""; }
+}
+function showEvent(e, a) {
+  GameCore.applyEvent(D, e);
+  const fast = a.fast > 1;
+  switch (e.k) {
+    case "lift":
+      renderPit(e.at);
+      moveHand(e.at, e.n);
+      break;
+    case "drop":
+      a.drops++;
+      renderPit(e.at, true);
+      moveHand(e.at, e.hand);
+      sfx.tok(e.at);
+      break;
+    case "relay":
+      renderPit(e.at);
+      moveHand(e.at, e.n);
+      flashEl(pitEls[e.at]);
+      if (!fast) floatAt(pitEls[e.at], "Sambung!", "");
+      sfx.relay();
+      break;
+    case "extra":
+      handEl.hidden = true;
+      floatAt(pitEls[e.at], "Main lagi!", "tag");
+      sfx.extra();
+      buzz(12);
+      break;
+    case "tembak": {
+      handEl.hidden = true;
+      shakeEl(pitEls[e.from]);
+      flySeeds(e.from, e.to, e.n - 1);
+      flySeeds(e.at, e.to, 1);
+      renderPit(e.from); renderPit(e.at); renderPit(e.to, true);
+      floatAt(pitEls[e.from], "TEMBAK! +" + e.n, "big");
+      sfx.tembak();
+      buzz([20, 30, 40]);
+      say("Tembak! " + e.n + " biji masuk lumbung");
+      break;
+    }
+    case "stop": case "cap":
+      handEl.hidden = true;
+      break;
+    case "noextra":
+      handEl.hidden = true;
+      floatAt(pitEls[e.at], e.open ? "Langkah pembuka: tanpa main lagi" : "Sudah 2x main lagi", "tag");
+      break;
+    case "sweep":
+      handEl.hidden = true;
+      renderBoard();
+      if (e.a) floatAt(pitEls[SA], "+" + e.a, "");
+      if (e.b) floatAt(pitEls[SB], "+" + e.b, "");
+      break;
+  }
+}
+function floatAt(el, text, cls) {
+  if (!el) return;
+  let [x, y] = center(el);
+  // Tulisan besar diletakkan di tengah papan supaya tidak terpotong tepi layar.
+  if (cls) x = center(boardEl)[0];
+  const f = document.createElement("div");
+  f.className = "float" + (cls ? " " + cls : "");
+  f.style.left = x + "px"; f.style.top = y + "px";
+  f.textContent = text;
+  fxEl.appendChild(f);
+  later(() => f.remove(), 1300);
+}
+function flashEl(el) { el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+function shakeEl(el) { if (RM) return; el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); later(() => el.classList.remove("shake"), 360); }
+// Biji terbang melengkung ke lumbung saat tembak.
+let flights = [], flyRaf = 0;
+function flySeeds(from, to, n) {
+  if (RM || n <= 0) return;
+  const [x0, y0] = center(holeEls[from]), [x1, y1] = center(holeEls[to]);
+  const t0 = performance.now();
+  for (let j = 0; j < Math.min(n, 8); j++) {
+    const s = document.createElement("i");
+    s.className = "sd fly";
+    s.style.setProperty("--r", (j * 47) % 180 + "deg");
+    s.style.transform = "translate(" + x0 + "px," + y0 + "px)";
+    fxEl.appendChild(s);
+    flights.push({ s, x0: x0 + (j % 3 - 1) * 6, y0: y0 + (j % 2) * 5, x1: x1 + (j % 4 - 1.5) * 8, y1, t0: t0 + j * 45, dur: 460 });
+  }
+  if (!flyRaf) flyRaf = requestAnimationFrame(flyTick);
+}
+function flyTick(ts) {
+  const t = performance.now();
+  flights = flights.filter((f) => {
+    const p = Math.max(0, Math.min(1, (t - f.t0) / f.dur));
+    const e = p * p * (3 - 2 * p);
+    const x = f.x0 + (f.x1 - f.x0) * e, y = f.y0 + (f.y1 - f.y0) * e - Math.sin(p * Math.PI) * 70;
+    f.s.style.transform = "translate(" + x + "px," + y + "px) rotate(" + p * 360 + "deg)";
+    if (p >= 1) { f.s.remove(); return false; }
+    return true;
+  });
+  flyRaf = flights.length ? requestAnimationFrame(flyTick) : 0;
+}
+function stopFlights() {
+  if (flyRaf) cancelAnimationFrame(flyRaf);
+  flyRaf = 0;
+  flights.forEach((f) => f.s.remove());
+  flights = [];
+}
+
+// ---------- Komputer (Web Worker dari Blob; cadangan: langsung di halaman dengan batas waktu) ----------
+let worker = null, wreq = 0, wcb = null;
+function initWorker() {
+  if (worker !== null) return;
+  worker = false;
+  try {
+    if (!CORE_SRC || typeof Worker === "undefined" || !window.Blob || !window.URL || !URL.createObjectURL) return;
+    const src = CORE_SRC + "\nself.onmessage=function(e){var d=e.data;var r=GameCore.think(d);self.postMessage({id:d.id,r:r});};";
+    const w = new Worker(URL.createObjectURL(new Blob([src], { type: "text/javascript" })));
+    w.onmessage = (e) => {
+      const d = e.data;
+      if (wcb && d && d.id === wreq) { const cb = wcb; wcb = null; cb(d.r); }
+    };
+    w.onerror = () => { worker = false; if (wcb) { const cb = wcb, req = wcb.req; wcb = null; setTimeout(() => cb(GameCore.think(req)), 0); } };
+    worker = w;
+  } catch (e) { worker = false; }
+}
+function think(req, cb) {
+  initWorker();
+  const id = ++wreq;
+  if (worker) {
+    wcb = cb; wcb.req = req;
+    worker.postMessage(Object.assign({ id }, req));
+    // Penjaga: bila worker macet, hitung langsung.
+    later(() => {
+      if (wreq === id && wcb) { wcb = null; try { worker.terminate(); } catch (e) {} worker = false; cb(GameCore.think(req)); }
+    }, 5000);
+  } else {
+    later(() => { if (wreq === id) cb(GameCore.think(req)); }, 30);
+  }
+}
+function aiMove() {
+  const r = run, g = r.g;
+  busy = true; thinking = true;
+  renderTurn();
+  const t0 = performance.now(), tok = token;
+  think({ b: g.b.slice(), burn: g.burn, side: g.turn, level: aiLevel(), single: g.maxRounds === 1, fm: g.fm, det: r.kind !== "vs", r: [Math.random(), Math.random(), Math.random()] }, (out) => {
+    if (tok !== token || run !== r) return;
+    // Jeda minimal supaya terasa seperti lawan manusia.
+    const wait = Math.max(0, 550 - (performance.now() - t0));
+    later(() => {
+      thinking = false; busy = false;
+      if (run !== r || r.g.over || r.g.roundOver) return;
+      const L = GameCore.legalMoves(g);
+      const pit = L.includes(out && out.pit) ? out.pit : L[0];
+      if (pit == null) return step();
+      doMove(pit);
+    }, wait);
+  });
+}
+function useHint() {
+  if (!canHuman() || !run.hints) return;
+  const r = run, g = r.g, tok = token;
+  r.hints--;
+  saveRun();
+  busy = true; thinking = false;
+  renderTurn();
+  think({ b: g.b.slice(), burn: g.burn, side: g.turn, level: "sulit", single: g.maxRounds === 1, fm: g.fm, det: true }, (out) => {
+    if (tok !== token || run !== r) return;
+    busy = false;
+    hintPit = out && out.pit >= 0 ? out.pit : -1;
+    renderTurn();
+    if (hintPit >= 0) { toast("Coba lubang " + (hintPit % 8 + 1) + " yang berkedip"); say("Petunjuk: lubang " + (hintPit % 8 + 1)); }
+  });
+}
+
+// ---------- Selesai ----------
+const BADGES = {
+  sulit1: "🏅 Menang pertama melawan Komputer Sulit!",
+  jago1: "🏅 Menang pertama melawan Komputer Jago!",
+  tembak5: "🏅 Tembak 5 kali dalam satu permainan!",
+  sambung20: "🏅 Tabur bersambung 20 biji lebih!",
+  bersih: "🏅 Menang telak: lawan di bawah 30 biji!"
+};
+// Mencatat hasil satu kali, langsung saat permainan berakhir (sinkron, sebelum animasi apa pun).
+function finalize(r) {
+  if (!r || r.finalized || !r.g.over) return;
+  r.finalized = true;
+  const g = r.g, a = g.b[SA], b = g.b[SB], m = a - b;
+  S.games++;
+  const o = {
+    kind: r.kind, level: r.kind === "vs" ? r.level : "sulit", a, b, margin: m, winner: g.winner, why: g.why, rounds: g.round, maxRounds: g.maxRounds,
+    tembak: g.tembak.slice(), longest: g.longest.slice(), date: r.date, practice: !!r.practice, seed: r.seed, chal: r.chal || null,
+    replyTo: r.replyTo || "", names: r.names.slice(), record: false, official: false, unlocked: "", badges: [], verdict: 0
+  };
+  // Latihan Harian tidak dihitung; level hanya terbuka dengan menang di mode Lawan Komputer.
+  if (r.kind !== "duo" && !r.practice) {
+    const lvl = o.level, win = g.winner === 0;
+    if (win) {
+      S.wins++;
+      const idx = LV.indexOf(lvl);
+      if (r.kind === "vs" && idx >= 1 && idx + 1 > S.open && idx + 1 <= 3) { S.open = idx + 1; o.unlocked = LV[S.open]; }
+    }
+    const got = [];
+    if (win && lvl === "sulit") got.push("sulit1");
+    if (win && lvl === "jago") got.push("jago1");
+    if (g.tembak[0] >= 5) got.push("tembak5");
+    if (g.longest[0] >= 20) got.push("sambung20");
+    if (win && b < 30) got.push("bersih");
+    for (const id of got) if (!S.badges.includes(id)) { S.badges.push(id); o.badges.push(id); }
+  }
+  if (r.kind === "vs") {
+    const st = S.lv[r.level];
+    if (g.winner === 0) st.w++; else if (g.winner === 1) st.l++; else st.d++;
+    if (g.winner === 0) {
+      // Rekor hanya bila memang ada rekor lama yang dikalahkan.
+      if (st.best > 0 && m > st.best) o.record = true;
+      if (m > st.best) st.best = m;
+    }
+  }
+  if (r.kind === "daily" && !r.practice) {
+    const already = S.daily && S.daily.date === r.date && S.daily.done;
+    if (!already) {
+      o.official = true;
+      S.daily = { date: r.date, a, b, m, tembak: g.tembak[0], done: true };
+      if (S.streak.last !== r.date) {
+        S.streak.count = S.streak.last === GameCore.prevDay(r.date) ? S.streak.count + 1 : 1;
+        S.streak.last = r.date;
+      }
+    }
+  }
+  if (r.kind === "chal" && r.chal) {
+    o.verdict = m > r.chal.m ? 1 : m < r.chal.m ? -1 : 0;
+    if (o.verdict > 0) S.chal.w++; else if (o.verdict < 0) S.chal.l++; else S.chal.d++;
+    if (S.pendingChal === r.chal.code) S.pendingChal = null;
+    // Tantangan yang sudah dimainkan diingat menurut papannya (seed), jadi tidak bisa diulang sampai menang.
+    S.chalDone = S.chalDone.filter((x) => chalSeed(x) !== r.seed).concat([{ s: r.seed, code: r.chal.code, n: r.chal.n, m: r.chal.m, mine: m, a, b }]).slice(-300);
+  }
+  if (r.kind === "duo") {
+    const [n0, n1] = r.names;
+    let f = S.family.find((x) => (x.n[0] === n0 && x.n[1] === n1) || (x.n[0] === n1 && x.n[1] === n0));
+    if (!f) { f = { n: [n0, n1], w: [0, 0], d: 0 }; S.family.push(f); }
+    if (g.winner === 2) f.d++;
+    else { const who = r.names[g.winner]; f.w[f.n[0] === who ? 0 : 1]++; }
+    S.family = S.family.slice(-8);
+    o.family = f;
+  }
+  r.result = o;
+  delete S.runs[r.kind];
+  save();
+}
+function gameOver() {
+  const r = run;
+  if (!r || !r.g.over || r.shownOver) return;
+  finalize(r);
+  r.shownOver = true;
+  busy = false;
+  renderTurn();
+  const o = r.result, humanWin = r.kind === "duo" ? o.winner !== 2 : o.winner === 0;
+  if (o.winner === 2) sfx.draw(); else if (humanWin) sfx.win(); else sfx.lose();
+  buzz(humanWin ? [30, 40, 60] : [40]);
+  say(resultTitle(o));
+  later(() => {
+    if (run !== r) return;
+    if (humanWin) confetti();
+    showResult(o);
+    o.badges.forEach((id, k) => later(() => toast(BADGES[id]), 900 + k * 2200));
+  }, RM ? 200 : 900);
+}
+function resultTitle(o) {
+  if (o.kind === "duo") return o.winner === 2 ? "Seri!" : o.names[o.winner] + " menang!";
+  return o.winner === 0 ? "Kamu menang!" : o.winner === 1 ? "Komputer menang" : "Seri!";
+}
+function versusHTML(o) {
+  const n0 = o.kind === "duo" ? o.names[0] : "Kamu", n1 = o.kind === "duo" ? o.names[1] : "Komputer " + LV_NAME[o.level];
+  return "<div class=\"versus\"><div class=\"side" + (o.winner === 0 ? " win" : "") + "\"><div class=\"who\">" + esc(n0) + "</div><div class=\"pts\">" + o.a + "</div></div>" +
+    "<span class=\"vs\">VS</span><div class=\"side" + (o.winner === 1 ? " win" : "") + "\"><div class=\"who\">" + esc(n1) + "</div><div class=\"pts\">" + o.b + "</div></div></div>";
+}
+function factsHTML(o) {
+  const duo = o.kind === "duo";
+  const m = duo ? Math.abs(o.margin) : o.margin;
+  return "<div class=\"facts\"><div><b>" + (duo ? m : GameCore.signed(m)) + "</b>selisih</div><div><b>" + (duo ? o.tembak[0] + "·" + o.tembak[1] : o.tembak[0] + "x") + "</b>tembak</div><div><b>" +
+    (duo ? Math.max(o.longest[0], o.longest[1]) : o.longest[0]) + "</b>sambung terpanjang</div></div>";
+}
+function extraLines(o) {
+  let h = "";
+  if (o.why === "habis") h += "<p>" + esc(o.kind === "duo" ? o.names[o.winner === 0 ? 1 : 0] : o.winner === 0 ? "Komputer" : "Kamu") + " tidak punya 7 biji untuk mengisi satu lubang pun.</p>";
+  else if (o.maxRounds > 1) h += "<p>Selesai setelah " + o.rounds + " putaran.</p>";
+  if (o.record) h += "<p>🎉 <b>Rekor baru!</b> Selisih terbesarmu melawan " + LV_NAME[o.level] + ".</p>";
+  if (o.unlocked) h += "<p>🔓 Level <b>" + LV_NAME[o.unlocked] + "</b> terbuka!</p>";
+  return h;
+}
+function showResult(o) {
+  const home = () => { hideOverlay(); goHome(); };
+  if (!o) return;
+  if (o.kind === "daily") {
+    const d = S.daily && S.daily.date === o.date ? S.daily : null;
+    showPanel(
+      "<h2>" + (o.practice ? "Latihan: " : "Harian #" + GameCore.dailyNumber(o.date) + ": ") + resultTitle(o).replace("Kamu menang!", "Menang!") + "</h2>" + versusHTML(o) + factsHTML(o) +
+      (o.practice && d ? "<p>Hasil resmi hari ini: <b>" + d.a + "–" + d.b + "</b>. Latihan tidak mengubahnya.</p>" : "<p>🔥 " + streakNow() + " hari beruntun. Papan besok berbeda lagi!</p>") + extraLines(o) +
+      "<div class=\"col\"><button class=\"btn main\" id=\"rShare\" type=\"button\">Bagikan hasil</button>" +
+      "<div class=\"row\"><button class=\"btn\" id=\"rHome\" type=\"button\">Kembali</button><button class=\"btn\" id=\"rChal\" type=\"button\">Tantang teman</button></div>" +
+      "<button class=\"btn\" id=\"rPractice\" type=\"button\">Latihan papan hari ini</button></div>",
+      () => {
+        $("rShare").onclick = shareDaily;
+        $("rHome").onclick = home;
+        $("rChal").onclick = () => sendChallenge(o);
+        $("rPractice").onclick = () => { hideOverlay(); startPractice(); };
+      }, goHome);
+    return;
+  }
+  if (o.kind === "chal") {
+    let title = resultTitle(o), body = "";
+    if (o.chal) {
+      title = o.verdict > 0 ? "Kamu mengalahkan " + esc(o.chal.n) + "!" : o.verdict < 0 ? esc(o.chal.n) + " masih unggul" : "Sama kuat dengan " + esc(o.chal.n) + "!";
+      body = "<p>Selisihmu <b>" + GameCore.signed(o.margin) + "</b>, selisih " + esc(o.chal.n) + " <b>" + GameCore.signed(o.chal.m) + "</b>.</p><p class=\"note\">Balasan memakai papan acak baru, jadi adil untuk kalian berdua.</p>";
+    } else body = "<p>Kirim papan ini ke teman. Mereka melawan Komputer Sulit yang sama dan harus mengalahkan selisihmu <b>" + GameCore.signed(o.margin) + "</b>.</p>";
+    showPanel(
+      "<h2>" + title + "</h2>" + versusHTML(o) + factsHTML(o) + body +
+      "<div class=\"col\"><button class=\"btn main\" id=\"rSend\" type=\"button\">" + (o.chal ? "Balas tantangan" : o.replyTo ? "Kirim balasan" : "Kirim tantangan") + "</button>" +
+      "<div class=\"row\"><button class=\"btn\" id=\"rHome\" type=\"button\">Kembali</button><button class=\"btn\" id=\"rAgain\" type=\"button\">Papan baru</button></div></div>",
+      () => {
+        $("rSend").onclick = () => (o.chal ? startReply(o.chal.n) : sendChallenge(o));
+        $("rHome").onclick = home;
+        $("rAgain").onclick = () => { hideOverlay(); startChal(null, ""); };
+      }, goHome);
+    return;
+  }
+  if (o.kind === "duo") {
+    const f = o.family;
+    showPanel(
+      "<h2>" + esc(resultTitle(o)) + "</h2>" + versusHTML(o) + factsHTML(o) + extraLines(o) +
+      (f ? "<p>Papan skor keluarga</p><div class=\"fam\">" + esc(f.n[0]) + " " + f.w[0] + " – " + f.w[1] + " " + esc(f.n[1]) + "</div>" + (f.d ? "<p class=\"note\">Seri " + f.d + " kali</p>" : "") : "") +
+      "<div class=\"col\"><button class=\"btn main\" id=\"rAgain\" type=\"button\">Main lagi</button>" +
+      "<div class=\"row\"><button class=\"btn\" id=\"rHome\" type=\"button\">Kembali</button><button class=\"btn\" id=\"rShare\" type=\"button\">Bagikan</button></div></div>",
+      () => {
+        $("rAgain").onclick = () => { hideOverlay(); startDuo(true); };
+        $("rHome").onclick = home;
+        $("rShare").onclick = () => shareText(duoShare(o));
+      }, goHome);
+    return;
+  }
+  const st = S.lv[o.level];
+  showPanel(
+    "<h2>" + resultTitle(o) + "</h2>" + versusHTML(o) + factsHTML(o) + extraLines(o) +
+    "<p class=\"note\">" + LV_NAME[o.level] + ": menang " + st.w + " · kalah " + st.l + " · seri " + st.d + (st.best > 0 ? " · selisih terbaik +" + st.best : "") + "</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"rAgain\" type=\"button\">Main lagi</button>" +
+    "<div class=\"row\"><button class=\"btn\" id=\"rHome\" type=\"button\">Kembali</button><button class=\"btn\" id=\"rShare\" type=\"button\">Bagikan</button></div>" +
+    (o.unlocked ? "<button class=\"btn\" id=\"rNext\" type=\"button\">Coba level " + LV_NAME[o.unlocked] + "</button>" : "") + "</div>",
+    () => {
+      $("rAgain").onclick = () => { hideOverlay(); startVs(o.level, true); };
+      $("rHome").onclick = home;
+      $("rShare").onclick = () => shareText(vsShare(o));
+      if ($("rNext")) $("rNext").onclick = () => { hideOverlay(); startVs(o.unlocked, true); };
+    }, goHome);
+}
+
+// Panel akhir putaran (mode beberapa putaran). Tetap muncul lagi bila permainan dilanjutkan dari simpanan.
+function roundPanel() {
+  const r = run, g = r.g;
+  const [fa, fb] = GameCore.refillPreview(g);
+  const line = (side, f) => "<b>" + esc(sideName(side)) + "</b> mengisi " + f + " lubang" + (f < 7 ? " (" + (7 - f) + " hangus)" : "");
+  showPanel(
+    "<h2>Putaran " + g.round + " selesai</h2>" +
+    "<div class=\"versus\"><div class=\"side\"><div class=\"who\">" + esc(sideName(0)) + "</div><div class=\"pts\">" + g.b[SA] + "</div></div><span class=\"vs\">VS</span><div class=\"side\"><div class=\"who\">" + esc(sideName(1)) + "</div><div class=\"pts\">" + g.b[SB] + "</div></div></div>" +
+    "<p>Putaran " + (g.round + 1) + ": " + line(0, fa) + ", " + line(1, fb) + ". Lubang hangus dilewati semua taburan.</p>" +
+    "<p class=\"note\">" + esc(sideName((g.first + g.round) % 2)) + " mulai duluan.</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"nrGo\" type=\"button\">Lanjut putaran " + (g.round + 1) + "</button><button class=\"btn\" id=\"nrHome\" type=\"button\">Simpan & ke menu</button></div>",
+    () => {
+      $("nrGo").onclick = () => {
+        hideOverlay();
+        if (run !== r) return;
+        GameCore.nextRound(g);
+        saveRun();
+        D = g.b.slice();
+        shown.fill(-1);
+        renderBoard(); renderLabels();
+        $("modeChip").textContent = chipText();
+        toast("Putaran " + g.round + " dimulai!");
+        later(step, 350);
+      };
+      $("nrHome").onclick = () => { hideOverlay(); goHome(); };
+    }, goHome);
+}
+
+// ---------- Bagikan ----------
+function shareText(text) {
+  if (navigator.share) navigator.share({ text }).catch((e) => { if (!e || e.name !== "AbortError") copyText(text, true); });
+  else copyText(text, true);
+}
+function copyText(text, wa) {
+  const done = () => {
+    toast("Tersalin. Tempel di WhatsApp!");
+    if (wa) { try { window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener"); } catch (e) {} }
+  };
+  const fallback = () => {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) { toast("Gagal menyalin"); }
+    ta.remove();
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(fallback);
+  else fallback();
+}
+function shareDaily() {
+  const d = S.daily;
+  if (!d || !d.done) return toast("Selesaikan Tantangan Hari Ini dulu, ya");
+  shareText(GameCore.dailyShare({ number: GameCore.dailyNumber(d.date), a: d.a, b: d.b, tembak: d.tembak, streak: streakNow(), url: shareUrl() }));
+}
+function vsShare(o) {
+  return "Congklak Dehayuk\n🐚 Aku " + GameCore.verdictText(o.a, o.b, "Komputer " + LV_NAME[o.level]) + "\n🎯 Tembak " + o.tembak[0] + "x\nBisa lebih besar? " + shareUrl();
+}
+function duoShare(o) {
+  const [n0, n1] = o.names;
+  if (o.winner === 2) return "🐚 " + n0 + " dan " + n1 + " seri " + o.a + "–" + o.b + " di Congklak Dehayuk\n" + shareUrl();
+  const w = o.winner, sc = w === 0 ? o.a + "–" + o.b : o.b + "–" + o.a;
+  return "🐚 " + o.names[w] + " menang " + sc + " lawan " + o.names[1 - w] + " di Congklak Dehayuk\n" + shareUrl();
+}
+// Link tantangan memuat seed papan dan selisihmu; komputer Sulit selalu bermain sama untuk papan yang sama.
+function sendChallenge(o) {
+  if (!S.name) return askName(() => sendChallenge(o));
+  const seed = o.kind === "daily" ? GameCore.dailySeed(o.date) : o.seed;
+  const code = GameCore.encodeDuel({ s: seed, m: o.margin, n: S.name });
+  const text = (o.replyTo ? "Balasan untukmu, " + o.replyTo + "! " : "") + "🐚 Aku " + GameCore.verdictText(o.a, o.b, "Komputer Sulit") + " di Congklak!\n" +
+    "Papan dan komputernya sama persis buatmu. Bisa menang dengan selisih lebih besar?\n👉 " + shareUrl() + "#t=" + code;
+  shareText(text);
+  showResult(o);
+}
+function askName(then) {
+  const back = run && run.result ? () => showResult(run.result) : hideOverlay;
+  showPanel(
+    "<h2>Siapa namamu?</h2><p>Nama ini muncul di tantangan untuk temanmu.</p>" +
+    "<input class=\"name-input\" id=\"nameIn\" maxlength=\"12\" autocomplete=\"nickname\" placeholder=\"misal: Dinda\">" +
+    "<div class=\"row\"><button class=\"btn\" id=\"nBack\" type=\"button\">Batal</button><button class=\"btn main\" id=\"nOk\" type=\"button\">Lanjut</button></div>",
+    () => {
+      const inp = $("nameIn");
+      const ok = () => {
+        const n = GameCore.cleanName(inp.value);
+        if (!n) { toast("Tulis namamu dulu"); return inp.focus(); }
+        S.name = n; save(); then();
+      };
+      $("nOk").onclick = ok;
+      $("nBack").onclick = back;
+      inp.onkeydown = (e) => { if (e.key === "Enter") ok(); };
+      setTimeout(() => inp.focus(), 50);
+    }, run && run.result ? goHome : null);
+}
+
+// ---------- Mode ----------
+function newRun(kind, g, extra) {
+  return Object.assign({ kind, g, hints: 3, names: ["Merah", "Biru"], finalized: false }, extra || {});
+}
+function resumable(kind) {
+  const r = S.runs[kind];
+  return r && GameCore.isValid(r.g) && !r.g.over ? r : null;
+}
+function startVs(level, fresh) {
+  if (!LV.includes(level) || LV.indexOf(level) > S.open) level = "mudah";
+  S.lastLevel = level;
+  const r = resumable("vs");
+  if (!fresh && r && r.level === level) return openRun(r);
+  // Yang mulai duluan bergantian tiap permainan baru, seperti mode berdua.
+  const first = S.vsFirst ? 1 : 0;
+  S.vsFirst = !first;
+  openRun(newRun("vs", GameCore.newGame({ multi: !!S.multi[level], first }), { level }));
+  toast(first ? "Komputer mulai duluan" : "Kamu mulai duluan");
+}
+function vsPanel() {
+  let sel = LV.indexOf(S.lastLevel) <= S.open ? S.lastLevel : "mudah";
+  const r = resumable("vs");
+  const draw = () => {
+    let h = "<h2>Lawan Komputer</h2>";
+    if (r) h += "<button class=\"btn main\" id=\"vResume\" type=\"button\">Lanjutkan · " + LV_NAME[r.level] + " " + r.g.b[SA] + "–" + r.g.b[SB] + "</button>";
+    h += "<div class=\"levels\">";
+    LV.forEach((l, k) => {
+      const st = S.lv[l], locked = k > S.open;
+      const sub = locked ? "🔒 Kalahkan " + LV_NAME[LV[k - 1]] : st.w + st.l + st.d ? "M " + st.w + " · K " + st.l + " · S " + st.d : "Belum dimainkan";
+      h += "<button class=\"btn lvl" + (l === sel ? " sel" : "") + "\" type=\"button\" data-l=\"" + l + "\"" + (locked ? " disabled" : "") + " aria-pressed=\"" + (l === sel) + "\"><b>" + LV_NAME[l] + "</b><small>" + sub + "</small></button>";
+    });
+    h += "</div><button class=\"btn toggle\" id=\"vMulti\" type=\"button\" aria-pressed=\"" + !!S.multi[sel] + "\"><span>Main beberapa putaran<small>Sampai 5 putaran, ada lubang hangus</small></span><i></i></button>" +
+      "<p class=\"note\">" + (sel === "mudah" || sel === "sedang" ? "Ada 3 💡 petunjuk per permainan." : "Tanpa petunjuk. Tunjukkan kemampuanmu!") + "</p>" +
+      "<div class=\"row\"><button class=\"btn\" id=\"vBack\" type=\"button\">Tutup</button><button class=\"btn main\" id=\"vGo\" type=\"button\">" + (r ? "Main baru" : "Mulai") + "</button></div>";
+    return h;
+  };
+  const wire = () => {
+    document.querySelectorAll(".lvl").forEach((b) => { b.onclick = () => { sel = b.dataset.l; sfx.tap(); rerender(); }; });
+    $("vMulti").onclick = () => { S.multi[sel] = !S.multi[sel]; save(); sfx.tap(); rerender(); };
+    $("vBack").onclick = hideOverlay;
+    $("vGo").onclick = () => { hideOverlay(); startVs(sel, true); };
+    if ($("vResume")) $("vResume").onclick = () => { hideOverlay(); openRun(r); };
+  };
+  const rerender = () => { const f = document.activeElement && document.activeElement.id; showPanel(draw(), wire); if (f && $(f)) $(f).focus(); };
+  showPanel(draw(), wire);
+}
+function startDuo(fresh) {
+  const r = resumable("duo");
+  if (!fresh && r) return openRun(r);
+  // Yang mulai duluan bergantian tiap permainan baru, supaya adil untuk keluarga.
+  const first = S.duo.nextFirst ? 1 : 0;
+  S.duo.nextFirst = !first;
+  const names = [S.duo.a || "Merah", S.duo.b || "Biru"];
+  openRun(newRun("duo", GameCore.newGame({ multi: !!S.duo.multi, first }), { names }));
+  toast(names[first] + " mulai duluan");
+}
+const SEATS = [["hadap", "Berhadapan", "HP di meja"], ["sebelah", "Bersebelahan", "duduk sejajar"], ["gilir", "Gantian pegang", "papan berputar"]];
+function seatSeg(id) {
+  return "<div class=\"seg\" id=\"" + id + "\">" + SEATS.map(([k, t, s]) => "<button type=\"button\" data-k=\"" + k + "\" aria-pressed=\"" + (S.settings.seat === k) + "\">" + t + "<br><small>" + s + "</small></button>").join("") + "</div>";
+}
+function wireSeat(id, after) {
+  document.querySelectorAll("#" + id + " button").forEach((b) => {
+    b.onclick = () => { S.settings.seat = b.dataset.k; save(); sfx.tap(); document.querySelectorAll("#" + id + " button").forEach((x) => x.setAttribute("aria-pressed", x === b)); if (after) after(); };
+  });
+}
+function duoPanel() {
+  const r = resumable("duo");
+  const fam = S.family.slice(-1)[0];
+  showPanel(
+    "<h2>Berdua di Satu HP</h2>" +
+    (r ? "<button class=\"btn main\" id=\"dResume\" type=\"button\">Lanjutkan · " + esc(r.names[0]) + " " + r.g.b[SA] + "–" + r.g.b[SB] + " " + esc(r.names[1]) + "</button>" : "") +
+    "<div class=\"names\"><label class=\"r\">Merah (kiri)<input class=\"name-input\" id=\"nA\" maxlength=\"12\" value=\"" + esc(S.duo.a) + "\"></label>" +
+    "<label class=\"u\">Biru (kanan)<input class=\"name-input\" id=\"nB\" maxlength=\"12\" value=\"" + esc(S.duo.b) + "\"></label></div>" +
+    "<div class=\"setrow\"><span>Cara duduk</span>" + seatSeg("dSeat") + "</div>" +
+    "<p class=\"note\" id=\"seatNote\"></p>" +
+    "<button class=\"btn toggle\" id=\"dMulti\" type=\"button\" aria-pressed=\"" + !!S.duo.multi + "\"><span>Main beberapa putaran (sampai 5)</span><i></i></button>" +
+    (fam ? "<p>Papan skor keluarga: <b>" + esc(fam.n[0]) + " " + fam.w[0] + " – " + fam.w[1] + " " + esc(fam.n[1]) + "</b></p>" : "") +
+    "<div class=\"row\"><button class=\"btn\" id=\"dBack\" type=\"button\">Tutup</button><button class=\"btn main\" id=\"dGo\" type=\"button\">" + (r ? "Main baru" : "Mulai") + "</button></div>",
+    () => {
+      const note = () => {
+        $("seatNote").textContent = { hadap: "Letakkan HP di meja. Merah duduk di sisi kiri HP, Biru di sisi kanan. Angka menghadap masing-masing.", sebelah: "Duduk berdampingan dan lihat HP bersama. Semua angka tegak.", gilir: "Oper HP tiap giliran. Papan berputar supaya lubangmu selalu di kiri." }[S.settings.seat];
+      };
+      note();
+      wireSeat("dSeat", note);
+      $("dMulti").onclick = () => { S.duo.multi = !S.duo.multi; save(); $("dMulti").setAttribute("aria-pressed", S.duo.multi); sfx.tap(); };
+      const names = () => {
+        S.duo.a = GameCore.cleanName($("nA").value) || "Merah";
+        S.duo.b = GameCore.cleanName($("nB").value) || "Biru";
+        if (S.duo.a === S.duo.b) S.duo.b = S.duo.b.slice(0, 10) + " 2";
+        save();
+      };
+      $("dBack").onclick = () => { names(); hideOverlay(); renderHome(); };
+      $("dGo").onclick = () => { names(); hideOverlay(); startDuo(true); };
+      if ($("dResume")) $("dResume").onclick = () => { hideOverlay(); openRun(r); };
+    });
+}
+function startDaily() {
+  const t = today();
+  const d = S.daily && S.daily.date === t && S.daily.done ? S.daily : null;
+  if (d) return dailyDonePanel();
+  const r = S.runs.daily;
+  if (r && r.date === t && !r.practice && GameCore.isValid(r.g) && !r.g.over) return openRun(r);
+  openRun(newRun("daily", GameCore.newGame({ start: GameCore.perturb(GameCore.dailySeed(t)) }), { date: t, practice: false, seed: GameCore.dailySeed(t) }));
+}
+function startPractice() {
+  const t = today();
+  openRun(newRun("daily", GameCore.newGame({ start: GameCore.perturb(GameCore.dailySeed(t)) }), { date: t, practice: true, seed: GameCore.dailySeed(t) }));
+}
+function dailyDonePanel() {
+  const d = S.daily;
+  showPanel(
+    "<h2>Harian #" + GameCore.dailyNumber(d.date) + " selesai ✓</h2>" +
+    "<div class=\"versus\"><div class=\"side" + (d.m > 0 ? " win" : "") + "\"><div class=\"who\">Kamu</div><div class=\"pts\">" + d.a + "</div></div><span class=\"vs\">VS</span><div class=\"side" + (d.m < 0 ? " win" : "") + "\"><div class=\"who\">Komputer Sulit</div><div class=\"pts\">" + d.b + "</div></div></div>" +
+    "<p>Selisih <b>" + GameCore.signed(d.m) + "</b> · tembak " + d.tembak + "x · 🔥 " + streakNow() + " hari beruntun</p>" +
+    "<p>Papan baru muncul besok. Mau latihan dengan papan hari ini? Hasil resmi tidak berubah.</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"dShare\" type=\"button\">Bagikan hasil</button>" +
+    "<div class=\"row\"><button class=\"btn\" id=\"dClose\" type=\"button\">Tutup</button><button class=\"btn\" id=\"dPractice\" type=\"button\">Latihan</button></div></div>",
+    () => {
+      $("dShare").onclick = shareDaily;
+      $("dClose").onclick = hideOverlay;
+      $("dPractice").onclick = () => { hideOverlay(); startPractice(); };
+    });
+}
+// Tantangan: papan acak dari seed, lawan Komputer Sulit, satu putaran, pemain selalu mulai.
+function startChal(inv, replyTo) {
+  const live = liveInvite();
+  if (inv) {
+    if (live && live.seed === inv.s) return openRun(live);
+    const done = chalDoneOf(inv.s);
+    if (done) return showChalDone(done);
+    if (live) return finishFirst(live);
+    if (dailyBlock(inv.s)) return;
+    // Dicatat "sudah dimulai" sebelum main, jadi membuka link lagi tidak memberi percobaan baru.
+    S.chalDone = S.chalDone.filter((x) => chalSeed(x) !== inv.s).concat([{ s: inv.s, code: inv.code, n: inv.n, m: inv.m, started: true }]).slice(-300);
+    if (S.pendingChal && (GameCore.decodeDuel(S.pendingChal) || {}).s === inv.s) S.pendingChal = null;
+    return openRun(newRun("chal", GameCore.newGame({ start: GameCore.perturb(inv.s) }), { seed: inv.s, chal: { n: inv.n, m: inv.m, code: inv.code } }));
+  }
+  if (live) return finishFirst(live);
+  const seed = newSeed();
+  openRun(newRun("chal", GameCore.newGame({ start: GameCore.perturb(seed) }), { seed, replyTo: replyTo || "" }));
+}
+function startReply(name) { hideOverlay(); startChal(null, GameCore.cleanName(name)); }
+// Seed papan dari catatan tantangan (catatan lama hanya menyimpan kode link).
+function chalSeed(x) { return x.s != null ? x.s : (GameCore.decodeDuel(x.code) || {}).s; }
+const chalDoneOf = (s) => S.chalDone.find((x) => chalSeed(x) === s) || null;
+// Tantangan dari teman yang sedang berjalan (belum selesai), bila ada.
+function liveInvite() { const r = resumable("chal"); return r && r.chal ? r : null; }
+function finishFirst(r) {
+  showPanel("<h2>Selesaikan dulu</h2><p>Tantangan dari <b>" + esc(r.chal.n) + "</b> belum selesai. Mainkan sampai habis dulu, baru tantangan lain.</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"fGo\" type=\"button\">Lanjutkan tantangan " + esc(r.chal.n) + "</button><button class=\"btn\" id=\"fClose\" type=\"button\">Tutup</button></div>",
+    () => { $("fGo").onclick = () => { hideOverlay(); openRun(r); }; $("fClose").onclick = () => { hideOverlay(); renderHome(); }; });
+}
+// Papan tantangan tak boleh sama dengan Harian hari ini/besok yang belum dimainkan. Dibandingkan papannya,
+// bukan seed-nya, jadi link palsu berseed lain dengan papan sama juga tertahan.
+function dailyBlock(s) {
+  const t = today(), [y, m, d] = t.split("-").map(Number), tomorrow = GameCore.dateKey(new Date(y, m - 1, d + 1));
+  const board = GameCore.perturb(s).join();
+  for (const key of [t, tomorrow]) {
+    if (S.daily && S.daily.date === key && S.daily.done) continue;
+    if (GameCore.perturb(GameCore.dailySeed(key)).join() !== board) continue;
+    const now = key === t;
+    showPanel("<h2>Mainkan Harian dulu</h2><p>Papan tantangan ini sama dengan <b>Tantangan Hari Ini" + (now ? "" : " besok") + "</b>. Mainkan Harian dulu, baru terima tantangannya.</p>" +
+      "<div class=\"col\">" + (now ? "<button class=\"btn main\" id=\"bDaily\" type=\"button\">Main Tantangan Hari Ini</button>" : "") + "<button class=\"btn\" id=\"bClose\" type=\"button\">Tutup</button></div>",
+      () => { if (now) $("bDaily").onclick = () => { hideOverlay(); startDaily(); }; $("bClose").onclick = () => { hideOverlay(); renderHome(); }; });
+    return true;
+  }
+  return false;
+}
+function showChalDone(d) {
+  if (d.started) {
+    return showPanel("<h2>Sudah dimulai</h2><p>Tantangan dari <b>" + esc(d.n) + "</b> dengan papan ini sudah pernah kamu mulai. Satu tantangan hanya bisa dimainkan sekali.</p>" +
+      "<div class=\"col\"><button class=\"btn main\" id=\"xReply\" type=\"button\">Balas dengan papan baru</button><button class=\"btn\" id=\"xClose\" type=\"button\">Tutup</button></div>",
+      () => { $("xReply").onclick = () => startReply(d.n); $("xClose").onclick = () => { hideOverlay(); renderHome(); }; });
+  }
+  const v = d.mine > d.m ? "Kamu menang" : d.mine < d.m ? esc(d.n) + " unggul" : "Seri";
+  showPanel(
+    "<h2>Sudah dimainkan</h2><p>Tantangan dari <b>" + esc(d.n) + "</b> ini sudah kamu mainkan. Selisihmu <b>" + GameCore.signed(d.mine) + "</b>, selisih " + esc(d.n) + " <b>" + GameCore.signed(d.m) + "</b>. " + v + ".</p>" +
+    "<p class=\"note\">Satu tantangan hanya bisa dimainkan sekali. Balas dengan papan baru!</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"xReply\" type=\"button\">Balas tantangan</button><button class=\"btn\" id=\"xClose\" type=\"button\">Tutup</button></div>",
+    () => {
+      $("xReply").onclick = () => startReply(d.n);
+      $("xClose").onclick = () => { hideOverlay(); renderHome(); };
+    });
+}
+function showInvite(inv) {
+  const target = inv.m > 0 ? "menang dengan selisih lebih dari <b>" + inv.m + "</b>" : inv.m === 0 ? "<b>menang</b>" : "kalah dengan selisih kurang dari <b>" + Math.abs(inv.m) + "</b>, atau menang";
+  showPanel(
+    "<h2>Ada tantangan!</h2><p><b>" + esc(inv.n) + "</b> " + esc(GameCore.verdictText(49 + inv.m / 2, 49 - inv.m / 2, "Komputer Sulit")) + ".</p>" +
+    "<p>Papan dan komputernya sama persis. Targetmu: " + target + "!</p><p class=\"note\">Hanya bisa dimainkan sekali.</p>" +
+    "<div class=\"col\"><button class=\"btn main\" id=\"iGo\" type=\"button\">Terima tantangan</button><button class=\"btn\" id=\"iLater\" type=\"button\">Nanti saja</button></div>",
+    () => {
+      $("iGo").onclick = () => { hideOverlay(); startChal(inv); };
+      $("iLater").onclick = () => { hideOverlay(); renderHome(); };
+    });
+}
+function chalPanel() {
+  const inv = S.pendingChal ? GameCore.decodeDuel(S.pendingChal) : null;
+  if (inv) return showInvite(Object.assign(inv, { code: S.pendingChal }));
+  const r = resumable("chal");
+  showPanel(
+    "<h2>Tantang Teman</h2><p>Kamu mendapat papan acak dan melawan <b>Komputer Sulit</b>. Setelah selesai, kirim link-nya lewat WhatsApp. Temanmu mendapat papan dan komputer yang sama persis, lalu harus mengalahkan selisihmu.</p>" +
+    (S.chal.w + S.chal.l + S.chal.d ? "<p>Tantangan diterima: menang " + S.chal.w + " · kalah " + S.chal.l + " · seri " + S.chal.d + "</p>" : "") +
+    "<div class=\"col\">" + (r ? "<button class=\"btn main\" id=\"cResume\" type=\"button\">Lanjutkan · " + r.g.b[SA] + "–" + r.g.b[SB] + "</button>" : "") +
+    "<button class=\"btn" + (r ? "" : " main") + "\" id=\"cGo\" type=\"button\">Main papan baru</button><button class=\"btn\" id=\"cClose\" type=\"button\">Tutup</button></div>",
+    () => {
+      if ($("cResume")) $("cResume").onclick = () => { hideOverlay(); openRun(r); };
+      $("cGo").onclick = () => { hideOverlay(); startChal(null, ""); };
+      $("cClose").onclick = hideOverlay;
+    });
+}
+function readChalHash() {
+  if (!/^#t=/.test(location.hash || "")) return;
+  const m = /^#t=([A-Za-z0-9_-]{8,300})$/.exec(location.hash || "");
+  try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  const inv = m ? GameCore.decodeDuel(m[1]) : null;
+  if (!inv) { toast("Link tantangan tidak valid. Minta tantangan baru, ya."); return; }
+  inv.code = m[1];
+  if (!$("play").hidden) goHome();
+  const live = liveInvite(), done = live && live.seed === inv.s ? null : chalDoneOf(inv.s);
+  if (!done && !(live && live.seed === inv.s)) { S.pendingChal = inv.code; save(); }
+  renderHome();
+  if (done) showChalDone(done); else showInvite(inv);
+}
+
+// ---------- Bantuan dan pengaturan ----------
+function mini(cells) {
+  return "<span class=\"mini\">" + cells.map((c) => {
+    const s = String(c), h = s[0] === "*", v = h ? s.slice(1) : s;
+    const l = v[0] === "L", x = v === "x";
+    return "<i class=\"" + (h ? "h " : "") + (l ? "l" : "") + (x ? "x" : "") + "\">" + (x ? "" : l ? v.slice(1) : v) + "</i>";
+  }).join("") + "</span>";
+}
+function mini2(top, bot, store) {
+  let h = "<span class=\"mini two\">";
+  for (let k = 0; k < top.length; k++) h += mini1(top[k]) + mini1(bot[k]);
+  return h + "<i class=\"l\">" + store + "</i></span>";
+}
+function mini1(c) { const s = String(c), hl = s[0] === "*"; return "<i class=\"" + (hl ? "h" : "") + "\">" + (hl ? s.slice(1) : s) + "</i>"; }
+function showHelp() {
+  const arr = "<span class=\"arr\">→</span>";
+  showPanel(
+    "<h2>Cara main</h2><p><b>Congklak (Dakon), Aturan Dehayuk.</b> Tiap pemain punya 7 lubang dan 1 lumbung. Mula-mula tiap lubang berisi 7 biji. Kumpulkan biji terbanyak di lumbungmu!</p>" +
+    "<div class=\"cards\">" +
+    "<div class=\"card\"><h3>1. Tabur</h3><div class=\"demo\">" + mini(["*3", 0, 0, 0]) + arr + mini([0, "*1", "*1", "*1"]) + "</div><p>Ketuk lubangmu. Semua bijinya diambil, lalu ditabur satu per lubang, berputar berlawanan arah jarum jam. Lumbung lawan dilewati.</p></div>" +
+    "<div class=\"card\"><h3>2. Lumbung sendiri = main lagi</h3><div class=\"demo\">" + mini([0, 0, "*1", "L5"]) + arr + mini([0, 0, 0, "*L6"]) + "</div><p>Biji terakhir jatuh di lumbungmu? Kamu <b>main lagi</b>, paling banyak 2 kali berturut-turut. Langkah pertama di awal putaran tidak dapat main lagi, supaya adil untuk yang jalan kedua.</p></div>" +
+    "<div class=\"card\"><h3>3. Sambung</h3><div class=\"demo\">" + mini(["*2", 0, 2, 0, 0, 0]) + arr + mini([0, 1, "*0", 1, 1, 1]) + "</div><p>Biji terakhir jatuh di lubang yang <b>sudah berisi</b> (sisi mana pun)? Ambil semua biji di lubang itu dan lanjutkan menabur.</p></div>" +
+    "<div class=\"card\"><h3>4. Tembak</h3><div class=\"demo\">" + mini2([0, "*6", 0], ["*1", 0, 0], 0) + arr + mini2([0, 0, 0], [0, 0, 0], "7") + "</div><p>Biji terakhir jatuh di lubang <b>kosong milikmu</b> dan lubang seberangnya berisi? Biji itu dan semua biji seberang masuk lumbungmu. Jatuh di lubang kosong lawan? Giliran selesai.</p></div>" +
+    "<div class=\"card\"><h3>5. Lubang hangus</h3><div class=\"demo\">" + mini([7, 7, 7, 7, 7, "x", "x"]) + "</div><p>Mode beberapa putaran: tiap putaran, isi lagi lubangmu 7 biji dari lumbungmu. Lubang yang tidak kebagian menjadi <b>hangus</b> dan dilewati. Tak bisa mengisi satu lubang pun? Kalah.</p></div>" +
+    "</div><p class=\"help-foot\">Tak punya biji saat giliranmu? Giliran dilewati. Satu putaran selesai bila semua lubang kosong.<br>Di daerahmu aturannya beda? Ini aturan yang kami pakai.</p>" +
+    "<button class=\"btn main\" id=\"hOk\" type=\"button\">Siap!</button>",
+    () => { $("hOk").onclick = hideOverlay; });
+}
+function settingsPanel() {
+  const seg = (id, items, cur) => "<div class=\"seg\" id=\"" + id + "\">" + items.map(([v, t]) => "<button type=\"button\" data-v=\"" + v + "\" aria-pressed=\"" + (String(cur) === String(v)) + "\">" + t + "</button>").join("") + "</div>";
+  showPanel(
+    "<h2>Pengaturan</h2>" +
+    "<div class=\"setrow\"><span>Kecepatan tabur</span>" + seg("sSpeed", [[0, "Pelan"], [1, "Normal"], [2, "Cepat"]], S.settings.speed) + "</div>" +
+    "<button class=\"btn toggle\" id=\"sSound\" type=\"button\" aria-pressed=\"" + !S.settings.mute + "\"><span>Suara</span><i></i></button>" +
+    "<button class=\"btn toggle\" id=\"sVibe\" type=\"button\" aria-pressed=\"" + !!S.settings.vibrate + "\"><span>Getar</span><i></i></button>" +
+    "<div class=\"setrow\"><span>Main berdua: cara duduk</span>" + seatSeg("sSeat") + "</div>" +
+    "<p class=\"note\">Saat biji ditabur, ketuk di mana saja untuk mempercepat, atau tekan Lewati.</p>" +
+    "<button class=\"btn main\" id=\"sOk\" type=\"button\">Selesai</button>",
+    () => {
+      document.querySelectorAll("#sSpeed button").forEach((b) => {
+        b.onclick = () => { S.settings.speed = +b.dataset.v; save(); sfx.tap(); document.querySelectorAll("#sSpeed button").forEach((x) => x.setAttribute("aria-pressed", x === b)); };
+      });
+      $("sSound").onclick = () => { S.settings.mute = !S.settings.mute; save(); renderToggles(); $("sSound").setAttribute("aria-pressed", !S.settings.mute); sfx.tap(); };
+      $("sVibe").onclick = () => { S.settings.vibrate = !S.settings.vibrate; save(); $("sVibe").setAttribute("aria-pressed", S.settings.vibrate); buzz(20); };
+      wireSeat("sSeat", () => { if (run) { applySeat(); layout(); } });
+      $("sOk").onclick = hideOverlay;
+    });
+}
+
+// ---------- Menu utama ----------
+function renderHome() {
+  $("best").textContent = S.wins;
+  const rv = resumable("vs");
+  $("stVs").textContent = rv ? "Lanjutkan · " + LV_NAME[rv.level] : "Level " + LV_NAME[LV[S.open]] + " terbuka";
+  const rd = resumable("duo"), fam = S.family.slice(-1)[0];
+  $("stDuo").textContent = rd ? "Lanjutkan" : fam ? fam.n[0] + " " + fam.w[0] + "–" + fam.w[1] + " " + fam.n[1] : "Main";
+  const t = today();
+  const d = S.daily && S.daily.date === t && S.daily.done ? S.daily : null;
+  const dr = S.runs.daily;
+  $("modeDaily").classList.toggle("done", !!d);
+  $("stDaily").textContent = d ? "Selesai ✓ · " + GameCore.signed(d.m) : dr && dr.date === t && !dr.practice && dr.g && !dr.g.over ? "Lanjutkan" : "#" + GameCore.dailyNumber(t) + " · Main";
+  const inv = S.pendingChal ? GameCore.decodeDuel(S.pendingChal) : null;
+  $("stChal").textContent = inv ? "Ditantang " + inv.n + "!" : resumable("chal") ? "Lanjutkan" : "Tantang";
+  const st = streakNow();
+  $("stats").textContent = S.games ? "Main " + S.games + " kali · menang " + S.wins + " kali lawan komputer" + (st ? " · 🔥 " + st + " hari" : "") + (S.badges.length ? " · 🏅 " + S.badges.length + "/5" : "") : "Selamat datang! Coba Lawan Komputer Mudah dulu.";
+  renderToggles();
+}
+function renderToggles() {
+  $("btnSound").textContent = S.settings.mute ? "🔇" : "🔊";
+  $("btnSound").setAttribute("aria-label", S.settings.mute ? "Nyalakan suara" : "Matikan suara");
+}
+function goHome() {
+  // Animasi cukup dibatalkan: permainan sudah tersimpan dalam keadaan setelah langkah.
+  stopRun();
+  if (run && !run.g.over) saveRun();
+  run = null;
+  $("play").hidden = true;
+  $("home").hidden = false;
+  document.body.classList.remove("playing");
+  document.documentElement.classList.remove("playing");
+  stageEl.classList.remove("flip");
+  renderHome();
+}
+
+// ---------- Panel, tombol Back, pesan ----------
+let backArmed = false, overlayBack = null;
+function enterScreen() {
+  if (backArmed) return;
+  try { history.pushState({ congklak: 1 }, ""); backArmed = true; } catch (e) {}
+}
+function showPanel(html, wire, onBack) {
+  const o = $("overlay");
+  o.innerHTML = "<div class=\"panel\" role=\"dialog\" aria-modal=\"true\">" + html + "</div>";
+  o.hidden = false;
+  o.scrollTop = 0;
+  overlayBack = onBack || null;
+  enterScreen();
+  if (wire) wire();
+  const btn = o.querySelector("button");
+  if (btn && !o.querySelector("input")) btn.focus({ preventScroll: true });
+  renderTurn();
+}
+function hideOverlay() { $("overlay").hidden = true; $("overlay").innerHTML = ""; overlayBack = null; renderTurn(); }
+// Back menutup panel atau kembali ke menu; tidak pernah keluar dari situs saat sedang main.
+window.addEventListener("popstate", () => {
+  backArmed = false;
+  if (!$("overlay").hidden) {
+    const after = overlayBack;
+    hideOverlay();
+    if (after) after();
+    else if (!$("play").hidden) enterScreen();
+    return;
+  }
+  if (!$("play").hidden) goHome();
+  // Di menu tanpa panel: entri sisa panel yang ditutup tombol, jadi teruskan Back.
+  else if (!/^#t=/.test(location.hash)) try { history.back(); } catch (e) {}
+});
+window.addEventListener("hashchange", readChalHash);
+let toastTimer = 0;
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; }, 2400);
+}
+
+// ---------- Ukuran papan ----------
+function layout() {
+  if (!run || $("play").hidden) return;
+  const W = arenaEl.clientWidth || 340, H = arenaEl.clientHeight || 500;
+  const hadap = arenaEl.classList.contains("hadap");
+  const aw = hadap ? W - 2 * 46 : W, ah = hadap ? H - 8 : H - 2 * 24;
+  let ph = Math.floor((ah - 22) / (7 + 2 * 1.42));
+  ph = Math.max(34, Math.min(74, ph));
+  const sh = Math.round(ph * 1.42), bh = ph * 7 + sh * 2 + 22;
+  const bw = Math.max(220, Math.min(aw, 400, Math.round(ph * 6.7)));
+  const colW = (bw - 26) / 2;
+  const hw = Math.max(40, Math.min(Math.round(ph * 1.9), Math.floor(colW - 40)));
+  const rs = document.documentElement.style;
+  rs.setProperty("--ph", ph + "px");
+  rs.setProperty("--sh", sh + "px");
+  rs.setProperty("--bh", bh + "px");
+  rs.setProperty("--bw", bw + "px");
+  rs.setProperty("--hw", hw + "px");
+  rs.setProperty("--sd", Math.max(7, Math.min(13, Math.round(ph * 0.22))) + "px");
+}
+
+// ---------- Tombol ----------
+$("modeVs").onclick = vsPanel;
+$("modeDuo").onclick = duoPanel;
+$("modeDaily").onclick = startDaily;
+$("modeChal").onclick = chalPanel;
+$("btnHelp").onclick = showHelp;
+$("btnSet").onclick = settingsPanel;
+$("btnPlaySet").onclick = settingsPanel;
+$("btnMenu").onclick = goHome;
+$("btnHint").onclick = useHint;
+$("btnSkip").onclick = (e) => { e.stopPropagation(); skipAnim(); };
+$("btnRestart").onclick = () => {
+  if (!run || anim) return;
+  showPanel(
+    "<h2>Mulai ulang?</h2><p>Permainan ini tidak akan disimpan.</p>" +
+    "<div class=\"row\"><button class=\"btn\" id=\"qNo\" type=\"button\">Lanjut main</button><button class=\"btn main\" id=\"qYes\" type=\"button\">Mulai ulang</button></div>",
+    () => {
+      $("qNo").onclick = () => { hideOverlay(); if (run) step(); };
+      $("qYes").onclick = () => {
+        hideOverlay();
+        if (!run) return;
+        if (run.practice) startPractice();
+        else if (run.kind === "duo") startDuo(true);
+        else startVs(run.level, true);
+      };
+    }, () => { if (run) step(); });
+};
+$("btnSound").onclick = () => {
+  S.settings.mute = !S.settings.mute;
+  save();
+  renderToggles();
+  if (!S.settings.mute) sfx.tap();
+};
+// Ketuk di mana saja saat menabur: percepat 4x sampai giliran selesai.
+$("play").addEventListener("pointerdown", (e) => {
+  if (!S.settings.mute) { try { audio(); } catch (err) {} }
+  if (anim && !e.target.closest("button.skip, #btnMenu")) speedUp();
+});
+document.addEventListener("keydown", (e) => {
+  if ($("play").hidden || !$("overlay").hidden || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (anim && (e.key === "Escape" || e.key === "Enter" || e.key === " ")) { e.preventDefault(); return skipAnim(); }
+  if (/^[1-7]$/.test(e.key) && canHuman()) {
+    e.preventDefault();
+    const i = (run.g.turn ? 8 : 0) + (+e.key - 1);
+    pitEls[i].focus();
+    tapPit(i);
+  }
+});
+let resizeRaf = 0;
+window.addEventListener("resize", () => {
+  if (resizeRaf) return;
+  resizeRaf = requestAnimationFrame(() => { resizeRaf = 0; layout(); });
+});
+document.addEventListener("visibilitychange", () => { if (document.hidden && run) saveRun(); });
+
+renderHome();
+readChalHash();
+if (/[?&]uji=1/.test(location.search)) {
+  const t0 = performance.now(), res = GameCore.selfTest(1000);
+  console.log("Uji Congklak:", res.ok ? "SEMUA LULUS" : "ADA YANG GAGAL", res, Math.round(performance.now() - t0) + " ms");
+}
+</script>
+</html>

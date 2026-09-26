@@ -8,7 +8,7 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 const out = path.join(root, "www");
 // Folder yang ikut masuk app. Tambahkan folder game baru di sini.
-const SITE_DIRS = ["nalargame", "balok-ria", "pilah-kelereng", "privasi"];
+const SITE_DIRS = ["nalargame", "balok-ria", "pilah-kelereng", "jatuh-buah", "congklak", "titik-kotak", "sambung-kembar", "lapis-menjulang", "privasi"];
 
 fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out);

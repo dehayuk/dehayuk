@@ -74,8 +74,21 @@
   }
   .art .ball { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset -2px -2px 0 rgba(0, 0, 0, .25); }
 
-  .game.soon { background: transparent; border-style: dashed; justify-content: center; }
-  .game.soon h2 { color: var(--muted); font-size: 22px; }
+  .art .fruit { border-radius: 50%; box-shadow: inset -3px -3px 0 rgba(0, 0, 0, .22); }
+  .art.boat { position: relative; width: 96px; background: #8A5A2B; border-radius: 19px; align-items: center; justify-content: center; gap: 4px; padding: 0 5px; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .25); }
+  .art .pits { display: grid; grid-template-columns: repeat(4, 11px); gap: 4px; }
+  .art .pit { width: 11px; height: 11px; border-radius: 50%; background: radial-gradient(circle at 50% 60%, #F3E6C8 0 2px, #4A2E12 2.5px); }
+  .art .store { width: 10px; height: 26px; border-radius: 6px; background: #4A2E12; }
+  .art.paper { position: relative; width: 38px; background: #FDFCF6; border-radius: 4px; }
+  .art.paper i { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #2B3A55; }
+  .art.paper b { position: absolute; }
+  .art.pairs { display: grid; grid-template-columns: repeat(3, 11px); grid-template-rows: repeat(3, 11px); gap: 2px; position: relative; }
+  .art .cell { width: 11px; height: 11px; border-radius: 3px; background: #2E8A84; }
+  .art .cell.twin { background: var(--tile); box-shadow: inset 0 -2px 0 var(--tile-shade); }
+  .art .link { position: absolute; background: #5FE3F0; border-radius: 2px; }
+  .art.cake { flex-direction: column; align-items: center; justify-content: flex-end; gap: 1px; width: 60px; }
+  .art .layer { height: 6px; border-radius: 3px; }
+  .art .plate { width: 60px; height: 3px; border-radius: 2px; background: #EAF6F3; }
 
   footer { color: var(--muted); font-size: 12px; text-align: center; }
 </style>
@@ -138,9 +151,103 @@
       </div>
     </article>
 
-    <article class="game soon">
-      <h2>Game berikutnya</h2>
-      <p>Sedang dibuat. Nantikan di sini.</p>
+    <article class="game">
+      <div class="art" aria-hidden="true">
+        <i class="fruit" style="width:10px;height:10px;background:#E5484D"></i>
+        <i class="fruit" style="width:16px;height:16px;background:#F59A3B"></i>
+        <i class="fruit" style="width:23px;height:23px;background:#F4C152"></i>
+        <i class="fruit" style="width:32px;height:32px;background:#8FA83A"></i>
+      </div>
+      <h2>Jatuh Buah</h2>
+      <p>Jatuhkan buah ke bakul. Dua buah kembar bersatu jadi buah yang lebih besar, terus sampai durian sang raja buah, sebelum bakulnya penuh.</p>
+      <ul class="features">
+        <li>Tanpa batas</li>
+        <li>Harian</li>
+        <li>Tantang teman</li>
+      </ul>
+      <div class="actions">
+        <a class="btn main" href="/jatuh-buah/">Main sekarang</a>
+      </div>
+    </article>
+
+    <article class="game">
+      <div class="art boat" aria-hidden="true">
+        <i class="store"></i>
+        <span class="pits"><i class="pit"></i><i class="pit"></i><i class="pit"></i><i class="pit"></i><i class="pit"></i><i class="pit"></i><i class="pit"></i><i class="pit"></i></span>
+        <i class="store"></i>
+      </div>
+      <h2>Congklak</h2>
+      <p>Permainan warisan nenek moyang. Lawan komputer, atau main berdua bersama keluarga di satu HP.</p>
+      <ul class="features">
+        <li>Tanpa batas</li>
+        <li>Harian</li>
+        <li>Tantang teman</li>
+      </ul>
+      <div class="actions">
+        <a class="btn main" href="/congklak/">Main sekarang</a>
+      </div>
+    </article>
+
+    <article class="game">
+      <div class="art paper" aria-hidden="true">
+        <b style="left:4px;top:4px;width:15px;height:15px;background:#FFB3AE"></b>
+        <b style="left:19px;top:19px;width:15px;height:15px;background:#A9D8FF"></b>
+        <b style="left:4px;top:3px;width:30px;height:3px;background:#2B3A55;border-radius:2px"></b>
+        <i style="left:2px;top:2px"></i><i style="left:17px;top:2px"></i><i style="left:32px;top:2px"></i>
+        <i style="left:2px;top:17px"></i><i style="left:17px;top:17px"></i><i style="left:32px;top:17px"></i>
+        <i style="left:2px;top:32px"></i><i style="left:17px;top:32px"></i><i style="left:32px;top:32px"></i>
+      </div>
+      <h2>Titik Kotak</h2>
+      <p>Permainan titik-titik di belakang buku tulis. Tarik garis, tutup kotaknya, dan kuasai papan melawan komputer atau keluarga.</p>
+      <ul class="features">
+        <li>Tanpa batas</li>
+        <li>Harian</li>
+        <li>Tantang teman</li>
+      </ul>
+      <div class="actions">
+        <a class="btn main" href="/titik-kotak/">Main sekarang</a>
+      </div>
+    </article>
+
+    <article class="game">
+      <div class="art pairs" aria-hidden="true">
+        <i class="cell twin"></i><i></i><i></i>
+        <i class="cell"></i><i class="cell"></i><i></i>
+        <i class="cell"></i><i class="cell"></i><i class="cell twin"></i>
+        <b class="link" style="left:5px;top:4px;width:30px;height:3px"></b>
+        <b class="link" style="left:32px;top:4px;width:3px;height:30px"></b>
+      </div>
+      <h2>Sambung Kembar</h2>
+      <p>Temukan dua ubin kembar yang bisa disambung garis dengan paling banyak dua belokan, lalu bersihkan papan secepatnya.</p>
+      <ul class="features">
+        <li>Tanpa batas</li>
+        <li>Harian</li>
+        <li>Tantang teman</li>
+      </ul>
+      <div class="actions">
+        <a class="btn main" href="/sambung-kembar/">Main sekarang</a>
+      </div>
+    </article>
+
+    <article class="game">
+      <div class="art cake" aria-hidden="true">
+        <i class="layer" style="width:40px;background:#B784E8;margin-left:4px"></i>
+        <i class="layer" style="width:44px;background:#FF8FB1;margin-right:3px"></i>
+        <i class="layer" style="width:48px;background:#F4C152"></i>
+        <i class="layer" style="width:51px;background:#9C6B3F;margin-left:3px"></i>
+        <i class="layer" style="width:54px;background:#5CC98A"></i>
+        <i class="plate"></i>
+      </div>
+      <h2>Lapis Menjulang</h2>
+      <p>Ketuk tepat waktu dan susun kue lapis setinggi langit. Main sendiri, atau gantian berdua di satu HP.</p>
+      <ul class="features">
+        <li>Tanpa batas</li>
+        <li>Harian</li>
+        <li>Tantang teman</li>
+      </ul>
+      <div class="actions">
+        <a class="btn main" href="/lapis-menjulang/">Main sekarang</a>
+      </div>
     </article>
   </div>
 
