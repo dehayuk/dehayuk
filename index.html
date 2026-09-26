@@ -22,8 +22,11 @@
     --display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
     --body: "Nunito", "Segoe UI", system-ui, sans-serif;
   }
+  [hidden] { display: none !important; }
+  *, *::before, *::after { box-sizing: border-box; }
   html, body { height: 100%; }
   body {
+    margin: 0;
     background: var(--ground);
     color: var(--ink);
     font-family: var(--body);
