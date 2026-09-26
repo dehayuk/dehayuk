@@ -1,5 +1,5 @@
-# Pengaturan Netlify untuk versi web NalarGame.
-# Game web cukup satu berkas index.html, jadi tidak ada langkah build.
+# Pengaturan Netlify untuk situs Dehayuk: halaman depan di akar, setiap game di foldernya sendiri (misal /nalargame/).
+# Semua halaman berupa berkas HTML biasa, jadi tidak ada langkah build.
 # Setiap push ke cabang main di GitHub otomatis ditayangkan ulang oleh Netlify.
 [build]
   publish = "."

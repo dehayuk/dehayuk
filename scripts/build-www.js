@@ -1,6 +1,6 @@
 // Menyiapkan folder www untuk app Android: index.html yang sama dengan versi web,
 // ditambah dua skrip Capacitor agar game bisa memanggil AdMob.
-// Versi web (GitHub Pages) tetap memakai index.html di akar repo tanpa skrip ini.
+// Versi web (Netlify) memakai nalargame/index.html yang sama, tanpa skrip ini.
 const fs = require("fs");
 const path = require("path");
 
@@ -12,7 +12,7 @@ fs.mkdirSync(out);
 fs.copyFileSync(path.join(root, "node_modules/@capacitor/core/dist/capacitor.js"), path.join(out, "capacitor.js"));
 fs.copyFileSync(path.join(root, "node_modules/@capacitor-community/admob/dist/plugin.js"), path.join(out, "admob.js"));
 
-const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const html = fs.readFileSync(path.join(root, "nalargame", "index.html"), "utf8");
 const marker = /<script>\r?\nconst THEMES/;
 if (!marker.test(html)) throw new Error("Penanda skrip utama tidak ditemukan di index.html");
 const withScripts = html.replace(marker, (found) => "<script src=\"capacitor.js\"></script>\n<script src=\"admob.js\"></script>\n" + found);

@@ -1,4 +1,4 @@
-// Server kecil untuk mencoba game di browser: http://127.0.0.1:8081/
+// Server kecil untuk mencoba situs Dehayuk di laptop: http://127.0.0.1:8081/ (NalarGame di /nalargame/)
 // Port 8081 dipilih agar tidak bentrok dengan Ruang Coba VILGO di 8080.
 const http = require("http");
 const fs = require("fs");
@@ -11,11 +11,12 @@ const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", "
 
 http.createServer((req, res) => {
   const urlPath = decodeURIComponent(req.url.split("?")[0]);
-  const file = path.join(ROOT, urlPath === "/" ? "index.html" : urlPath);
+  // Alamat folder, misalnya /nalargame/, membuka index.html di dalamnya, seperti di Netlify.
+  const file = path.join(ROOT, urlPath.endsWith("/") ? urlPath + "index.html" : urlPath);
   if (!file.startsWith(ROOT)) { res.writeHead(403); return res.end(); }
   fs.readFile(file, (err, data) => {
     if (err) { res.writeHead(404); return res.end("Tidak ditemukan"); }
     res.writeHead(200, { "Content-Type": TYPES[path.extname(file)] || "application/octet-stream" });
     res.end(data);
   });
-}).listen(PORT, HOST, () => console.log("NalarGame jalan di http://" + HOST + ":" + PORT + "/"));
+}).listen(PORT, HOST, () => console.log("Dehayuk jalan di http://" + HOST + ":" + PORT + "/"));
