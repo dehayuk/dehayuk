@@ -1,0 +1,13 @@
+# Pengaturan Netlify untuk versi web Tebak Kata.
+# Game web cukup satu berkas index.html, jadi tidak ada langkah build.
+# Setiap push ke cabang main di GitHub otomatis ditayangkan ulang oleh Netlify.
+[build]
+  publish = "."
+  command = "echo Tidak ada langkah build untuk versi web"
+
+# Folder dan berkas app Android tidak perlu dibuka lewat web.
+[[redirects]]
+  from = "/android/*"
+  to = "/"
+  status = 302
+  force = true

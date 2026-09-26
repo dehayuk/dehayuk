@@ -596,8 +596,14 @@ const BLOCKED_WORDS = ["KONTOL", "MEMEK", "NGENTOT", "ENTOT", "JEMBUT", "PEPEK",
 const DUEL_COUNT = 5;
 const DUEL_WIN_BONUS = 20;
 const DUEL_MEMORY = 30;
-// Alamat yang dibagikan dalam tantangan dan hasil harian. Ganti di sini bila memakai domain sendiri.
-const GAME_URL = "https://socialiam.github.io/tebak-kata/";
+// Alamat resmi game. Dipakai oleh app Android dan saat dicoba di laptop sendiri.
+// Di web, link yang dibagikan otomatis mengikuti alamat situs yang sedang dibuka (Netlify, GitHub Pages, domain sendiri).
+const HOME_URL = "https://socialiam.github.io/tebak-kata/";
+const GAME_URL = (() => {
+  const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  const onWeb = /^https?:$/.test(location.protocol) && !local && !(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  return onWeb ? location.origin + location.pathname : HOME_URL;
+})();
 
 // Gelar naik terus. Setelah Legenda Kata, bintangnya bertambah tanpa batas.
 const TITLES = [
