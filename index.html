@@ -17,8 +17,6 @@
     --muted: #9EC6C0;
     --good: #7FE0A3;
     --bad: #FF7A70;
-    --ad: #2A2F3A;
-    --ad-ink: #D7DCE6;
     --display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
     --body: "Nunito", "Segoe UI", system-ui, sans-serif;
   }
@@ -36,11 +34,12 @@
     max-width: 480px;
     margin: 0 auto;
     padding-inline: 16px;
-    padding-block: 14px 96px;
+    padding-block: 14px 110px;
     display: flex;
     flex-direction: column;
     gap: 16px;
   }
+  section { display: flex; flex-direction: column; gap: 16px; }
   header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .brand { font-family: var(--display); font-weight: 800; font-size: 26px; line-height: 1; letter-spacing: .5px; }
   .brand span { color: var(--tile); }
@@ -52,11 +51,47 @@
   }
   .coin-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--tile); box-shadow: inset 0 -2px 0 var(--tile-shade); }
 
-  .meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted); }
+  /* Menu utama */
+  .profile {
+    background: var(--board); border: 1px solid var(--board-edge); border-radius: 14px;
+    padding: 16px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .profile-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+  .label { display: block; color: var(--muted); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; }
+  .title-name { font-family: var(--display); font-weight: 800; font-size: 28px; line-height: 1.05; color: var(--tile); }
+  .streak {
+    font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums;
+    background: var(--ground); border: 1px solid var(--board-edge); padding: 6px 12px; border-radius: 999px;
+  }
+  .xptext { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .modes { display: grid; gap: 10px; }
+  .mode {
+    display: grid; grid-template-columns: 1fr auto; grid-template-areas: "name state" "desc state";
+    gap: 2px 12px; align-items: center; text-align: left;
+    background: var(--board); border: 1px solid var(--board-edge); border-radius: 14px;
+    padding: 14px 16px; color: var(--ink); font-family: var(--body); cursor: pointer;
+  }
+  .mode-name { grid-area: name; font-family: var(--display); font-weight: 800; font-size: 21px; line-height: 1.1; }
+  .mode-desc { grid-area: desc; font-size: 12.5px; color: var(--muted); }
+  .mode-state {
+    grid-area: state; max-width: 140px; text-align: center; font-weight: 800; font-size: 12px;
+    background: var(--tile); color: var(--tile-ink); box-shadow: inset 0 -3px 0 var(--tile-shade);
+    padding: 7px 10px; border-radius: 9px; font-variant-numeric: tabular-nums;
+  }
+  .mode.done .mode-state { background: transparent; box-shadow: none; color: var(--good); border: 1px solid var(--good); }
+
+  /* Layar permainan */
+  .topbar { display: flex; align-items: center; gap: 10px; }
+  .back {
+    background: none; border: 1px solid var(--board-edge); color: var(--ink); border-radius: 8px;
+    padding: 4px 10px; font-family: var(--body); font-weight: 800; font-size: 13px; cursor: pointer;
+  }
   .chip {
     font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
     color: var(--tile); border: 1px solid var(--tile-shade); padding: 1px 10px; border-radius: 6px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
   }
+  #levelLabel { margin-left: auto; color: var(--muted); font-size: 13px; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .bar { height: 6px; background: var(--board); border-radius: 3px; overflow: hidden; }
   .bar > i { display: block; height: 100%; background: var(--tile); transition: width .4s; }
 
@@ -64,7 +99,6 @@
     background: var(--board); border: 1px solid var(--board-edge); border-radius: 14px;
     padding: 18px 16px; text-align: center;
   }
-  .clue small { display: block; color: var(--muted); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
   .clue p { margin: 0; font-size: 19px; font-weight: 800; line-height: 1.35; text-wrap: balance; }
 
   .slots { display: flex; justify-content: center; gap: 6px; }
@@ -92,6 +126,7 @@
   .tile:disabled { visibility: hidden; }
 
   .actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .actions.two { grid-template-columns: 1fr 1fr; }
   .btn {
     border: 1px solid var(--board-edge); background: var(--board); color: var(--ink);
     border-radius: 10px; padding: 10px 6px; font-family: var(--body); font-weight: 800; font-size: 13px;
@@ -103,10 +138,9 @@
     background: var(--tile); color: var(--tile-ink); border: 0; box-shadow: inset 0 -4px 0 var(--tile-shade);
     font-family: var(--display); font-size: 20px; padding: 12px 20px;
   }
-  button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  button:focus-visible, a:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 
   .note { font-size: 12px; color: var(--muted); text-align: center; margin: 0; }
-  .note a { color: var(--tile); font-weight: 800; }
 
   .getapp {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
@@ -139,6 +173,9 @@
   .panel h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 30px; line-height: 1.1; color: var(--tile); }
   .panel p { margin: 0; color: var(--muted); }
   .panel .word { font-family: var(--display); font-weight: 800; font-size: 26px; letter-spacing: 3px; color: var(--ink); }
+  .panel .levelup { color: var(--good); font-weight: 800; }
+  .panel .row { display: flex; gap: 8px; width: 100%; }
+  .panel .row .btn { flex: 1; }
   .count { font-variant-numeric: tabular-nums; font-weight: 800; }
 
   .toast {
@@ -159,23 +196,58 @@
     <div class="coins" title="Koin"><i class="coin-dot"></i><span id="coins">0</span></div>
   </header>
 
-  <div>
-    <div class="meta"><span class="chip" id="theme">Hewan</span><span id="levelLabel">Soal 1 / 50</span></div>
-    <div class="bar" style="margin-top:8px"><i id="bar" style="width:0%"></i></div>
-  </div>
+  <section id="home">
+    <div class="profile">
+      <div class="profile-top">
+        <div><span class="label">Gelar</span><div class="title-name" id="titleName">Pemula</div></div>
+        <div class="streak" id="streak" title="Hari beruntun menyelesaikan Tantangan Harian">🔥 0 hari</div>
+      </div>
+      <div class="bar"><i id="xpFill" style="width:0%"></i></div>
+      <div class="xptext" id="xpText"></div>
+    </div>
 
-  <div class="clue"><small>Petunjuk</small><p id="clue"></p></div>
+    <div class="modes">
+      <button class="mode" id="modeDaily" type="button">
+        <span class="mode-name">Tantangan Harian</span>
+        <span class="mode-desc">5 soal baru setiap hari, sama untuk semua pemain</span>
+        <span class="mode-state" id="stDaily">Siap dimainkan</span>
+      </button>
+      <button class="mode" id="modeBlitz" type="button">
+        <span class="mode-name">Mode Kilat</span>
+        <span class="mode-desc">60 detik, jawab sebanyak mungkin</span>
+        <span class="mode-state" id="stBlitz">Rekor: 0</span>
+      </button>
+      <button class="mode" id="modeAdventure" type="button">
+        <span class="mode-name">Petualangan</span>
+        <span class="mode-desc" id="descAdventure">Semua soal, makin lama makin sulit</span>
+        <span class="mode-state" id="stAdventure">Mulai</span>
+      </button>
+    </div>
+  </section>
 
-  <div class="slots" id="slots"></div>
-  <div class="tiles" id="tiles"></div>
+  <section id="game" hidden>
+    <div class="topbar">
+      <button class="back" id="btnBack" type="button">‹ Menu</button>
+      <span class="chip" id="theme"></span>
+      <span id="levelLabel"></span>
+    </div>
+    <div class="bar"><i id="bar" style="width:0%"></i></div>
 
-  <div class="actions">
-    <button class="btn" id="btnClear" type="button">Hapus<small>kosongkan</small></button>
-    <button class="btn" id="btnHint" type="button">Petunjuk<small id="hintCost">30 koin</small></button>
-    <button class="btn watch" id="btnWatch" type="button">Petunjuk gratis<small>tunggu 5 detik</small></button>
-  </div>
+    <div class="clue"><p id="clue"></p></div>
 
-  <p class="note">Ketuk huruf untuk mengisi, ketuk kotak untuk mengembalikan. Di komputer bisa langsung mengetik.</p>
+    <div class="slots" id="slots"></div>
+    <div class="tiles" id="tiles"></div>
+
+    <div class="actions" id="actions">
+      <button class="btn" id="btnClear" type="button">Hapus<small>kosongkan</small></button>
+      <button class="btn" id="btnHint" type="button">Petunjuk<small id="hintCost">30 koin</small></button>
+      <button class="btn watch" id="btnWatch" type="button">Petunjuk gratis<small>tunggu 5 detik</small></button>
+      <button class="btn watch" id="btnSkip" type="button" hidden>Lewati<small>soal berikutnya</small></button>
+    </div>
+
+    <p class="note">Ketuk huruf untuk mengisi, ketuk kotak untuk mengembalikan. Di komputer bisa langsung mengetik.</p>
+  </section>
+
   <p class="note" id="adStatus" hidden></p>
 </div>
 
@@ -184,7 +256,6 @@
   <a class="getapp-btn" href="https://github.com/socialiam/tebak-kata/releases/latest/download/tebak-kata.apk">Pasang</a>
   <button class="getapp-close" id="getAppClose" type="button" aria-label="Tutup">×</button>
 </div>
-
 
 <div class="overlay" id="overlay" hidden></div>
 <div class="toast" id="toast" hidden></div>
@@ -250,6 +321,193 @@ const THEMES = [
     ["MASINIS", "Yang mengemudikan kereta api"],
     ["ARSITEK", "Menggambar rumah sebelum rumahnya ada"],
     ["WARTAWAN", "Kerjanya mengejar berita dan menulis kabar terbaru"]
+  ]],
+  ["Buah", [
+    ["APEL", "Merah atau hijau, katanya sehari satu bikin jauh dari dokter"],
+    ["PISANG", "Kuning, melengkung, kesukaan monyet"],
+    ["MANGGA", "Ada harum manis dan gedong, panennya saat kemarau"],
+    ["DURIAN", "Raja buah berduri, baunya bikin dilarang masuk hotel"],
+    ["SALAK", "Kulitnya bersisik seperti ular, rasanya manis sepat"],
+    ["RAMBUTAN", "Buah merah berambut, musimnya menjelang akhir tahun"],
+    ["SEMANGKA", "Hijau di luar, merah di dalam, bijinya hitam"],
+    ["NANAS", "Bermahkota daun berduri, kebanyakan makan bikin lidah gatal"],
+    ["JERUK", "Kaya vitamin C, dikupas langsung harum"],
+    ["ANGGUR", "Tumbuh bergerombol, kalau dikeringkan jadi kismis"],
+    ["MANGGIS", "Ratu buah, kulitnya ungu, isinya putih seperti siung bawang"],
+    ["KELAPA", "Pohonnya menjulang di pantai, airnya segar diminum langsung"],
+    ["PEPAYA", "Daging buahnya oranye, bagus untuk pencernaan"],
+    ["ALPUKAT", "Hijau lembut, paling enak dijus dengan susu cokelat"],
+    ["SIRSAK", "Kulitnya berduri lunak, dagingnya putih asam manis"]
+  ]],
+  ["Sayur & Bumbu", [
+    ["BAYAM", "Sayur hijau kesukaan Popeye"],
+    ["KANGKUNG", "Tumbuh di air, paling enak ditumis terasi"],
+    ["WORTEL", "Oranye, katanya bagus untuk mata, kesukaan kelinci"],
+    ["TOMAT", "Merah bulat, buah atau sayur? Masih saja diperdebatkan"],
+    ["CABAI", "Kecil-kecil pedasnya bikin keringetan"],
+    ["BAWANG", "Mengupasnya bikin mata berair"],
+    ["JAHE", "Rimpang penghangat badan, cocok diminum saat hujan"],
+    ["KUNYIT", "Rimpang yang bikin nasi berwarna kuning"],
+    ["TERONG", "Ungu mengilap, enak dibalado"],
+    ["KENTANG", "Bisa jadi keripik, perkedel, atau goreng ala restoran cepat saji"],
+    ["JAGUNG", "Tongkolnya ramai dibakar saat malam tahun baru"],
+    ["KUBIS", "Daunnya berlapis-lapis membulat, nama lainnya kol"],
+    ["LABU", "Besar dan oranye, identik dengan pesta Halloween"],
+    ["SELEDRI", "Daun wangi penghias sop dan bakso"],
+    ["KEMIRI", "Biji bulat berminyak, bumbu wajib opor"]
+  ]],
+  ["Wisata", [
+    ["BOROBUDUR", "Candi Buddha terbesar di dunia, ada di Magelang"],
+    ["PRAMBANAN", "Candi Hindu megah dengan kisah Roro Jonggrang"],
+    ["BROMO", "Gunung dengan lautan pasir, ramai saat matahari terbit"],
+    ["TOBA", "Danau vulkanik terbesar di dunia, di tengahnya ada Pulau Samosir"],
+    ["KUTA", "Pantai terkenal di Bali, tempat belajar selancar"],
+    ["LOMBOK", "Pulau di timur Bali, punya Gunung Rinjani"],
+    ["BUNAKEN", "Taman laut di Sulawesi Utara, surganya penyelam"],
+    ["MONAS", "Tugu di Jakarta, puncaknya berlapis emas"],
+    ["DIENG", "Dataran tinggi di Jawa Tengah, ada anak berambut gimbal"],
+    ["BELITUNG", "Pulau berbatu granit raksasa, latar film Laskar Pelangi"],
+    ["ANCOL", "Taman rekreasi di pinggir laut Jakarta Utara"],
+    ["MALIOBORO", "Jalan paling ramai di Jogja, surga oleh-oleh"],
+    ["UBUD", "Desa seni di Bali yang dikelilingi sawah"],
+    ["SENGGIGI", "Pantai terkenal di Lombok Barat"],
+    ["WAKATOBI", "Taman laut di Sulawesi Tenggara, namanya singkatan empat pulau"]
+  ]],
+  ["Olahraga", [
+    ["SEPAKBOLA", "Sebelas lawan sebelas memperebutkan satu bola"],
+    ["BADMINTON", "Nama lain bulu tangkis, olahraga andalan Indonesia"],
+    ["CATUR", "Olahraga otak dengan raja, ratu, dan kuda"],
+    ["RENANG", "Olahraga di kolam, ada gaya bebas dan gaya katak"],
+    ["SILAT", "Bela diri asli Nusantara, sudah diakui UNESCO"],
+    ["VOLI", "Bola dipukul melewati net, enam pemain tiap tim"],
+    ["BASKET", "Bola dimasukkan ke keranjang yang tinggi"],
+    ["TINJU", "Adu pukul dengan sarung tangan tebal di atas ring"],
+    ["KARATE", "Bela diri dari Jepang, sabuknya berwarna-warni"],
+    ["LARI", "Olahraga paling murah, cukup modal sepatu"],
+    ["SEPEDA", "Dua roda dikayuh, ramai setiap Minggu pagi"],
+    ["PANAHAN", "Membidik sasaran bundar dengan busur"],
+    ["GOLF", "Memukul bola kecil ke lubang di lapangan rumput yang luas"],
+    ["YOGA", "Latihan peregangan dan pernapasan dari India"],
+    ["SUMO", "Gulat Jepang dengan pegulat bertubuh besar"]
+  ]],
+  ["Alam", [
+    ["GUNUNG", "Menjulang tinggi, sebagian bisa meletus"],
+    ["PELANGI", "Muncul setelah hujan, warnanya ada tujuh"],
+    ["PETIR", "Kilatan di langit saat badai, suaranya menggelegar"],
+    ["OMBAK", "Datang silih berganti di pantai, disukai peselancar"],
+    ["AWAN", "Kapas putih yang melayang di langit"],
+    ["BULAN", "Bersinar di malam hari, kadang sabit kadang purnama"],
+    ["MATAHARI", "Bintang yang paling dekat dengan Bumi"],
+    ["HUJAN", "Air yang jatuh dari langit, bikin malas keluar rumah"],
+    ["SUNGAI", "Air yang mengalir dari hulu ke hilir"],
+    ["PASIR", "Butiran halus di pantai, bahan membangun istana mainan"],
+    ["SALJU", "Turun di negara empat musim, putih dan dingin"],
+    ["GEMPA", "Bumi berguncang karena lempeng bergeser"],
+    ["KABUT", "Uap putih yang menutup pandangan di pagi hari"],
+    ["BINTANG", "Berkelip di langit malam, dulu jadi penunjuk arah pelaut"],
+    ["ANGIN", "Tak terlihat, tapi bisa menerbangkan layang-layang"]
+  ]],
+  ["Tubuh", [
+    ["MATA", "Jendela dunia, dipakai untuk melihat"],
+    ["HIDUNG", "Bisa mencium bau, sering tersumbat saat pilek"],
+    ["TELINGA", "Sepasang, tugasnya mendengar"],
+    ["JANTUNG", "Berdetak terus tanpa pernah libur"],
+    ["PARU", "Tempat udara keluar masuk saat bernapas"],
+    ["GIGI", "Disikat dua kali sehari supaya tidak berlubang"],
+    ["LIDAH", "Bisa merasakan manis, asin, asam, dan pahit"],
+    ["RAMBUT", "Tumbuh di kepala, bisa dipotong, diwarnai, dikeriting"],
+    ["KUKU", "Tumbuh di ujung jari, rutin dipotong"],
+    ["TULANG", "Kerangka penopang tubuh, butuh kalsium"],
+    ["OTAK", "Pusat berpikir di dalam kepala"],
+    ["LUTUT", "Sendi di tengah kaki, sering lecet waktu kecil"],
+    ["SIKU", "Sendi di tengah lengan"],
+    ["ALIS", "Rambut melengkung di atas mata"],
+    ["PERUT", "Berbunyi keroncongan saat lapar"]
+  ]],
+  ["Rumah", [
+    ["KASUR", "Tempat paling nyaman untuk rebahan"],
+    ["LEMARI", "Tempat menyimpan baju, pintunya kadang berderit"],
+    ["KULKAS", "Kotak dingin penyimpan makanan"],
+    ["JENDELA", "Dibuka pagi hari supaya udara segar masuk"],
+    ["ATAP", "Pelindung rumah dari panas dan hujan"],
+    ["TANGGA", "Naik turun lantai lewat sini"],
+    ["DAPUR", "Tempat memasak, jantungnya rumah"],
+    ["KOMPOR", "Nyalakan apinya untuk memasak"],
+    ["PANCI", "Wadah untuk merebus mi dan sayur"],
+    ["PIRING", "Tempat nasi dan lauk saat makan"],
+    ["SENDOK", "Alat makan, pasangannya garpu"],
+    ["SELIMUT", "Penghangat saat tidur, susah dilepas di pagi hari"],
+    ["TELEVISI", "Kotak bergambar di ruang keluarga"],
+    ["SOFA", "Kursi empuk di ruang tamu"],
+    ["KERAN", "Diputar, airnya mengalir"]
+  ]],
+  ["Kendaraan", [
+    ["MOTOR", "Roda dua yang paling banyak di jalanan Indonesia"],
+    ["MOBIL", "Beroda empat, bisa membawa satu keluarga"],
+    ["KERETA", "Berjalan di atas rel, menarik gerbong-gerbong"],
+    ["PESAWAT", "Terbang membawa penumpang antarpulau"],
+    ["KAPAL", "Mengarungi laut membawa penumpang dan barang"],
+    ["BECAK", "Roda tiga yang dikayuh, penumpangnya duduk di depan"],
+    ["DELMAN", "Kereta kecil yang ditarik kuda"],
+    ["ANGKOT", "Angkutan kota yang bisa berhenti di mana saja"],
+    ["BAJAJ", "Roda tiga khas Jakarta, suaranya berisik"],
+    ["TRUK", "Kendaraan besar pengangkut barang"],
+    ["BUS", "Kendaraan panjang yang membawa banyak penumpang"],
+    ["OJEK", "Naik motor dengan membayar, kini bisa dipesan lewat aplikasi"],
+    ["PERAHU", "Kendaraan air kecil yang didayung"],
+    ["HELIKOPTER", "Terbang dengan baling-baling besar di atasnya"],
+    ["ROKET", "Meluncur menembus langit ke luar angkasa"]
+  ]],
+  ["Budaya", [
+    ["BATIK", "Kain bermotif yang dibuat dengan canting dan malam"],
+    ["WAYANG", "Pertunjukan boneka kulit yang dimainkan dalang"],
+    ["ANGKLUNG", "Alat musik bambu yang digoyangkan, dari Jawa Barat"],
+    ["GAMELAN", "Orkes tradisional Jawa dan Bali"],
+    ["KERIS", "Senjata tradisional berlekuk, pusaka turun-temurun"],
+    ["SASANDO", "Alat musik petik dari daun lontar, asal Pulau Rote"],
+    ["KECAK", "Tarian Bali tanpa alat musik, penarinya berseru cak cak cak"],
+    ["SAMAN", "Tari seribu tangan dari Aceh"],
+    ["REOG", "Kesenian Ponorogo dengan topeng kepala harimau raksasa"],
+    ["TENUN", "Kain dari benang yang disilang-silangkan, contohnya ulos dan ikat"],
+    ["KEBAYA", "Pakaian tradisional wanita, sering dipakai saat Hari Kartini"],
+    ["BLANGKON", "Penutup kepala khas pria Jawa"],
+    ["SONGKET", "Kain tenun bersulam benang emas dari Sumatra"],
+    ["GASING", "Mainan kayu yang diputar dengan tali"],
+    ["LENONG", "Teater rakyat Betawi yang penuh lawakan"]
+  ]],
+  ["Sekolah", [
+    ["BUKU", "Jendela dunia yang bisa dibawa ke mana-mana"],
+    ["PENSIL", "Alat tulis yang tulisannya bisa dihapus"],
+    ["PENGHAPUS", "Musuh bebuyutan tulisan pensil"],
+    ["PENGGARIS", "Alat untuk membuat garis lurus"],
+    ["TAS", "Dibawa di punggung, isinya buku"],
+    ["SERAGAM", "Pakaian yang sama untuk semua murid"],
+    ["UPACARA", "Setiap Senin pagi di halaman sekolah"],
+    ["KANTIN", "Tempat jajan saat jam istirahat"],
+    ["RAPOR", "Buku nilai yang dibagikan akhir semester"],
+    ["UJIAN", "Datang tiap akhir semester, bikin deg-degan"],
+    ["PAPAN", "Tempat guru menulis di depan kelas"],
+    ["MURID", "Yang belajar di kelas"],
+    ["LIBUR", "Hari yang paling ditunggu murid"],
+    ["KAPUR", "Dulu dipakai guru menulis di papan hitam"],
+    ["ABSEN", "Daftar hadir yang dipanggil setiap pagi"]
+  ]],
+  ["Jajanan", [
+    ["KOPI", "Hitam pahit, teman begadang"],
+    ["TEH", "Diseduh panas, atau jadi es manis"],
+    ["CENDOL", "Minuman hijau kenyal dengan santan dan gula merah"],
+    ["WEDANG", "Minuman hangat khas Jawa, misalnya jahe atau ronde"],
+    ["SIOMAY", "Kukusan ikan dengan bumbu kacang, dijual naik sepeda"],
+    ["CILOK", "Aci dicolok, jajanan kenyal dari Bandung"],
+    ["BATAGOR", "Bakso tahu goreng dari Bandung"],
+    ["RUJAK", "Potongan buah dengan bumbu gula merah pedas"],
+    ["GORENGAN", "Bakwan, tahu isi, pisang, semuanya digoreng"],
+    ["KERUPUK", "Renyah, wajib ada saat lomba 17 Agustus"],
+    ["SERABI", "Kue tepung beras yang dimasak di tungku tanah liat"],
+    ["LUMPIA", "Kulit tipis berisi rebung, khas Semarang"],
+    ["PUTU", "Kue kukus dalam bambu, penjualnya datang dengan bunyi siulan"],
+    ["DODOL", "Manisan lengket khas Garut"],
+    ["JAMU", "Minuman herbal tradisional, kadang pahit"]
   ]]
 ];
 const LEVELS = THEMES.flatMap(([theme, list]) => list.map(([answer, clue]) => ({ theme, answer, clue })));
@@ -258,6 +516,20 @@ const REWARD_WIN = 10;
 const REWARD_CLEAN = 5;
 const INTERSTITIAL_EVERY = 3;
 const STORE_KEY = "tebakkata.v1";
+
+const DAILY_COUNT = 5;
+const DAILY_BONUS = 30;
+const BLITZ_SECONDS = 60;
+const BLITZ_COINS = 2;
+const BLITZ_INTERSTITIAL_EVERY = 2;
+const XP_PER_WIN = { adventure: 10, daily: 15, blitz: 5 };
+
+// Gelar naik terus. Setelah Legenda Kata, bintangnya bertambah tanpa batas.
+const TITLES = [
+  [0, "Pemula"], [100, "Penebak"], [300, "Jago Kata"], [700, "Pakar Kata"],
+  [1500, "Master Kata"], [3000, "Raja Kata"], [5000, "Legenda Kata"]
+];
+const LEGEND_STEP = 3000;
 
 // ID AdMob milik app Tebak Kata. Selama testing = true, AdMob hanya mengirim iklan uji.
 // Ubah ke false hanya untuk versi yang terbit di Play Store.
@@ -269,18 +541,23 @@ const ADMOB = {
 };
 // Di app Android, plugin AdMob tersedia; di browser tidak ada iklan sama sekali.
 const IN_APP = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
-const NativeAds = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() && window.capacitorStripe
-  ? window.capacitorStripe.AdMob : null;
+const NativeAds = IN_APP && window.capacitorStripe ? window.capacitorStripe.AdMob : null;
 
-let state = { level: 0, coins: 60, freeHints: 0 };
+let state = {
+  level: 0, coins: 60, freeHints: 0, xp: 0,
+  streak: 0, bestStreak: 0, lastDailyDate: null, daily: null,
+  blitzBest: 0, blitzRounds: 0
+};
 try {
   const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
   if (saved && typeof saved.level === "number") state = Object.assign(state, saved);
 } catch (e) {}
 function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
 
-let cur = null;
 const $ = (id) => document.getElementById(id);
+let mode = "adventure";
+let cur = null;
+let blitz = null;
 
 function rng(seed) {
   return function () {
@@ -290,10 +567,16 @@ function rng(seed) {
     return ((t ^ t >>> 14) >>> 0) / 4294967296;
   };
 }
+function shuffle(list, rand) {
+  for (let k = list.length - 1; k > 0; k--) {
+    const j = Math.floor(rand() * (k + 1));
+    [list[k], list[j]] = [list[j], list[k]];
+  }
+  return list;
+}
 
-// Setiap pemain punya seed sendiri, jadi urutan soal dan susunan huruf berbeda tiap orang.
-// Kesulitan tetap naik perlahan: soal diurutkan menurut panjang jawaban plus sedikit acak,
-// sehingga yang pendek cenderung di depan, dan tema bercampur.
+// Setiap pemain punya seed sendiri, jadi urutan Petualangan dan susunan huruf berbeda tiap orang.
+// Kesulitan tetap naik perlahan: soal diurutkan menurut panjang jawaban plus sedikit acak.
 function newSeed() { return Math.floor(Math.random() * 2147483647); }
 if (typeof state.seed !== "number") { state.seed = newSeed(); save(); }
 
@@ -306,20 +589,105 @@ function buildOrder() {
     .map((item) => item.index);
 }
 buildOrder();
-const questionAt = (i) => LEVELS[ORDER[i]];
 
-function buildLevel(i) {
-  const { answer } = questionAt(i);
-  const rand = rng(ORDER[i] * 7919 + state.seed);
+// ---------- Gelar dan XP ----------
+function titleInfo(xp) {
+  if (xp < TITLES[TITLES.length - 1][0]) {
+    let i = 0;
+    while (i + 1 < TITLES.length && xp >= TITLES[i + 1][0]) i++;
+    return { name: TITLES[i][1], floor: TITLES[i][0], next: TITLES[i + 1][0], nextName: TITLES[i + 1][1] };
+  }
+  const base = TITLES[TITLES.length - 1][0];
+  const star = 1 + Math.floor((xp - base) / LEGEND_STEP);
+  const floor = base + (star - 1) * LEGEND_STEP;
+  return { name: "Legenda Kata ★" + star, floor, next: floor + LEGEND_STEP, nextName: "Legenda Kata ★" + (star + 1) };
+}
+function addXp(amount) {
+  const before = titleInfo(state.xp).name;
+  state.xp += amount;
+  const after = titleInfo(state.xp).name;
+  return after !== before ? after : null;
+}
+
+// ---------- Tanggal dan Tantangan Harian ----------
+function dateKey(d) {
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+function today() { return dateKey(new Date()); }
+function yesterday() { const d = new Date(); d.setDate(d.getDate() - 1); return dateKey(d); }
+function streakNow() {
+  return state.lastDailyDate === today() || state.lastDailyDate === yesterday() ? state.streak : 0;
+}
+function dailyQuestions(key) {
+  let h = 2166136261;
+  for (const c of key) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+  const picks = shuffle(LEVELS.map((_, i) => i), rng(h)).slice(0, DAILY_COUNT);
+  return picks.sort((a, b) => LEVELS[a].answer.length - LEVELS[b].answer.length);
+}
+function ensureDaily() {
+  const t = today();
+  if (!state.daily || state.daily.date !== t) {
+    state.daily = { date: t, index: 0, clean: true, done: false };
+    save();
+  }
+}
+function untilMidnight() {
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const s = Math.max(0, Math.floor((next - now) / 1000));
+  return [Math.floor(s / 3600), Math.floor(s / 60) % 60, s % 60].map((n) => String(n).padStart(2, "0")).join(":");
+}
+
+// ---------- Menu utama ----------
+function renderHome() {
+  $("coins").textContent = state.coins;
+  const t = titleInfo(state.xp);
+  $("titleName").textContent = t.name;
+  $("xpFill").style.width = ((state.xp - t.floor) / (t.next - t.floor) * 100) + "%";
+  $("xpText").textContent = (state.xp - t.floor) + " / " + (t.next - t.floor) + " XP menuju " + t.nextName;
+  $("streak").textContent = "🔥 " + streakNow() + " hari";
+
+  const d = state.daily && state.daily.date === today() ? state.daily : null;
+  const dailyDone = !!(d && d.done);
+  $("modeDaily").classList.toggle("done", dailyDone);
+  $("stDaily").textContent = dailyDone ? "Selesai ✓ · baru lagi " + untilMidnight()
+    : d && d.index > 0 ? "Lanjut " + d.index + " / " + DAILY_COUNT : "Siap dimainkan";
+
+  $("stBlitz").textContent = "Rekor: " + state.blitzBest + " kata";
+
+  const finished = state.level >= LEVELS.length;
+  $("descAdventure").textContent = LEVELS.length + " soal, makin lama makin sulit";
+  $("stAdventure").textContent = finished ? "Main lagi" : state.level === 0 ? "Mulai" : "Soal " + (state.level + 1) + " / " + LEVELS.length;
+}
+setInterval(() => { if (!$("home").hidden) renderHome(); }, 1000);
+
+function showGame() { $("home").hidden = true; $("game").hidden = false; }
+function goHome() {
+  stopBlitz();
+  cur = null;
+  $("game").hidden = true;
+  $("home").hidden = false;
+  renderHome();
+}
+
+// ---------- Soal ----------
+function currentIndex() {
+  if (mode === "daily") return dailyQuestions(state.daily.date)[state.daily.index];
+  if (mode === "blitz") return blitz.queue[blitz.pos % blitz.queue.length];
+  return ORDER[state.level];
+}
+
+function buildLevel(qi) {
+  const q = LEVELS[qi];
+  const answer = q.answer;
+  const rand = rng(qi * 7919 + state.seed + (mode === "blitz" ? blitz.pos : 0));
   const total = answer.length <= 6 ? 12 : answer.length <= 8 ? 14 : 16;
   const letters = answer.split("");
   const pool = "ABDEGIKLMNOPRSTU";
   while (letters.length < total) letters.push(pool[Math.floor(rand() * pool.length)]);
-  for (let k = letters.length - 1; k > 0; k--) {
-    const j = Math.floor(rand() * (k + 1));
-    [letters[k], letters[j]] = [letters[j], letters[k]];
-  }
+  shuffle(letters, rand);
   cur = {
+    q,
     answer,
     tiles: letters.map((ch) => ({ ch, used: false })),
     slots: answer.split("").map(() => ({ tile: null, locked: false })),
@@ -328,13 +696,37 @@ function buildLevel(i) {
   };
 }
 
+function loadQuestion() {
+  buildLevel(currentIndex());
+  render();
+}
+
+function updateBlitzHud() {
+  const left = Math.max(0, blitz.endAt - Date.now());
+  $("levelLabel").textContent = "Skor " + blitz.score + " · " + Math.ceil(left / 1000) + " dtk";
+  $("bar").style.width = (left / (BLITZ_SECONDS * 1000) * 100) + "%";
+}
+
 function render() {
-  const lv = questionAt(state.level);
+  if (!cur) return;
   $("coins").textContent = state.coins;
-  $("theme").textContent = lv.theme;
-  $("levelLabel").textContent = "Soal " + (state.level + 1) + " / " + LEVELS.length;
-  $("bar").style.width = (state.level / LEVELS.length * 100) + "%";
-  $("clue").textContent = lv.clue;
+  $("theme").textContent = cur.q.theme;
+  $("clue").textContent = cur.q.clue;
+
+  if (mode === "blitz") updateBlitzHud();
+  else if (mode === "daily") {
+    $("levelLabel").textContent = "Harian " + (state.daily.index + 1) + " / " + DAILY_COUNT;
+    $("bar").style.width = (state.daily.index / DAILY_COUNT * 100) + "%";
+  } else {
+    $("levelLabel").textContent = "Soal " + (state.level + 1) + " / " + LEVELS.length;
+    $("bar").style.width = (state.level / LEVELS.length * 100) + "%";
+  }
+
+  const isBlitz = mode === "blitz";
+  $("btnHint").hidden = isBlitz;
+  $("btnWatch").hidden = isBlitz;
+  $("btnSkip").hidden = !isBlitz;
+  $("actions").classList.toggle("two", isBlitz);
   $("hintCost").textContent = state.freeHints > 0 ? state.freeHints + " gratis" : HINT_COST + " koin";
 
   const slotsEl = $("slots");
@@ -365,7 +757,7 @@ function render() {
 }
 
 function tapTile(ti) {
-  if (cur.busy || cur.tiles[ti].used) return;
+  if (!cur || cur.busy || cur.tiles[ti].used) return;
   const si = cur.slots.findIndex((s) => s.tile === null);
   if (si < 0) return;
   cur.slots[si].tile = ti;
@@ -383,7 +775,7 @@ function tapSlot(si) {
 }
 
 function clearSlots() {
-  if (cur.busy) return;
+  if (!cur || cur.busy) return;
   cur.slots.forEach((s) => {
     if (!s.locked && s.tile !== null) { cur.tiles[s.tile].used = false; s.tile = null; }
   });
@@ -399,7 +791,7 @@ function checkIfFull() {
 }
 
 function useHint() {
-  if (cur.busy) return;
+  if (!cur || cur.busy || mode === "blitz") return;
   if (state.freeHints > 0) state.freeHints--;
   else if (state.coins >= HINT_COST) state.coins -= HINT_COST;
   else return toast(IN_APP ? "Koin kurang. Tonton iklan untuk petunjuk gratis" : "Koin kurang. Pakai tombol petunjuk gratis");
@@ -419,6 +811,7 @@ function useHint() {
   slot.locked = true;
   cur.tiles[ti].used = true;
   cur.usedHint = true;
+  if (mode === "daily") state.daily.clean = false;
   save();
   render();
   checkIfFull();
@@ -427,35 +820,198 @@ function useHint() {
 function win() {
   cur.busy = true;
   $("slots").classList.add("right");
+  const levelUp = addXp(XP_PER_WIN[mode]);
+  const upLine = levelUp ? "<p class=\"levelup\">Naik gelar: " + levelUp + "!</p>" : "";
+
+  if (mode === "blitz") {
+    blitz.score++;
+    state.coins += BLITZ_COINS;
+    save();
+    $("coins").textContent = state.coins;
+    updateBlitzHud();
+    if (levelUp) toast("Naik gelar: " + levelUp + "!");
+    setTimeout(() => {
+      if (mode !== "blitz" || !blitz || blitz.over) return;
+      blitz.pos++;
+      loadQuestion();
+    }, 350);
+    return;
+  }
+
   const gained = REWARD_WIN + (cur.usedHint ? 0 : REWARD_CLEAN);
   state.coins += gained;
+  const gainedLine = "<p>+" + gained + " koin" + (cur.usedHint ? "" : " (termasuk bonus tanpa petunjuk)") + "</p>";
+
+  if (mode === "daily") {
+    state.daily.index++;
+    save();
+    $("coins").textContent = state.coins;
+    setTimeout(() => {
+      if (state.daily.index >= DAILY_COUNT) return finishDaily(upLine);
+      showPanel(
+        "<h2>Benar!</h2><div class=\"word\">" + cur.answer + "</div>" + gainedLine + upLine +
+        "<button class=\"btn main\" id=\"next\" type=\"button\">Lanjut</button>",
+        () => $("next").onclick = () => { hideOverlay(); loadQuestion(); }
+      );
+    }, 450);
+    return;
+  }
+
   const solved = state.level + 1;
   state.level = solved;
   save();
   $("coins").textContent = state.coins;
   setTimeout(() => {
-    if (state.level >= LEVELS.length) return showFinish();
+    if (state.level >= LEVELS.length) return showFinish(upLine);
     showPanel(
-      "<h2>Benar!</h2><div class=\"word\">" + cur.answer + "</div>" +
-      "<p>+" + gained + " koin" + (cur.usedHint ? "" : " (termasuk bonus tanpa petunjuk)") + "</p>" +
+      "<h2>Benar!</h2><div class=\"word\">" + cur.answer + "</div>" + gainedLine + upLine +
       "<button class=\"btn main\" id=\"next\" type=\"button\">Lanjut</button>",
       () => $("next").onclick = () => {
         hideOverlay();
-        if (solved % INTERSTITIAL_EVERY === 0) showInterstitial(startLevel);
-        else startLevel();
+        if (solved % INTERSTITIAL_EVERY === 0) showInterstitial(loadQuestion);
+        else loadQuestion();
       }
     );
   }, 450);
 }
 
-function showFinish() {
+// ---------- Petualangan ----------
+function startAdventure() {
+  if (state.level >= LEVELS.length) {
+    state.level = 0;
+    state.seed = newSeed();
+    buildOrder();
+    save();
+  }
+  mode = "adventure";
+  showGame();
+  loadQuestion();
+}
+
+function showFinish(upLine) {
   showPanel(
-    "<h2>Tamat!</h2><p>Semua " + LEVELS.length + " soal sudah terjawab. Koin kamu: " + state.coins + ".</p>" +
-    "<button class=\"btn main\" id=\"again\" type=\"button\">Main dari awal</button>",
-    () => $("again").onclick = () => { state.level = 0; state.seed = newSeed(); buildOrder(); save(); hideOverlay(); startLevel(); }
+    "<h2>Tamat!</h2><p>Semua " + LEVELS.length + " soal Petualangan sudah terjawab. Hebat!</p>" + (upLine || "") +
+    "<div class=\"row\"><button class=\"btn\" id=\"toMenu\" type=\"button\">Menu</button>" +
+    "<button class=\"btn main\" id=\"again\" type=\"button\">Main lagi</button></div>",
+    () => {
+      $("toMenu").onclick = () => { hideOverlay(); goHome(); };
+      $("again").onclick = () => { hideOverlay(); startAdventure(); };
+    }
   );
 }
 
+// ---------- Tantangan Harian ----------
+function startDaily() {
+  ensureDaily();
+  if (state.daily.done) return toast("Tantangan hari ini sudah selesai. Kembali besok!");
+  mode = "daily";
+  showGame();
+  loadQuestion();
+}
+
+function finishDaily(upLine) {
+  const d = state.daily;
+  d.done = true;
+  if (state.lastDailyDate !== today()) {
+    state.streak = state.lastDailyDate === yesterday() ? state.streak + 1 : 1;
+    state.lastDailyDate = today();
+  }
+  state.bestStreak = Math.max(state.bestStreak || 0, state.streak);
+  state.coins += DAILY_BONUS;
+  save();
+  $("coins").textContent = state.coins;
+
+  const [y, m, day] = d.date.split("-");
+  const shareText = "Tebak Kata Harian " + day + "/" + m + "/" + y + "\n" +
+    "✅ " + DAILY_COUNT + "/" + DAILY_COUNT + (d.clean ? " tanpa petunjuk" : "") + "\n" +
+    "🔥 " + state.streak + " hari beruntun\n" +
+    "https://socialiam.github.io/tebak-kata/";
+
+  showPanel(
+    "<h2>Tuntas!</h2><p>Tantangan hari ini selesai" + (d.clean ? " tanpa petunjuk" : "") + ".</p>" +
+    "<div class=\"word\">🔥 " + state.streak + " hari</div>" +
+    "<p>+" + DAILY_BONUS + " koin bonus harian</p>" + (upLine || "") +
+    "<button class=\"btn\" id=\"share\" type=\"button\">Salin hasil untuk dibagikan</button>" +
+    "<button class=\"btn main\" id=\"toMenu\" type=\"button\">Kembali ke menu</button>",
+    () => {
+      $("share").onclick = () => copyText(shareText);
+      $("toMenu").onclick = () => { hideOverlay(); goHome(); };
+    }
+  );
+}
+
+function copyText(text) {
+  const done = () => toast("Hasil disalin. Tempel di WhatsApp!");
+  const fallback = () => {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) { toast("Gagal menyalin"); }
+    ta.remove();
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(fallback);
+  else fallback();
+}
+
+// ---------- Mode Kilat ----------
+function startBlitz() {
+  stopBlitz();
+  blitz = {
+    score: 0,
+    pos: 0,
+    queue: shuffle(LEVELS.map((_, i) => i), rng(newSeed())),
+    endAt: Date.now() + BLITZ_SECONDS * 1000,
+    over: false,
+    timer: null
+  };
+  mode = "blitz";
+  showGame();
+  loadQuestion();
+  blitz.timer = setInterval(() => {
+    updateBlitzHud();
+    if (Date.now() >= blitz.endAt) endBlitz();
+  }, 200);
+}
+
+function stopBlitz() {
+  if (blitz && !blitz.over) {
+    clearInterval(blitz.timer);
+    blitz.over = true;
+  }
+}
+
+function endBlitz() {
+  stopBlitz();
+  if (cur) cur.busy = true;
+  const score = blitz.score;
+  const record = score > state.blitzBest;
+  if (record) state.blitzBest = score;
+  state.blitzRounds++;
+  save();
+  showPanel(
+    "<h2>Waktu habis!</h2><div class=\"word\">" + score + " kata</div>" +
+    "<p>" + (record ? "Rekor baru! Hebat!" : "Rekormu: " + state.blitzBest + " kata. Pecahkan!") + "</p>" +
+    "<div class=\"row\"><button class=\"btn\" id=\"toMenu\" type=\"button\">Menu</button>" +
+    "<button class=\"btn main\" id=\"again\" type=\"button\">Main lagi</button></div>",
+    () => {
+      $("toMenu").onclick = () => { hideOverlay(); goHome(); };
+      $("again").onclick = () => {
+        hideOverlay();
+        if (state.blitzRounds % BLITZ_INTERSTITIAL_EVERY === 0) showInterstitial(startBlitz);
+        else startBlitz();
+      };
+    }
+  );
+}
+
+function skipQuestion() {
+  if (mode !== "blitz" || !cur || cur.busy) return;
+  blitz.pos++;
+  loadQuestion();
+}
+
+// ---------- Iklan ----------
 const native = { interstitialReady: false, rewardedReady: false, afterInterstitial: null, rewardEarned: false };
 
 // Status AdMob, hanya tampil di app Android selama mode uji, untuk memeriksa sambungan iklan.
@@ -575,6 +1131,7 @@ function showFreeHintWait() {
   closeBtn.onclick = () => { clearInterval(timer); hideOverlay(); };
 }
 
+// ---------- Panel dan pesan ----------
 function showPanel(html, wire) {
   const o = $("overlay");
   o.innerHTML = "<div class=\"panel\">" + html + "</div>";
@@ -594,18 +1151,18 @@ function toast(msg) {
   toastTimer = setTimeout(() => { t.hidden = true; }, 1800);
 }
 
-function startLevel() {
-  if (state.level >= LEVELS.length) { buildLevel(LEVELS.length - 1); render(); return showFinish(); }
-  buildLevel(state.level);
-  render();
-}
-
+// ---------- Tombol ----------
+$("modeAdventure").onclick = startAdventure;
+$("modeDaily").onclick = startDaily;
+$("modeBlitz").onclick = startBlitz;
+$("btnBack").onclick = goHome;
 $("btnClear").onclick = clearSlots;
 $("btnHint").onclick = useHint;
-$("btnWatch").onclick = () => { if (!cur.busy) showRewarded(); };
+$("btnWatch").onclick = () => { if (cur && !cur.busy) showRewarded(); };
+$("btnSkip").onclick = skipQuestion;
 
 document.addEventListener("keydown", (e) => {
-  if (!$("overlay").hidden || e.ctrlKey || e.metaKey || e.altKey) return;
+  if ($("game").hidden || !$("overlay").hidden || !cur || e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.key === "Backspace") {
     for (let k = cur.slots.length - 1; k >= 0; k--) {
       if (!cur.slots[k].locked && cur.slots[k].tile !== null) { e.preventDefault(); return tapSlot(k); }
@@ -618,6 +1175,6 @@ document.addEventListener("keydown", (e) => {
   if (ti >= 0) tapTile(ti);
 });
 
-startLevel();
+renderHome();
 initNativeAds();
 </script>
