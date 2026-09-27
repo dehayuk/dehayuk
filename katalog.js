@@ -37,6 +37,31 @@ window.DEHAYUK = {
         "Permainan selesai bila buah menumpuk melewati garis merah selama dua detik."
       ],
       kontrol: "Di HP: sentuh dan geser. Di komputer: arahkan dan klik mouse, atau tombol panah dan spasi."
+    },
+    {
+      slug: "blok-ledak",
+      nama: "Blok Ledak",
+      genre: "Puzzle balok",
+      ajakan: "Susun balok, penuhi baris, ledakkan!",
+      kategori: ["otak", "santai"],
+      warna: "#7440D6",
+      sampul: "/blok-ledak/sampul.jpg",
+      ditambahkan: "2026-09-27",
+      diperbarui: "2026-09-27",
+      orientasi: "Tegak",
+      unggulan: true,
+      deskripsi: [
+        "Blok Ledak adalah puzzle balok yang gampang dimainkan tapi susah berhenti. Seret balok jeli warna-warni ke papan 8x8, penuhi satu baris atau kolom, dan baloknya meledak jadi kepingan berkilau.",
+        "Hapus beberapa garis sekaligus untuk bonus besar, dan terus menghapus berturut-turut untuk membangun Kombo. Kosongkan seluruh papan untuk teriakan BERSIH! dan kumpulkan lencana dari Perunggu sampai Mahkota.",
+        "Main Harian dengan balok yang sama untuk semua orang dan kejar tiga bintang, atau kirim tautan tantangan ke teman lewat WhatsApp dan lihat siapa yang skornya lebih tinggi."
+      ],
+      caraMain: [
+        "Seret balok dari baki ke papan.",
+        "Penuhi satu baris atau kolom untuk meledakkannya.",
+        "Hapus garis berturut-turut untuk menjaga Kombo tetap menyala.",
+        "Permainan selesai bila tidak ada balok yang muat di papan."
+      ],
+      kontrol: "Di HP: sentuh dan seret. Di komputer: klik dan seret dengan mouse."
     }
   ]
 };

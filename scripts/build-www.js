@@ -10,7 +10,8 @@ const out = path.join(root, "www");
 // Folder yang ikut masuk app dibaca dari katalog.js, jadi game baru cukup didaftarkan di katalog.
 global.window = {};
 require(path.join(root, "katalog.js"));
-const SITE_DIRS = window.DEHAYUK.game.map((g) => g.slug).concat(["privasi"]);
+// kit/ berisi perangkat bersama semua game (tampilan, suara, setelan, kemajuan).
+const SITE_DIRS = window.DEHAYUK.game.map((g) => g.slug).concat(["kit", "privasi"]);
 
 fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out);
