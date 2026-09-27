@@ -7,8 +7,10 @@ const path = require("path");
 
 const root = path.join(__dirname, "..");
 const out = path.join(root, "www");
-// Folder yang ikut masuk app. Tambahkan folder game baru di sini.
-const SITE_DIRS = ["jatuh-buah", "privasi"];
+// Folder yang ikut masuk app dibaca dari katalog.js, jadi game baru cukup didaftarkan di katalog.
+global.window = {};
+require(path.join(root, "katalog.js"));
+const SITE_DIRS = window.DEHAYUK.game.map((g) => g.slug).concat(["privasi"]);
 
 fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out);
@@ -16,6 +18,7 @@ fs.mkdirSync(out);
 fs.copyFileSync(path.join(root, "node_modules/@capacitor/core/dist/capacitor.js"), path.join(out, "capacitor.js"));
 fs.copyFileSync(path.join(root, "node_modules/@capacitor-community/admob/dist/plugin.js"), path.join(out, "admob.js"));
 fs.copyFileSync(path.join(__dirname, "app-shell.js"), path.join(out, "app-shell.js"));
+fs.copyFileSync(path.join(root, "katalog.js"), path.join(out, "katalog.js"));
 
 // Di dalam app, alamat folder seperti "/nalargame/" akan dibuka sebagai halaman depan oleh
 // Capacitor. Karena itu tautan antarhalaman diubah menjadi berkas yang jelas, misalnya

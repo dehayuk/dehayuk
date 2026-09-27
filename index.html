@@ -4,10 +4,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0D0F1C">
 <title>Dehayuk</title>
-<meta name="description" content="Dehayuk: kumpulan game ringan buatan Indonesia. Main di browser atau pasang di HP Android.">
+<meta name="description" content="Dehayuk: game ringan buatan Indonesia. Langsung main di browser atau pasang di HP Android.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&display=swap">
 <style>
   :root {
     color-scheme: dark;
@@ -26,16 +26,15 @@
     --top-h: 62px;
     --side-w: 76px;
     --nav-h: 64px;
+    --pad: 16px;
   }
   [hidden] { display: none !important; }
   *, *::before, *::after { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body { margin: 0; overflow-x: clip; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; -webkit-tap-highlight-color: transparent; }
-  main { overflow-x: clip; }
   a { color: inherit; text-decoration: none; }
   button { font: inherit; color: inherit; }
   a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-  svg text { font-family: var(--display); font-weight: 800; }
 
   /* Bilah atas */
   .top {
@@ -50,11 +49,11 @@
     background: linear-gradient(145deg, var(--accent-2), var(--accent)); box-shadow: inset 0 -3px 0 #C9952A;
     font-family: var(--display); font-weight: 800; font-size: 22px; color: var(--accent-ink); line-height: 1; padding-top: 3px;
   }
-  .logo-word { font-family: var(--display); font-weight: 800; font-size: 25px; line-height: 1; letter-spacing: .2px; }
+  .logo-word { font-family: var(--display); font-weight: 800; font-size: 25px; line-height: 1; }
   .logo-word span { color: var(--accent); }
   .search {
     flex: 1; max-width: 460px; margin: 0 auto; display: none; align-items: center; gap: 10px; height: 42px; padding: 0 16px;
-    background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; color: var(--muted); cursor: text;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; color: var(--muted);
   }
   .search svg { width: 18px; height: 18px; flex: none; }
   .top-end { margin-left: auto; display: flex; gap: 8px; }
@@ -66,10 +65,7 @@
 
   /* Menu samping (komputer) dan menu bawah (HP) */
   .side { display: none; }
-  .nav a, .side a {
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-    color: var(--muted); font-size: 11px; font-weight: 800; border-radius: 14px;
-  }
+  .nav a, .side a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--muted); font-size: 11px; font-weight: 800; border-radius: 14px; text-align: center; }
   .nav svg, .side svg { width: 24px; height: 24px; }
   .nav a[aria-current="page"], .side a[aria-current="page"] { color: var(--accent); }
   .nav {
@@ -77,137 +73,112 @@
     height: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px);
     background: rgba(13, 15, 28, .96); border-top: 1px solid rgba(255,255,255,.07);
   }
-  .nav a[aria-current="page"] svg { filter: drop-shadow(0 0 8px rgba(244,193,82,.55)); }
 
-  main { padding: 18px 16px calc(var(--nav-h) + 28px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 26px; min-width: 0; }
+  main { padding: 18px var(--pad) calc(var(--nav-h) + 28px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 26px; min-width: 0; overflow-x: clip; }
   .view { display: flex; flex-direction: column; gap: 26px; min-width: 0; }
   .sec { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-  .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .sec-head { display: flex; align-items: center; gap: 12px; min-height: 32px; }
   .sec-head h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 21px; line-height: 1.15; }
-  .sec-head a { color: var(--muted); font-weight: 800; font-size: 13px; white-space: nowrap; padding: 6px 0; }
+  .sec-head h2 a { display: inline-flex; align-items: center; gap: 4px; }
+  .sec-head h2 a::after { content: "›"; font-size: 24px; line-height: 1; color: var(--muted); }
+  .sec-note { color: var(--muted); font-weight: 800; font-size: 13px; }
+  .arrows { margin-left: auto; display: none; gap: 6px; }
+  .arrows button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel-2); cursor: pointer; display: grid; place-items: center; }
+  .arrows button:hover { border-color: var(--accent); color: var(--accent); }
+  .arrows svg { width: 16px; height: 16px; }
 
-  /* Sampul game: warna sendiri, gambar, dan kilau */
-  .thumb {
-    position: relative; overflow: hidden; border-radius: 18px; isolation: isolate; background: var(--c);
-    box-shadow: 0 8px 18px rgba(0,0,0,.35); transition: transform .18s ease, box-shadow .18s ease;
-  }
-  .thumb::before {
-    content: ""; position: absolute; inset: 0; z-index: -1;
-    background:
-      radial-gradient(circle at 78% 22%, rgba(255,255,255,.32), transparent 52%),
-      repeating-linear-gradient(135deg, rgba(255,255,255,.07) 0 14px, transparent 14px 28px),
-      linear-gradient(180deg, transparent 45%, rgba(0,0,0,.28));
-  }
-  .thumb img.cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-  .thumb svg { position: absolute; filter: drop-shadow(0 6px 8px rgba(0,0,0,.28)); }
-  .thumb.sq { aspect-ratio: 1; }
-  .thumb.sq svg { inset: 11%; width: 78%; height: 78%; }
+  /* Baris bertema: latar berwarna tipis, ikon, dan satu kalimat */
+  .theme { border-radius: 22px; padding: 16px 0 10px; background: linear-gradient(100deg, color-mix(in srgb, var(--t) 30%, transparent), color-mix(in srgb, var(--t) 8%, transparent) 70%); }
+  .theme > .sec-head, .theme > .theme-desc { padding: 0 16px; }
+  .theme-icon { width: 38px; height: 38px; border-radius: 12px; background: var(--t); display: grid; place-items: center; flex: none; box-shadow: 0 4px 10px rgba(0,0,0,.3); }
+  .theme-icon svg { width: 22px; height: 22px; color: #fff; }
+  .theme-desc { margin: -6px 0 0; color: #D6D9EE; font-weight: 700; font-size: 13px; }
+  .theme .rail { margin: 0; padding: 2px 16px 8px; scroll-padding-inline: 16px; }
+
+  /* Sampul */
+  .thumb { position: relative; overflow: hidden; border-radius: 16px; isolation: isolate; background: var(--c, var(--panel-2)); box-shadow: 0 8px 18px rgba(0,0,0,.35); transition: transform .18s ease, box-shadow .18s ease; }
+  .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .thumb.wide { aspect-ratio: 16 / 10; }
-  .thumb.wide svg { right: 3%; top: 10%; height: 80%; width: auto; aspect-ratio: 1; }
-  .card.w b, .card.w small { display: none; }
-  .ttl {
-    position: absolute; left: 6%; bottom: 9%; max-width: 54%; font-family: var(--display); font-weight: 800; line-height: .92;
-    color: #fff; font-size: clamp(18px, 6.2vw, 30px); text-shadow: 0 3px 0 rgba(0,0,0,.35), 0 0 14px rgba(0,0,0,.25);
-    -webkit-text-stroke: 1.2px rgba(0,0,0,.28); paint-order: stroke fill; text-wrap: balance;
+  .thumb.sq { aspect-ratio: 1; }
+  .thumb.tall { aspect-ratio: 3 / 4; }
+  .badge { position: absolute; left: 8px; top: 8px; z-index: 2; font-size: 10.5px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; background: var(--new); color: #fff; padding: 3px 8px; border-radius: 7px; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+  .hover-info {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 26px 12px 10px; display: flex; flex-direction: column; gap: 4px;
+    background: linear-gradient(0deg, rgba(58,34,160,.96), rgba(58,34,160,.75) 60%, transparent); opacity: 0; transform: translateY(8px); transition: opacity .18s, transform .18s;
   }
-  .badge {
-    position: absolute; left: 9px; top: 9px; z-index: 2; font-size: 10.5px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase;
-    background: var(--new); color: #fff; padding: 3px 8px; border-radius: 7px; box-shadow: 0 2px 6px rgba(0,0,0,.3);
-  }
-  .play-dot {
-    position: absolute; right: 10px; bottom: 10px; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
-    background: #fff; opacity: 0; transform: scale(.7); transition: opacity .18s, transform .18s; box-shadow: 0 4px 10px rgba(0,0,0,.35);
-  }
-  .play-dot::before { content: ""; margin-left: 3px; border-left: 12px solid #17192B; border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+  .hover-info b { font-family: var(--display); font-weight: 800; font-size: 17px; line-height: 1.1; }
+  .hover-info span { align-self: flex-start; font-size: 11px; font-weight: 800; background: rgba(255,255,255,.18); padding: 2px 8px; border-radius: 6px; }
   @media (hover: hover) {
-    a:hover > .thumb, a:hover .thumb { transform: translateY(-3px) scale(1.02); box-shadow: 0 16px 28px rgba(0,0,0,.5); }
-    a:hover .play-dot { opacity: 1; transform: none; }
+    a:hover .thumb { transform: translateY(-3px) scale(1.03); box-shadow: 0 16px 28px rgba(0,0,0,.5); z-index: 3; }
+    a:hover .hover-info { opacity: 1; transform: none; }
   }
   a:active .thumb { transform: scale(.97); }
-
   .card { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
-  .card b { font-weight: 800; font-size: 13.5px; line-height: 1.2; padding: 0 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .card b.name { font-weight: 800; font-size: 13.5px; line-height: 1.2; padding: 0 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .card small { color: var(--muted); font-weight: 800; font-size: 11.5px; padding: 0 2px; margin-top: -5px; }
 
   /* Pilihan hari ini */
-  .spot.solo .hero { grid-column: 1 / -1 !important; grid-row: auto !important; max-width: 880px; }
-  .spot.solo .hero > .thumb { aspect-ratio: 16 / 10 !important; height: auto !important; min-height: 0 !important; border-radius: 22px 22px 0 0; }
-  .spot.solo .hero-bar { position: static; background: var(--panel); border-radius: 0 0 22px 22px; }
-  .spot.solo .hero { box-shadow: 0 14px 30px rgba(0,0,0,.4); border-radius: 22px; }
-  .spot { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .hero { grid-column: 1 / -1; position: relative; }
-  .hero > .thumb { aspect-ratio: 16 / 10; border-radius: 22px; }
-  .hero > .thumb svg { right: 6%; top: 6%; height: 76%; width: auto; aspect-ratio: 1; animation: bob 3.4s ease-in-out infinite; }
-  .hero-bar {
-    position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 12px; padding: 14px;
-    background: linear-gradient(0deg, rgba(8,9,20,.88), rgba(8,9,20,.55) 60%, transparent);
-    border-radius: 0 0 22px 22px;
-  }
+  .spot { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .hero { grid-column: 1 / -1; display: flex; flex-direction: column; border-radius: 22px; overflow: hidden; background: var(--panel); box-shadow: 0 14px 30px rgba(0,0,0,.4); }
+  .hero > .thumb { border-radius: 0; box-shadow: none; aspect-ratio: 16 / 10; }
+  .hero-bar { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
   .hero-icon { width: 50px; height: 50px; border-radius: 13px; flex: none; }
-  .hero-icon svg { inset: 10%; width: 80%; height: 80%; }
   .hero-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-  .hero-text b { font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1.05; }
+  .hero-text b { font-family: var(--display); font-weight: 800; font-size: 21px; line-height: 1.05; }
   .hero-text small { color: #D6D9EE; font-weight: 700; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .btn-play {
-    flex: none; display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px 0 16px; border-radius: 999px;
-    background: var(--accent); color: var(--accent-ink); font-family: var(--display); font-weight: 800; font-size: 18px;
-    box-shadow: inset 0 -3px 0 #C9952A, 0 6px 14px rgba(0,0,0,.35);
+    flex: none; display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px 0 16px; border-radius: 999px; border: 0; cursor: pointer;
+    background: var(--accent); color: var(--accent-ink); font-family: var(--display); font-weight: 800; font-size: 18px; box-shadow: inset 0 -3px 0 #C9952A, 0 6px 14px rgba(0,0,0,.35);
   }
   .btn-play::before { content: ""; border-left: 11px solid currentColor; border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
-  .kicker { position: absolute; left: 14px; top: 14px; z-index: 2; font-size: 11px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; background: rgba(8,9,20,.55); padding: 5px 10px; border-radius: 999px; }
-  @keyframes bob { 50% { transform: translateY(-6px) rotate(-2deg); } }
+  .spot .mini .thumb { aspect-ratio: 16 / 10; }
+  .spot .mini:nth-of-type(n+4) { display: none; }
 
-  /* Baris yang bisa digeser */
-  .rail { display: grid; grid-auto-flow: column; grid-auto-columns: 62%; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; scrollbar-width: none; margin: 0 -16px; padding: 2px 16px 8px; }
+  /* Baris geser */
+  .rail { display: grid; grid-auto-flow: column; grid-auto-columns: 62%; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--pad); scroll-behavior: smooth; scrollbar-width: none; margin: 0 calc(var(--pad) * -1); padding: 2px var(--pad) 8px; }
   .rail::-webkit-scrollbar { display: none; }
   .rail > * { scroll-snap-align: start; }
-  .rail.small { grid-auto-columns: 27%; }
+  .rail.small { grid-auto-columns: 28%; }
+  .rail.tall { grid-auto-columns: 40%; }
 
-  .spot .extra { display: none; }
   .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 12px; }
-  .grid.sq { grid-template-columns: repeat(3, 1fr); }
+  .more-btn { align-self: center; height: 44px; padding: 0 24px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-2); font-weight: 800; cursor: pointer; }
+  .more-btn:hover { border-color: var(--accent); color: var(--accent); }
 
   /* Cari, Permainanku, Kategori */
-  .page-title { margin: 0; font-family: var(--display); font-weight: 800; font-size: 26px; }
+  .page-title { margin: 0; font-family: var(--display); font-weight: 800; font-size: 28px; line-height: 1.1; }
+  .page-sub { margin: -16px 0 0; color: var(--muted); font-weight: 700; }
   .field { display: flex; align-items: center; gap: 10px; height: 50px; padding: 0 16px; border-radius: 16px; background: var(--panel-2); border: 1px solid var(--line); }
   .field svg { width: 20px; height: 20px; color: var(--muted); flex: none; }
   .field input { flex: 1; min-width: 0; background: none; border: 0; color: var(--ink); font: 800 16px var(--body); outline: none; }
   .empty { text-align: center; color: var(--muted); padding: 30px 10px; display: flex; flex-direction: column; align-items: center; gap: 12px; line-height: 1.5; }
   .empty b { color: var(--ink); font-family: var(--display); font-size: 19px; }
   .cats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .cat {
-    position: relative; overflow: hidden; min-height: 96px; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; justify-content: flex-end;
-    background: var(--c); box-shadow: 0 8px 18px rgba(0,0,0,.3); isolation: isolate;
-  }
+  .cat { position: relative; overflow: hidden; min-height: 96px; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; justify-content: flex-end; background: var(--t); box-shadow: 0 8px 18px rgba(0,0,0,.3); isolation: isolate; }
   .cat::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(circle at 85% 15%, rgba(255,255,255,.3), transparent 55%), linear-gradient(180deg, transparent 40%, rgba(0,0,0,.25)); }
   .cat svg { position: absolute; right: 12px; top: 12px; width: 34px; height: 34px; color: rgba(255,255,255,.9); }
   .cat b { font-family: var(--display); font-weight: 800; font-size: 19px; line-height: 1.1; }
   .cat small { font-weight: 800; font-size: 12px; opacity: .85; }
 
   /* Halaman main: game dimainkan di dalam portal */
-  .player { display: flex; flex-direction: column; gap: 0; border-radius: 20px; overflow: hidden; background: #05060D; box-shadow: 0 14px 34px rgba(0,0,0,.45); }
+  .player { display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; background: #05060D; box-shadow: 0 14px 34px rgba(0,0,0,.45); }
   .stage { position: relative; height: calc(100vh - var(--top-h) - 150px); min-height: 480px; background: #05060D; }
-  .stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: #05060D; }
+  .stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
   .pbar { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--panel); }
   .pbar .thumb { width: 46px; height: 46px; border-radius: 12px; flex: none; box-shadow: none; }
-  .pbar .thumb svg { inset: 10%; width: 80%; height: 80%; }
   .pbar-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
   .pbar-text b { font-family: var(--display); font-weight: 800; font-size: 20px; line-height: 1.1; }
   .pbar-text small { color: var(--muted); font-weight: 700; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .pbtn { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel-2); font-weight: 800; font-size: 13.5px; cursor: pointer; white-space: nowrap; }
   .pbtn svg { width: 18px; height: 18px; }
   .pbtn:hover { border-color: var(--accent); color: var(--accent); }
-  .pcover { position: relative; }
-  .pcover .thumb { aspect-ratio: 16 / 11; border-radius: 22px; }
-  .pcover .thumb svg { inset: 12% 20% 22%; width: 60%; height: 66%; }
-  .pinfo { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; margin-top: -34px; position: relative; z-index: 2; }
-  .pinfo .thumb { width: 76px; height: 76px; border-radius: 20px; border: 3px solid var(--bg); }
-  .pinfo .thumb svg { inset: 10%; width: 80%; height: 80%; }
-  .pinfo h1 { margin: 4px 0 0; font-family: var(--display); font-weight: 800; font-size: 27px; line-height: 1.1; }
+  .pmob { display: flex; flex-direction: column; border-radius: 22px; overflow: hidden; background: var(--panel); box-shadow: 0 14px 30px rgba(0,0,0,.4); }
+  .pmob .thumb { border-radius: 0; box-shadow: none; }
+  .pinfo { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; padding: 16px 16px 20px; }
+  .pinfo h1 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 26px; line-height: 1.1; }
   .pinfo p { margin: 0; color: var(--muted); font-weight: 700; line-height: 1.45; max-width: 34ch; }
   .pinfo .btn-play { height: 54px; font-size: 21px; padding: 0 34px 0 28px; margin-top: 8px; }
   .desk-only { display: none; }
-  @media (min-width: 960px) { .desk-only { display: flex; } .mob-only { display: none; } }
 
   footer { color: var(--muted); font-size: 12px; text-align: center; }
   footer a { display: inline-block; padding: 10px 6px; text-decoration: underline; }
@@ -216,44 +187,47 @@
     .search { display: flex; }
     .rail { grid-auto-columns: 34%; }
     .rail.small { grid-auto-columns: 17%; }
+    .rail.tall { grid-auto-columns: 22%; }
     .grid { grid-template-columns: repeat(3, 1fr); }
-    .grid.sq { grid-template-columns: repeat(5, 1fr); }
-    .cats { grid-template-columns: repeat(4, 1fr); }
-    .ttl { font-size: 26px; }
+    .cats { grid-template-columns: repeat(3, 1fr); }
+    .spot { grid-template-columns: repeat(3, 1fr); }
   }
   @media (min-width: 960px) {
+    :root { --pad: 28px; }
     .nav { display: none; }
-    .side {
-      display: flex; flex-direction: column; gap: 4px; position: fixed; left: 0; top: var(--top-h); bottom: 0; width: var(--side-w);
-      padding: 12px 6px; border-right: 1px solid rgba(255,255,255,.06); background: var(--bg); z-index: 20;
-    }
-    .side a { padding: 10px 2px; text-align: center; }
+    .side { display: flex; flex-direction: column; gap: 4px; position: fixed; left: 0; top: var(--top-h); bottom: 0; width: var(--side-w); padding: 12px 6px; border-right: 1px solid rgba(255,255,255,.06); background: var(--bg); z-index: 20; overflow-y: auto; scrollbar-width: none; }
+    .side a { padding: 10px 2px; }
     .side a:hover { background: var(--panel); color: var(--ink); }
     .side hr { border: 0; border-top: 1px solid var(--line); margin: 6px 10px; }
-    main { margin-left: var(--side-w); padding: 22px 28px 40px; max-width: 1280px; }
-    .rail { margin: 0 -28px; padding: 2px 28px 8px; scroll-padding-inline: 28px; grid-auto-columns: 24%; }
-    .rail.small { grid-auto-columns: 12%; }
+    main { margin-left: var(--side-w); padding: 22px var(--pad) 40px; max-width: 1400px; }
+    .arrows { display: flex; }
+    .rail { grid-auto-columns: calc((100% - 5 * 12px) / 5.4); }
+    .rail.small { grid-auto-columns: calc((100% - 8 * 12px) / 8.6); }
+    .rail.tall { grid-auto-columns: calc((100% - 6 * 12px) / 6.5); }
+    .grid { grid-template-columns: repeat(5, 1fr); }
+    .cats { grid-template-columns: repeat(4, 1fr); }
     .spot { grid-template-columns: repeat(4, 1fr); grid-template-rows: auto auto; }
-    .hero { grid-column: 1 / 3; grid-row: 1 / 3; }
-    .hero > .thumb { aspect-ratio: auto; height: 100%; min-height: 320px; }
-    .spot .card:not(.hero) .thumb { aspect-ratio: 16 / 10; }
-    .spot .card:not(.hero) .thumb svg { inset: auto; right: 5%; top: 8%; height: 84%; width: auto; aspect-ratio: 1; }
-    .spot .extra { display: flex; }
-    .grid { grid-template-columns: repeat(4, 1fr); }
-    .grid.sq { grid-template-columns: repeat(6, 1fr); }
+    .spot .hero { grid-column: 1 / 3; grid-row: 1 / 3; }
+    .spot .hero > .thumb { aspect-ratio: auto; flex: 1; min-height: 260px; }
+    .spot .mini:nth-of-type(n+4) { display: flex; }
+    .spot.solo { grid-template-columns: 1fr; max-width: 880px; }
+    .spot.solo .hero { grid-column: auto; grid-row: auto; }
+    .spot.solo .hero > .thumb { aspect-ratio: 16 / 10; flex: none; }
+    .desk-only { display: flex; }
+    .mob-only { display: none !important; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .hero > .thumb svg { animation: none; }
-    .thumb, .play-dot { transition: none; }
+    .thumb, .hover-info { transition: none; }
+    .rail { scroll-behavior: auto; }
   }
 </style>
 
 <header class="top">
-  <a class="logo" href="#" data-view="home" aria-label="Dehayuk, beranda">
+  <a class="logo" href="#" aria-label="Dehayuk, beranda">
     <span class="logo-mark" aria-hidden="true">D</span>
     <span class="logo-word">Deha<span>yuk</span></span>
   </a>
-  <a class="search" href="#cari" data-view="cari"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Cari game</a>
+  <a class="search" href="#cari"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Cari game</a>
   <div class="top-end">
     <a class="install" href="https://github.com/dehayuk/dehayuk/releases/latest/download/dehayuk.apk"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 3h2v10.2l3.6-3.6 1.4 1.4L12 17l-6-6 1.4-1.4 3.6 3.6zM5 19h14v2H5z"/></svg>Pasang app</a>
   </div>
@@ -262,17 +236,7 @@
 <nav class="side" id="side" aria-label="Menu"></nav>
 
 <main>
-  <div class="view" id="vHome">
-    <section class="sec">
-      <div class="sec-head"><h2>Pilihan hari ini</h2></div>
-      <div class="spot" id="spot"></div>
-    </section>
-    <section class="sec" id="recentSec" hidden>
-      <div class="sec-head"><h2>Terakhir dimainkan</h2><a href="#permainanku">Lihat semua ›</a></div>
-      <div class="rail small" id="recentRail"></div>
-    </section>
-    <div id="rows" class="view"></div>
-  </div>
+  <div class="view" id="vHome"></div>
 
   <div class="view" id="vMain" hidden>
     <div class="player desk-only" id="player">
@@ -283,18 +247,18 @@
         <button class="pbtn" type="button" id="pFull"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Layar penuh</button>
       </div>
     </div>
-    <div class="mob-only" id="pMobile" style="flex-direction:column"></div>
-    <section class="sec">
+    <div class="pmob mob-only" id="pMobile"></div>
+    <section class="sec" id="moreSec">
       <div class="sec-head"><h2>Game lainnya</h2></div>
-      <div class="grid sq" id="more"></div>
+      <div class="grid" id="more"></div>
     </section>
   </div>
 
   <div class="view" id="vCari" hidden>
     <h1 class="page-title">Cari game</h1>
     <label class="field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><input id="q" type="search" placeholder="Nama game atau jenisnya" autocomplete="off" aria-label="Cari game"></label>
-    <div class="grid sq" id="results"></div>
-    <div class="empty" id="noResult" hidden><b>Belum ketemu</b>Coba kata lain, misalnya "buah", "kata", atau "berdua".</div>
+    <div class="grid" id="results"></div>
+    <div class="empty" id="noResult" hidden><b>Belum ketemu</b>Coba kata lain, misalnya "buah" atau "santai".</div>
   </div>
 
   <div class="view" id="vPermainanku" hidden>
@@ -305,8 +269,10 @@
 
   <div class="view" id="vKategori" hidden>
     <h1 class="page-title" id="catTitle">Kategori</h1>
+    <p class="page-sub" id="catSub" hidden></p>
     <div class="cats" id="cats"></div>
     <div class="grid" id="catGrid" hidden></div>
+    <button class="more-btn" type="button" id="catMore" hidden>Muat lagi</button>
   </div>
 
   <footer>© 2026 Dehayuk · Game ringan buatan Indonesia · <a href="/privasi/">Kebijakan Privasi</a></footer>
@@ -314,164 +280,226 @@
 
 <nav class="nav" id="nav" aria-label="Menu utama"></nav>
 
+<script src="/katalog.js"></script>
 <script>
 (function () {
-  var GAMES = [{"slug":"jatuh-buah","cat":["santai"],"hook":"Satukan buah kembar sampai jadi Durian sang raja buah!","c":"#F28A4B","svg":"<img class=\"cover\" src=\"/jatuh-buah/sampul.jpg\" alt=\"\" loading=\"lazy\">","name":"Jatuh Buah","tag":"Gabung buah"}];
-  var NEW = { "jatuh-buah": 1 };
-  var ALL_CATS = [
-    { id: "otak", name: "Asah otak", c: "#6A4BC4", icon: "M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3zM9 18h6v2H9z" },
-    { id: "santai", name: "Santai", c: "#E0712B", icon: "M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 9h2a2 2 0 0 1 0 4h-2M7 3v3M11 3v3" },
-    { id: "tradisional", name: "Tradisional", c: "#B23F3A", icon: "M12 2l2.6 6.6L21 9l-5 4.6L17.5 21 12 17.3 6.5 21 8 13.6 3 9l6.4-.4z" },
-    { id: "berdua", name: "Main berdua", c: "#2E9A5C", icon: "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20a6.5 6.5 0 0 1 13 0zM16 11a3 3 0 1 0 0-6M17 14a5 5 0 0 1 4.5 6" }
-  ];
-  // Hanya kategori yang sudah punya game yang ditampilkan.
-  var CATS = ALL_CATS.filter(function (c) { return GAMES.some(function (g) { return g.cat.indexOf(c.id) >= 0; }); });
-  var ICON = {
-    home: "M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z",
-    cari: "M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM16.5 16.5L21 21",
-    permainanku: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3.5 2",
-    kategori: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"
-  };
-  // Di app Android, tautan harus menunjuk berkas .html; di web cukup foldernya.
+  var DATA = window.DEHAYUK || { kategori: [], game: [] };
+  var GAMES = DATA.game.slice();
+  var bySlug = {}; GAMES.forEach(function (g) { bySlug[g.slug] = g; });
+  var MIN_ROW = 4;        // kategori tampil sebagai baris setelah punya minimal 4 game
+  var ROW_MAX = 20;       // satu baris menampilkan paling banyak 20 game
+  var PAGE = 30;          // halaman kategori dan daftar semua game dimuat per 30 game
+  var NEW_DAYS = 30;      // label BARU selama 30 hari sejak ditambahkan
+
+  function inCat(id) { return GAMES.filter(function (g) { return g.kategori.indexOf(id) >= 0; }); }
+  var CATS = DATA.kategori.filter(function (c) { return inCat(c.id).length > 0; });
+  var ROW_CATS = CATS.filter(function (c) { return inCat(c.id).length >= MIN_ROW; });
+  function catById(id) { return DATA.kategori.filter(function (c) { return c.id === id; })[0]; }
+
+  // Di app Android kartu langsung membuka berkas game; di web membuka halaman main di portal.
   var inApp = document.documentElement.classList.contains("in-app");
   function gameUrl(g) { return inApp ? "/" + g.slug + "/index.html" : "/" + g.slug + "/"; }
   function hrefOf(g) { return inApp ? gameUrl(g) : "#main/" + g.slug; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function read(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
   function write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
-  var bySlug = {}; GAMES.forEach(function (g) { bySlug[g.slug] = g; });
+  function svgPath(d) { return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + d + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
 
-  function thumb(g, shape, extra, plain) {
-    return '<div class="thumb ' + shape + '" style="--c:' + g.c + '">' + (NEW[g.slug] && !plain ? '<span class="badge">Baru</span>' : "") +
-      g.svg + (shape === "wide" ? '<span class="ttl">' + esc(g.name) + "</span>" : "") + (extra || "") + '<span class="play-dot" aria-hidden="true"></span></div>';
+  var today = new Date();
+  var dayIndex = Math.floor((today.getTime() - today.getTimezoneOffset() * 60000) / 86400000);
+  function isNew(g) { var t = Date.parse(g.ditambahkan); return t && (today.getTime() - t) / 86400000 < NEW_DAYS; }
+  function genreOf(g) { var c = catById(g.kategori[0]); return g.genre || (c ? c.nama : ""); }
+
+  function thumb(g, shape, opts) {
+    opts = opts || {};
+    return '<div class="thumb ' + shape + '" style="--c:' + g.warna + '">' +
+      '<img src="' + g.sampul + '" alt="" loading="lazy" decoding="async">' +
+      (isNew(g) && !opts.plain ? '<span class="badge">Baru</span>' : "") +
+      (opts.info ? '<span class="hover-info"><b>' + esc(g.nama) + "</b><span>" + esc(genreOf(g)) + "</span></span>" : "") + "</div>";
   }
-  function card(g, shape, plain) {
-    return '<a class="card' + (shape === "wide" ? " w" : "") + '" href="' + hrefOf(g) + '" data-slug="' + g.slug + '" aria-label="Main ' + esc(g.name) + '">' + thumb(g, shape, "", plain) +
-      "<b>" + esc(g.name) + "</b><small>" + esc(g.tag) + "</small></a>";
+  // Kartu lebar dan tegak: nama muncul saat disentuh, karena judul sudah ada di sampul; kartu kecil: nama di bawah.
+  function card(g, shape, cls) {
+    var named = shape === "sq";
+    return '<a class="card ' + (cls || "") + '" href="' + hrefOf(g) + '" data-slug="' + g.slug + '" aria-label="Main ' + esc(g.nama) + '">' +
+      thumb(g, shape, { info: !named, plain: cls === "recent" }) +
+      (named ? '<b class="name">' + esc(g.nama) + "</b><small>" + esc(genreOf(g)) + "</small>" : "") + "</a>";
   }
-  function inCat(id) { return GAMES.filter(function (g) { return g.cat.indexOf(id) >= 0; }); }
+  function arrows() {
+    return '<div class="arrows"><button type="button" data-dir="-1" aria-label="Geser kiri">' + svgPath("M15 5l-7 7 7 7") + '</button><button type="button" data-dir="1" aria-label="Geser kanan">' + svgPath("M9 5l7 7-7 7") + "</button></div>";
+  }
+  function rowHead(title, href) {
+    return '<div class="sec-head"><h2>' + (href ? '<a href="' + href + '">' + title + "</a>" : title) + "</h2>" + arrows() + "</div>";
+  }
 
-  // Pilihan hari ini: satu game besar dan empat berikutnya, berganti setiap hari.
-  var now = new Date();
-  var day = Math.floor((now.getTime() - now.getTimezoneOffset() * 60000) / 86400000);
-  var order = GAMES.map(function (g, i) { return GAMES[(day + i) % GAMES.length]; });
-  var small = order.slice(1, 5);
-  if (small.length < 4) { small = []; document.getElementById("spot").classList.add("solo"); }
-  var hero = order[0];
-  document.getElementById("spot").innerHTML =
-    '<a class="card hero" href="' + hrefOf(hero) + '" data-slug="' + hero.slug + '" aria-label="Main ' + esc(hero.name) + '">' +
-      '<div class="thumb" style="--c:' + hero.c + '">' + hero.svg + '</div>' +
-      '<div class="hero-bar"><div class="thumb sq hero-icon" style="--c:' + hero.c + '">' + hero.svg + '</div>' +
-      '<div class="hero-text"><b>' + esc(hero.name) + "</b><small>" + esc(hero.hook) + '</small></div><span class="btn-play">Main</span></div></a>' +
-    small.slice(0, 3).map(function (g) { return card(g, "sq"); }).join("") +
-    (small[3] ? card(small[3], "sq").replace('class="card"', 'class="card extra"') : "");
+  // ---------- Beranda: disusun sendiri dari katalog ----------
+  function renderHome() {
+    var html = "";
+    var pool = GAMES.filter(function (g) { return g.unggulan; });
+    if (!pool.length) pool = GAMES;
+    if (pool.length) {
+      var hero = pool[dayIndex % pool.length];
+      var others = GAMES.filter(function (g) { return g !== hero; });
+      var start = others.length ? dayIndex % others.length : 0;
+      var minis = [];
+      for (var i = 0; i < Math.min(4, others.length); i++) minis.push(others[(start + i) % others.length]);
+      var solo = minis.length < 4;
+      html += '<section class="sec"><div class="sec-head"><h2>Pilihan hari ini</h2></div><div class="spot' + (solo ? " solo" : "") + '">' +
+        '<a class="hero" href="' + hrefOf(hero) + '" data-slug="' + hero.slug + '" aria-label="Main ' + esc(hero.nama) + '">' + thumb(hero, "wide") +
+        '<div class="hero-bar"><div class="thumb sq hero-icon" style="--c:' + hero.warna + '"><img src="' + hero.sampul + '" alt=""></div>' +
+        '<div class="hero-text"><b>' + esc(hero.nama) + "</b><small>" + esc(hero.ajakan) + '</small></div><span class="btn-play">Main</span></div></a>' +
+        (solo ? "" : minis.map(function (g) { return card(g, "wide", "mini"); }).join("")) + "</div></section>";
+    }
+    var recent = recentList();
+    if (recent.length && GAMES.length > 1) {
+      html += '<section class="sec">' + rowHead("Terakhir dimainkan", "#permainanku") + '<div class="rail small">' +
+        recent.slice(0, 16).map(function (s) { return card(bySlug[s], "sq", "recent"); }).join("") + "</div></section>";
+    }
+    var fresh = GAMES.filter(isNew).sort(function (a, b) { return Date.parse(b.ditambahkan) - Date.parse(a.ditambahkan); });
+    if (fresh.length >= MIN_ROW) {
+      html += '<section class="sec">' + rowHead("Game baru") + '<div class="rail">' + fresh.slice(0, ROW_MAX).map(function (g) { return card(g, "wide"); }).join("") + "</div></section>";
+    }
+    ROW_CATS.forEach(function (c, i) {
+      var list = inCat(c.id);
+      var s = dayIndex % list.length;
+      var rotated = list.slice(s).concat(list.slice(0, s)).slice(0, ROW_MAX);
+      // Selang-seling baris bertema berlatar warna dan baris polos, agar beranda tidak monoton.
+      if (i % 3 === 1) {
+        html += '<section class="sec">' + rowHead(esc(c.nama), "#k-" + c.id) + '<div class="rail">' + rotated.map(function (g) { return card(g, "wide"); }).join("") + "</div></section>";
+      } else {
+        html += '<section class="sec theme" style="--t:' + c.warna + '"><div class="sec-head"><span class="theme-icon">' + svgPath(c.ikon) + '</span><h2><a href="#k-' + c.id + '">' + esc(c.nama) + "</a></h2>" + arrows() + "</div>" +
+          '<p class="theme-desc">' + esc(c.ajakan) + '</p><div class="rail">' + rotated.map(function (g) { return card(g, "wide"); }).join("") + "</div></section>";
+      }
+    });
+    if (GAMES.length > 1) {
+      html += '<section class="sec"><div class="sec-head"><h2>Semua game</h2><span class="sec-note" style="margin-left:auto">' + GAMES.length + ' game</span></div><div class="grid" id="allGrid"></div><button class="more-btn" type="button" id="allMore">Muat lagi</button></section>';
+    }
+    document.getElementById("vHome").innerHTML = html;
+    if (GAMES.length > 1) pager(document.getElementById("allGrid"), document.getElementById("allMore"), GAMES);
+  }
 
-  // Baris kategori.
-  document.getElementById("rows").innerHTML = GAMES.length < 3 ? "" : CATS.map(function (c) {
-    return '<section class="sec"><div class="sec-head"><h2>' + c.name + '</h2><a href="#k-' + c.id + '">Lihat semua ›</a></div><div class="rail">' +
-      inCat(c.id).map(function (g) { return card(g, "wide"); }).join("") + "</div></section>";
-  }).join("") +
-  '<section class="sec"><div class="sec-head"><h2>Semua game</h2><span class="sec-note" style="color:var(--muted);font-weight:800;font-size:13px">' + GAMES.length + ' game</span></div><div class="grid">' +
-    GAMES.map(function (g) { return card(g, "wide"); }).join("") + "</div></section>";
+  // Daftar panjang dimuat per halaman, agar ribuan game tetap ringan.
+  function pager(grid, btn, list) {
+    var shown = 0;
+    function more() {
+      grid.insertAdjacentHTML("beforeend", list.slice(shown, shown + PAGE).map(function (g) { return card(g, "wide"); }).join(""));
+      shown += PAGE;
+      btn.hidden = shown >= list.length;
+    }
+    grid.innerHTML = "";
+    btn.onclick = more;
+    more();
+  }
 
   function recentList() { return (read("dehayuk.recent") || []).filter(function (s) { return bySlug[s]; }); }
-  function renderRecent() {
-    var r = recentList();
-    document.getElementById("recentSec").hidden = !r.length;
-    document.getElementById("recentRail").innerHTML = r.slice(0, 8).map(function (s) { return card(bySlug[s], "sq", true); }).join("");
-    document.getElementById("mine").innerHTML = r.map(function (s) { return card(bySlug[s], "wide"); }).join("");
-    document.getElementById("mineEmpty").hidden = !!r.length;
-  }
   document.addEventListener("click", function (ev) {
+    var arrow = ev.target.closest && ev.target.closest(".arrows button");
+    if (arrow) {
+      var rail = arrow.closest(".sec").querySelector(".rail");
+      if (rail) rail.scrollBy({ left: rail.clientWidth * 0.85 * Number(arrow.dataset.dir), behavior: "smooth" });
+      return;
+    }
     var a = ev.target.closest && ev.target.closest("a[data-slug]");
-    if (!a) return;
+    if (!a || !bySlug[a.dataset.slug]) return;
     var list = recentList().filter(function (s) { return s !== a.dataset.slug; });
     list.unshift(a.dataset.slug);
-    write("dehayuk.recent", list.slice(0, 12));
+    write("dehayuk.recent", list.slice(0, 30));
   });
 
-  // Menu: samping di komputer, bawah di HP.
-  function navItem(id, label, path, href) {
-    return '<a href="' + href + '" data-nav="' + id + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + path + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' + label + "</a>";
-  }
+  // ---------- Menu ----------
+  var ICON = {
+    home: "M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z",
+    cari: "M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM16.5 16.5L21 21",
+    permainanku: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3.5 2",
+    kategori: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"
+  };
+  function navItem(id, label, path, href) { return '<a href="' + href + '" data-nav="' + id + '">' + svgPath(path) + esc(label) + "</a>"; }
   var MAIN_NAV = [["home", "Beranda", ICON.home, "#"], ["cari", "Cari", ICON.cari, "#cari"], ["permainanku", "Permainanku", ICON.permainanku, "#permainanku"], ["kategori", "Kategori", ICON.kategori, "#kategori"]];
   document.getElementById("nav").innerHTML = MAIN_NAV.map(function (n) { return navItem.apply(null, n); }).join("");
-  document.getElementById("side").innerHTML = MAIN_NAV.map(function (n) { return navItem.apply(null, n); }).join("") + "<hr>" +
-    CATS.map(function (c) { return navItem("k-" + c.id, c.name.replace("Main b", "B"), c.icon, "#k-" + c.id); }).join("");
-
+  document.getElementById("side").innerHTML = MAIN_NAV.map(function (n) { return navItem.apply(null, n); }).join("") +
+    (CATS.length ? "<hr>" : "") + CATS.map(function (c) { return navItem("k-" + c.id, c.nama, c.ikon, "#k-" + c.id); }).join("");
   document.getElementById("cats").innerHTML = CATS.map(function (c) {
-    return '<a class="cat" href="#k-' + c.id + '" style="--c:' + c.c + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + c.icon + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><b>' + c.name + "</b><small>" + inCat(c.id).length + " game</small></a>";
+    return '<a class="cat" href="#k-' + c.id + '" style="--t:' + c.warna + '">' + svgPath(c.ikon) + "<b>" + esc(c.nama) + "</b><small>" + inCat(c.id).length + " game</small></a>";
   }).join("");
 
-  // Cari.
+  // ---------- Cari ----------
   var q = document.getElementById("q");
   function renderSearch() {
     var s = q.value.trim().toLowerCase();
     var hits = GAMES.filter(function (g) {
-      var text = (g.name + " " + g.tag + " " + g.hook + " " + g.cat.map(function (id) { var c = CATS.filter(function (x) { return x.id === id; })[0]; return c ? c.name : id; }).join(" ")).toLowerCase();
+      var text = (g.nama + " " + (g.genre || "") + " " + g.ajakan + " " + g.kategori.map(function (id) { var c = catById(id); return c ? c.nama : id; }).join(" ")).toLowerCase();
       return !s || text.indexOf(s) >= 0;
     });
-    document.getElementById("results").innerHTML = hits.map(function (g) { return card(g, "sq"); }).join("");
+    document.getElementById("results").innerHTML = hits.slice(0, 60).map(function (g) { return card(g, "wide"); }).join("");
     document.getElementById("noResult").hidden = !!hits.length;
   }
   q.addEventListener("input", renderSearch);
 
-  // Pindah halaman lewat tanda # agar tombol Kembali di HP bekerja wajar.
-  function show() {
-    var h = location.hash.replace("#", "");
-    var view = h.indexOf("main/") === 0 && bySlug[h.slice(5)] ? "main" : h === "cari" ? "cari" : h === "permainanku" ? "permainanku" : h === "kategori" || h.indexOf("k-") === 0 ? "kategori" : "home";
-    ["Home", "Main", "Cari", "Permainanku", "Kategori"].forEach(function (v) { document.getElementById("v" + v).hidden = v.toLowerCase() !== view; });
-    var navId = h.indexOf("k-") === 0 ? h : view;
-    document.querySelectorAll("[data-nav]").forEach(function (a) {
-      if (a.dataset.nav === navId || (a.closest(".nav") && a.dataset.nav === "kategori" && h.indexOf("k-") === 0)) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
-    });
-    if (view === "kategori") {
-      var c = CATS.filter(function (x) { return "k-" + x.id === h; })[0];
-      document.getElementById("catTitle").textContent = c ? c.name : "Kategori";
-      document.getElementById("cats").hidden = !!c;
-      var grid = document.getElementById("catGrid");
-      grid.hidden = !c;
-      if (c) grid.innerHTML = inCat(c.id).map(function (g) { return card(g, "wide"); }).join("");
-    }
-    renderPlayer(view === "main" ? bySlug[h.slice(5)] : null);
-    if (view === "cari") { renderSearch(); setTimeout(function () { try { q.focus(); } catch (e) {} }, 50); }
-    renderRecent();
-    window.scrollTo(0, 0);
-  }
-  // Halaman main: di komputer game dimainkan di dalam portal, di HP sampul besar lalu layar penuh.
+  // ---------- Halaman main ----------
   var stage = document.getElementById("stage"), current = null;
   var wide = window.matchMedia ? window.matchMedia("(min-width: 960px)") : { matches: false };
   function renderPlayer(g) {
     if (!g) { stage.innerHTML = ""; current = null; document.title = "Dehayuk"; return; }
-    document.title = g.name + " · Dehayuk";
-    if (current !== g.slug || (wide.matches && !stage.firstChild)) {
-      current = g.slug;
-      stage.innerHTML = "";
-      if (wide.matches) {
-        var f = document.createElement("iframe");
-        f.src = gameUrl(g); f.title = g.name; f.allow = "fullscreen; autoplay"; f.setAttribute("allowfullscreen", "");
-        // Tombol kembali milik game disembunyikan; bilah portal sudah ada di atasnya.
-        f.addEventListener("load", function () {
-          try { var st = f.contentDocument.createElement("style"); st.textContent = "a[href=\"/\"]{visibility:hidden!important}"; f.contentDocument.head.appendChild(st); } catch (e) {}
-        });
-        stage.appendChild(f);
-      }
-      document.getElementById("pIcon").setAttribute("style", "--c:" + g.c);
-      document.getElementById("pIcon").innerHTML = g.svg;
-      document.getElementById("pName").textContent = g.name;
-      document.getElementById("pHook").textContent = g.tag + " · " + g.hook;
-      document.getElementById("pMobile").innerHTML =
-        '<div class="pcover"><div class="thumb" style="--c:' + g.c + '">' + g.svg + '</div></div>' +
-        '<div class="pinfo"><div class="thumb sq" style="--c:' + g.c + '">' + g.svg + '</div><h1>' + esc(g.name) + '</h1><p>' + esc(g.hook) + '</p><a class="btn-play" href="' + gameUrl(g) + '">Main</a></div>';
-      document.getElementById("more").closest("section").hidden = GAMES.length < 2;
-      document.getElementById("more").innerHTML = GAMES.filter(function (x) { return x !== g; }).map(function (x) { return card(x, "sq"); }).join("");
+    document.title = g.nama + " · Dehayuk";
+    if (current === g.slug && (!wide.matches || stage.firstChild)) return;
+    current = g.slug;
+    stage.innerHTML = "";
+    if (wide.matches) {
+      var f = document.createElement("iframe");
+      f.src = gameUrl(g); f.title = g.nama; f.allow = "fullscreen; autoplay"; f.setAttribute("allowfullscreen", "");
+      // Tombol kembali milik game disembunyikan; bilah portal sudah ada di atasnya.
+      f.addEventListener("load", function () {
+        try { var st = f.contentDocument.createElement("style"); st.textContent = 'a[href="/"]{visibility:hidden!important}'; f.contentDocument.head.appendChild(st); } catch (e) {}
+      });
+      stage.appendChild(f);
     }
+    var icon = document.getElementById("pIcon");
+    icon.setAttribute("style", "--c:" + g.warna);
+    icon.innerHTML = '<img src="' + g.sampul + '" alt="">';
+    document.getElementById("pName").textContent = g.nama;
+    document.getElementById("pHook").textContent = genreOf(g) + " · " + g.ajakan;
+    document.getElementById("pMobile").innerHTML = thumb(g, "wide", { plain: true }) +
+      '<div class="pinfo"><h1>' + esc(g.nama) + "</h1><p>" + esc(g.ajakan) + '</p><a class="btn-play" href="' + gameUrl(g) + '">Main</a></div>';
+    // Game lainnya: yang sekategori lebih dulu.
+    var same = GAMES.filter(function (x) { return x !== g && x.kategori.some(function (k) { return g.kategori.indexOf(k) >= 0; }); });
+    var rest = GAMES.filter(function (x) { return x !== g && same.indexOf(x) < 0; });
+    var more = same.concat(rest).slice(0, 15);
+    document.getElementById("moreSec").hidden = !more.length;
+    document.getElementById("more").innerHTML = more.map(function (x) { return card(x, "wide"); }).join("");
   }
   document.getElementById("pFull").addEventListener("click", function () {
-    var el = document.getElementById("stage");
-    var fn = el.requestFullscreen || el.webkitRequestFullscreen;
-    if (fn) { try { var p = fn.call(el); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
+    var fn = stage.requestFullscreen || stage.webkitRequestFullscreen;
+    if (fn) { try { var p = fn.call(stage); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
   });
+
+  // ---------- Pindah halaman lewat tanda # agar tombol Kembali di HP bekerja wajar ----------
+  function show() {
+    var h = decodeURIComponent(location.hash.replace("#", ""));
+    var view = h.indexOf("main/") === 0 && bySlug[h.slice(5)] ? "main" : h === "cari" ? "cari" : h === "permainanku" ? "permainanku" : h === "kategori" || h.indexOf("k-") === 0 ? "kategori" : "home";
+    ["Home", "Main", "Cari", "Permainanku", "Kategori"].forEach(function (v) { document.getElementById("v" + v).hidden = v.toLowerCase() !== view; });
+    document.querySelectorAll("[data-nav]").forEach(function (a) {
+      var on = a.dataset.nav === (h.indexOf("k-") === 0 ? h : view) || (a.closest(".nav") && a.dataset.nav === "kategori" && h.indexOf("k-") === 0);
+      if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+    });
+    renderPlayer(view === "main" ? bySlug[h.slice(5)] : null);
+    if (view === "home") renderHome();
+    if (view === "kategori") {
+      var c = h.indexOf("k-") === 0 ? catById(h.slice(2)) : null;
+      var list = c ? inCat(c.id) : [];
+      document.getElementById("catTitle").textContent = c ? c.nama : "Kategori";
+      document.getElementById("catSub").textContent = c ? c.ajakan + " · " + list.length + " game" : "";
+      document.getElementById("catSub").hidden = !c;
+      document.getElementById("cats").hidden = !!c;
+      document.getElementById("catGrid").hidden = !c;
+      if (c) pager(document.getElementById("catGrid"), document.getElementById("catMore"), list); else document.getElementById("catMore").hidden = true;
+    }
+    if (view === "cari") { renderSearch(); setTimeout(function () { try { q.focus(); } catch (e) {} }, 50); }
+    if (view === "permainanku") {
+      var r = recentList();
+      document.getElementById("mine").innerHTML = r.map(function (s) { return card(bySlug[s], "wide"); }).join("");
+      document.getElementById("mineEmpty").hidden = !!r.length;
+    }
+    window.scrollTo(0, 0);
+  }
   if (wide.addEventListener) wide.addEventListener("change", function () { current = null; show(); });
   window.addEventListener("hashchange", show);
   show();

@@ -11,20 +11,18 @@
     for (var i = 0; i < links.length; i++) links[i].style.display = "none";
   });
 
-  // NalarGame mengatur iklannya sendiri (banner, iklan jeda, iklan hadiah).
-  if (/\/nalargame\//.test(location.pathname)) return;
   var ads = window.capacitorStripe && window.capacitorStripe.AdMob;
   if (!ads) return;
 
-  // Game lain: tanpa banner, agar papan dan tombol permainan tidak pernah tertutup iklan.
+  // Tanpa banner, agar papan dan tombol permainan tidak pernah tertutup iklan.
   try { ads.hideBanner().catch(function () {}); } catch (e) {}
 
-  // Di halaman depan dan privasi tidak ada iklan sama sekali.
-  if (!/\/(balok-ria|pilah-kelereng|jatuh-buah|congklak|titik-kotak|sambung-kembar|lapis-menjulang)\//.test(location.pathname)) return;
+  // Di halaman depan dan privasi tidak ada iklan sama sekali; setiap folder lain adalah game.
+  if (!/^\/[a-z0-9-]+\//.test(location.pathname) || /^\/privasi\//.test(location.pathname)) return;
 
   // Iklan jeda dibuat longgar: hanya saat pemain sendiri menekan "Main lagi / Lanjut" di layar hasil,
   // tidak di 4 menit pertama pemakaian app, dan paling sering sekali tiap 4 menit untuk semua game.
-  // Samakan nilai testing dengan ADMOB.testing di nalargame/index.html; ubah ke false hanya untuk versi Play Store.
+  // Ubah ke false hanya untuk versi Play Store.
   var ADMOB = { testing: true, interstitial: "ca-app-pub-4794081394235829/1704959677" };
   var GRACE_MS = 240000;
   var GAP_MS = 240000;
