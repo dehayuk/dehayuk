@@ -22,7 +22,21 @@ window.DEHAYUK = {
       warna: "#F28A4B",
       sampul: "/jatuh-buah/sampul.jpg",
       ditambahkan: "2026-09-27",
-      unggulan: true
+      diperbarui: "2026-09-27",
+      orientasi: "Tegak",
+      unggulan: true,
+      deskripsi: [
+        "Jatuh Buah adalah game gabung buah yang santai tapi bikin penasaran. Jatuhkan buah ke dalam peti kayu, dan setiap kali dua buah yang sama bersentuhan, keduanya bersatu menjadi buah yang lebih besar.",
+        "Ada 11 buah Nusantara untuk dikumpulkan, dari ceri, rambutan, duku, dan salak sampai nangka dan Durian sang raja buah yang bermahkota. Gabungkan dua Durian untuk perayaan besar dan bonus 1.000 poin.",
+        "Setiap hari ada tantangan Harian dengan urutan buah yang sama untuk semua pemain, jadi skormu bisa diadu dengan teman. Kirim juga tantangan lewat WhatsApp dan lihat siapa yang lebih jago."
+      ],
+      caraMain: [
+        "Geser untuk membidik, lalu lepas untuk menjatuhkan buah.",
+        "Dua buah yang sama akan bergabung menjadi buah berikutnya.",
+        "Buah yang lebih besar memberi poin lebih banyak, dan gabungan beruntun memberi Kombo.",
+        "Permainan selesai bila buah menumpuk melewati garis merah selama dua detik."
+      ],
+      kontrol: "Di HP: sentuh dan geser. Di komputer: arahkan dan klik mouse, atau tombol panah dan spasi."
     }
   ]
 };

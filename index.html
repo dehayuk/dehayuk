@@ -180,6 +180,42 @@
   .pinfo .btn-play { height: 54px; font-size: 21px; padding: 0 34px 0 28px; margin-top: 8px; }
   .desk-only { display: none; }
 
+  /* Tombol Simpan dan Bagikan */
+  .pbtn.icon { padding: 0 12px; }
+  .pbtn .lbl { display: none; }
+  .pbtn[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+  .pbtn[aria-pressed="true"] svg path { fill: currentColor; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .actions .pbtn .lbl { display: inline; }
+
+  /* Informasi game di bawah permainan */
+  .play-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .play-main { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+  .upnext { display: none; }
+  .ginfo { background: var(--panel); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 16px; line-height: 1.6; }
+  .crumbs { display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px; font-weight: 800; color: var(--muted); }
+  .crumbs a { color: #B9A8FF; }
+  .ginfo h1 { margin: -6px 0 0; font-family: var(--display); font-weight: 800; font-size: 30px; line-height: 1.1; }
+  .ginfo h2 { margin: 6px 0 -6px; font-family: var(--display); font-weight: 800; font-size: 20px; }
+  .ginfo p { margin: 0; color: #D6D9EE; max-width: 72ch; }
+  .facts { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; margin: 0; font-size: 14px; }
+  .facts dt { color: var(--muted); font-weight: 700; }
+  .facts dd { margin: 0; font-weight: 800; }
+  .facts dd a { color: #B9A8FF; }
+  .steps { margin: 0; padding-left: 22px; color: #D6D9EE; display: flex; flex-direction: column; gap: 4px; }
+  .steps li::marker { color: var(--accent); font-weight: 800; }
+  .back-to-game {
+    position: fixed; left: 50%; bottom: calc(var(--nav-h) + 16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 35;
+    height: 46px; padding: 0 22px; border: 0; border-radius: 999px; cursor: pointer; background: var(--new); color: #fff; font-weight: 800; font-size: 14.5px;
+    box-shadow: 0 10px 24px rgba(0,0,0,.45); white-space: nowrap;
+  }
+  /* Di HP judul sudah tampil tepat di atas kotak informasi, jadi tidak diulang. */
+  @media (max-width: 959px) { .ginfo h1 { display: none; } }
+  .toast {
+    position: fixed; left: 50%; top: calc(var(--top-h) + 14px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 40;
+    background: var(--ink); color: var(--bg); font-weight: 800; font-size: 13.5px; padding: 10px 16px; border-radius: 999px; box-shadow: 0 8px 20px rgba(0,0,0,.4);
+  }
+
   footer { color: var(--muted); font-size: 12px; text-align: center; }
   footer a { display: inline-block; padding: 10px 6px; text-decoration: underline; }
 
@@ -195,10 +231,22 @@
   @media (min-width: 960px) {
     :root { --pad: 28px; }
     .nav { display: none; }
-    .side { display: flex; flex-direction: column; gap: 4px; position: fixed; left: 0; top: var(--top-h); bottom: 0; width: var(--side-w); padding: 12px 6px; border-right: 1px solid rgba(255,255,255,.06); background: var(--bg); z-index: 20; overflow-y: auto; scrollbar-width: none; }
-    .side a { padding: 10px 2px; }
-    .side a:hover { background: var(--panel); color: var(--ink); }
-    .side hr { border: 0; border-top: 1px solid var(--line); margin: 6px 10px; }
+    /* Menu samping: tertutup hanya ikon, membuka sendiri saat didekati kursor dan menutupi isi tanpa menggesernya. */
+    .side {
+      display: flex; flex-direction: column; gap: 2px; position: fixed; left: 0; top: var(--top-h); bottom: 0; width: var(--side-w);
+      padding: 12px 10px; border-right: 1px solid rgba(255,255,255,.06); background: var(--bg); z-index: 25; overflow: hidden auto; scrollbar-width: none;
+      transition: width .22s ease .08s, box-shadow .22s ease .08s;
+    }
+    .side:hover, .side:focus-within { width: 250px; box-shadow: 18px 0 40px rgba(0,0,0,.55); }
+    .side a { flex-direction: row; justify-content: flex-start; gap: 16px; padding: 11px 16px; font-size: 14px; white-space: nowrap; }
+    .side a .lbl { opacity: 0; transition: opacity .15s ease; }
+    .side:hover a .lbl, .side:focus-within a .lbl { opacity: 1; transition-delay: .12s; }
+    .side a svg { flex: none; }
+    .side a:hover { background: var(--panel-2); color: var(--ink); }
+    .side a[aria-current="page"] { background: var(--panel); }
+    .side hr { border: 0; border-top: 1px solid var(--line); margin: 8px 6px; }
+    .side .side-title { font-size: 11px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); padding: 4px 16px; white-space: nowrap; opacity: 0; transition: opacity .15s; }
+    .side:hover .side-title { opacity: 1; transition-delay: .12s; }
     main { margin-left: var(--side-w); padding: 22px var(--pad) 40px; max-width: 1400px; }
     .arrows { display: flex; }
     .rail { grid-auto-columns: calc((100% - 5 * 12px) / 5.4); }
@@ -215,6 +263,16 @@
     .spot.solo .hero > .thumb { aspect-ratio: 16 / 10; flex: none; }
     .desk-only { display: flex; }
     .mob-only { display: none !important; }
+    .pbtn .lbl { display: inline; }
+    .back-to-game { bottom: 24px; }
+    .ginfo { padding: 26px 28px; }
+  }
+  @media (min-width: 1200px) {
+    .play-layout.has-next { grid-template-columns: minmax(0, 1fr) 300px; }
+    .play-layout.has-next .upnext { display: flex; flex-direction: column; gap: 12px; }
+    .upnext h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 19px; }
+    .upnext-list { display: flex; flex-direction: column; gap: 14px; }
+    .play-layout.has-next ~ #moreSec { display: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     .thumb, .hover-info { transition: none; }
@@ -239,19 +297,31 @@
   <div class="view" id="vHome"></div>
 
   <div class="view" id="vMain" hidden>
-    <div class="player desk-only" id="player">
-      <div class="stage" id="stage"></div>
-      <div class="pbar">
-        <div class="thumb sq" id="pIcon"></div>
-        <div class="pbar-text"><b id="pName"></b><small id="pHook"></small></div>
-        <button class="pbtn" type="button" id="pFull"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Layar penuh</button>
+    <div class="play-layout" id="playLayout">
+      <div class="play-main">
+        <div class="player desk-only" id="player">
+          <div class="stage" id="stage"></div>
+          <div class="pbar">
+            <div class="thumb sq" id="pIcon"></div>
+            <div class="pbar-text"><b id="pName"></b><small id="pHook"></small></div>
+            <button class="pbtn icon save-btn" type="button" data-save aria-pressed="false" title="Simpan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg><span class="lbl">Simpan</span></button>
+            <button class="pbtn icon" type="button" data-share title="Bagikan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 12h.01M18 6a2.5 2.5 0 1 0 0-.01M18 18a2.5 2.5 0 1 0 0-.01M6 12a2.5 2.5 0 1 0 0-.01M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span class="lbl">Bagikan</span></button>
+            <button class="pbtn" type="button" id="pFull"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Layar penuh</button>
+          </div>
+        </div>
+        <div class="pmob mob-only" id="pMobile"></div>
+        <article class="ginfo" id="gInfo"></article>
       </div>
+      <aside class="upnext" id="upNext">
+        <h2>Putar selanjutnya</h2>
+        <div class="upnext-list" id="upList"></div>
+      </aside>
     </div>
-    <div class="pmob mob-only" id="pMobile"></div>
     <section class="sec" id="moreSec">
       <div class="sec-head"><h2>Game lainnya</h2></div>
       <div class="grid" id="more"></div>
     </section>
+    <button class="back-to-game" type="button" id="backToGame" hidden>↑ Kembali ke permainan</button>
   </div>
 
   <div class="view" id="vCari" hidden>
@@ -263,8 +333,15 @@
 
   <div class="view" id="vPermainanku" hidden>
     <h1 class="page-title">Permainanku</h1>
-    <div class="grid" id="mine"></div>
-    <div class="empty" id="mineEmpty" hidden><b>Belum ada game yang dimainkan</b>Game yang pernah kamu buka akan muncul di sini.<a class="btn-play" href="#">Cari game</a></div>
+    <section class="sec" id="savedSec" hidden>
+      <div class="sec-head"><h2>Disimpan</h2></div>
+      <div class="grid" id="saved"></div>
+    </section>
+    <section class="sec" id="mineSec" hidden>
+      <div class="sec-head"><h2>Terakhir dimainkan</h2></div>
+      <div class="grid" id="mine"></div>
+    </section>
+    <div class="empty" id="mineEmpty" hidden><b>Belum ada game di sini</b>Game yang kamu buka atau simpan akan muncul di sini.<a class="btn-play" href="#">Cari game</a></div>
   </div>
 
   <div class="view" id="vKategori" hidden>
@@ -275,6 +352,7 @@
     <button class="more-btn" type="button" id="catMore" hidden>Muat lagi</button>
   </div>
 
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
   <footer>© 2026 Dehayuk · Game ringan buatan Indonesia · <a href="/privasi/">Kebijakan Privasi</a></footer>
 </main>
 
@@ -412,11 +490,11 @@
     permainanku: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3.5 2",
     kategori: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"
   };
-  function navItem(id, label, path, href) { return '<a href="' + href + '" data-nav="' + id + '">' + svgPath(path) + esc(label) + "</a>"; }
+  function navItem(id, label, path, href) { return '<a href="' + href + '" data-nav="' + id + '" title="' + esc(label) + '">' + svgPath(path) + '<span class="lbl">' + esc(label) + "</span></a>"; }
   var MAIN_NAV = [["home", "Beranda", ICON.home, "#"], ["cari", "Cari", ICON.cari, "#cari"], ["permainanku", "Permainanku", ICON.permainanku, "#permainanku"], ["kategori", "Kategori", ICON.kategori, "#kategori"]];
   document.getElementById("nav").innerHTML = MAIN_NAV.map(function (n) { return navItem.apply(null, n); }).join("");
   document.getElementById("side").innerHTML = MAIN_NAV.map(function (n) { return navItem.apply(null, n); }).join("") +
-    (CATS.length ? "<hr>" : "") + CATS.map(function (c) { return navItem("k-" + c.id, c.nama, c.ikon, "#k-" + c.id); }).join("");
+    (CATS.length ? '<hr><span class="side-title">Kategori</span>' : "") + CATS.map(function (c) { return navItem("k-" + c.id, c.nama, c.ikon, "#k-" + c.id); }).join("");
   document.getElementById("cats").innerHTML = CATS.map(function (c) {
     return '<a class="cat" href="#k-' + c.id + '" style="--t:' + c.warna + '">' + svgPath(c.ikon) + "<b>" + esc(c.nama) + "</b><small>" + inCat(c.id).length + " game</small></a>";
   }).join("");
@@ -459,13 +537,85 @@
     document.getElementById("pHook").textContent = genreOf(g) + " · " + g.ajakan;
     document.getElementById("pMobile").innerHTML = thumb(g, "wide", { plain: true }) +
       '<div class="pinfo"><h1>' + esc(g.nama) + "</h1><p>" + esc(g.ajakan) + '</p><a class="btn-play" href="' + gameUrl(g) + '">Main</a></div>';
-    // Game lainnya: yang sekategori lebih dulu.
+    document.getElementById("gInfo").innerHTML = infoHTML(g);
+    syncSave();
+    // Putar selanjutnya: yang sekategori lebih dulu. Di layar lebar tampil di kolom kanan, selain itu di bawah.
     var same = GAMES.filter(function (x) { return x !== g && x.kategori.some(function (k) { return g.kategori.indexOf(k) >= 0; }); });
     var rest = GAMES.filter(function (x) { return x !== g && same.indexOf(x) < 0; });
     var more = same.concat(rest).slice(0, 15);
+    var cards = more.map(function (x) { return card(x, "wide"); }).join("");
+    document.getElementById("playLayout").classList.toggle("has-next", more.length > 0);
+    document.getElementById("upList").innerHTML = cards;
     document.getElementById("moreSec").hidden = !more.length;
-    document.getElementById("more").innerHTML = more.map(function (x) { return card(x, "wide"); }).join("");
+    document.getElementById("more").innerHTML = cards;
   }
+
+  // Halaman informasi game, disusun dari katalog: sama rapinya untuk satu game atau seribu.
+  var BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  function tanggal(s) { var d = new Date(s + "T00:00:00"); return isNaN(d) ? "" : d.getDate() + " " + BULAN[d.getMonth()] + " " + d.getFullYear(); }
+  function infoHTML(g) {
+    var cats = g.kategori.map(catById).filter(Boolean);
+    var facts = [
+      ["Pengembang", "Dehayuk"],
+      ["Kategori", cats.map(function (c) { return '<a href="#k-' + c.id + '">' + esc(c.nama) + "</a>"; }).join(", ")],
+      ["Jenis", esc(genreOf(g))],
+      ["Dirilis", tanggal(g.ditambahkan)],
+      ["Diperbarui", tanggal(g.diperbarui || g.ditambahkan)],
+      ["Perangkat", "HP, tablet, dan komputer · app Android"],
+      ["Orientasi layar", esc(g.orientasi || "Tegak")],
+      ["Bahasa", "Indonesia"]
+    ].filter(function (f) { return f[1]; });
+    return '<nav class="crumbs" aria-label="Lokasi"><a href="#">Beranda</a>»' + (cats[0] ? '<a href="#k-' + cats[0].id + '">' + esc(cats[0].nama) + "</a>»" : "") + "<span>" + esc(g.nama) + "</span></nav>" +
+      "<h1>" + esc(g.nama) + "</h1>" +
+      '<div class="actions"><button class="pbtn icon save-btn" type="button" data-save aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg><span class="lbl">Simpan</span></button>' +
+      '<button class="pbtn icon" type="button" data-share><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6a2.5 2.5 0 1 0 0-.01M18 18a2.5 2.5 0 1 0 0-.01M6 12a2.5 2.5 0 1 0 0-.01M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span class="lbl">Bagikan</span></button></div>' +
+      '<dl class="facts">' + facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + f[1] + "</dd>"; }).join("") + "</dl>" +
+      (g.deskripsi && g.deskripsi.length ? "<h2>Tentang " + esc(g.nama) + "</h2>" + g.deskripsi.map(function (p) { return "<p>" + esc(p) + "</p>"; }).join("") : "<p>" + esc(g.ajakan) + "</p>") +
+      (g.caraMain && g.caraMain.length ? '<h2>Cara main</h2><ol class="steps">' + g.caraMain.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ol>" : "") +
+      (g.kontrol ? "<h2>Kontrol</h2><p>" + esc(g.kontrol) + "</p>" : "");
+  }
+
+  // Simpan (favorit) dan Bagikan: nyata, tersimpan di perangkat pemain, tanpa server.
+  function savedList() { return (read("dehayuk.simpan") || []).filter(function (s) { return bySlug[s]; }); }
+  function syncSave() {
+    var on = current && savedList().indexOf(current) >= 0;
+    document.querySelectorAll("[data-save]").forEach(function (b) {
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      b.title = on ? "Hapus dari simpanan" : "Simpan";
+      var l = b.querySelector(".lbl"); if (l) l.textContent = on ? "Disimpan" : "Simpan";
+    });
+  }
+  var toastTimer = null;
+  function toast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 2200);
+  }
+  document.addEventListener("click", function (ev) {
+    var save = ev.target.closest && ev.target.closest("[data-save]");
+    if (save && current) {
+      var list = savedList(), i = list.indexOf(current);
+      if (i >= 0) list.splice(i, 1); else list.unshift(current);
+      write("dehayuk.simpan", list);
+      syncSave();
+      toast(i >= 0 ? "Dihapus dari Permainanku" : "Disimpan ke Permainanku");
+      return;
+    }
+    var share = ev.target.closest && ev.target.closest("[data-share]");
+    if (share && current) {
+      var g = bySlug[current];
+      var base = /^https?:$/.test(location.protocol) && !inApp ? location.origin + location.pathname : "https://dehayuk.netlify.app/";
+      var url = base + "#main/" + g.slug, text = g.nama + " di Dehayuk: " + g.ajakan;
+      if (navigator.share) { navigator.share({ title: g.nama, text: text, url: url }).catch(function () {}); return; }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(function () { toast("Link disalin, tinggal tempel"); }, function () { window.open("https://wa.me/?text=" + encodeURIComponent(text + " " + url)); });
+      else window.open("https://wa.me/?text=" + encodeURIComponent(text + " " + url));
+    }
+  });
+
+  // Tombol "Kembali ke permainan" muncul setelah pemain menggulir melewati permainan.
+  var backBtn = document.getElementById("backToGame");
+  window.addEventListener("scroll", function () { backBtn.hidden = !current || window.scrollY < 480; }, { passive: true });
+  backBtn.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
   document.getElementById("pFull").addEventListener("click", function () {
     var fn = stage.requestFullscreen || stage.webkitRequestFullscreen;
     if (fn) { try { var p = fn.call(stage); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
@@ -481,6 +631,7 @@
       if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
     renderPlayer(view === "main" ? bySlug[h.slice(5)] : null);
+    backBtn.hidden = true;
     if (view === "home") renderHome();
     if (view === "kategori") {
       var c = h.indexOf("k-") === 0 ? catById(h.slice(2)) : null;
@@ -494,9 +645,12 @@
     }
     if (view === "cari") { renderSearch(); setTimeout(function () { try { q.focus(); } catch (e) {} }, 50); }
     if (view === "permainanku") {
-      var r = recentList();
+      var r = recentList(), sv = savedList();
+      document.getElementById("saved").innerHTML = sv.map(function (s) { return card(bySlug[s], "wide"); }).join("");
+      document.getElementById("savedSec").hidden = !sv.length;
       document.getElementById("mine").innerHTML = r.map(function (s) { return card(bySlug[s], "wide"); }).join("");
-      document.getElementById("mineEmpty").hidden = !!r.length;
+      document.getElementById("mineSec").hidden = !r.length;
+      document.getElementById("mineEmpty").hidden = !!(r.length || sv.length);
     }
     window.scrollTo(0, 0);
   }
