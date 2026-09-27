@@ -1,9 +1,12 @@
-# Pengaturan Netlify untuk situs Dehayuk: halaman depan di akar, setiap game di foldernya sendiri (misal /nalargame/).
+# Pengaturan Netlify untuk situs Dehayuk: halaman depan di akar, setiap game di foldernya sendiri (misal /jatuh-buah/).
 # Semua halaman berupa berkas HTML biasa, jadi tidak ada langkah build.
 # Setiap push ke cabang main di GitHub otomatis ditayangkan ulang oleh Netlify.
 [build]
   publish = "."
   command = "echo Tidak ada langkah build untuk versi web"
+  # Perubahan yang hanya menyangkut app Android atau berkas kerja tidak ditayangkan ulang,
+  # agar kredit Netlify tidak terpakai. Keluar 0 berarti lewati penayangan.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':(exclude)android' ':(exclude).github' ':(exclude)scripts' ':(exclude)STANDAR-GAME.md' ':(exclude)package.json' ':(exclude)package-lock.json'"
 
 # Folder dan berkas app Android tidak perlu dibuka lewat web.
 [[redirects]]
