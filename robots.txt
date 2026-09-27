@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /android/
+Disallow: /scripts/
+Disallow: /www/
+
+Sitemap: https://dehayuk.netlify.app/sitemap.xml

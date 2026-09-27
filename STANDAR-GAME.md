@@ -30,7 +30,11 @@ Acuan hidup: `jatuh-buah/` dan `blok-ledak/`.
 
 - `<meta charset="utf-8">` adalah tag pertama di `<head>`. Skrip app Android disisipkan tepat setelahnya.
 - `<button id="rAgain">` adalah tombol **Main lagi** di layar hasil. Iklan jeda AdMob menempel pada tombol ini. **Game tidak pernah menampilkan iklan sendiri.**
-- Perangkat bersama dimuat dengan alamat mutlak: `/kit/kit.js` (dan `/kit/kit.css` bila dipakai).
+- Perangkat bersama dimuat dengan alamat mutlak. Game baru memakai `/kit/v1/kit.js` (dan `/kit/v1/kit.css` bila dipakai). `/kit/kit.js` adalah salinan identik untuk game lama. Perubahan yang bisa merusak game lama masuk ke versi baru (`/kit/v2/`), bukan ke v1.
+- Tombol di layar hasil dan panel jeda hanya bereaksi saat layarnya sedang tampil. App Android meneruskan klik **Main lagi** setelah iklan ditutup, jadi klik yang datang saat permainan berjalan harus diabaikan.
+- Penyimpanan hanya lewat `DehayukKit.store(slug)`, dengan kunci berawalan `dehayuk.<slug>.`.
+- **Slug tidak boleh diganti setelah tayang.** Rekor, simpanan, dan link tantangan pemain bergantung padanya.
+- `?uji=1` menulis hasil ke `<pre id="uji">` yang diawali "UJI LULUS" atau "UJI GAGAL". `npm run uji` menjalankannya untuk semua game.
 - Satu berkas `index.html` di bawah **160 KB**. Alamat luar hanya huruf Google, `wa.me`, dan `dehayuk.netlify.app`.
 - Viewport tidak melarang perbesaran layar; cukup `touch-action: none` di area bermain.
 - Tampil rapi di 360x640, 390x844, dan bingkai mendatar sekitar 1200x640 di dalam portal. App Android dikunci posisi tegak.
@@ -68,7 +72,7 @@ Portal, halaman informasi game, daftar isi app, dan aturan iklan semuanya membac
 1. **Bangun:** agen pembangun mengikuti standar ini, dengan Jatuh Buah dan Blok Ledak sebagai acuan.
 2. **Periksa:** `game-designer` menilai keseruan dan rasa, `reality-checker` menguji kualitas. Keduanya hanya membaca.
 3. **Perbaiki:** semua temuan dikerjakan, lalu uji `?uji=1` diulang.
-4. **Daftarkan** di `katalog.js`, lalu jalankan `npm run cek` dan uji app.
+4. **Daftarkan** di `katalog.js` (teks panjang boleh ditulis di entri itu), lalu jalankan `npm run situs` (membuat sampul kecil, halaman info, dan peta situs), `npm run cek`, `npm run uji`, dan uji app.
 5. **Lihat sendiri** potret di HP dan komputer.
 6. **Pemilik mencoba** dan menyetujui.
 7. **Tayangkan sekali:** gabungkan semua perubahan dalam satu kiriman, karena setiap penayangan Netlify memakan kredit.

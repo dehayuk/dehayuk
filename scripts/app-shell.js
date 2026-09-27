@@ -44,7 +44,16 @@
     var btn = pending;
     pending = null;
     prepare();
-    if (btn && document.body.contains(btn)) { bypass = true; btn.click(); bypass = false; }
+    // Klik diteruskan hanya bila tombol masih terlihat di layar hasil, agar tidak mengulang permainan yang sudah berjalan.
+    if (btn && document.body.contains(btn) && shown(btn)) { bypass = true; btn.click(); bypass = false; }
+  }
+  function shown(el) {
+    for (; el && el.nodeType === 1; el = el.parentElement) {
+      if (el.hidden) return false;
+      var st = getComputedStyle(el);
+      if (st.display === "none" || st.visibility === "hidden") return false;
+    }
+    return true;
   }
   function allowed() {
     var now = Date.now();

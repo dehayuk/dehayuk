@@ -1,0 +1,1915 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#3a9ad0">
+<title>Oyen Nyebrang</title>
+<meta name="description" content="Bantu Oyen si kucing oranye menyeberangi jalan, kali, dan rel kereta tanpa henti. Lompat di sela angkot, naik getek, kumpulkan ikan asin!">
+<link rel="canonical" href="https://dehayuk.netlify.app/oyen-nyebrang/">
+<meta property="og:title" content="Oyen Nyebrang">
+<meta property="og:description" content="Seberapa jauh Oyen bisa nyebrang? Lompat di sela angkot, naik getek, kalahkan kereta!">
+<meta property="og:image" content="https://dehayuk.netlify.app/oyen-nyebrang/sampul.jpg">
+<meta property="og:url" content="https://dehayuk.netlify.app/oyen-nyebrang/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/kit/kit.css">
+<style>
+:root{--dk-ink:#2b1a10;--dk-lbl:#7a5a40}
+html,body{background:#6fbf4a}
+body{position:fixed;inset:0}
+canvas{display:block}
+#cv{position:fixed;inset:0;width:100%;height:100%;touch-action:none}
+#col{position:fixed;top:0;bottom:0;pointer-events:none;z-index:10}
+#probe{position:fixed;left:0;top:0;width:0;height:0;padding:var(--dk-st) var(--dk-sr) var(--dk-sb) var(--dk-sl);visibility:hidden}
+.scr{position:absolute;inset:0}
+#sTitle{display:flex;flex-direction:column;align-items:center;padding:calc(var(--dk-st) + 94px) 14px calc(var(--dk-sb) + 18px)}
+#sTitle>*{pointer-events:auto}
+.home{position:absolute!important;left:calc(var(--dk-sl) + 12px);top:calc(var(--dk-st) + 12px);width:44px!important;height:44px!important}
+.home svg{width:22px!important;height:22px!important;filter:none!important}
+.pill{display:flex;align-items:center;gap:5px;background:rgba(43,26,16,.72);border:3px solid var(--dk-ink);border-radius:999px;padding:3px 12px 3px 6px;font:800 17px/1.2 var(--dk-fd);white-space:nowrap}
+.pill svg{width:22px;height:22px;flex:none}
+.best{position:absolute;right:calc(var(--dk-sr) + 12px);top:calc(var(--dk-st) + 14px);color:#ffe36a}
+.fishp{position:absolute;right:calc(var(--dk-sr) + 12px);top:calc(var(--dk-st) + 52px);color:#fff}
+.chip{position:absolute;left:50%;top:calc(var(--dk-st) + 16px);transform:translateX(-50%);font-size:15px;color:#fff}
+.chip .strk{display:flex;align-items:center;gap:3px;margin-left:3px;padding-left:7px;border-left:2px solid rgba(255,255,255,.25)}
+#logo{flex:none;width:min(92%,360px,calc(32vh * 1.55));aspect-ratio:1.55/1}
+.tsp{flex:1;min-height:40px}
+.tmid{flex:none;display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
+.chal{font:800 17px/1.15 var(--dk-fd);background:#ff5c93;border:3px solid var(--dk-ink);border-radius:14px;padding:6px 14px 8px;box-shadow:0 4px 0 var(--dk-ink);transform:rotate(-2deg);animation:dk-wig 1.4s ease-in-out infinite;text-align:center;max-width:300px}
+#bMain{font-size:40px;padding:14px 46px 18px;border-radius:28px;animation:dk-pulse 1.1s ease-in-out infinite}
+#bMain svg{width:34px;height:34px}
+#bMain.dk-pr{animation:none}
+.icons{display:flex;gap:12px;justify-content:center}
+.ent>*{animation:dk-pop .5s cubic-bezier(.2,1.5,.4,1) backwards}
+.ent>:nth-child(2){animation-delay:.08s}.ent>:nth-child(3){animation-delay:.16s}
+.leave{animation:leave .28s ease-in forwards}
+@keyframes leave{to{transform:translateY(40px) scale(.9);opacity:0}}
+.cover .tmid,.cover .home,.cover .best,.cover .chip,.cover .fishp{display:none!important}
+.cover #sTitle{padding-top:58px}
+.cover #logo{width:min(32vw,340px)}
+/* HUD */
+#hud{position:absolute;left:0;right:0;top:0;bottom:0;padding:calc(var(--dk-st) + 8px) 10px 0;display:flex;align-items:flex-start;justify-content:space-between;pointer-events:none}
+#hud>*{pointer-events:auto}
+#hud .dk-circle{width:46px;height:46px}
+.sc{position:absolute;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;pointer-events:none!important}
+.sc b{font:800 44px/1 var(--dk-fd);font-variant-numeric:tabular-nums;transition:transform .1s}
+.sc b.bump{transform:scale(1.18)}
+.sc small{margin-top:4px;font:800 12px/1 var(--dk-fd);background:#ff5c93;border:2px solid var(--dk-ink);border-radius:999px;padding:2px 8px 3px}
+.hbest{margin-top:5px;color:#ffe36a;font-size:15px;pointer-events:none!important}
+.hbest svg{width:18px;height:18px}
+.hbest.live{background:#ff3d7f;color:#fff;animation:dk-pulse .7s ease-in-out infinite}
+.hfish{margin-top:4px;color:#fff;font-size:17px;pointer-events:none!important}
+.hfish.pop{animation:dk-pulse .25s}
+#hint{position:absolute;left:50%;bottom:calc(var(--dk-sb) + 26px);transform:translateX(-50%);font:800 18px/1 var(--dk-fd);background:rgba(43,26,16,.7);border:3px solid var(--dk-ink);border-radius:999px;padding:8px 16px 10px;white-space:nowrap;color:#fff;transition:opacity .5s;pointer-events:none}
+#hint.off{opacity:0}
+/* panel */
+.big{font:800 58px/1 var(--dk-fd);font-variant-numeric:tabular-nums}
+.rtop{display:flex;align-items:center;gap:4px;width:100%}
+.bcol{flex:none;width:108px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.stage{position:relative;width:96px;height:88px;display:grid;place-items:center}
+.stage .rays{position:absolute;inset:-16px;border-radius:50%;background:repeating-conic-gradient(rgba(255,200,60,.6) 0 12deg,transparent 12deg 24deg);-webkit-mask:radial-gradient(circle,#000 30%,transparent 70%);mask:radial-gradient(circle,#000 30%,transparent 70%);animation:spin 8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.stage div{position:relative;width:92px;height:86px;animation:dk-bob 2.2s ease-in-out infinite}
+.stage svg,.kb svg{width:100%;height:100%;display:block}
+.rrank{font:800 15px/1 var(--dk-fd);white-space:nowrap}
+.rrank.new::after{content:" · baru!";color:#ff3d7f}
+.rsc{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px}
+.rrec{font:800 13px/1.15 var(--dk-fd);color:var(--dk-lbl);text-align:center}
+.rbar{width:100%;height:14px;border:3px solid var(--dk-ink);border-radius:999px;background:#f0e2cc;overflow:hidden;box-shadow:inset 0 2px 0 rgba(0,0,0,.1)}
+.rbar i{display:block;height:100%;width:0;background:linear-gradient(#ffe36a,#ffb21a);border-radius:999px}
+.rbar.rec i{background:linear-gradient(#ffb3d9,#ff5c93)}
+.cause{font:800 15px/1.2 var(--dk-fd);text-align:center;background:#fff;border:3px solid var(--dk-ink);border-radius:14px;padding:5px 10px 6px;box-shadow:0 3px 0 var(--dk-ink);transform:rotate(-1deg)}
+.rmisc{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+.stars{display:flex;gap:1px}.stars svg{width:28px;height:28px}
+.goals{display:flex;gap:8px}
+.goal{display:flex;flex-direction:column;align-items:center;gap:3px;background:#fff;border:3px solid var(--dk-ink);border-radius:14px;box-shadow:0 3px 0 var(--dk-ink);padding:5px 8px 6px;min-width:70px}
+.goal span{display:flex}.goal svg{width:18px;height:18px}
+.goal b{font:800 16px/1 var(--dk-fd)}
+.strk2{display:flex;align-items:center;gap:4px;font:800 15px/1 var(--dk-fd)}.strk2 svg{width:20px;height:20px}
+.kgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px 4px;width:100%}
+.kb{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.kb i{width:48px;height:46px;display:block}
+.kb b{font:800 11px/1.05 var(--dk-fd)}.kb span{font:800 10px/1 var(--dk-fd);color:var(--dk-lbl)}
+.kb.lk b{color:#a99a8a}
+#rNormal{font-size:17px;padding:8px 10px 10px}
+.rek{position:absolute;right:-18px;top:-30px;width:96px;height:96px;display:grid;place-items:center;transform:rotate(12deg);z-index:2}
+.rek::before,.rek::after{content:"";position:absolute;clip-path:polygon(50% 0,61% 16%,79% 7%,80% 27%,100% 30%,88% 47%,100% 64%,80% 69%,79% 90%,61% 82%,50% 100%,39% 82%,21% 90%,20% 69%,0 64%,12% 47%,0 30%,20% 27%,21% 7%,39% 16%)}
+.rek::before{inset:0;background:var(--dk-ink)}
+.rek::after{inset:5px;background:linear-gradient(#ffe36a,#ffb21a)}
+.rek span{position:relative;z-index:1;font:800 17px/.95 var(--dk-fd);text-align:center}
+.rek.go{animation:stamp .5s cubic-bezier(.2,1.6,.4,1) backwards}
+@keyframes stamp{from{transform:rotate(-30deg) scale(3);opacity:0}}
+.stats{display:flex;gap:10px;width:100%}
+.st{flex:1;display:flex;align-items:center;gap:8px;background:#fff;border:3px solid var(--dk-ink);border-radius:16px;box-shadow:0 4px 0 var(--dk-ink);padding:6px 10px}
+.st svg{width:30px;height:30px;flex:none}
+.st div{display:flex;flex-direction:column}
+.st b{font:800 24px/1 var(--dk-fd)}
+.st span{font:800 12px/1.1 var(--dk-fd);color:var(--dk-lbl)}
+.note{font:800 19px/1.1 var(--dk-fd);padding:5px 16px 7px;border-radius:12px;border:3px solid var(--dk-ink);background:#ff8a8a;box-shadow:0 3px 0 var(--dk-ink)}
+.note.win{background:#8ef06a}
+.xp{font:800 14px/1 var(--dk-fd);background:var(--dk-ink);color:#ffe36a;border-radius:999px;padding:5px 12px 6px}
+#rAgain{font-size:26px;padding:14px 10px 17px}
+.cal{width:104px;height:106px;border:4px solid var(--dk-ink);border-radius:20px;background:#fff;box-shadow:0 5px 0 var(--dk-ink);overflow:hidden;display:flex;flex-direction:column;transform:rotate(-4deg)}
+.cal i{display:block;height:30px;background:linear-gradient(#ff7a7a,#e8384f);border-bottom:4px solid var(--dk-ink);font:800 16px/27px var(--dk-fd);font-style:normal;color:#fff;text-align:center}
+.cal b{flex:1;display:grid;place-items:center;font:800 50px/1 var(--dk-fd)}
+/* koleksi */
+.wal{color:#fff}
+.car{display:flex;align-items:center;gap:8px}
+.car .dk-circle{width:44px;height:44px;flex:none}
+#kCv{width:150px;height:120px;border:3px solid var(--dk-ink);border-radius:20px;background:#9adf66;box-shadow:inset 0 -6px 0 rgba(0,0,0,.12)}
+.kname{font:800 22px/1 var(--dk-fd)}
+.kst{font:800 14px/1 var(--dk-fd);color:var(--dk-lbl);margin-top:-6px}
+.dots{display:flex;gap:5px}.dots i{width:9px;height:9px;border-radius:50%;background:#e2cfb6;border:2px solid var(--dk-ink)}.dots i.on{background:#ff8a1a}
+#kCan{font-size:16px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.rnext{font:800 11px/1.1 var(--dk-fd);color:var(--dk-lbl);text-align:center;max-width:108px}
+.rcan{display:flex;align-items:center;gap:6px;width:100%;font:800 13px/1 var(--dk-fd);color:var(--dk-lbl)}
+.rcan[hidden]{display:none}
+.rcan svg{width:22px;height:22px;flex:none}.rcan span{white-space:nowrap}
+.rcan .rbar{flex:1;height:12px;border-width:2px}
+.rcan.full span,.rcan.full .rbar{display:none}
+#rCan{flex:1;font-size:18px;padding:6px 10px 8px;animation:dk-pulse .9s ease-in-out infinite}
+html.band #hFishP{position:absolute;left:var(--bx);top:calc(var(--dk-st) + 14px);transform:translateX(-50%);margin:0}
+body:has(#sOver:not([hidden])) .dk-toast{top:calc(var(--dk-st) + 12px);bottom:auto}
+@media (max-height:700px){
+  #kCv{width:120px;height:96px}.kb i{width:38px;height:36px}.kb span{display:none}
+  #sKoleksi .dk-panel{gap:6px}.kname{font-size:19px}
+  #sOver .dk-panel{gap:7px}.big{font-size:48px}.stage{width:80px;height:74px}.stage div{width:78px;height:72px}
+  #rAgain{padding:10px 10px 13px}.note{font-size:16px}#sOver .dk-stack{gap:8px}
+}
+@media (prefers-reduced-motion:reduce){
+  #bMain,.chal,.hbest.live,#rCan,.stage .rays,.stage div{animation:none!important}
+}
+@media (max-height:500px){
+  #sOver .dk-panel{max-width:640px;display:grid;grid-template-columns:1fr 1fr;column-gap:16px;row-gap:8px;align-items:center}
+  #sOver .rtop{grid-column:1;grid-row:1}#sOver .rbar{grid-column:1;grid-row:2}#sOver .stats{grid-column:1;grid-row:3}
+  #sOver .cause{grid-column:2;grid-row:1}#sOver .rmisc{grid-column:2;grid-row:2}#sOver .dk-stack{grid-column:2;grid-row:3/5}#sOver .rec2{grid-column:1;grid-row:4}
+  .big{font-size:42px}.stage{width:76px;height:70px}.stage div{width:72px;height:66px}.bcol{width:88px}
+  #rAgain{font-size:20px;padding:9px 8px 11px}
+  .rek{width:70px;height:70px;top:34px;right:auto;left:calc(50% - 66px)}.rek span{font-size:14px}
+  .st{padding:3px 8px}.st b{font-size:20px}.st svg{width:24px;height:24px}
+  .cal{display:none}
+  #sKoleksi .dk-panel{max-width:620px;display:grid;grid-template-columns:auto 1fr;column-gap:14px;row-gap:6px;align-items:center;justify-items:center}
+  #sKoleksi .dk-panel>:not(.dk-ribbon):not(.dk-close){grid-column:1}
+  #sKoleksi .dk-panel>#kInfo{grid-column:2;grid-row:1}#sKoleksi .dk-panel>#kGrid{grid-column:2;grid-row:2/7;align-self:start}
+  #sKoleksi .kst{margin-top:-2px}
+  #sOver .rtop{grid-row:1/3}#sOver .rbar{grid-row:3}#sOver .stats{grid-row:4}#sOver .rcan{grid-column:1;grid-row:5}#sOver .dk-stack{grid-row:3/6}
+  #sOver .rcan .rbar{grid-row:auto}
+  #sOver .dk-stack{flex-direction:row;flex-wrap:wrap;gap:6px}#sOver .dk-row{display:contents}#rAgain{flex:1 0 100%}
+  #rNormal,#rShare,#rMenu{flex:1 1 0;min-width:0;font-size:15px;padding:6px 6px 8px;white-space:nowrap}#rNormal{flex-grow:1.35}#rShare svg,#rMenu svg{width:18px;height:18px}
+  .note{font-size:15px;padding:4px 10px 6px}
+  .tsp{min-height:6px}
+  #sTitle{padding-top:calc(var(--dk-st) + 52px)}
+  #logo{width:min(26vw,200px)}
+  .tmid{gap:8px}#bMain{font-size:27px;padding:8px 30px 11px}
+  .dk-round>i{width:50px;height:50px}
+}
+#uji{position:fixed;left:4px;top:4px;right:4px;bottom:4px;overflow:auto;z-index:99;background:rgba(0,0,0,.88);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px}
+</style>
+</head>
+<body>
+<canvas id="cv" role="img" aria-label="Jalanan Oyen"></canvas>
+<div id="live" class="sr" aria-live="polite"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-x" viewBox="0 0 24 24"><g stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#2b1a10" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></g></symbol><symbol id="i-play" viewBox="0 0 24 24"><g><path fill="#fff" stroke="#2b1a10" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></g></symbol><symbol id="i-re" viewBox="0 0 24 24"><g fill="none" stroke-linecap="round"><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#2b1a10" stroke-width="5"/><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#fff" stroke-width="2.6"/><path d="M13.5 3.5h5v5z" fill="#fff" stroke="#2b1a10" stroke-width="1.8" stroke-linejoin="round"/></g></symbol><symbol id="i-home" viewBox="0 0 24 24"><g><path fill="#fff" stroke="#2b1a10" stroke-width="1.8" stroke-linejoin="round" d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z"/></g></symbol><symbol id="i-sh" viewBox="0 0 24 24"><g stroke="#2b1a10" stroke-width="1.8"><path d="M7 12l10-6M7 12l10 6" stroke-width="4.5"/><path d="M7 12l10-6M7 12l10 6" stroke="#fff" stroke-width="2"/><circle cx="6.5" cy="12" r="3.3" fill="#fff"/><circle cx="17.5" cy="5.5" r="3.3" fill="#fff"/><circle cx="17.5" cy="18.5" r="3.3" fill="#fff"/></g></symbol><symbol id="i-crown" viewBox="0 0 24 24"><g><path fill="#ffd23a" stroke="#2b1a10" stroke-width="2" stroke-linejoin="round" d="M3 18h18l1-11-6 4-4-7-4 7-6-4z"/></g></symbol><symbol id="i-flame" viewBox="0 0 24 24"><path fill="#ff8a1a" stroke="#2b1a10" stroke-width="2" stroke-linejoin="round" d="M12 2.5c1.2 3.6 5.5 5.6 5.5 11a5.5 5.5 0 0 1-11 0c0-2.8 1.4-4.4 2.8-5.4-.1 2.1.8 3.2 2 3.4-.7-3.2.2-6.4.7-9z"/><path fill="#ffe36a" d="M12 12.5c.9 1.5 2.3 2.3 2.3 4a2.3 2.3 0 0 1-4.6 0c0-1.2.9-2.1 2.3-4z"/></symbol></defs></svg>
+<div id="probe"></div>
+<div id="col">
+  <section id="sTitle" class="scr">
+    <a href="/" class="dk-btn dk-yellow dk-circle home" aria-label="Beranda"><svg viewBox="0 0 24 24"><path fill="#2b1a10" d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z"/></svg></a>
+    <div class="pill chip dk-ol" id="tProg"><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#2b1a10" stroke-width="2" stroke-linejoin="round" d="M12 2.8l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 16.7l-5.4 2.9 1.1-6.1-4.5-4.3 6.1-.8z"/></svg><span id="tLv">Lv 1</span><span class="strk" id="tStrk" hidden><svg viewBox="0 0 24 24"><use href="#i-flame"/></svg><span id="tStrkN">1 hari</span></span></div>
+    <div class="pill best dk-ol" id="tBest"><svg viewBox="0 0 24 24"><use href="#i-crown"/></svg><span>0</span></div>
+    <div class="pill fishp dk-ol" id="tFish"><svg viewBox="0 0 24 24"><g id="icoFish"><path d="M3 12c3-5 9-6 13-3l5-3-1.5 6L21 18l-5-3c-4 3-10 2-13-3z" fill="#e8c27a" stroke="#2b1a10" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 9.5v5M12 9v6" stroke="#b58a44" stroke-width="1.4"/><circle cx="6.3" cy="11.2" r="1.1" fill="#2b1a10"/></g></svg><span>0</span></div>
+    <div id="logo"></div>
+    <div class="tsp"></div>
+    <div class="tmid ent" id="tMid">
+      <div class="chal dk-ol" id="tChal" hidden>Kalahkan!</div>
+      <button class="dk-btn dk-green dk-ol" id="bMain"><svg viewBox="0 0 24 24"><use href="#i-play"/></svg>MAIN</button>
+      <div class="icons">
+        <button class="dk-round dk-yellow" id="bHarian"><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><rect x="4" y="5.5" width="16" height="15" rx="3" fill="#fff" stroke="#2b1a10" stroke-width="2"/><path d="M4.5 10h15" stroke="#e8384f" stroke-width="4"/><path d="M8.5 3.5v4M15.5 3.5v4" stroke="#2b1a10" stroke-width="2.6"/><rect x="9.5" y="13" width="5" height="5" rx="1.2" fill="#ff8a1a"/></svg><b class="dk-dot" id="dDaily" hidden></b></i><span>Harian</span></button>
+        <button class="dk-round dk-pink" id="bTantang" aria-label="Tantang"><i class="dk-ol" aria-hidden="true">VS</i><span>Tantang</span></button>
+        <button class="dk-round dk-blue" id="bKoleksi"><i><svg viewBox="0 0 24 24"><path d="M4 20V9l3-5 2.6 4h4.8L17 4l3 5v11z" fill="#ff9a3a" stroke="#2b1a10" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 20c0-3 1.8-4.5 4-4.5s4 1.5 4 4.5" fill="#fff" stroke="#2b1a10" stroke-width="1.6"/><circle cx="9" cy="12" r="1.3" fill="#2b1a10"/><circle cx="15" cy="12" r="1.3" fill="#2b1a10"/></svg></i><span>Koleksi</span></button>
+        <button class="dk-round dk-purple" id="bSetelan"><i><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.2" stroke="#2b1a10" stroke-width="6.5" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="7.2" stroke="#fff" stroke-width="4" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="6" fill="#fff" stroke="#2b1a10" stroke-width="2"/><circle cx="12" cy="12" r="2.4" fill="#8f5cf0" stroke="#2b1a10" stroke-width="1.6"/></svg></i><span>Setelan</span></button>
+      </div>
+    </div>
+  </section>
+
+  <div id="hud" hidden>
+    <button class="dk-btn dk-orange dk-circle" id="bPause" aria-label="Jeda"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4.5" height="14" rx="1.5" fill="#fff" stroke="#2b1a10" stroke-width="1.8"/><rect x="13.5" y="5" width="4.5" height="14" rx="1.5" fill="#fff" stroke="#2b1a10" stroke-width="1.8"/></svg></button>
+    <div class="sc"><b class="dk-ol" id="hScore">0</b><small class="dk-ol" id="hTag" hidden>Harian</small><div class="pill hbest dk-ol" id="hBestP"><svg viewBox="0 0 24 24"><use href="#i-crown"/></svg><span id="hBest">0</span></div></div>
+    <div class="pill hfish dk-ol" id="hFishP"><svg viewBox="0 0 24 24"><use href="#icoFish"/></svg><span id="hFish">0</span></div>
+    <div id="hint" class="off">Ketuk: maju · Geser: belok</div>
+  </div>
+
+  <section id="sPause" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-blue dk-ol">Jeda</div>
+      <div class="dk-stack">
+        <button class="dk-btn dk-green dk-ol" id="pGo"><svg viewBox="0 0 24 24"><use href="#i-play"/></svg>Lanjut</button>
+        <button class="dk-btn dk-yellow dk-ol" id="pRe"><svg viewBox="0 0 24 24"><use href="#i-re"/></svg><span>Ulang</span></button>
+        <button class="dk-btn dk-orange dk-ol" id="pMenu"><svg viewBox="0 0 24 24"><use href="#i-home"/></svg>Menu</button>
+      </div>
+      <div class="dk-lbl" id="pInfo" hidden>Percobaan resmi: Akhiri dan Menu menyimpan skormu</div>
+    </div>
+  </section>
+
+  <section id="sOver" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-ol" id="rRib">Selesai!</div>
+      <div class="rek dk-ol" id="rRek" hidden><span>Rekor<br>baru!</span></div>
+      <div class="rtop">
+        <div class="bcol"><div class="stage"><div class="rays"></div><div id="rBadge"></div></div><div class="rrank dk-ol" id="rRank">Perunggu</div><div class="rnext" id="rNext"></div></div>
+        <div class="rsc"><div class="dk-lbl" id="rMode">Langkah</div><div class="big dk-ol" id="rScore">0</div><div class="rrec" id="rRec"></div></div>
+      </div>
+      <div class="rbar" id="rBarW"><i id="rBar"></i></div>
+      <div class="cause" id="rCause">Ditabrak angkot</div>
+      <div class="stats">
+        <div class="st"><svg viewBox="0 0 24 24"><use href="#icoFish"/></svg><div><b id="rFish">0</b><span>Ikan asin</span></div></div>
+        <div class="st"><svg viewBox="0 0 24 24"><path d="M3 8h9M2 12h11M4 16h8" stroke="#2b1a10" stroke-width="2.4" stroke-linecap="round"/><path d="M14 5l7 7-7 7z" fill="#ffd23a" stroke="#2b1a10" stroke-width="2" stroke-linejoin="round"/></svg><div><b id="rNear">0</b><span>Nyaris</span></div></div>
+      </div>
+      <div class="rcan" id="rCanW"><svg viewBox="0 0 24 24"><use href="#icoFish"/></svg><span id="rCanT">Kaleng 0/25</span><div class="rbar"><i id="rCanB"></i></div><button class="dk-btn dk-yellow dk-ol" id="rCan" hidden>Buka Kaleng!</button></div>
+      <div class="rmisc"><div class="stars" id="rStars" hidden></div><div class="note dk-ol" id="rNote" hidden></div><div class="xp" id="rXp" hidden></div></div>
+      <div class="dk-stack">
+        <button class="dk-btn dk-green dk-ol" id="rAgain"><svg viewBox="0 0 24 24"><use href="#i-re"/></svg>Main lagi</button>
+        <button class="dk-btn dk-purple dk-ol" id="rNormal" hidden>Main biasa</button>
+        <div class="dk-row">
+          <button class="dk-btn dk-blue dk-ol" id="rShare"><svg viewBox="0 0 24 24"><use href="#i-sh"/></svg>Bagikan</button>
+          <button class="dk-btn dk-orange dk-ol" id="rMenu"><svg viewBox="0 0 24 24"><use href="#i-home"/></svg>Menu</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sHarian" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-ol">Harian</div>
+      <button class="dk-btn dk-red dk-circle dk-close" data-close aria-label="Tutup"><svg viewBox="0 0 24 24"><use href="#i-x"/></svg></button>
+      <div class="cal"><i id="dMonth">SEP</i><b id="dDay">28</b></div>
+      <div class="big dk-ol" style="font-size:32px" id="dN">Hari ke-1</div>
+      <div class="goals" id="dGoals"></div>
+      <div class="strk2 dk-ol"><svg viewBox="0 0 24 24"><use href="#i-flame"/></svg><span id="dStrkN">1 hari beruntun</span></div>
+      <div class="dk-lbl" id="dInfo">Jalanan sama untuk semua. 1 kesempatan.</div>
+      <div class="dk-stack"><button class="dk-btn dk-green dk-ol" id="dPlay"><svg viewBox="0 0 24 24"><use href="#i-play"/></svg><span>Main</span></button></div>
+    </div>
+  </section>
+
+  <section id="sKoleksi" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-blue dk-ol">Koleksi</div>
+      <button class="dk-btn dk-red dk-circle dk-close" data-close aria-label="Tutup"><svg viewBox="0 0 24 24"><use href="#i-x"/></svg></button>
+      <div class="pill wal dk-ol"><svg viewBox="0 0 24 24"><use href="#icoFish"/></svg><span id="kFish">0</span></div>
+      <div class="car">
+        <button class="dk-btn dk-orange dk-circle" id="kPrev" aria-label="Sebelumnya"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="#2b1a10" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 5l-7 7 7 7" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <canvas id="kCv" width="150" height="120" role="img" aria-label="Pratinjau kostum"></canvas>
+        <button class="dk-btn dk-orange dk-circle" id="kNext" aria-label="Berikutnya"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="#2b1a10" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 5l7 7-7 7" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="kname dk-ol" id="kName">Oyen</div>
+      <div class="kst" id="kSt">Dipakai</div>
+      <div class="dots" id="kDots"></div>
+      <div class="dk-row"><button class="dk-btn dk-green dk-ol" id="kUse">Pakai</button><button class="dk-btn dk-yellow dk-ol" id="kCan">Buka Kaleng · 100</button></div>
+      <div class="dk-lbl" id="kInfo">0/10 lencana</div>
+      <div class="kgrid" id="kGrid"></div>
+    </div>
+  </section>
+
+  <section id="sTantang" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-purple dk-ol">Tantang</div>
+      <button class="dk-btn dk-red dk-circle dk-close" data-close aria-label="Tutup"><svg viewBox="0 0 24 24"><use href="#i-x"/></svg></button>
+      <div class="dk-lbl" id="cInfo">Langkah terakhirmu</div>
+      <div class="big dk-ol" id="cScore">0</div>
+      <div class="dk-lbl">Kirim ke teman. Jalanannya sama persis!</div>
+      <div class="dk-stack"><button class="dk-btn dk-pink dk-ol" id="cSend"><svg viewBox="0 0 24 24"><use href="#i-sh"/></svg><span>Kirim</span></button></div>
+    </div>
+  </section>
+</div>
+<script src="/kit/kit.js"></script>
+<script>
+"use strict";
+const { min, max, sin, cos, floor, round, abs, ceil, PI, random: rnd, pow } = Math;
+const KIT = window.DehayukKit, SLUG = "oyen-nyebrang", TAU = PI * 2;
+const Q = new URLSearchParams(location.search);
+const DEMO = Q.get("demo") === "1", COVER = Q.get("cover") === "1", UJI = Q.get("uji") === "1";
+// penyimpanan: bila localStorage gagal, ikan dan kostum tetap hidup selama sesi di MEM
+const KST = KIT.store(SLUG), MEM = {};
+const ST = { get(k, fb) { return k in MEM ? MEM[k] : KST.get(k, fb); }, set(k, v) { MEM[k] = v; KST.set(k, v); },
+  // baca dengan cek jenis: data lama atau rusak diganti nilai cadangan, tidak pernah melempar
+  arr(k) { const v = this.get(k, []); return Array.isArray(v) ? v.slice() : []; },
+  obj(k, keys) { const v = this.get(k, null); return v && typeof v === "object" && !Array.isArray(v) && keys.every((q) => q in v) ? v : null; } };
+
+/* ================= INTI (tanpa DOM) ================= */
+const COLS = 9, HOP = .14, EXT = 10, WARN = 1.5, TV = 40, TLEN = 15, CH = 12, MAT_T = 5.2, MAT_S = 1;
+const IDLE_WARN = 5.5, IDLE_MAX = 7, HB = .35, NEAR = .3, WIN = 2.2 * HOP, RIVER_MAX = 2.5;
+const UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
+const L_G = 0, L_R = 1, L_W = 2, L_T = 3; // lajur: rumput/trotoar, jalan, sungai, rel
+// kendaraan: [nama, panjang (sel), faktor laju]
+const VT = [["ojek", .9, 1.25], ["angkot", 1.7, 1], ["becak", 1.15, .6], ["bakso", 1, .45], ["rodatiga", 1.35, .95], ["bus", 3, .7], ["truk", 2.4, .9], ["sate", 1, .45]];
+const BIO = [
+  { n: "Kampung", g: ["#93d65c", "#86cc50"], gs: "#5e9a36", road: "#5f6d8c", w: ["#3fc8d2", "#279fb5"], rail: "#9c8c7a", veh: [0, 1, 2, 3, 4, 1], fl: [0, 1], pr: [1, 2, 3, 1, 4, 2] },
+  { n: "Kota", g: ["#d3d6dc", "#c7cbd2"], gs: "#8a919c", road: "#525c78", w: ["#45b8d6", "#2c93b8"], rail: "#8f8a86", veh: [1, 5, 0, 6, 4, 1, 0], fl: [0, 1], pr: [2, 4, 9, 1, 3] },
+  { n: "Pesisir", g: ["#f6df9f", "#efd38d"], gs: "#c8a25a", road: "#687388", w: ["#34bde6", "#1c95cc"], rail: "#a79a86", veh: [0, 6, 2, 4, 1], fl: [2, 1, 2, 0], pr: [6, 5, 6, 2, 5] },
+  { n: "Sawah", g: ["#bde35f", "#afd852"], gs: "#7ea334", road: "#676b7c", w: ["#5ac8b3", "#3ba898"], rail: "#9a8d74", veh: [6, 0, 3, 2, 4], fl: [1, 1, 0], pr: [7, 8, 1, 8, 1] },
+  { n: "Malam Pasar", g: ["#4f6c5f", "#48655a"], gs: "#2c4138", road: "#353d58", w: ["#2d7494", "#225c7a"], rail: "#5d544c", veh: [0, 1, 7, 2, 4, 7], fl: [0, 1], pr: [9, 3, 4, 2, 3], night: 1 }
+];
+function mod(a, n) { return ((a % n) + n) % n; }
+function rowRng(seed, row, att) { return KIT.rng((seed ^ Math.imul(row + 7, 2654435761) ^ Math.imul(att, 0x9E3779B9)) >>> 0); }
+function biomeOf(row) { return floor(max(0, row) / 60) % BIO.length; }
+
+/* ---------- pembuat lajur: fungsi murni dari (benih, baris) ---------- */
+function laneGrass(row, rng, b, n, tut) {
+  const L = { row, t: L_G, b, blk: new Uint8Array(COLS), ik: -1, gold: false };
+  if (n == null) n = [0, 1, 1, 2, 2, 3, 4][(rng() * 7) | 0];
+  const P = BIO[b].pr;
+  for (let i = 0; i < n; i++) { const c = (rng() * COLS) | 0; if (!(tut && c === 4)) L.blk[c] = P[(rng() * P.length) | 0]; }
+  if (row > 0 && rng() < .32) { const c = (rng() * COLS) | 0; if (!L.blk[c]) { L.ik = c; L.gold = rng() < .12; } }
+  if (row > 0 && row % 60 === 0) { L.blk[0] = 10; L.blk[8] = 10; L.gate = 1; }
+  return L;
+}
+function laneRoad(row, rng, d, b, dir, slow) {
+  const ty = slow ? 1 : BIO[b].veh[(rng() * BIO[b].veh.length) | 0], vt = VT[ty];
+  let v = slow ? 1.05 : (1.2 + 2.4 * d) * vt[2] * (.85 + .3 * rng());
+  v = max(.5, min(4.6, v));
+  // jendela waktu: celah kosong di setiap kolom >= WIN + waktu kendaraan lewat
+  const need = 1 + WIN * v + .1, gmin = slow ? 5.5 : 4 - 1.8 * d, gx = slow ? 2 : 3 - 1.5 * d;
+  const o = [], cl = []; let P = 0;
+  while (P < COLS + 2 * EXT + 1) { o.push(P); cl.push((rng() * 6) | 0); P += vt[1] + max(need, gmin + rng() * gx); }
+  const L = { row, t: L_R, b, ty, len: vt[1], dir, v, o, cl, P, ph: rng() * P };
+  // angkot ngetem: seluruh lajur berhenti NG_STOP detik tiap nP detik (lampu hazard menyala dulu)
+  if (!slow && ty === 1 && row >= 10 && rng() < .6) { L.nP = 4.5 + rng() * 3; L.nO = rng() * L.nP; }
+  return L;
+}
+function laneRiver(row, rng, d, b, dir) {
+  for (let tries = 0; ; tries++) {
+    const mats = row >= 40 && tries < 5 && rng() < .12 + .35 * d;
+    const fk = mats ? 3 : BIO[b].fl[(rng() * BIO[b].fl.length) | 0];
+    const v = (.8 + 1.1 * d) * (.85 + .3 * rng());
+    const o = [], ln = [], sp = []; let P = 0;
+    while (P < COLS + 2 * EXT + 1) {
+      const len = fk === 0 ? 3 - d + rng() : fk === 1 ? 2.5 - .5 * d + rng() * .5 : fk === 2 ? 2 + rng() * .4 : 1.8 + rng() * .4;
+      o.push(P); ln.push(len); sp.push(mats && (o.length & 1) === 0 ? rng() * MAT_T : -1);
+      P += len + .8 + rng() * (min(RIVER_MAX * v, 3.2) - .8 - (mats ? .6 : 0));
+    }
+    const L = { row, t: L_W, b, fk, dir, v, o, ln, sp, P, ph: rng() * P };
+    if (!mats || riverGap(L) <= RIVER_MAX) return L;
+  }
+}
+function laneRail(row, rng, d, b) { const Tp = (9 - 4 * d) * (.9 + .3 * rng()); return { row, t: L_T, b, dir: rng() < .5 ? 1 : -1, Tp, ph: WARN + .5 + rng() * Tp }; }
+const HEDGE = { row: -1, t: L_G, b: 0, blk: new Uint8Array(COLS).fill(11), ik: -1, hedge: 1 };
+
+/* ---------- posisi benda: fungsi murni dari (lajur, waktu) ---------- */
+const NG_STOP = 1.2, NG_WARN = .6;
+// waktu jalan lajur ngetem: jam berhenti selama NG_STOP; celah waktu antarkendaraan hanya bisa bertambah
+function ngPh(L, t) { return mod(t + L.nO, L.nP); }
+function laneT(L, t) { if (!L.nP) return t; const a = t + L.nO, k = floor(a / L.nP), m = L.nP - NG_STOP; return k * m + min(a - k * L.nP, m); }
+function ngStop(L, t) { return !!L.nP && ngPh(L, t) >= L.nP - NG_STOP; }
+function ngWarn(L, t) { return !!L.nP && ngPh(L, t) >= L.nP - NG_STOP - NG_WARN; }
+function vehX(L, i, t) { return mod(L.o[i] + L.ph + L.dir * L.v * laneT(L, t), L.P) - EXT; }
+// indeks+1 kendaraan yang mengenai Oyen di x (kotak kena 70%), 0 bila aman
+function roadHit(L, x, t, m) {
+  const a = x - HB - m, b = x + HB + m;
+  for (let i = 0; i < L.o.length; i++) { const vx = vehX(L, i, t); if (vx + .05 < b && vx + L.len - .05 > a) return i + 1; }
+  return 0;
+}
+function roadGap(L, x, t) {
+  let g = 99;
+  for (let i = 0; i < L.o.length; i++) { const vx = vehX(L, i, t), d = max(vx + .05 - (x + HB), (x - HB) - (vx + L.len - .05)); if (d < g) g = d; }
+  return g;
+}
+function matPh(L, i, t) { return L.sp[i] < 0 ? -1 : mod(t + L.sp[i], MAT_T); }
+function sunk(L, i, t) { return L.sp[i] >= 0 && matPh(L, i, t) >= MAT_T - MAT_S; }
+function floatAt(L, x, t, tol) {
+  for (let i = 0; i < L.o.length; i++) { const fx = vehX(L, i, t); if (x >= fx - tol && x <= fx + L.ln[i] + tol && !sunk(L, i, t)) return i; }
+  return -1;
+}
+// selang terlama sebuah kolom tidak tertutup pelampung (detik), dicek dengan sampel waktu
+function riverGap(L) {
+  const H = L.P / L.v + 2 * MAT_T, dt = .05; let worst = 0;
+  for (let c = 0; c < COLS; c++) {
+    let run = 0;
+    for (let t = 0; t < H; t += dt) { if (floatAt(L, c + .5, t, 0) < 0) { run += dt; if (run > worst) worst = run; } else run = 0; }
+  }
+  return worst;
+}
+function trainArr(L, k) { return L.ph + k * L.Tp; }
+function trainSpan(L, t, k) { const f = L.dir > 0 ? (t - trainArr(L, k)) * TV : COLS - (t - trainArr(L, k)) * TV; return L.dir > 0 ? [f - TLEN, f] : [f, f + TLEN]; }
+function trainK(L, t) { return floor((t - L.ph) / L.Tp); }
+function railHit(L, x, t, m) {
+  const k = trainK(L, t);
+  for (let j = max(0, k); j <= k + 1; j++) { const s = trainSpan(L, t, j); if (s[0] < x + HB + m && s[1] > x - HB - m) return 1; }
+  return 0;
+}
+// lampu & palang menyala mulai WARN detik sebelum kereta masuk lapangan
+function railWarn(L, t) {
+  const k = trainK(L, t);
+  for (let j = max(0, k); j <= k + 1; j++) { const a = trainArr(L, j); if (t >= a - WARN && t <= a + .8) return true; }
+  return false;
+}
+function danger(L, x, t, m) { return L.t === L_R ? roadHit(L, x, t, m) : L.t === L_T ? railHit(L, x, t, m) : 0; }
+
+/* ---------- lompatan ---------- */
+function hopTarget(lf, r, x, dir) {
+  const tr = r + (dir === UP ? 1 : dir === DOWN ? -1 : 0), tx = x + (dir === LEFT ? -1 : dir === RIGHT ? 1 : 0);
+  if (tr < 0) return null;
+  const L = lf(tr);
+  if (L.t === L_W) return tx < .25 || tx > COLS - .25 ? null : { r: tr, x: tx };
+  const c = floor(tx);
+  if ((dir === LEFT || dir === RIGHT) && (c < 0 || c >= COLS)) return null;
+  const cc = max(0, min(COLS - 1, c));
+  if (L.t === L_G && L.blk[cc]) return null;
+  return { r: tr, x: cc + .5 };
+}
+
+/* ---------- pencari jalan: BFS atas (baris, x, irisan waktu HOP) ---------- */
+// satu langkah HOP detik; aksi 0 diam, 1..4 = arah+1. Pengecekan lebih ketat dari permainan (margin M).
+const SM = .1;
+function stepState(lf, r, x, a, t) {
+  const L0 = lf(r); let tr = r, tx = x;
+  if (a) { const tg = hopTarget(lf, r, x, a - 1); if (!tg) return null; tr = tg.r; tx = tg.x; }
+  const L1 = a ? lf(tr) : L0;
+  for (let q = 1; q <= 4; q++) {
+    const f = q / 4, tt = t + HOP * f;
+    if (!a) {
+      if (L0.t === L_W) { const xx = x + L0.dir * L0.v * HOP * f; if (xx < .3 || xx > COLS - .3 || floatAt(L0, xx, tt, -.05) < 0) return null; }
+      else if (danger(L0, x, tt, SM)) return null;
+    } else {
+      const xi = x + (tx - x) * f;
+      if (f <= .5 && L0.t !== L_W && danger(L0, xi, tt, SM)) return null;
+      if (f >= .5 && L1.t !== L_W && danger(L1, xi, tt, SM)) return null;
+      if (f === 1 && L1.t === L_W && floatAt(L1, tx, tt, -.05) < 0) return null;
+    }
+  }
+  return { r: tr, x: a ? tx : L0.t === L_W ? x + L0.dir * L0.v * HOP : x };
+}
+const ORDER = [1, 0, 3, 4, 2]; // utamakan maju, lalu diam, geser, mundur
+// mengembalikan daftar aksi dari starts pada waktu t0 sampai baris >= goal, atau null
+function solve(lf, starts, t0, goal, maxSteps, minRow) {
+  let layer = starts.map((s) => ({ r: s.r, x: s.x, p: null, a: 0 }));
+  for (let step = 0; step < maxSteps; step++) {
+    const t = t0 + step * HOP, nxt = [], seen = new Set();
+    for (const s of layer) for (const a of ORDER) {
+      const n = stepState(lf, s.r, s.x, a, t);
+      if (!n || n.r < minRow) continue;
+      const node = { r: n.r, x: n.x, p: s, a };
+      if (n.r >= goal) { const path = []; let z = node; for (; z.p; z = z.p) path.push(z.a); path.reverse(); path.from = z; return path; }
+      const key = n.r * 4096 + round(n.x * 8);
+      if (seen.has(key)) continue; seen.add(key); nxt.push(node);
+    }
+    if (!nxt.length) return null;
+    layer = nxt;
+  }
+  return null;
+}
+
+/* ---------- dunia: potongan 12 baris, dibuat malas ---------- */
+function World(seed, dFix) { this.seed = seed >>> 0; this.dFix = dFix == null ? null : dFix; this.ch = new Map(); this.fix = null; this.regen = 0; this.id = ++World.n; }
+World.n = 0;
+World.prototype.d = function (row) { return this.dFix != null ? this.dFix : min(1, max(0, row) / 250); };
+World.prototype.lane = function (row) {
+  if (this.fix && this.fix[row]) return this.fix[row];
+  if (row < 0) return HEDGE;
+  const k = floor(row / CH); let c = this.ch.get(k);
+  if (!c) { c = genChunk(this, k); this.ch.set(k, c); }
+  return c[row - k * CH];
+};
+World.prototype.gc = function (minRow) { for (const k of this.ch.keys()) if ((k + 1) * CH < minRow - 2) this.ch.delete(k); };
+// baris pertama tiap potongan selalu rumput dan tidak bergantung pada percobaan ulang
+function firstRow(w, k) {
+  const row = k * CH, rng = rowRng(w.seed, row, 0);
+  if (row === 0) { const L = laneGrass(0, rng, 0, 0, true); L.blk[0] = 1; L.blk[8] = 2; return L; }
+  return laneGrass(row, rng, biomeOf(row), null, false);
+}
+function buildChunk(w, k, att) {
+  const r0 = k * CH, out = [firstRow(w, k)];
+  let run = 0, left = 0, bt = L_G, rdir = 1;
+  for (let i = 1; i < CH; i++) {
+    const row = r0 + i, rng = rowRng(w.seed, row, att), d = w.d(row), b = biomeOf(row);
+    if (row < 8) { // tutorial: rumput, jalan pelan, rumput, rumput, jalan pelan, rumput
+      out.push(row === 2 || row === 5 ? laneRoad(row, rng, 0, b, row === 2 ? 1 : -1, true) : laneGrass(row, rng, b, row < 4 ? 1 : 2, true));
+      continue;
+    }
+    const maxRun = round(2 + 3 * d), pD = .45 + .3 * d;
+    // baris terakhir potongan selalu lajur bahaya, jadi deret aman tidak pernah melintasi batas potongan
+    const last = i === CH - 1, pre = i === CH - 2;
+    let ty;
+    if (last) ty = left > 0 ? bt : pickDanger(rng, row, d);
+    else if (run >= maxRun || (pre && run + 2 > maxRun)) ty = L_G;
+    else if (left > 0) ty = bt;
+    else if (rng() < pD) {
+      ty = pickDanger(rng, row, d);
+      left = ty === L_R ? 1 + ((rng() * 4) | 0) : ty === L_W ? 1 + ((rng() * 3) | 0) : 1;
+      rdir = rng() < .5 ? 1 : -1;
+    } else ty = L_G;
+    if (ty === L_G) { run = 0; left = 0; bt = L_G; out.push(laneGrass(row, rng, b, null, false)); continue; }
+    bt = ty; run++; left--;
+    if (ty === L_R) out.push(laneRoad(row, rng, d, b, rng() < .5 ? 1 : -1, false));
+    else if (ty === L_W) { rdir = -rdir; out.push(laneRiver(row, rng, d, b, rdir)); }
+    else out.push(laneRail(row, rng, d, b));
+  }
+  return out;
+}
+function pickDanger(rng, row, d) {
+  const wr = row >= 15 ? .45 : 0, wt = row >= 25 ? .2 + .25 * d : 0, v = rng() * (1 + wr + wt);
+  return v < 1 ? L_R : v < 1 + wr ? L_W : L_T;
+}
+// rintangan di lajur aman tidak boleh menyegel jalan: setiap sel terbuka di baris bawah suatu deret aman
+// harus tersambung ke >= 2 sel terbuka di baris atasnya (flood fill). Bila gagal, rintangan dibuang satu per satu.
+function safeRunsOk(lanes, fixIt) {
+  let ok = true;
+  for (let a = 0; a < lanes.length; a++) {
+    if (lanes[a].t !== L_G || (a > 0 && lanes[a - 1].t === L_G)) continue;
+    let b = a; while (b + 1 < lanes.length && lanes[b + 1].t === L_G) b++;
+    for (let guard = 0; guard < 40; guard++) {
+      if (runConnected(lanes, a, b)) break;
+      ok = false; if (!fixIt) break;
+      let done = false;
+      for (let r = b; r >= a && !done; r--) for (let c = 0; c < COLS && !done; c++) if (lanes[r].blk[c] && lanes[r].blk[c] !== 10) { lanes[r].blk[c] = 0; done = true; }
+      if (!done) for (let r = b; r >= a && !done; r--) for (let c = 0; c < COLS && !done; c++) if (lanes[r].blk[c]) { lanes[r].blk[c] = 0; lanes[r].gate = 0; done = true; }
+    }
+    a = b;
+  }
+  return ok;
+}
+function runConnected(lanes, a, b) {
+  const H = b - a + 1, comp = new Int16Array(H * COLS).fill(-1);
+  let nc = 0;
+  for (let s = 0; s < H * COLS; s++) {
+    if (comp[s] >= 0 || lanes[a + ((s / COLS) | 0)].blk[s % COLS]) continue;
+    const st = [s]; comp[s] = nc;
+    while (st.length) {
+      const u = st.pop(), ur = (u / COLS) | 0, uc = u % COLS;
+      const nb = [[ur, uc - 1], [ur, uc + 1], [ur - 1, uc], [ur + 1, uc]];
+      for (const [r, c] of nb) { if (r < 0 || r >= H || c < 0 || c >= COLS) continue; const v = r * COLS + c; if (comp[v] >= 0 || lanes[a + r].blk[c]) continue; comp[v] = nc; st.push(v); }
+    }
+    nc++;
+  }
+  for (let c = 0; c < COLS; c++) {
+    if (lanes[a].blk[c]) continue;
+    const id = comp[c]; let top = 0;
+    for (let cc = 0; cc < COLS; cc++) if (comp[(H - 1) * COLS + cc] === id) top++;
+    if (top < 2) return false;
+  }
+  return true;
+}
+// sungai & jalan pasti bisa diseberangi: BFS dari baris pertama potongan ke baris pertama potongan berikutnya
+function chunkPassable(w, lanes, r0, next, starts) {
+  const lf = (row) => row < r0 ? HEDGE : row - r0 < CH ? lanes[row - r0] : next;
+  const st = []; for (let c = 0; c < COLS; c++) if (!lanes[0].blk[c]) st.push({ r: r0, x: c + .5 });
+  for (const t0 of starts) if (!solve(lf, st, t0, r0 + CH, 150, r0)) return false;
+  return true;
+}
+const CHK_T = [3.1, 17.9];
+function genChunk(w, k) {
+  const r0 = k * CH, next = firstRow(w, k + 1);
+  for (let att = 0; att < 24; att++) {
+    const lanes = buildChunk(w, k, att);
+    safeRunsOk(lanes, true);
+    if (chunkPassable(w, lanes, r0, next, CHK_T)) { if (att) w.regen++; return lanes; }
+  }
+  const out = [firstRow(w, k)]; // cadangan terakhir: rumput lapang
+  for (let i = 1; i < CH; i++) out.push(laneGrass(r0 + i, rowRng(w.seed, r0 + i, 99), biomeOf(r0 + i), 0, false));
+  w.regen += 100; return out;
+}
+
+/* ---------- simulasi permainan ---------- */
+function Sim(w, opt) {
+  this.w = w; this.calm = !!(opt && opt.calm); this.lf = (r) => w.lane(r);
+  this.t = 0; this.r = 0; this.x = 4.5; this.max = 0; this.hop = null; this.q = -1; this.dead = ""; this.idle = 0; this.cam = 0;
+  this.face = UP; this.fish = 0; this.got = new Set(); this.near = 0; this.nmEnd = -1; this.nmDone = true; this.rails = 0; this.rivers = 0; this.bio = 1;
+  this.ev = []; this.hops = 0; this.pre = null; this.due = -1; this.killer = null; this.nmOk = false; this.tn = null;
+}
+Sim.prototype.prog = function () { const h = this.hop; return h ? min(1, (this.t - h.t0) / HOP) : 1; };
+Sim.prototype.oy = function () { const h = this.hop; return h ? h.fr + (h.tr - h.fr) * this.prog() : this.r; };
+Sim.prototype.ox = function () { const h = this.hop; return h ? h.fx + (h.tx - h.fx) * this.prog() : this.x; };
+Sim.prototype.input = function (dir) {
+  if (this.dead) return false;
+  if (this.hop) { if (this.q < 0) this.q = dir; return true; }
+  return this.start(dir);
+};
+Sim.prototype.start = function (dir) {
+  this.face = dir;
+  const tg = hopTarget(this.lf, this.r, this.x, dir);
+  if (!tg) { this.ev.push(["bump", dir]); return false; }
+  this.hop = { fr: this.r, fx: this.x, tr: tg.r, tx: tg.x, t0: this.t, dir };
+  // nyaris hanya dihitung saat maju ke baris baru, jadi tidak bisa dipanen bolak-balik
+  this.nmOk = dir === UP && tg.r > this.max; this.nmEnd = this.t + HOP + .2; this.nmDone = false; this.hops++;
+  this.tn = this.nmOk && this.lf(this.r).t === L_T ? { row: this.r, x: this.x, until: this.t + .35 } : null;
+  this.ev.push(["hop", dir]); return true;
+};
+Sim.prototype.die = function (c, k) { if (this.dead) return; this.dead = c; this.killer = k || null; this.q = -1; this.ev.push(["die", c]); };
+Sim.prototype.check = function () {
+  const h = this.hop; let row = this.r, x = this.x;
+  if (h) { const p = this.prog(); row = p < .5 ? h.fr : h.tr; x = this.ox(); }
+  const L = this.lf(row);
+  if (L.t === L_R) { const i = roadHit(L, x, this.t, 0); if (i) this.die(ngStop(L, this.t) ? "ngetem" : VT[L.ty][0], { row, i: i - 1 }); }
+  else if (L.t === L_T && railHit(L, x, this.t, 0)) this.die("kereta", { row });
+};
+Sim.prototype.land = function () {
+  const h = this.hop; this.hop = null; this.r = h.tr; this.x = h.tx;
+  const L = this.lf(this.r);
+  if (L.t === L_W && floatAt(L, this.x, this.t, .1) < 0) { this.die("kali"); return; }
+  if (this.r > this.max) {
+    this.max = this.r; this.idle = 0; this.ev.push(["score", this.max]);
+    const Lb = this.lf(this.r - 1); if (Lb.t === L_T) this.rails++; else if (Lb.t === L_W) this.rivers++;
+    this.bio |= 1 << biomeOf(this.r);
+    if (this.max % 50 === 0) this.ev.push(["mile", this.max]);
+  }
+  if (L.t === L_G && L.ik >= 0 && floor(this.x) === L.ik && !this.got.has(this.r)) { this.got.add(this.r); const n = L.gold ? 5 : 1; this.fish += n; this.ev.push(["fish", n]); }
+  this.ev.push(["land", L.t]);
+  this.check();
+  if (!this.dead && this.q >= 0) { const d = this.q; this.q = -1; this.start(d); }
+};
+Sim.prototype.adv = function (h) {
+  this.t += h;
+  if (!this.hop) {
+    const L = this.lf(this.r);
+    if (L.t === L_W) {
+      this.x += L.dir * L.v * h;
+      if (this.x < 0 || this.x > COLS) return this.die("hanyut");
+      if (floatAt(L, this.x, this.t, .1) < 0) return this.die("kali");
+    }
+  }
+  this.check(); if (this.dead) return;
+  if (this.nmOk && !this.nmDone && this.t < this.nmEnd) {
+    const hh = this.hop, x = this.ox(), rows = hh ? [hh.fr, hh.tr] : [this.r];
+    for (const row of rows) { const L = this.lf(row); if (L.t === L_R && !ngStop(L, this.t)) { const g = roadGap(L, x, this.t); if (g > 0 && g < NEAR) { this.near++; this.fish++; this.nmDone = true; this.ev.push(["near", row, 1]); break; } } }
+  }
+  // nyaris kereta: kereta lewat di belakang Oyen tak lama setelah ia melompat keluar rel
+  if (this.tn) {
+    if (this.t > this.tn.until) this.tn = null;
+    else if (this.oy() >= this.tn.row + .5 && railHit(this.lf(this.tn.row), this.tn.x, this.t, .4)) { this.near++; this.fish += 3; this.ev.push(["near", this.tn.row, 3, "kereta"]); this.tn = null; }
+  }
+  const oy = this.oy();
+  if (!this.calm) {
+    if (this.max >= 30) this.cam += (.15 + .2 * min(1, (this.max - 30) / 220)) * h;
+    if (oy > this.cam) this.cam = oy;
+    this.idle += h;
+    if (this.idle >= IDLE_MAX || oy < this.cam - 3) this.die("elang");
+  } else if (oy > this.cam) this.cam = oy;
+};
+// maju dt detik dalam irisan <= 1/120 detik; pendaratan tepat pada waktunya, jadi dt besar tidak menembus
+Sim.prototype.step = function (dt) {
+  let left = dt;
+  for (let guard = 0; guard < 100000 && !this.dead; guard++) {
+    if (this.hop && this.t >= this.hop.t0 + HOP - 1e-9) { this.land(); continue; }
+    if (this.pre) this.pre();
+    if (this.dead || left <= 1e-9) break;
+    let h = min(left, 1 / 120);
+    if (this.hop) h = min(h, this.hop.t0 + HOP - this.t);
+    if (this.due > this.t + 1e-9) h = min(h, this.due - this.t);
+    if (h < 1e-9) h = 1e-9;
+    this.adv(h); left -= h;
+  }
+};
+
+/* ---------- pemain otomatis (demo, layar judul, uji) ---------- */
+function Bot(sim, calmPauses, seed) { this.s = sim; this.plan = null; this.i = 0; this.t0 = 0; this.wait = 0; this.pz = calmPauses; this.rn = KIT.rng(seed || 77); this.fail = 0; }
+Bot.prototype.tick = function () {
+  const s = this.s; if (s.dead || s.hop) return;
+  if (this.plan && this.i < this.plan.length) {
+    const due = this.t0 + this.i * HOP;
+    if (s.t + 1e-6 < due) { s.due = due; return; }
+    const a = this.plan[this.i++];
+    s.due = this.i < this.plan.length ? this.t0 + this.i * HOP : -1;
+    if (a && !s.start(a - 1)) this.plan = null;
+    return;
+  }
+  if (this.plan) { this.plan = null; if (this.pz && s.lf(s.r).t === L_G) this.wait = s.t + .7 + this.rn() * 1.8; }
+  if (s.t < this.wait) { s.due = this.wait; return; }
+  let goal = s.r + 8;
+  if (this.pz) for (let g = s.r + 1; g < s.r + 8; g++) if (s.lf(g).t === L_G) { goal = g; break; }
+  this.plan = solve(s.lf, [{ r: s.r, x: s.x }], s.t, goal, 90, s.r - 2); this.i = 0; this.t0 = s.t;
+  if (!this.plan) { this.fail++; this.plan = [0, 0]; }
+  s.due = this.t0;
+};
+
+/* ================= SENI (semua digambar dengan kode) ================= */
+const INK = "#2b1a10", OL = "rgba(43,26,16,.8)";
+let dpr = 1, C = 40;
+function mk(w, h) { const c = document.createElement("canvas"); c.width = max(1, ceil(w)); c.height = max(1, ceil(h || w)); return c; }
+function hex(h) { const n = parseInt(h.slice(1), 16); return [n >> 16, n >> 8 & 255, n & 255]; }
+function mix(a, b, t) { const x = hex(a), y = hex(b); return "#" + [0, 1, 2].map((i) => ("0" + round(x[i] + (y[i] - x[i]) * t).toString(16)).slice(-2)).join(""); }
+const lite = (c, t) => mix(c, "#ffffff", t), dark = (c, t) => mix(c, "#000000", t);
+function hsh(n) { n = Math.imul(n ^ 0x5bd1e995, 0x27d4eb2d); n ^= n >>> 15; return (n >>> 0) / 4294967296; }
+// persegi bersudut bulat; cadangan manual untuk WebView lama tanpa roundRect
+function rr(g, x, y, w, h, r) {
+  g.beginPath();
+  if (g.roundRect) { g.roundRect(x, y, w, h, r); return; }
+  let tl, tr, br, bl;
+  if (Array.isArray(r)) { const n = r.length; tl = r[0]; tr = n > 1 ? r[1] : tl; br = n > 2 ? r[2] : tl; bl = n > 3 ? r[3] : tr; }
+  else tl = tr = br = bl = r || 0;
+  const m = min(w, h) / 2; tl = min(tl, m); tr = min(tr, m); br = min(br, m); bl = min(bl, m);
+  g.moveTo(x + tl, y); g.lineTo(x + w - tr, y); g.arcTo(x + w, y, x + w, y + tr, tr);
+  g.lineTo(x + w, y + h - br); g.arcTo(x + w, y + h, x + w - br, y + h, br);
+  g.lineTo(x + bl, y + h); g.arcTo(x, y + h, x, y + h - bl, bl);
+  g.lineTo(x, y + tl); g.arcTo(x, y, x + tl, y, tl); g.closePath();
+}
+function ell(g, x, y, rx, ry) { g.beginPath(); g.ellipse(x, y, max(.1, rx), max(.1, ry), 0, 0, TAU); }
+function fl(g, col, lw) { g.fillStyle = col; g.fill(); if (lw) { g.lineWidth = lw; g.strokeStyle = OL; g.stroke(); } }
+// balok bergaya mainan: muka atas + muka selatan lebih gelap (kesan miring 3/4)
+function box(g, x, yc, w, dp, h, top, side, r, lw) {
+  const yt = yc - dp / 2 - h;
+  rr(g, x, yt + dp * .4, w, dp * .6 + h, r); fl(g, side, lw);
+  rr(g, x, yt, w, dp, r); fl(g, top, lw);
+}
+function shadow(g, x, y, w, h) { g.fillStyle = "rgba(20,20,45,.22)"; rr(g, x, y, w, h, h / 2); g.fill(); }
+
+/* ---------- Oyen dan kawan-kawan ---------- */
+// [id, nama, badan, gelap, belang, dada, mata, pola (0 loreng,1 telon,2 polos,3 batik), aksesori, kepala]
+const SKINS = [
+  ["oyen", "Oyen", "#ff9a3a", "#e0701c", "#d05a10", "#fff3e0", "#79c94a", 0],
+  ["telon", "Belang Telon", "#fff8ee", "#e2d4bf", "#ff9a3a", "#ffffff", "#e8a020", 1],
+  ["hitam", "Si Hitam", "#3b3442", "#241f2a", "#514858", "#5a5262", "#ffd23a", 2],
+  ["garong", "Kucing Garong", "#9c9ca8", "#72727e", "#56565f", "#dcdce4", "#a8e060", 0, "luka"],
+  ["sarung", "Kucing Sarung", "#ffb04a", "#e0851c", "#d06a14", "#fff3e0", "#79c94a", 0, "peci"],
+  ["batik", "Kucing Batik", "#c07a3e", "#8a5226", "#5a3212", "#f5dcb0", "#79c94a", 3],
+  ["astro", "Oyen Astronot", "#f2f5fb", "#c9d2e0", "#d05a10", "#dfe6f0", "#79c94a", 2, "helm", "#ff9a3a"]
+];
+const FV = [[0, -1], [0, 1], [-1, 0], [1, 0]];
+// kucing di titik tanah (0,0); o: {u, sx, sy, air, tail, mood: 0 biasa, 1 gepeng, 2 basah, 3 senang}
+function drawCat(g, sk, face, o) {
+  const u = o.u, air = (o.air || 0) / u, lw = .045, [fx, fy] = FV[face], upF = face === UP, side = fx;
+  const hb = sk[9] || sk[2];
+  g.save(); g.scale(u, u);
+  g.fillStyle = "rgba(30,20,10,.24)"; const ss = 1 - min(.55, air * .8); ell(g, 0, -.02, .33 * ss, .13 * ss); g.fill();
+  g.translate(0, -air); g.scale(o.sx || 1, o.sy || 1); g.lineJoin = "round"; g.lineCap = "round";
+  const by = -.27, hx = side * .13, hy = upF ? -.6 : -.52, HR = .25;
+  const tail = () => {
+    const sw = sin(o.tail || 0) * .5, bx = -fx * .2, byy = by - fy * .12 + .05;
+    const tx = bx - fx * .2 + (fy ? sw * .3 + .12 : 0), ty = byy - fy * .16 - .22 + (fx ? sw * .1 : 0);
+    g.beginPath(); g.moveTo(bx, byy); g.quadraticCurveTo(bx - fx * .28 + (fy ? .2 : 0), byy + .02, tx, ty);
+    g.lineWidth = .13; g.strokeStyle = OL; g.stroke(); g.lineWidth = .08; g.strokeStyle = sk[2]; g.stroke();
+    g.beginPath(); g.arc(tx, ty, .04, 0, TAU); g.fillStyle = sk[7] === 0 ? sk[4] : sk[3]; g.fill();
+  };
+  const head = () => {
+    for (const e of [-1, 1]) { // telinga
+      const ex = hx + e * HR * .62, ey = hy - HR * .55;
+      g.beginPath(); g.moveTo(ex - e * HR * .35, ey + HR * .15); g.lineTo(ex + e * HR * .2, ey - HR * .55); g.lineTo(ex + e * HR * .38, ey + HR * .28); g.closePath(); fl(g, hb, lw);
+      if (sk[8] === "luka" && e > 0) { g.fillStyle = hb; g.beginPath(); g.arc(ex + e * HR * .14, ey - HR * .3, HR * .1, 0, TAU); g.fill(); }
+      g.beginPath(); g.moveTo(ex - e * HR * .15, ey + HR * .1); g.lineTo(ex + e * HR * .14, ey - HR * .3); g.lineTo(ex + e * HR * .24, ey + HR * .18); g.closePath(); g.fillStyle = "#ffb3c1"; g.fill();
+    }
+    ell(g, hx, hy, HR * 1.08, HR); fl(g, hb, lw);
+    if (sk[7] === 0 || sk[9]) { g.strokeStyle = sk[4]; g.lineWidth = .04; for (const e of [-.35, 0, .35]) { g.beginPath(); g.moveTo(hx + e * HR, hy - HR * .95); g.lineTo(hx + e * HR * .8, hy - HR * (upF ? .2 : .55)); g.stroke(); } }
+    if (sk[7] === 1) { g.fillStyle = sk[4]; ell(g, hx - HR * .45, hy - HR * .45, HR * .4, HR * .33); g.fill(); g.fillStyle = "#3a2a22"; ell(g, hx + HR * .5, hy - HR * .5, HR * .33, HR * .28); g.fill(); }
+    if (sk[7] === 3) batik(g, hx, hy - HR * .3, HR * .8, sk, u);
+    if (upF) return;
+    const mood = o.mood || 0, ex0 = hx + side * HR * .22, eyY = hy + HR * .02;
+    g.fillStyle = "rgba(255,120,140,.35)"; for (const e of [-1, 1]) { ell(g, ex0 + e * HR * .62, eyY + HR * .38, HR * .17, HR * .1); g.fill(); }
+    g.fillStyle = sk[5]; ell(g, ex0, hy + HR * .52, HR * .42, HR * .3); g.fill();
+    for (const e of [-1, 1]) {
+      const x = ex0 + e * HR * .4 * (side && e === side ? 1.08 : side ? .8 : 1), s = side && e !== side ? .8 : 1;
+      if (mood === 1) { g.strokeStyle = INK; g.lineWidth = .04; g.beginPath(); g.moveTo(x - HR * .13, eyY - HR * .13); g.lineTo(x + HR * .13, eyY + HR * .13); g.moveTo(x + HR * .13, eyY - HR * .13); g.lineTo(x - HR * .13, eyY + HR * .13); g.stroke(); continue; }
+      if (mood === 2) { g.strokeStyle = INK; g.lineWidth = .04; g.beginPath(); g.moveTo(x - HR * .16, eyY + e * HR * .02 - HR * .06); g.lineTo(x + HR * .16, eyY - e * HR * .02 - HR * .06); g.stroke(); g.fillStyle = INK; ell(g, x, eyY + HR * .02, HR * .1, HR * .07); g.fill(); continue; }
+      ell(g, x, eyY, HR * .27 * s, HR * .31 * s); fl(g, "#fff", lw * .8);
+      g.fillStyle = sk[6]; ell(g, x + side * HR * .06, eyY + HR * .03, HR * .2 * s, HR * .24 * s); g.fill();
+      g.fillStyle = "#1a1010"; ell(g, x + side * HR * .09, eyY + HR * .05, HR * .11 * s, HR * .18 * s); g.fill();
+      g.fillStyle = "#fff"; ell(g, x + side * HR * .02 - HR * .07, eyY - HR * .1, HR * .07, HR * .07); g.fill();
+    }
+    if (sk[8] === "luka") { g.strokeStyle = "#e0506a"; g.lineWidth = .03; g.beginPath(); g.moveTo(ex0 - HR * .7, eyY - HR * .45); g.lineTo(ex0 - HR * .15, eyY + HR * .35); g.moveTo(ex0 - HR * .6, eyY - HR * .15); g.lineTo(ex0 - HR * .3, eyY - HR * .25); g.stroke(); }
+    const nx = ex0 + side * HR * .1, ny = hy + HR * .38;
+    g.beginPath(); g.moveTo(nx - HR * .1, ny - HR * .05); g.lineTo(nx + HR * .1, ny - HR * .05); g.lineTo(nx, ny + HR * .07); g.closePath(); g.fillStyle = "#ff7a92"; g.fill();
+    g.strokeStyle = INK; g.lineWidth = .03; g.beginPath();
+    if (mood === 2) { g.moveTo(nx - HR * .16, ny + HR * .24); g.quadraticCurveTo(nx, ny + HR * .12, nx + HR * .16, ny + HR * .24); }
+    else if (mood === 3) { g.moveTo(nx - HR * .16, ny + HR * .1); g.quadraticCurveTo(nx, ny + HR * .42, nx + HR * .16, ny + HR * .1); g.closePath(); g.fillStyle = "#c83a4a"; g.fill(); }
+    else { g.moveTo(nx - HR * .18, ny + HR * .12); g.quadraticCurveTo(nx - HR * .09, ny + HR * .24, nx, ny + HR * .09); g.quadraticCurveTo(nx + HR * .09, ny + HR * .24, nx + HR * .18, ny + HR * .12); }
+    g.stroke();
+    g.lineWidth = .018; g.strokeStyle = "rgba(43,26,16,.55)";
+    for (const e of [-1, 1]) for (const k of [-1, 1]) { g.beginPath(); g.moveTo(nx + e * HR * .35, ny + HR * .08 + k * HR * .05); g.lineTo(nx + e * HR * .95, ny + k * HR * .14); g.stroke(); }
+  };
+  const acc = () => {
+    if (sk[8] === "peci") { rr(g, hx - HR * .62, hy - HR * 1.12, HR * 1.24, HR * .5, [HR * .25, HR * .25, HR * .08, HR * .08]); fl(g, "#262028", lw); g.fillStyle = "#d9a53a"; g.fillRect(hx - HR * .6, hy - HR * .72, HR * 1.2, HR * .07); }
+    if (sk[8] === "helm") {
+      ell(g, hx, hy - HR * .08, HR * 1.42, HR * 1.36); g.fillStyle = "rgba(170,225,255,.28)"; g.fill(); g.lineWidth = .06; g.strokeStyle = "#fff"; g.stroke(); g.lineWidth = lw; g.strokeStyle = OL; g.stroke();
+      g.strokeStyle = "rgba(255,255,255,.85)"; g.lineWidth = .04; g.beginPath(); g.arc(hx, hy - HR * .08, HR * 1.1, -2.6, -1.9); g.stroke();
+      g.strokeStyle = INK; g.lineWidth = .025; g.beginPath(); g.moveTo(hx + HR * .9, hy - HR * 1.1); g.lineTo(hx + HR * 1.1, hy - HR * 1.6); g.stroke(); g.fillStyle = "#ff4d5e"; ell(g, hx + HR * 1.1, hy - HR * 1.62, .04, .04); g.fill();
+    }
+  };
+  const tailBehind = fy >= 0 || fx !== 0;
+  if (upF) head();
+  if (tailBehind) tail();
+  ell(g, 0, by, .29, .25); fl(g, sk[2], lw);
+  if (sk[7] === 0) { g.strokeStyle = sk[4]; g.lineWidth = .05; for (const e of [-.12, .02, .16]) { g.beginPath(); g.arc(0, by + e - .18, .2, .25 * PI, .75 * PI); g.stroke(); } }
+  if (sk[7] === 1) { g.fillStyle = sk[4]; ell(g, -.12, by - .06, .12, .09); g.fill(); g.fillStyle = "#3a2a22"; ell(g, .13, by + .05, .1, .08); g.fill(); }
+  if (sk[7] === 3) batik(g, 0, by, .2, sk, u);
+  if (sk[8] === "peci") { g.save(); ell(g, 0, by, .29, .25); g.clip(); for (let k = 0; k < 6; k++) { g.fillStyle = k & 1 ? "#1f7a4a" : "#7a2438"; g.fillRect(-.3 + k * .1, by + .02, .1, .3); } g.fillStyle = "rgba(255,230,120,.5)"; g.fillRect(-.3, by + .1, .6, .03); g.restore(); ell(g, 0, by, .29, .25); g.lineWidth = lw; g.strokeStyle = OL; g.stroke(); }
+  if (sk[8] === "helm") { g.fillStyle = "#ff8a2a"; rr(g, -.08, by - .02, .16, .1, .02); g.fill(); }
+  if (!upF) { g.fillStyle = sk[5]; ell(g, side * .1, by + .02, .14, .12); g.fill(); }
+  for (const e of [-1, 1]) { ell(g, e * .13 + side * .06, -.05, .08, .055); fl(g, sk[7] === 2 && !sk[9] ? sk[3] : sk[5], lw * .8); }
+  if (!tailBehind) tail();
+  if (!upF) head();
+  acc();
+  g.restore();
+}
+function batik(g, x, y, r, sk) { // motif kawung sederhana
+  g.fillStyle = sk[5];
+  for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) {
+    if ((i + j) & 1) continue; const cx = x + i * r * .6, cy = y + j * r * .45;
+    for (let k = 0; k < 4; k++) { const a = k * PI / 2 + PI / 4; ell(g, cx + cos(a) * .035, cy + sin(a) * .035, .03, .018); g.fill(); }
+  }
+}
+
+/* ---------- kendaraan (menghadap kanan; dibalik saat melaju ke kiri) ---------- */
+const VCOL = ["#38a1f0", "#46c24a", "#ffc21a", "#ef4a5a", "#ff8a2a", "#a06cf0"];
+const HELM = ["#ff4d5e", "#ffd23a", "#38a1f0", "#46c24a", "#ffffff", "#a06cf0"];
+const GLASS = "#2e4466";
+let VSPR = new Map();
+function wheel(g, x, y, r) { g.beginPath(); g.arc(x, y, r, 0, TAU); fl(g, "#232228", r * .25); g.beginPath(); g.arc(x, y, r * .42, 0, TAU); g.fillStyle = "#9aa0ab"; g.fill(); }
+function person(g, x, yc, u, shirt, hat) {
+  box(g, x - u * .13, yc, u * .26, u * .22, u * .3, lite(shirt, .2), shirt, u * .08, u * .035);
+  const hy = yc - u * .46;
+  if (hat === 1) { g.beginPath(); g.moveTo(x - u * .2, hy + u * .02); g.lineTo(x, hy - u * .14); g.lineTo(x + u * .2, hy + u * .02); g.closePath(); fl(g, "#e8c25a", u * .03); }
+  else { g.beginPath(); g.arc(x, hy, u * .11, 0, TAU); fl(g, "#f0b88a", u * .03); if (hat) { g.beginPath(); g.arc(x, hy - u * .02, u * .12, PI, 0); fl(g, hat, u * .03); } }
+}
+function vehSprite(ty, ci) {
+  const key = ty * 10 + ci; let s = VSPR.get(key); if (s) return s;
+  const len = VT[ty][1], u = C, W = (len + .3) * u, H = 1.75 * u, cv = mk(W * dpr, H * dpr), g = cv.getContext("2d");
+  g.scale(dpr * u, dpr * u); g.lineJoin = "round";
+  const x0 = .15, L = len, yc = 1.25, col = VCOL[ci], lw = .04;
+  shadow(g, x0 + .06, yc - .12, L, .5);
+  const side = (h, dp) => yc + dp / 2 - h; // tepi atas muka selatan
+  if (ty === 1 || ty === 5 || ty === 4) { // angkot, bus kota, roda tiga
+    const dp = .64, h = ty === 5 ? .66 : ty === 4 ? .48 : .54, top = ty === 4 ? "#34323c" : lite(col, .28), sc = ty === 5 ? ["#3b7fd6", "#e8484a", "#2fa86a"][ci % 3] : col;
+    const ys = side(h, dp);
+    if (ty !== 4) { wheel(g, x0 + .3, yc + dp / 2 - .02, .13); wheel(g, x0 + L - .34, yc + dp / 2 - .02, .13); }
+    else { wheel(g, x0 + .28, yc + dp / 2 - .02, .12); wheel(g, x0 + L - .22, yc + dp / 2 - .02, .11); }
+    box(g, x0, yc, L, dp, h, top, sc, (ty === 4 ? .2 : .12), lw);
+    if (ty === 5) { g.fillStyle = "#f4f1e8"; rr(g, x0 + .05, ys + .02, L - .1, h * .52, .06); g.fill(); g.fillStyle = "rgba(255,255,255,.5)"; for (let k = 0; k < 3; k++) { rr(g, x0 + .3 + k * L / 3.4, yc - dp / 2 - h + .14, .34, dp - .28, .05); g.fill(); } }
+    const n = ty === 5 ? 6 : ty === 1 ? 3 : 1, ww = (L - (ty === 4 ? .7 : .5)) / n;
+    for (let k = 0; k < n; k++) { g.fillStyle = GLASS; rr(g, x0 + .12 + k * ww, ys + .06, ww - .06, h * .36, .04); g.fill(); g.fillStyle = "rgba(255,255,255,.35)"; g.fillRect(x0 + .15 + k * ww, ys + .08, ww * .25, h * .3); }
+    if (ty === 1) { g.fillStyle = "#fff"; g.fillRect(x0 + .05, ys + h * .62, L - .1, .05); g.fillStyle = dark(col, .25); g.fillRect(x0 + .2, yc - dp / 2 - h + .1, L - .6, .05); g.fillRect(x0 + .2, yc + dp / 2 - h - .14, L - .6, .05); }
+    g.fillStyle = GLASS; rr(g, x0 + L - .3, yc - dp / 2 - h + .07, .2, dp - .14, .05); g.fill();
+    if (ty === 4) { g.fillStyle = col; rr(g, x0 + L - .5, ys, .45, h, .14); g.fill(); person(g, x0 + L - .55, yc - .05, .8, "#4a6fd6"); }
+    g.fillStyle = "#fff2a0"; rr(g, x0 + L - .1, ys + h * .55, .08, .1, .03); g.fill();
+  } else if (ty === 0) { // ojek dengan pengendara condong ke depan
+    wheel(g, x0 + .14, yc + .12, .12); wheel(g, x0 + L - .14, yc + .12, .12);
+    box(g, x0 + .08, yc, L - .16, .26, .22, "#3a3a44", ["#d8384a", "#2a60c8", "#222"][ci % 3], .1, lw);
+    box(g, x0 + .22, yc - .02, .36, .3, .38, lite(VCOL[(ci + 2) % 6], .2), VCOL[(ci + 2) % 6], .12, lw);
+    g.beginPath(); g.arc(x0 + .56, yc - .56, .15, 0, TAU); fl(g, HELM[ci], lw);
+    g.fillStyle = GLASS; rr(g, x0 + .6, yc - .6, .1, .1, .03); g.fill();
+    g.fillStyle = "#fff2a0"; g.beginPath(); g.arc(x0 + L - .04, yc - .12, .05, 0, TAU); g.fill();
+  } else if (ty === 2) { // becak: penumpang di depan, pengayuh di belakang
+    wheel(g, x0 + .16, yc + .18, .14); wheel(g, x0 + L - .24, yc + .2, .13);
+    box(g, x0 + .4, yc, L - .42, .6, .3, "#d8384a", "#b82a3a", .1, lw);
+    g.beginPath(); g.moveTo(x0 + .42, yc + .1); g.quadraticCurveTo(x0 + .42, yc - .9, x0 + L - .1, yc - .55); g.lineTo(x0 + L - .1, yc - .2); g.lineTo(x0 + .55, yc - .2); g.closePath(); fl(g, VCOL[ci], lw);
+    g.strokeStyle = "rgba(255,255,255,.6)"; g.lineWidth = .04; g.beginPath(); g.moveTo(x0 + .5, yc - .3); g.quadraticCurveTo(x0 + .55, yc - .75, x0 + L - .15, yc - .45); g.stroke();
+    person(g, x0 + .2, yc - .02, .85, "#3a8a5a", 1);
+  } else if (ty === 3 || ty === 7) { // gerobak bakso / sate
+    const sate = ty === 7;
+    wheel(g, x0 + L * .55, yc + .2, .16);
+    box(g, x0 + .28, yc, L - .3, .5, .34, sate ? "#7a4a2a" : "#e8e2d4", sate ? "#5a3218" : "#3a8adf", .06, lw);
+    if (!sate) { g.fillStyle = "rgba(210,240,255,.85)"; rr(g, x0 + .36, yc - .78, L - .46, .36, .05); g.fill(); g.lineWidth = lw; g.strokeStyle = OL; g.stroke(); for (let k = 0; k < 2; k++) { g.fillStyle = "#fff"; ell(g, x0 + .52 + k * .26, yc - .5, .1, .05); g.fill(); g.fillStyle = "#c8864a"; ell(g, x0 + .52 + k * .26, yc - .54, .05, .04); g.fill(); } }
+    else { g.fillStyle = "#ff8a2a"; rr(g, x0 + .36, yc - .46, L - .46, .1, .03); g.fill(); g.fillStyle = "#ffe36a"; g.beginPath(); g.arc(x0 + L - .12, yc - .9, .07, 0, TAU); g.fill(); g.fillStyle = "#553"; g.fillRect(x0 + L - .13, yc - .84, .02, .4); }
+    person(g, x0 + .12, yc - .02, .85, sate ? "#e8484a" : "#f2f2f2", sate ? "#222" : 0);
+  } else if (ty === 6) { // truk sayur
+    const dp = .66, cabL = .72;
+    wheel(g, x0 + .35, yc + dp / 2 - .02, .14); wheel(g, x0 + L * .55, yc + dp / 2 - .02, .14); wheel(g, x0 + L - .3, yc + dp / 2 - .02, .14);
+    box(g, x0, yc, L - cabL + .04, dp, .36, "#c68a4e", "#9a6230", .06, lw);
+    g.fillStyle = "#6a4020"; g.fillRect(x0 + .06, yc + dp / 2 - .3, L - cabL - .1, .04);
+    const rn = KIT.rng(ci + 5);
+    for (let k = 0; k < 9; k++) { const cx = x0 + .18 + rn() * (L - cabL - .3), cy = yc - dp / 2 - .3 + rn() * dp * .7; g.beginPath(); g.arc(cx, cy, .13, 0, TAU); fl(g, k % 3 === 2 ? "#ff8a2a" : k & 1 ? "#6fcf4a" : "#9fe06a", lw * .7); }
+    box(g, x0 + L - cabL, yc, cabL, dp, .62, lite(col, .25), col, .12, lw);
+    g.fillStyle = GLASS; rr(g, x0 + L - .28, yc - dp / 2 - .55, .2, dp - .14, .05); g.fill();
+    rr(g, x0 + L - cabL + .12, side(.62, dp) + .06, .38, .2, .04); g.fill();
+  }
+  s = { cv, w: W, h: H }; VSPR.set(key, s); return s;
+}
+// pelampung sungai: 0 kayu, 1 getek bambu, 2 perahu, 3 eceng gondok
+function floatSprite(fk, len, b) {
+  const key = 1000 + fk * 100 + round(len * 10) + b * 10000; let s = VSPR.get(key); if (s) return s;
+  const u = C, W = (len + .2) * u, H = 1.2 * u, cv = mk(W * dpr, H * dpr), g = cv.getContext("2d"), L = len, x0 = .1, yc = .7, lw = .035;
+  g.scale(dpr * u, dpr * u); g.lineJoin = "round";
+  g.fillStyle = "rgba(0,40,60,.22)"; rr(g, x0 + .04, yc - .18, L, .52, .2); g.fill();
+  if (fk === 0) {
+    rr(g, x0, yc - .33, L, .56, .26); fl(g, "#9a5e30", lw);
+    rr(g, x0 + .06, yc - .33, L - .12, .26, .12); g.fillStyle = "#c07e4a"; g.fill();
+    g.strokeStyle = "#7a4520"; g.lineWidth = .03; for (let k = 1; k < len * 2; k++) { g.beginPath(); g.moveTo(x0 + k * .5, yc - .22 + (k & 1) * .1); g.lineTo(x0 + k * .5 + .25, yc - .22 + (k & 1) * .1); g.stroke(); }
+    ell(g, x0 + L - .14, yc - .05, .13, .26); fl(g, "#e8b882", lw); g.strokeStyle = "#b07a44"; g.lineWidth = .02; ell(g, x0 + L - .14, yc - .05, .06, .13); g.stroke();
+  } else if (fk === 1) {
+    for (let k = 0; k < 5; k++) { rr(g, x0, yc - .36 + k * .13, L, .13, .065); fl(g, k & 1 ? "#cdbb52" : "#e2d26a", lw * .8); }
+    g.fillStyle = "#6a4a24"; for (const f of [.15, .85]) g.fillRect(x0 + L * f - .04, yc - .38, .08, .68);
+  } else if (fk === 2) {
+    g.beginPath(); g.moveTo(x0, yc - .3); g.quadraticCurveTo(x0 + L / 2, yc - .42, x0 + L, yc - .3); g.quadraticCurveTo(x0 + L - .1, yc + .3, x0 + L / 2, yc + .3); g.quadraticCurveTo(x0 + .1, yc + .3, x0, yc - .3); g.closePath(); fl(g, ["#e8484a", "#2f7fd6", "#3aa860"][b % 3], lw);
+    g.fillStyle = "#fff"; g.fillRect(x0 + .2, yc + .02, L - .4, .07);
+    ell(g, x0 + L / 2, yc - .22, L / 2 - .2, .13); g.fillStyle = "#9a6a3a"; g.fill();
+  } else {
+    const rn = KIT.rng(round(len * 100));
+    for (let k = 0; k < len * 3; k++) { const cx = x0 + .22 + (k / (len * 3)) * (L - .4), cy = yc - .08 + (rn() - .5) * .3; ell(g, cx, cy, .24, .2); fl(g, k & 1 ? "#4fae3a" : "#62c24a", lw * .7); }
+    for (let k = 0; k < 2; k++) { const cx = x0 + L * (.3 + k * .4), cy = yc - .2; g.fillStyle = "#c88ae8"; for (let p = 0; p < 5; p++) { ell(g, cx + cos(p * 1.26) * .07, cy + sin(p * 1.26) * .07, .06, .06); g.fill(); } g.fillStyle = "#ffe36a"; ell(g, cx, cy, .04, .04); g.fill(); }
+  }
+  s = { cv, w: W, h: H }; VSPR.set(key, s); return s;
+}
+
+/* ---------- rintangan dan hiasan ---------- */
+// 1 pohon, 2 pot bunga, 3 gerobak warung, 4 motor parkir, 5 batu, 6 kelapa, 7 orang-orangan sawah, 8 jerami, 9 lampu jalan, 10 tiang gapura, 11 semak, 12 rumah
+function prop(g, ty, cx, yb, u, b, h) {
+  g.save(); g.translate(cx, yb); g.scale(u, u); cx = 0; yb = 0;
+  const lw = .04, yc = -.5;
+  g.lineJoin = "round";
+  if (ty !== 12) shadow(g, cx - .36, yc - .1, .8, .42);
+  if (ty === 1) {
+    box(g, cx - .08, yc, .16, .14, .4, "#9a6a3a", "#7a4a24", .04, lw);
+    const gc = b === 4 ? ["#2e6a44", "#3d8055"] : b === 3 ? ["#4f9a2e", "#6cc040"] : ["#3f9a3a", "#5cc04a"];
+    for (const [dx, dy, r, k] of [[0, -.62, .36, 0], [-.18, -.78, .25, 1], [.16, -.86, .22, 1], [0, -1.0, .2, 1]]) { g.beginPath(); g.arc(cx + dx, yc + dy, r, 0, TAU); fl(g, gc[k], lw); }
+    if (b === 0 && h < .4) { g.fillStyle = "#ffc21a"; for (let k = 0; k < 3; k++) { g.beginPath(); g.arc(cx + (k - 1) * .16, yc - (.6 + (k & 1) * .15), .05, 0, TAU); g.fill(); } }
+  } else if (ty === 2) {
+    box(g, cx - .2, yc, .4, .36, .26, "#e07a4a", "#b8552e", .08, lw);
+    for (let k = 0; k < 5; k++) { g.beginPath(); g.arc(cx + cos(k * 1.3) * .14, yc - .45 + sin(k * 1.3) * .08, .12, 0, TAU); fl(g, k & 1 ? "#4fae3a" : "#62c84a", lw * .7); }
+    g.fillStyle = ["#ff5c93", "#ffd23a", "#fff"][(h * 3) | 0]; for (let k = 0; k < 3; k++) { g.beginPath(); g.arc(cx + (k - 1) * .12, yc - .55 - (k & 1) * .06, .05, 0, TAU); g.fill(); }
+  } else if (ty === 3) {
+    wheel(g, cx + .25, yc + .2, .1);
+    box(g, cx - .38, yc, .76, .5, .34, "#e8c890", "#b88a52", .05, lw);
+    g.fillStyle = "#6a4a2a"; g.fillRect(cx - .34, yc - .75, .04, .5); g.fillRect(cx + .3, yc - .75, .04, .5);
+    for (let k = 0; k < 5; k++) { g.fillStyle = k & 1 ? "#fff" : b === 4 ? "#ffb21a" : "#e8384f"; g.fillRect(cx - .42 + k * .168, yc - .95, .17, .26); }
+    g.lineWidth = lw; g.strokeStyle = OL; g.strokeRect(cx - .42, yc - .95, .84, .26);
+    if (b === 4) { g.fillStyle = "rgba(255,220,120,.35)"; g.beginPath(); g.arc(cx, yc - .4, .6, 0, TAU); g.fill(); }
+  } else if (ty === 4) {
+    wheel(g, cx - .28, yc + .14, .12); wheel(g, cx + .28, yc + .14, .12);
+    box(g, cx - .32, yc, .64, .26, .26, "#3a3a44", VCOL[(h * 6) | 0], .1, lw);
+    g.beginPath(); g.arc(cx - .05, yc - .38, .12, 0, TAU); fl(g, HELM[(((h * 6) | 0) + 2) % 6], lw);
+  } else if (ty === 5) {
+    for (const [dx, dy, r] of [[-.12, -.12, .26], [.16, -.08, .2], [.02, -.3, .18]]) { ell(g, cx + dx, yc + dy, r * 1.1, r); fl(g, "#a8a8b4", lw); }
+    g.fillStyle = "rgba(255,255,255,.35)"; ell(g, cx - .16, yc - .22, .08, .05); g.fill();
+  } else if (ty === 6) {
+    g.strokeStyle = OL; g.lineWidth = .16; g.beginPath(); g.moveTo(cx, yc); g.quadraticCurveTo(cx + .18, yc - .5, cx + .05, yc - 1.05); g.stroke();
+    g.strokeStyle = "#a07a4a"; g.lineWidth = .1; g.stroke();
+    for (let k = 0; k < 6; k++) { const a = -PI / 2 + (k - 2.5) * .55; g.beginPath(); g.moveTo(cx + .05, yc - 1.05); g.quadraticCurveTo(cx + .05 + cos(a) * .3, yc - 1.25 + sin(a) * .1, cx + .05 + cos(a) * .55, yc - .95 + sin(a) * .25); g.lineWidth = .12; g.strokeStyle = OL; g.stroke(); g.lineWidth = .07; g.strokeStyle = "#4fae3a"; g.stroke(); }
+    g.fillStyle = "#7a5a2a"; for (let k = 0; k < 3; k++) { g.beginPath(); g.arc(cx + (k - 1) * .07, yc - .98, .06, 0, TAU); g.fill(); }
+  } else if (ty === 7) {
+    g.fillStyle = "#7a5a34"; g.fillRect(cx - .03, yc - .8, .06, .82); g.fillRect(cx - .36, yc - .56, .72, .06);
+    box(g, cx - .18, yc - .3, .36, .2, .3, "#e8484a", "#b8303a", .05, lw);
+    g.beginPath(); g.arc(cx, yc - .78, .12, 0, TAU); fl(g, "#f2e2b0", lw);
+    g.beginPath(); g.moveTo(cx - .3, yc - .84); g.lineTo(cx, yc - 1.06); g.lineTo(cx + .3, yc - .84); g.closePath(); fl(g, "#e8c25a", lw);
+  } else if (ty === 8) {
+    g.beginPath(); g.moveTo(cx - .4, yc + .1); g.quadraticCurveTo(cx - .38, yc - .7, cx, yc - .72); g.quadraticCurveTo(cx + .38, yc - .7, cx + .4, yc + .1); g.closePath(); fl(g, "#f0c84a", lw);
+    g.strokeStyle = "#c8962a"; g.lineWidth = .025; for (let k = 0; k < 5; k++) { g.beginPath(); g.moveTo(cx - .3 + k * .15, yc); g.lineTo(cx - .2 + k * .1, yc - .5); g.stroke(); }
+  } else if (ty === 9) {
+    if (b === 4 || B_NIGHT) { const gr = g.createRadialGradient(cx, yc - 1.05, .05, cx, yc - 1.05, .8); gr.addColorStop(0, "rgba(255,230,140,.6)"); gr.addColorStop(1, "rgba(255,230,140,0)"); g.fillStyle = gr; g.fillRect(cx - 1, yc - 1.9, 2, 1.8); }
+    box(g, cx - .12, yc, .24, .2, .12, "#6a6a78", "#4a4a58", .04, lw);
+    g.fillStyle = "#4a4a58"; g.fillRect(cx - .035, yc - 1.05, .07, .95);
+    rr(g, cx - .14, yc - 1.18, .28, .16, .06); fl(g, "#ffe36a", lw);
+  } else if (ty === 10) {
+    for (let k = 0; k < 4; k++) box(g, cx - .2, yc - k * .26, .4, .36, .26, k & 1 ? "#ffffff" : "#ef4a5a", k & 1 ? "#d8d8d8" : "#c02a3a", .04, lw);
+    g.beginPath(); g.moveTo(cx - .24, yc - 1.22); g.lineTo(cx, yc - 1.45); g.lineTo(cx + .24, yc - 1.22); g.closePath(); fl(g, "#ffd23a", lw);
+  } else if (ty === 11) {
+    for (const [dx, dy, r] of [[-.28, -.25, .3], [.28, -.25, .3], [0, -.45, .32]]) { g.beginPath(); g.arc(cx + dx, yc + dy, r, 0, TAU); fl(g, "#3a8a3a", lw); }
+  } else if (ty === 12) {
+    const roof = ["#c8502e", "#b8462a", "#d8643a"][(h * 3) | 0], wall = ["#f2e2c0", "#e8f0f0", "#f8d8b8"][(h * 5 | 0) % 3];
+    box(g, cx - .48, yc + .1, .96, .7, .5, wall, dark(wall, .12), .03, lw);
+    g.fillStyle = "#6a8ab0"; g.fillRect(cx - .3, yc - .05, .2, .18); g.fillStyle = "#8a5a34"; g.fillRect(cx + .1, yc - .1, .18, .3);
+    g.beginPath(); g.moveTo(cx - .56, yc - .42); g.lineTo(cx - .36, yc - 1.02); g.lineTo(cx + .36, yc - 1.02); g.lineTo(cx + .56, yc - .42); g.closePath(); fl(g, roof, lw);
+    g.strokeStyle = "rgba(90,20,10,.4)"; g.lineWidth = .025; for (let k = 1; k < 4; k++) { g.beginPath(); g.moveTo(cx - .56 + k * .05, yc - .42 - k * .15); g.lineTo(cx + .56 - k * .05, yc - .42 - k * .15); g.stroke(); }
+  }
+  g.restore();
+}
+let B_NIGHT = 0;
+// ikan asin: token mata uang kostum
+function drawFish(g, x, y, u, gold, t) {
+  g.save(); g.translate(x, y); g.scale(u, u);
+  g.fillStyle = "rgba(0,0,0,.18)"; ell(g, 0, .2, .2, .07); g.fill();
+  g.translate(0, sin(t * 4 + x) * .05 - .1); g.rotate(sin(t * 2.4 + x) * .15);
+  if (gold) { g.fillStyle = "rgba(255,230,120,.45)"; g.beginPath(); g.arc(0, 0, .4 + sin(t * 6) * .04, 0, TAU); g.fill(); }
+  g.beginPath(); g.moveTo(-.3, 0); g.quadraticCurveTo(-.05, -.2, .18, -.02); g.lineTo(.32, -.14); g.lineTo(.28, .02); g.lineTo(.32, .16); g.lineTo(.18, .04); g.quadraticCurveTo(-.05, .2, -.3, 0); g.closePath();
+  fl(g, gold ? "#ffd23a" : "#e8c27a", .04);
+  g.strokeStyle = gold ? "#e89a00" : "#b58a44"; g.lineWidth = .03; for (const k of [-.05, .05]) { g.beginPath(); g.moveTo(k, -.08); g.lineTo(k, .08); g.stroke(); }
+  g.fillStyle = INK; g.beginPath(); g.arc(-.18, -.03, .03, 0, TAU); g.fill();
+  g.restore();
+}
+// elang bondol: kepala putih, badan cokelat kemerahan
+function drawEagle(g, x, y, u, flap, s) {
+  g.save(); g.translate(x, y); g.scale((s || 1) * u, (s || 1) * u); g.lineJoin = "round";
+  const f = sin(flap) * .5;
+  for (const e of [-1, 1]) {
+    g.beginPath(); g.moveTo(e * .15, -.05); g.quadraticCurveTo(e * .7, -(.4 + f * .5), e * 1.1, -(.1 + f * .6)); g.lineTo(e * .9, .05); g.lineTo(e * .7, .02); g.lineTo(e * .5, .12); g.quadraticCurveTo(e * .3, .12, e * .12, .12); g.closePath(); fl(g, "#b0582a", .05);
+    g.fillStyle = "#6a2e14"; g.beginPath(); g.moveTo(e * .95, -(.08 + f * .6)); g.lineTo(e * 1.1, -(.1 + f * .6)); g.lineTo(e * .9, .05); g.closePath(); g.fill();
+  }
+  g.beginPath(); g.moveTo(-.12, .2); g.lineTo(0, .5); g.lineTo(.12, .2); g.closePath(); fl(g, "#9a4a22", .04);
+  ell(g, 0, .08, .2, .26); fl(g, "#b8602e", .05);
+  g.beginPath(); g.arc(0, -.22, .17, 0, TAU); fl(g, "#fbf6ee", .05);
+  g.beginPath(); g.moveTo(-.06, -.12); g.quadraticCurveTo(0, -.02, .07, -.12); g.lineTo(0, -.18); g.closePath(); fl(g, "#ffc21a", .03);
+  g.fillStyle = INK; for (const e of [-1, 1]) { g.beginPath(); g.arc(e * .07, -.25, .035, 0, TAU); g.fill(); }
+  g.strokeStyle = INK; g.lineWidth = .03; g.beginPath(); g.moveTo(-.12, -.32); g.lineTo(-.03, -.29); g.moveTo(.12, -.32); g.lineTo(.03, -.29); g.stroke();
+  g.restore();
+}
+function drawTrain(g, x0, x1, yb, u, dir) { // kereta komuter umum: badan krem, garis toska
+  const yc = yb - u * .5, dp = u * .74, h = u * .72, car = TLEN / 4 * u;
+  shadow(g, x0, yc - u * .1, x1 - x0, u * .5);
+  for (let k = 0; k < 4; k++) {
+    const cx = x0 + k * car, front = dir > 0 ? k === 3 : k === 0;
+    box(g, cx + u * .04, yc, car - u * .08, dp, h, "#dfe4ea", "#f4f0e6", u * (front ? .3 : .1), u * .045);
+    const ys = yc + dp / 2 - h;
+    g.fillStyle = "#1fa8a0"; g.fillRect(cx + u * .08, ys + h * .62, car - u * .16, u * .1);
+    g.fillStyle = GLASS; for (let w = 0; w < 5; w++) { rr(g, cx + u * .3 + w * (car - u * .6) / 5, ys + u * .1, (car - u * .6) / 5 - u * .12, h * .34, u * .05); g.fill(); }
+    g.fillStyle = "#9aa4b0"; g.fillRect(cx + u * .3, yc - dp / 2 - h + u * .28, car - u * .6, u * .08);
+    if (front) { g.fillStyle = GLASS; rr(g, dir > 0 ? cx + car - u * .5 : cx + u * .18, yc - dp / 2 - h + u * .08, u * .32, dp - u * .16, u * .08); g.fill(); g.fillStyle = "#fff6a0"; g.beginPath(); g.arc(dir > 0 ? cx + car - u * .1 : cx + u * .1, ys + h * .4, u * .07, 0, TAU); g.fill(); }
+  }
+}
+
+/* ================= TATA LETAK ================= */
+const $ = (id) => document.getElementById(id);
+const cv = $("cv"), ctx = cv.getContext("2d"), colEl = $("col");
+let vw = 0, vh = 0, sT = 0, sB = 0, LAND = false, gx0 = 0, PW = 0, anchorY = 0, playAnchor = 0, titleAnchor = 0;
+const RC = new Map(); // tembolok gambar latar per baris
+function layout() {
+  dpr = min(2, window.devicePixelRatio || 1); vw = window.innerWidth; vh = window.innerHeight;
+  const ps = getComputedStyle($("probe")); sT = parseFloat(ps.paddingTop) || 0; sB = parseFloat(ps.paddingBottom) || 0;
+  cv.width = round(vw * dpr); cv.height = round(vh * dpr);
+  LAND = !COVER && vw / vh > 1.3;
+  // mendatar: sel lebih kecil supaya terlihat +-10 baris ke depan, sama adilnya dengan HP
+  C = COVER ? vh / 7.6 : LAND ? min(vw / 9, vh / 12.5) : min(vw / 9, vh / 10.5);
+  PW = COLS * C; gx0 = (vw - PW) / 2;
+  const cw = min(vw, max(320, PW)); colEl.style.left = (vw - cw) / 2 + "px"; colEl.style.width = cw + "px";
+  playAnchor = vh - sB - (LAND ? 2 : 3.6) * C;
+  // pita samping yang lebar dipakai untuk ikan (dan spanduk), kolom main bersih dari tulisan
+  const band = !COVER && gx0 > 220; document.documentElement.classList.toggle("band", band); colEl.style.setProperty("--bx", gx0 / 2 - (vw - cw) / 2 + "px");
+  VSPR = new Map(); RC.clear();
+  measureTitle();
+}
+function measureTitle() {
+  const lg = $("logo").getBoundingClientRect(), mb = $("tMid").getBoundingClientRect();
+  if (lg.width > 10) buildLogo(lg.left, lg.top, lg.width, lg.height);
+  titleAnchor = COVER ? vh * .83 : lg.height > 0 && mb.top > lg.bottom ? min(vh - C, (lg.bottom + mb.top) / 2 + C * .9) : vh * .6;
+}
+
+/* ================= LATAR BARIS (digambar sekali per baris) ================= */
+function rowCanvas(w, L, row) {
+  const key = w.id * 1e6 + row; let c = RC.get(key);
+  if (!c) { c = buildRow(w, L, row); RC.set(key, c); }
+  return c;
+}
+function gcRows(w, lo, hi) { if (RC.size < 70) return; for (const k of RC.keys()) { const id = floor(k / 1e6), r = k - id * 1e6; if (id !== w.id || r < lo - 4 || r > hi + 6) RC.delete(k); } }
+function buildRow(w, L, row) {
+  const u = C, cvs = mk(vw * dpr, 2 * u * dpr), g = cvs.getContext("2d"); g.scale(dpr, dpr);
+  const y0 = u, y1 = 2 * u, B = BIO[L.b], up = w.lane(row + 1), dn = w.lane(row - 1);
+  const c0 = floor(-gx0 / u) - 1, c1 = ceil((vw - gx0) / u), X = (c) => gx0 + c * u, H = (c, k) => hsh(row * 131 + c * 17 + k * 7919 + (w.seed & 1023));
+  B_NIGHT = B.night ? 1 : 0;
+  if (L.t === L_G) {
+    g.fillStyle = L.hedge ? (row === -2 ? "#dcc49a" : "#7cb85a") : B.g[row & 1]; g.fillRect(0, y0, vw, u);
+    for (let c = c0; c <= c1; c++) {
+      const h = H(c, 1), x = X(c);
+      if (L.b === 1 && !L.hedge) { g.fillStyle = "rgba(0,0,0,.07)"; g.fillRect(x, y0, u * .03, u); g.fillRect(x + u * .5, y0, u * .02, u); g.fillRect(x, y0 + u * .5, u, u * .02); }
+      else if (L.b === 2) { if (h < .3) { g.fillStyle = "rgba(255,255,255,.6)"; ell(g, x + h * 3 * u, y0 + u * (.3 + h), u * .05, u * .03); g.fill(); } }
+      else if (L.b === 3 && !L.hedge) { g.strokeStyle = "rgba(60,110,20,.35)"; g.lineWidth = u * .03; for (let k = 0; k < 3; k++) for (let j = 0; j < 2; j++) { const px = x + u * (.18 + k * .32), py = y0 + u * (.25 + j * .45); g.beginPath(); g.moveTo(px - u * .05, py + u * .08); g.lineTo(px, py - u * .06); g.lineTo(px + u * .05, py + u * .08); g.stroke(); } }
+      else if (h < .35) { g.strokeStyle = "rgba(40,90,20,.3)"; g.lineWidth = u * .03; const px = x + H(c, 2) * u, py = y0 + H(c, 3) * u * .8 + u * .1; g.beginPath(); g.moveTo(px - u * .06, py - u * .07); g.lineTo(px, py + u * .04); g.lineTo(px + u * .06, py - u * .07); g.stroke(); }
+      else if (h > .9 && !B.night) { g.fillStyle = h > .95 ? "#fff" : "#ffd23a"; ell(g, x + H(c, 2) * u, y0 + H(c, 3) * u, u * .05, u * .05); g.fill(); }
+      if (B.night && h > .85) { g.fillStyle = "rgba(255,210,120,.18)"; ell(g, x + u / 2, y0 + u / 2, u * .5, u * .3); g.fill(); }
+    }
+    if (dn.t === L_G && dn.b !== L.b) { g.fillStyle = "rgba(0,0,0,.08)"; g.fillRect(0, y1 - u * .05, vw, u * .05); }
+    for (let c = c0; c <= c1; c++) {
+      const x = X(c) + u / 2, h = H(c, 4);
+      if (c >= 0 && c < COLS && !L.hedge) { if (L.blk[c]) prop(g, L.blk[c], x, y1, u, L.b, h); }
+      else if (L.hedge) { if (row === -1) prop(g, 11, x, y1, u, 0, h); else if (row === -2) { if (mod(c, 4) === 1) prop(g, 9, x, y1, u, 0, h); } else if (h < .75) prop(g, h < .45 ? 12 : 1, x, y1, u, 0, h); }
+      else if ((gx0 > 2 || COVER) && h < .55) prop(g, [[12, 1, 12], [12, 9, 2], [6, 5, 6], [8, 1, 7], [3, 9, 12]][L.b][(h * 5.4) | 0] || 1, x, y1, u, L.b, h);
+    }
+    if (L.gate && L.blk[0] === 10 && L.blk[8] === 10) {
+      const yy = y1 - u * 1.6, xa = X(0) + u / 2, xb = X(8) + u / 2;
+      g.strokeStyle = INK; g.lineWidth = u * .03; g.beginPath(); g.moveTo(xa, yy); g.quadraticCurveTo((xa + xb) / 2, yy + u * .35, xb, yy); g.stroke();
+      for (let k = 1; k < 16; k++) { const f = k / 16, fx = xa + (xb - xa) * f, fy = yy + sin(f * PI) * u * .17; g.beginPath(); g.moveTo(fx - u * .1, fy); g.lineTo(fx + u * .1, fy); g.lineTo(fx, fy + u * .22); g.closePath(); g.fillStyle = k & 1 ? "#ef4a5a" : "#fff"; g.fill(); }
+      const sw = u * 2.6, sx = (xa + xb) / 2 - sw / 2; rr(g, sx, yy + u * .08, sw, u * .5, u * .12); fl(g, "#ffd23a", u * .05);
+      g.font = "800 " + round(u * .34) + "px 'Baloo 2',sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillStyle = INK; g.fillText(B.n.toUpperCase(), (xa + xb) / 2, yy + u * .35);
+    }
+  } else if (L.t === L_R) {
+    g.fillStyle = B.road; g.fillRect(0, y0, vw, u);
+    g.fillStyle = "rgba(255,255,255,.05)"; for (let k = 0; k < vw / u * 3; k++) { const h = H(k, 5); g.fillRect(h * vw, y0 + H(k, 6) * u, u * .06, u * .06); }
+    if (up.t === L_R) { g.fillStyle = "rgba(255,255,255,.85)"; for (let x = (gx0 % (u * .8)) - u * .8; x < vw; x += u * .8) g.fillRect(x, y0 - u * .03, u * .42, u * .06); }
+    if (dn.t !== L_R) { g.fillStyle = "#cfcfd6"; g.fillRect(0, y1 - u * .12, vw, u * .12); g.fillStyle = "rgba(0,0,0,.15)"; g.fillRect(0, y1 - u * .12, vw, u * .025); }
+    if (L.b === 1 && hsh(row * 3 + 1) < .6) { const zc = (hsh(row) * COLS) | 0; g.fillStyle = "rgba(255,255,255,.9)"; for (let k = 0; k < 3; k++) g.fillRect(X(zc) + u * .08, y0 + u * (.1 + k * .29), u * .84, u * .15); }
+  } else if (L.t === L_W) {
+    const gr = g.createLinearGradient(0, y0, 0, y1); gr.addColorStop(0, B.w[1]); gr.addColorStop(1, B.w[0]); g.fillStyle = gr; g.fillRect(0, y0, vw, u);
+    g.strokeStyle = "rgba(255,255,255,.18)"; g.lineWidth = u * .03; for (let k = 0; k < vw / u * 1.5; k++) { const x = H(k, 7) * vw, y = y0 + u * (.25 + H(k, 8) * .55); g.beginPath(); g.arc(x, y, u * .12, 3.6, 5.8); g.stroke(); }
+    if (up.t !== L_W) { g.fillStyle = up.t === L_G ? BIO[up.b].gs : "#7a6a5a"; g.fillRect(0, y0, vw, u * .2); }
+    if (dn.t !== L_W) { g.fillStyle = "rgba(255,255,255,.35)"; g.fillRect(0, y1 - u * .06, vw, u * .06); }
+  } else {
+    g.fillStyle = B.rail; g.fillRect(0, y0, vw, u);
+    g.fillStyle = "rgba(0,0,0,.12)"; for (let k = 0; k < vw / u * 4; k++) g.fillRect(H(k, 9) * vw, y0 + H(k, 10) * u, u * .05, u * .05);
+    for (let x = (gx0 % (u * .5)) - u * .5; x < vw; x += u * .5) { rr(g, x + u * .17, y0 + u * .16, u * .16, u * .72, u * .03); fl(g, "#7a5234", u * .02); }
+    for (const yy of [.3, .64]) { g.fillStyle = "#5a5f6a"; g.fillRect(0, y0 + u * yy, vw, u * .1); g.fillStyle = "#d8dde6"; g.fillRect(0, y0 + u * yy, vw, u * .045); }
+  }
+  if (L.t !== L_G && up.t === L_G) { g.fillStyle = BIO[up.b].gs; g.fillRect(0, y0, vw, u * .16); g.fillStyle = "rgba(0,0,0,.14)"; g.fillRect(0, y0 + u * .16, vw, u * .07); }
+  B_NIGHT = 0;
+  cvs.pad = L.t === L_G; // hanya lajur rumput yang punya benda tinggi di atas pitanya
+  return cvs;
+}
+
+/* ================= EFEK ================= */
+const PN = 500, pX = new Float32Array(PN), pY = new Float32Array(PN), pVX = new Float32Array(PN), pVY = new Float32Array(PN), pL = new Float32Array(PN), pM = new Float32Array(PN), pS = new Float32Array(PN), pK = new Uint8Array(PN), pG = new Float32Array(PN);
+let pHead = 0;
+const PCOL = ["#f1e2c4", "#bfeaff", "#ffd23a", "#ff5c93", "#ffffff", "#7ed957", "#35c6c9", "#c9a3ff", "#ff9a3a"];
+function part(x, y, vx, vy, life, size, kind, grav) { const i = pHead; pHead = (pHead + 1) % PN; pX[i] = x; pY[i] = y; pVX[i] = vx; pVY[i] = vy; pL[i] = life; pM[i] = life; pS[i] = size; pK[i] = kind; pG[i] = grav == null ? 600 : grav; }
+function puff(x, y, n, kind) { for (let k = 0; k < n; k++) { const a = PI + rnd() * PI; part(x + (rnd() - .5) * C * .4, y, cos(a) * C * (.8 + rnd()), sin(a) * C * .6, .35 + rnd() * .2, C * (.08 + rnd() * .07), kind, -40); } }
+function burst(x, y, n, sp, kinds, grav) { for (let k = 0; k < n; k++) { const a = rnd() * TAU, v = sp * (.3 + rnd() * .8); part(x, y, cos(a) * v, sin(a) * v - sp * .4, .6 + rnd() * .6, C * (.07 + rnd() * .08), kinds[k % kinds.length], grav); } }
+const TN = 12, tX = new Float32Array(TN), tY = new Float32Array(TN), tL = new Float32Array(TN), tSz = new Float32Array(TN), tTx = new Array(TN).fill(""), tC = new Array(TN).fill("#fff");
+let tHead = 0;
+function ftext(x, y, s, size, col) { const i = tHead; tHead = (tHead + 1) % TN; tX[i] = x; tY[i] = y; tL[i] = 1; tSz[i] = size; tTx[i] = s; tC[i] = col; }
+const BAN = { s: "", t: 0, d: 1, col: 0, mid: false, a: 1 };
+const BAN_COL = [["#fffbd0", "#ffd32e", "#ff7a1a"], ["#fff0f7", "#ff7ab8", "#ff3d7f"], ["#e8fbff", "#7fd8ff", "#2f9df0"]];
+// mid: di tengah layar (hanya setelah permainan selesai); selain itu di bawah HUD atau di pita kiri
+function banner(s, dur, col, mid, a) { BAN.s = s; BAN.t = dur; BAN.d = dur; BAN.col = col || 0; BAN.mid = !!mid; BAN.a = a || 1; }
+let shake = 0, flash = 0, flashCol = "#fff", speedT = 0, speedY = 0, speedX = 0, slowT = 0, anchorT = 0, press = false;
+function fontPx(n) { return "800 " + max(1, n | 0) + "px 'Baloo 2','Arial Rounded MT Bold',sans-serif"; }
+
+/* ================= SUARA ================= */
+const A = KIT.audio;
+const SFX = {
+  tap() { A.tone({ freq: 880, dur: .06, vol: .2, slideTo: 1320 }); },
+  hop() { const f = 480 + rnd() * 110; A.tone({ freq: f, dur: .07, vol: .26, slideTo: f * 1.6 }); A.noise({ dur: .03, vol: .04, filter: 2500 }); },
+  land() { A.noise({ dur: .04, vol: .06, filter: 700 }); },
+  bump() { A.tone({ freq: 170, dur: .09, type: "triangle", vol: .35, slideTo: 110 }); },
+  fish(n) { if (n > 1) [1319, 1568, 2093, 2637].forEach((f, k) => A.tone({ freq: f, dur: .14, vol: .14, delay: k * .06 })); else { A.tone({ freq: 1760, dur: .1, vol: .14 }); A.tone({ freq: 2637, dur: .14, vol: .1, delay: .05 }); } },
+  whoosh() { A.noise({ dur: .22, vol: .14, filter: 2600, type: "highpass" }); A.tone({ freq: 900, dur: .18, vol: .06, slideTo: 300 }); },
+  honk() { for (let k = 0; k < 2; k++) { A.tone({ freq: 415, dur: .08, type: "square", vol: .05, delay: k * .13 }); A.tone({ freq: 523, dur: .08, type: "square", vol: .05, delay: k * .13 }); } },
+  bowl() { for (let k = 0; k < 2; k++) A.tone({ freq: 2349, dur: .18, vol: .06, delay: k * .16 }); },
+  bell() { A.tone({ freq: 1568, dur: .12, type: "triangle", vol: .1 }); A.tone({ freq: 2093, dur: .06, vol: .04 }); },
+  rumble() { A.noise({ dur: .38, vol: .2, filter: 160, type: "lowpass" }); A.noise({ dur: .3, vol: .12, filter: 400, delay: .2 }); },
+  splash() { A.noise({ dur: .34, vol: .24, filter: 1100 }); A.tone({ freq: 600, dur: .2, vol: .12, slideTo: 150 }); },
+  meow() { A.tone({ freq: 620, dur: .12, type: "triangle", vol: .24, slideTo: 880 }); A.tone({ freq: 880, dur: .3, type: "triangle", vol: .24, slideTo: 520, delay: .1 }); A.tone({ freq: 1760, dur: .3, vol: .05, slideTo: 1040, delay: .1 }); },
+  thud() { A.tone({ freq: 130, dur: .18, vol: .45, slideTo: 55 }); A.noise({ dur: .12, vol: .18, filter: 500 }); },
+  screech() { A.tone({ freq: 2100, dur: .35, type: "sawtooth", vol: .05, slideTo: 1300 }); A.noise({ dur: .3, vol: .06, filter: 3500, type: "highpass" }); },
+  fanfare() { [523, 659, 784, 1047].forEach((f, k) => A.tone({ freq: f, dur: .22, type: "triangle", vol: .2, delay: k * .09 })); A.tone({ freq: 1568, dur: .4, vol: .1, delay: .36 }); },
+  praise(n) { [659, 784, 988].slice(0, n + 1).forEach((f, k) => A.tone({ freq: f * (1 + n * .12), dur: .12, type: "triangle", vol: .16, delay: k * .06 })); },
+  rec() { [659, 784, 988, 1319].forEach((f, k) => A.tone({ freq: f, dur: .25, type: "square", vol: .08, delay: k * .08 })); [1319, 1568, 2093].forEach((f, k) => A.tone({ freq: f, dur: .4, vol: .14, delay: .35 + k * .1 })); },
+  tick() { A.tone({ freq: 1500, dur: .03, vol: .05 }); }
+};
+// musik petik ringan bernuansa keroncong (lewat mnote kit)
+const MUSIC = { step: .17, root: 53, chords: [0, 5, 7, 0], lead: "triangle", melody: [4, -1, 5, 4, 2, -1, 4, -1, 7, -1, 5, 4, 5, -1, -1, -1, 2, -1, 4, 2, 1, -1, 2, -1, 4, 5, 4, 2, 0, -1, -1, -1] };
+
+/* ================= KEMAJUAN, LENCANA, KOSTUM ================= */
+const RANKS = [["Perunggu", 25, "#f2b27a", "#b8662c"], ["Perak", 60, "#f4f6fb", "#8f9bb3"], ["Emas", 100, "#ffe36a", "#e09a00"], ["Berlian", 175, "#bff6ff", "#2aa8e0"], ["Mahkota", 250, "#ffc2e6", "#d63a9a"]];
+function rankOf(sc) { let r = -1; for (let i = 0; i < RANKS.length; i++) if (sc >= RANKS[i][1]) r = i; return r; }
+const STARS = [40, 90, 150];
+function starsFor(sc) { let n = 0; for (const s of STARS) if (sc >= s) n++; return n; }
+// [id, nama, syarat, uji(run)]
+const BADGES = [
+  ["b10", "Langkah Pertama", "10 langkah", (r) => r.score >= 10],
+  ["b50", "Anak Kampung", "50 langkah", (r) => r.score >= 50],
+  ["b100", "Raja Jalanan", "100 langkah", (r) => r.score >= 100],
+  ["b200", "Legenda Nyebrang", "200 langkah", (r) => r.score >= 200],
+  ["rel", "Penakluk Rel", "10 rel sekali main", (r) => r.rails >= 10],
+  ["sungai", "Anak Sungai", "15 kali sekali main", (r) => r.rivers >= 15],
+  ["nyaris", "Nyaris Terus", "10 nyaris sekali main", (r) => r.near >= 10],
+  ["kaya", "Kaya Ikan", "50 ikan sekali main", (r) => r.fish >= 50],
+  ["keliling", "Keliling", "5 wilayah sekali main", (r) => r.bio === 31],
+  ["rajin", "Rajin", "Harian 7 hari", (r) => r.hari >= 7]
+];
+// harga kostum; lencana pengganti; Astronot hanya lewat rekor 300
+const PRICE = 100, FIRST_CAN = 25, SKIN_BADGE = { garong: "b100", sarung: "rajin", batik: "keliling" }, ASTRO = 300;
+function wallet() { const o = ST.arr("skins"); return { fish: max(0, ST.get("fish", 0) | 0), owned: o.length ? o : ["oyen"], badges: ST.arr("badges"), best: ST.get("best", 0) | 0, cans: max(0, ST.get("cans", 0) | 0) }; }
+// kaleng pertama murah supaya kostum pertama cepat didapat
+const canPrice = (s) => s.cans ? PRICE : FIRST_CAN;
+function saveWallet(s) { ST.set("fish", s.fish); ST.set("skins", s.owned); ST.set("cans", s.cans); }
+function skinOpen(s, id) { return s.owned.indexOf(id) >= 0 || (SKIN_BADGE[id] && s.badges.indexOf(SKIN_BADGE[id]) >= 0) || (id === "astro" && s.best >= ASTRO); }
+function buyable(id) { return id !== "oyen" && id !== "astro"; }
+function buySkin(s, id) { if (!buyable(id) || skinOpen(s, id) || s.fish < PRICE) return false; s.fish -= PRICE; s.owned = s.owned.concat([id]); return true; }
+// Buka Kaleng: harga tetap, selalu kostum yang belum dimiliki, urutan pasti dari jumlah kaleng yang pernah dibuka
+function openCan(s) {
+  const pool = SKINS.map((k) => k[0]).filter((id) => buyable(id) && !skinOpen(s, id));
+  const pr = canPrice(s);
+  if (!pool.length || s.fish < pr) return null;
+  const id = pool[(KIT.rng(KIT.hash("kaleng|" + s.cans))() * pool.length) | 0];
+  s.fish -= pr; s.cans++; s.owned = s.owned.concat([id]); return id;
+}
+function skinIdx(id) { const i = SKINS.findIndex((k) => k[0] === id); return i < 0 ? 0 : i; }
+function curSkin() { const s = wallet(), id = String(ST.get("skin", "oyen")); return skinOpen(s, id) || id === "oyen" ? skinIdx(id) : 0; }
+
+function starPath(cx, cy, R, r) { let d = ""; for (let k = 0; k < 10; k++) { const a = -PI / 2 + k * PI / 5, q = k & 1 ? r : R; d += (k ? "L" : "M") + (cx + cos(a) * q).toFixed(1) + " " + (cy + sin(a) * q).toFixed(1); } return d + "Z"; }
+const STAR_BIG = starPath(32, 28.5, 10, 4.4), STAR_S = starPath(12, 12.8, 10.5, 4.8);
+function starSVG(on) { return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + STAR_S + '" fill="' + (on ? "#ffd23a" : "#e2d6c6") + '" stroke="#2b1a10" stroke-width="2" stroke-linejoin="round"/></svg>'; }
+const EMB = [ // lambang lencana (viewBox 64x60, pusat 32,28)
+  "M26 30a4 5 0 1 0 12 0a4 5 0 1 0-12 0M22 22a2.6 3.2 0 1 0 .1 0M29 18a2.6 3.2 0 1 0 .1 0M36 18a2.6 3.2 0 1 0 .1 0M43 22a2.6 3.2 0 1 0 .1 0",
+  "M22 34h20M22 24h20M25 20v18M32 20v18M39 20v18",
+  "M20 24q4-4 8 0t8 0t8 0M20 32q4-4 8 0t8 0t8 0",
+  "M34 16l-9 14h7l-3 12 11-16h-7z",
+  "M20 28c4-6 12-7 17-3l6-4-2 7 2 7-6-4c-5 4-13 3-17-3z",
+  "M32 16a12 12 0 1 0 .1 0M20 28h24M32 16c-5 6-5 18 0 24M32 16c5 6 5 18 0 24",
+  "M22 20h20v18H22zM22 25h20M27 17v5M37 17v5"
+];
+const BEMB = [0, 0, 0, 0, 1, 2, 3, 4, 5, 6], BCOL = [["#ffd6a0", "#e08a3a"], ["#c8f0a0", "#4aa83a"], ["#ffe36a", "#e09a00"], ["#ffc2e6", "#d63a9a"], ["#d8dde6", "#6a7488"], ["#b8ecff", "#2a98d0"], ["#ffe0a0", "#ff7a2b"], ["#fff0b0", "#c8962a"], ["#d8c8ff", "#7a5ad6"], ["#ffc8c8", "#e8384f"]];
+function medal(i, locked, emb, cols) {
+  const a = locked ? "#e2d8cc" : cols[0], b = locked ? "#9a8e80" : cols[1], id = "m" + i + (locked ? "l" : "") + (emb < 0 ? "r" : "");
+  const em = emb < 0 ? '<path d="' + STAR_BIG + '" fill="#fff" stroke="#2b1a10" stroke-width="2" stroke-linejoin="round"/>' : '<path d="' + EMB[emb] + '" fill="' + (emb === 1 || emb === 2 || emb === 5 ? "none" : "#fff") + '" stroke="#2b1a10" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
+  return '<svg viewBox="0 0 64 60" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="' + a + '"/><stop offset="1" stop-color="' + b + '"/></linearGradient></defs>' +
+    '<path d="M20 38 13 56l7-3 4 6 7-17z" fill="' + (locked ? "#c8bdb0" : "#ff5c93") + '" stroke="#2b1a10" stroke-width="2.4" stroke-linejoin="round"/>' +
+    '<path d="M44 38l7 18-7-3-4 6-7-17z" fill="' + (locked ? "#c8bdb0" : "#38a1f0") + '" stroke="#2b1a10" stroke-width="2.4" stroke-linejoin="round"/>' +
+    '<circle cx="32" cy="28" r="20" fill="url(#' + id + ')" stroke="#2b1a10" stroke-width="3"/><circle cx="32" cy="28" r="14.5" fill="none" stroke="' + b + '" stroke-width="2.4" opacity=".8"/>' + em + "</svg>";
+}
+const rankSVG = (i, locked) => medal(i, locked, -1, [RANKS[i][2], RANKS[i][3]]);
+
+/* ================= STATUS ================= */
+let mode = "title", kind = "normal", seedNow = 1, chal = null, chalLast = null, time = 0;
+let world = null, sim = null, bot = null, tWorld = null, tSim = null, tBot = null, vcam = 0, tcam = 0;
+let recPrev = 0, recHit = false, deadT = 0, landT = 1, bumpT = 0, bumpDir = 0, fwd = [], praiseT = -9, praiseN = 0, hintN = 0, lastScore = 0;
+let honkCd = 0, bowlCd = 0, bellCd = 0, rumbleCd = 0, screeched = false, dieX = 0, dieY = 0, eagleT = 0;
+function best() { return ST.get("best", 0) | 0; }
+function daily() { const d = ST.obj("harian", ["d"]); return d && d.d === KIT.dateKey() ? d : null; }
+function isDailyRun() { return (kind === "daily" || kind === "practice") && seedNow === KIT.dailySeed(SLUG); }
+
+function startGame(k, seed) {
+  kind = k; seedNow = (seed >>> 0) || ((rnd() * 4294967295) >>> 0) || 1;
+  if (k === "daily") ST.set("harian", { d: KIT.dateKey(), score: 0, done: false });
+  world = new World(seedNow); sim = new Sim(world); bot = DEMO ? new Bot(sim, false, 9) : null;
+  if (bot) sim.pre = () => bot.tick();
+  const fromTitle = mode === "leaving" || mode === "title";
+  vcam = 0; anchorY = playAnchor; skinNow = curSkin(); recPrev = best(); recHit = false; deadT = 0; landT = 1; bumpT = 0; fwd = []; praiseT = -9; praiseN = 0; lastScore = 0;
+  pL.fill(0); tL.fill(0); BAN.t = 0; shake = 0; flash = 0; speedT = 0; slowT = 0; screeched = false; eagleT = 0; pid = -1; press = false;
+  // dari layar judul: kamera meluncur ke posisi main dan kilat putih tipis menandai ganti adegan
+  anchorT = fromTitle ? .35 : 0; if (fromTitle) { flash = .25; flashCol = "#fff"; }
+  hideAll(); $("hud").hidden = false; $("hBest").textContent = recPrev; $("hBestP").classList.remove("live"); $("hBestP").hidden = recPrev === 0; $("hScore").textContent = "0"; $("hFish").textContent = "0";
+  const tag = $("hTag"); tag.hidden = k === "normal"; tag.textContent = k === "daily" ? "Harian" : k === "practice" ? "Latihan" : "Tantangan";
+  hintN = DEMO ? 3 : ST.get("hint", 0) | 0; $("hint").classList.toggle("off", hintN >= 3);
+  $("pRe").querySelector("span").textContent = k === "daily" ? "Akhiri" : "Ulang"; $("pRe").querySelector("use").setAttribute("href", k === "daily" ? "#i-x" : "#i-re"); $("pInfo").hidden = k !== "daily";
+  mode = "play";
+}
+function runStats() { return { score: sim.max, fish: sim.fish, near: sim.near, rails: sim.rails, rivers: sim.rivers, bio: sim.bio, hari: ((ST.obj("hari", ["n"]) || { n: 0 }).n | 0) }; }
+const CAUSE = { ojek: "Keserempet ojek yang ngebut", angkot: "Ditabrak angkot yang ngebut", ngetem: "Nyeruduk angkot yang lagi ngetem", serah: "Oyen pulang duluan", becak: "Kelindas becak. Pelan, tapi pasti", bakso: "Ketabrak gerobak bakso. Ting ting!", rodatiga: "Diseruduk roda tiga", bus: "Kegilas bus kota yang kejar setoran", truk: "Ketiban sayur dari truk", sate: "Ketabrak gerobak sate. Wangi, sih", kali: "Kecebur kali", hanyut: "Hanyut kebawa arus", elang: "Diculik elang bondol", kereta: "Kalah cepat sama kereta" };
+function endGame() {
+  mode = "over";
+  const sc = sim.max, rec = sc > recPrev && sc > 0;
+  if (rec) ST.set("best", sc);
+  ST.set("last", { seed: seedNow, score: sc });
+  if (kind === "daily") {
+    ST.set("harian", { d: KIT.dateKey(), score: sc, done: true });
+    const h = ST.obj("hari", ["n"]) || { n: 0, last: "" }; if (h.last !== KIT.dateKey()) ST.set("hari", { n: (h.n | 0) + 1, last: KIT.dateKey() });
+  }
+  const s = wallet(); s.fish += sim.fish; saveWallet(s);
+  const run = runStats(), got = ST.arr("badges"), fresh = [];
+  for (const b of BADGES) if (got.indexOf(b[0]) < 0 && b[3](run)) { got.push(b[0]); fresh.push(b[1]); }
+  if (fresh.length) ST.set("badges", got);
+  const pr = KIT.progress.record({ game: SLUG, score: sc, mutu: min(1, sc / 150) });
+  $("hud").hidden = true;
+  $("rMode").textContent = kind === "daily" ? "Harian · Hari ke-" + KIT.dayNumber() : kind === "practice" ? "Latihan" : kind === "chal" ? "Tantangan" : "Langkah";
+  $("rFish").textContent = "+" + sim.fish; $("rNear").textContent = sim.near;
+  $("rCause").textContent = CAUSE[sim.dead] || "Oyen kecapekan";
+  $("rRek").hidden = true;
+  const r = rankOf(sc), rs = ST.arr("ranks"); let freshR = false;
+  for (let i = 0; i <= r; i++) if (rs.indexOf(i) < 0) { rs.push(i); freshR = true; }
+  if (freshR) ST.set("ranks", rs);
+  $("rBadge").innerHTML = rankSVG(max(0, r), r < 0);
+  const rk = $("rRank"); rk.textContent = r < 0 ? RANKS[0][0] + " di " + RANKS[0][1] : RANKS[r][0]; rk.classList.toggle("new", freshR);
+  // target berikutnya: selalu ada angka "sekali lagi"
+  const nx = RANKS[r + 1]; $("rNext").textContent = r < 0 ? "kurang " + (RANKS[0][1] - sc) : nx ? nx[0] + " di " + nx[1] + " · kurang " + (nx[1] - sc) : "Puncak!";
+  paintCan();
+  say((rec ? "Rekor baru! " : "") + sc + " langkah. " + (CAUSE[sim.dead] || ""));
+  $("rRec").textContent = rec ? (recPrev > 0 ? "+" + (sc - recPrev) + " dari rekor lama" : "Rekor pertamamu!") : "Rekor " + recPrev + " · kurang " + (recPrev - sc + 1);
+  const barW = $("rBarW"), bar = $("rBar"), full = max(1, rec ? sc : recPrev);
+  barW.classList.toggle("rec", rec); bar.style.width = "0%";
+  const stars = $("rStars"); stars.hidden = !isDailyRun(); if (!stars.hidden) { let h = ""; for (let i = 0; i < 3; i++) h += starSVG(sc >= STARS[i]); stars.innerHTML = h; }
+  const note = $("rNote"); note.hidden = true; note.className = "note dk-ol";
+  $("rNormal").hidden = kind !== "chal";
+  if (kind === "chal" && chal) {
+    note.hidden = false;
+    if (sc > chal.score) { note.textContent = "MENANG! " + chal.score + " terlewati"; note.classList.add("win"); }
+    else note.textContent = "KALAH · kurang " + (chal.score - sc + 1);
+    chalLast = chal; chal = null; try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { }
+  }
+  const xp = $("rXp"); xp.hidden = false; xp.textContent = (pr.leveledUp ? "Naik level! " : "+" + pr.gain + " XP · ") + "Lv " + pr.level;
+  KIT.ui.show($("sOver"));
+  let lastTick = 0;
+  KIT.ui.countUp($("rScore"), sc, min(1300, 400 + sc * 8), (v) => {
+    bar.style.width = min(100, v / full * 100) + "%";
+    if (v - lastTick >= max(1, sc / 30) && mode === "over") { lastTick = v; SFX.tick(); }
+  }).then(() => {
+    if (rec && mode === "over") { const e = $("rRek"); e.hidden = false; e.classList.remove("go"); void e.offsetWidth; e.classList.add("go"); KIT.ui.confetti(160); SFX.rec(); KIT.vibrate([30, 40, 30]); }
+    if (fresh.length && mode === "over") KIT.ui.toast("Lencana baru: " + fresh[0] + "!");
+    else if (freshR && mode === "over") KIT.ui.toast("Peringkat baru: " + RANKS[r][0] + "!");
+  });
+  return pr;
+}
+
+/* ================= LAYAR ================= */
+const SCR = ["sTitle", "sPause", "sOver", "sHarian", "sTantang", "sKoleksi"];
+function hideAll() { for (const id of SCR) $(id).hidden = true; }
+function toTitle() {
+  skinNow = curSkin(); hideAll(); $("hud").hidden = true; mode = "title";
+  $("tBest").querySelector("span").textContent = best();
+  $("tFish").querySelector("span").textContent = wallet().fish;
+  const p = KIT.progress.get();
+  $("tLv").textContent = "Lv " + p.level;
+  $("tStrk").hidden = p.streak <= 0; $("tStrkN").textContent = p.streak + " hari";
+  $("dDaily").hidden = !!daily();
+  const c = $("tChal"); c.hidden = !chal; if (chal) c.textContent = "Oyen temanmu sampai langkah " + chal.score + ". Kalahkan!";
+  $("sTitle").hidden = false;
+  const m = $("tMid"); m.classList.remove("ent", "leave"); void m.offsetWidth; m.classList.add("ent");
+  measureTitle();
+}
+function leaveTitle(fn) { $("tMid").classList.add("leave"); mode = "leaving"; setTimeout(fn, 260); }
+function openHarian() {
+  const d = new Date(), M = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
+  $("dMonth").textContent = M[d.getMonth()]; $("dDay").textContent = d.getDate();
+  $("dN").textContent = "Hari ke-" + KIT.dayNumber();
+  const dd = daily(), sc = dd && dd.done ? dd.score : -1;
+  let h = ""; for (let i = 0; i < 3; i++) { let st = ""; for (let j = 0; j <= i; j++) st += starSVG(sc >= STARS[i]); h += '<div class="goal"><span>' + st + "</span><b>" + STARS[i] + "</b></div>"; }
+  $("dGoals").innerHTML = h;
+  const p = KIT.progress.get();
+  $("dStrkN").textContent = p.streak > 0 ? p.streak + " hari beruntun" : "Mulai beruntun hari ini";
+  $("dInfo").textContent = dd ? (dd.done ? "Hari ini: " + dd.score + " langkah · kembali besok!" : "Percobaan hari ini tidak selesai") : "Jalanan sama untuk semua. 1 kesempatan.";
+  $("dPlay").querySelector("span").textContent = dd ? "Latihan" : "Main";
+  $("dPlay").className = "dk-btn dk-ol " + (dd ? "dk-yellow" : "dk-green");
+  KIT.ui.show($("sHarian"));
+}
+function openTantang() {
+  const L = ST.obj("last", ["seed", "score"]);
+  if (L) { $("cScore").textContent = L.score; $("cInfo").textContent = "Langkah terakhirmu"; $("cSend").querySelector("span").textContent = "Kirim"; }
+  else { $("cScore").textContent = "?"; $("cInfo").textContent = "Main dulu, lalu kirim langkahmu"; $("cSend").querySelector("span").textContent = "Main"; }
+  KIT.ui.show($("sTantang"));
+}
+let kSel = 0;
+// kemajuan menuju kaleng berikutnya di layar hasil; penuh = tombol Buka Kaleng
+function paintCan() {
+  const s = wallet(), left = SKINS.some((k) => buyable(k[0]) && !skinOpen(s, k[0])), pr = canPrice(s), ok = s.fish >= pr;
+  $("rCanW").hidden = !left; if (!left) return;
+  $("rCanT").textContent = "Kaleng " + min(s.fish, pr) + "/" + pr; $("rCanB").style.width = min(100, s.fish / pr * 100) + "%";
+  $("rCan").hidden = !ok; $("rCanW").classList.toggle("full", ok);
+}
+function say(t) { const e = $("live"); e.textContent = ""; setTimeout(() => { e.textContent = t; }, 50); }
+function paintKoleksi() {
+  const s = wallet(), sk = SKINS[kSel], id = sk[0], open = skinOpen(s, id) || id === "oyen", cur = curSkin() === kSel;
+  $("kFish").textContent = s.fish; $("kName").textContent = sk[1];
+  const st = $("kSt"), use = $("kUse");
+  if (cur) { st.textContent = "Sedang dipakai"; use.textContent = "Dipakai"; use.className = "dk-btn dk-ol dk-green"; use.disabled = true; }
+  else if (open) { st.textContent = "Sudah punya"; use.textContent = "Pakai"; use.className = "dk-btn dk-ol dk-green"; use.disabled = false; }
+  else if (id === "astro") { st.textContent = "Capai " + ASTRO + " langkah"; use.textContent = "Terkunci"; use.className = "dk-btn dk-ol dk-purple"; use.disabled = true; }
+  else { const bd = SKIN_BADGE[id] ? BADGES.find((b) => b[0] === SKIN_BADGE[id]) : null; st.textContent = bd ? "Atau raih lencana " + bd[1] : "Beli dengan ikan asin"; use.textContent = "Beli · " + PRICE; use.className = "dk-btn dk-ol dk-blue"; use.disabled = s.fish < PRICE; }
+  const left = SKINS.filter((k) => buyable(k[0]) && !skinOpen(s, k[0])).length, can = $("kCan");
+  can.textContent = left ? (s.cans ? "Buka Kaleng · " : "Kaleng pertama · ") + canPrice(s) : "Semua terbuka"; can.disabled = !left || s.fish < canPrice(s);
+  let d = ""; for (let i = 0; i < SKINS.length; i++) d += '<i class="' + (i === kSel ? "on" : "") + '"></i>'; $("kDots").innerHTML = d;
+  const got = s.badges; let h = "";
+  BADGES.forEach((b, i) => { const on = got.indexOf(b[0]) >= 0; h += '<div class="kb' + (on ? "" : " lk") + '"><i>' + medal(i, !on, BEMB[i], BCOL[i]) + "</i><b>" + b[1] + "</b><span>" + b[2] + "</span></div>"; });
+  $("kGrid").innerHTML = h; $("kInfo").textContent = got.length + "/" + BADGES.length + " lencana";
+}
+function openKoleksi() { kSel = curSkin(); paintKoleksi(); KIT.ui.show($("sKoleksi")); }
+function closeKoleksi() { if (mode === "over") paintCan(); }
+function shareScore(seed, score) { KIT.share({ title: "Oyen Nyebrang", text: "Oyen nyebrang " + score + " langkah! Bisa lebih jauh?", url: KIT.challengeLink(SLUG, seed, score) }); }
+function pause() { if (mode !== "play") return; mode = "pause"; pid = -1; press = false; KIT.ui.show($("sPause")); }
+
+/* ================= MASUKAN ================= */
+function on(id, fn) { $(id).addEventListener("click", (e) => { SFX.tap(); fn(e); }); }
+on("bMain", () => leaveTitle(() => chal ? startGame("chal", chal.seed) : startGame("normal")));
+on("bHarian", openHarian); on("bTantang", openTantang); on("bKoleksi", openKoleksi); on("bSetelan", () => KIT.ui.openSettings());
+on("dPlay", () => { const k = daily() ? "practice" : "daily"; $("sHarian").hidden = true; leaveTitle(() => startGame(k, KIT.dailySeed(SLUG))); });
+on("cSend", () => { const L = ST.obj("last", ["seed", "score"]); if (L) shareScore(L.seed, L.score); else { $("sTantang").hidden = true; leaveTitle(() => startGame("normal")); } });
+on("bPause", pause);
+on("pGo", () => { $("sPause").hidden = true; mode = "play"; });
+// Harian resmi tidak pernah hangus diam-diam: Akhiri/Menu menutup permainan dan menyimpan skornya
+function finishDaily() { $("sPause").hidden = true; if (!sim.dead) sim.die("serah"); sim.ev.length = 0; endGame(); }
+on("pRe", () => { if (mode !== "pause") return; if (kind === "daily") return finishDaily(); startGame(kind, kind === "normal" ? 0 : seedNow); });
+on("pMenu", () => { if (mode !== "pause") return; if (kind === "daily") finishDaily(); toTitle(); });
+// tombol hasil hanya bekerja di layar hasil: klik susulan (misalnya diteruskan setelah iklan) diabaikan
+on("rAgain", () => {
+  if (mode !== "over") return;
+  if (kind === "chal") { chal = chalLast; startGame("chal", seedNow); return; }
+  const same = kind === "daily" || kind === "practice"; startGame(same ? "practice" : "normal", same ? seedNow : 0);
+});
+on("rNormal", () => { if (mode === "over") startGame("normal"); });
+on("rShare", () => { if (mode === "over") shareScore(seedNow, sim ? sim.max : 0); });
+on("rMenu", () => { if (mode === "over") toTitle(); });
+on("rCan", () => { if (mode === "over") openKoleksi(); });
+on("kPrev", () => { kSel = (kSel + SKINS.length - 1) % SKINS.length; paintKoleksi(); });
+on("kNext", () => { kSel = (kSel + 1) % SKINS.length; paintKoleksi(); });
+on("kUse", () => {
+  const s = wallet(), id = SKINS[kSel][0];
+  if (skinOpen(s, id) || id === "oyen") { ST.set("skin", id); SFX.fish(1); }
+  else if (buySkin(s, id)) { saveWallet(s); ST.set("skin", id); SFX.fanfare(); KIT.ui.toast(SKINS[kSel][1] + " jadi milikmu!"); }
+  paintKoleksi(); $("tFish").querySelector("span").textContent = wallet().fish;
+});
+on("kCan", () => {
+  const s = wallet(), id = openCan(s);
+  if (id) { saveWallet(s); kSel = skinIdx(id); ST.set("skin", id); SFX.fanfare(); KIT.ui.confetti(80); KIT.ui.toast("Dapat " + SKINS[kSel][1] + "!"); }
+  paintKoleksi(); $("tFish").querySelector("span").textContent = wallet().fish;
+});
+for (const b of document.querySelectorAll("[data-close]")) b.addEventListener("click", () => { SFX.tap(); b.closest(".dk-overlay").hidden = true; closeKoleksi(); });
+
+// satu jari saja; jari lain diabaikan. Ketuk = maju, geser = belok/mundur (ambang 24 px)
+let pid = -1, px0 = 0, py0 = 0, pDone = false;
+function doHop(dir) {
+  if (mode !== "play" || !sim || sim.dead) return;
+  sim.input(dir);
+  if (hintN < 3 && ++hintN >= 3) { $("hint").classList.add("off"); ST.set("hint", 3); }
+}
+function swipe(dx, dy) { if (abs(dx) > abs(dy)) doHop(dx < 0 ? LEFT : RIGHT); else doHop(dy > 0 ? DOWN : UP); }
+cv.addEventListener("pointerdown", (e) => {
+  if (mode !== "play" || pid !== -1) return;
+  pid = e.pointerId; px0 = e.clientX; py0 = e.clientY; pDone = false; press = true;
+  try { cv.setPointerCapture(pid); } catch (_) { }
+});
+cv.addEventListener("pointermove", (e) => { if (e.pointerId !== pid || pDone) return; const dx = e.clientX - px0, dy = e.clientY - py0; if (dx * dx + dy * dy > 576) { pDone = true; press = false; swipe(dx, dy); } });
+cv.addEventListener("pointerup", (e) => { if (e.pointerId !== pid) return; pid = -1; press = false; if (pDone) return; const dx = e.clientX - px0, dy = e.clientY - py0; if (dx * dx + dy * dy > 576) swipe(dx, dy); else doHop(UP); });
+cv.addEventListener("pointercancel", (e) => { if (e.pointerId === pid) { pid = -1; press = false; } });
+const KEYS = { ArrowUp: UP, w: UP, W: UP, " ": UP, ArrowDown: DOWN, s: DOWN, S: DOWN, ArrowLeft: LEFT, a: LEFT, A: LEFT, ArrowRight: RIGHT, d: RIGHT, D: RIGHT };
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" || e.key === "p") { if (mode === "play") pause(); else if (mode === "pause") { $("sPause").hidden = true; mode = "play"; } return; }
+  if (mode === "play" && e.key in KEYS) { e.preventDefault(); if (!e.repeat) doHop(KEYS[e.key]); }
+});
+document.addEventListener("visibilitychange", () => { if (document.hidden) pause(); });
+window.addEventListener("contextmenu", (e) => e.preventDefault());
+let rsT = 0; window.addEventListener("resize", () => { clearTimeout(rsT); rsT = setTimeout(layout, 120); });
+
+/* ================= PERISTIWA PERMAINAN ================= */
+const PRAISE = ["Gesit!", "Lincah!", "Kilat!"];
+function oyScreen(S) { return { x: gx0 + S.ox() * C, y: anchorY - (S.oy() - vcam) * C + C * .28 }; }
+function handleEvents() {
+  const o = oyScreen(sim);
+  for (const e of sim.ev) {
+    const k = e[0];
+    if (k === "hop") {
+      SFX.hop(); puff(o.x, o.y, 3, 0);
+      if (e[1] === UP) {
+        fwd.push(sim.t); while (fwd.length && sim.t - fwd[0] > 2) fwd.shift();
+        if (fwd.length >= 5) { praiseN = sim.t - praiseT < 3.5 ? min(2, praiseN + 1) : 0; praiseT = sim.t; fwd = []; banner(PRAISE[praiseN], .6, 2, false, .9); SFX.praise(praiseN); KIT.vibrate(8); }
+      }
+    } else if (k === "bump") { SFX.bump(); bumpT = .18; bumpDir = e[1]; KIT.vibrate(12); }
+    else if (k === "land") { landT = 0; if (e[1] === L_W) { burst(o.x, o.y - C * .1, 5, C * 1.5, [1, 4], 500); A.noise({ dur: .08, vol: .08, filter: 1400 }); } else { puff(o.x, o.y, 4, 0); SFX.land(); } }
+    else if (k === "score") {
+      const hs = $("hScore"); hs.textContent = e[1]; hs.classList.remove("bump"); void hs.offsetWidth; hs.classList.add("bump"); setTimeout(() => hs.classList.remove("bump"), 110);
+      if (recHit) $("hBest").textContent = e[1];
+      if (!recHit && recPrev === 0) { recHit = true; const b = $("hBestP"); b.hidden = false; b.classList.add("live"); $("hBest").textContent = e[1]; }
+      if (!recHit && recPrev > 0 && e[1] > recPrev) { say("Rekor baru!"); recHit = true; banner("Rekor baru!", 1.5, 1); setTimeout(() => SFX.rec(), 120); $("hBestP").classList.add("live"); $("hBest").textContent = e[1]; }
+    }
+    else if (k === "fish") { SFX.fish(e[1]); ftext(o.x, o.y - C, "+" + e[1], C * (e[1] > 1 ? .8 : .6), e[1] > 1 ? "#ffd23a" : "#fff"); burst(o.x, o.y - C * .4, e[1] > 1 ? 18 : 8, C * 3, [2, 4], 300); fishHud(); }
+    else if (k === "near") {
+      const tr = e[3] === "kereta";
+      SFX.whoosh(); ftext(o.x, o.y - C * 1.2, (tr ? "NYARIS KERETA! +" : "Nyaris! +") + e[2], C * (tr ? .7 : .55), tr ? "#ff7ab8" : "#ffd23a");
+      speedT = .3; speedY = o.y - C * .3; speedX = o.x; KIT.vibrate(tr ? [15, 30, 15] : 12); fishHud();
+      if (tr) { shake = max(shake, C * .1); slowT = .12; }
+    }
+    else if (k === "mile") { banner(e[1] + " LANGKAH!", 1.8, 0); SFX.fanfare(); for (let q = 0; q < 3; q++) setTimeout(() => burst(gx0 + PW * (.2 + rnd() * .6), vh * (.2 + rnd() * .2), 40, C * 5, [2, 3, 5, 6, 7, 8], 250), q * 220); KIT.vibrate([20, 30, 20]); }
+    else if (k === "die") onDeath(e[1], o);
+  }
+  sim.ev.length = 0;
+}
+function fishHud() { const f = $("hFishP"); $("hFish").textContent = sim.fish; f.classList.remove("pop"); void f.offsetWidth; f.classList.add("pop"); }
+function onDeath(c, o) {
+  mode = "dying"; deadT = 0; dieX = o.x; dieY = o.y; KIT.vibrate(30); shake = C * .12;
+  if (c === "kali" || c === "hanyut") { SFX.splash(); burst(o.x, o.y - C * .1, 26, C * 4, [1, 4, 1], 700); setTimeout(() => SFX.meow(), 250); }
+  else if (c === "elang") { SFX.screech(); setTimeout(() => SFX.meow(), 200); }
+  else if (c === "kereta") { SFX.rumble(); flash = .6; flashCol = "#ffffff"; setTimeout(() => SFX.meow(), 120); }
+  else { SFX.thud(); banner("MEONG!", 1.2, 1, true); setTimeout(() => SFX.meow(), 60); burst(o.x, o.y - C * .3, 12, C * 3, [2, 4], 400); }
+}
+// suara jalanan: klakson bila kendaraan mendekat, mangkuk bakso, bel dan gemuruh kereta
+function ambience(S, dt) {
+  honkCd -= dt; bowlCd -= dt; bellCd -= dt; rumbleCd -= dt;
+  const r0 = round(S.oy()), x = S.ox();
+  for (let r = r0 - 1; r <= r0 + 2; r++) {
+    const L = S.w.lane(r);
+    if (L.t === L_R && honkCd <= 0) for (let i = 0; i < L.o.length; i++) {
+      const vx = vehX(L, i, S.t), d = L.dir > 0 ? x - (vx + L.len) : vx - x;
+      if (d > 0 && d < 1.6 && abs(r - S.oy()) < 1.2) { if (L.ty === 3 && bowlCd <= 0) { SFX.bowl(); bowlCd = 3; } else if (L.ty !== 2 && L.ty !== 3 && rnd() < .45) SFX.honk(); honkCd = 2.2; break; }
+    }
+    if (L.t === L_T) {
+      if (railWarn(L, S.t) && bellCd <= 0) { SFX.bell(); bellCd = .32; }
+      if (rumbleCd <= 0 && railHit(L, 4.5, S.t, 6)) { SFX.rumble(); rumbleCd = .8; shake = max(shake, C * .05); }
+    }
+  }
+}
+
+/* ================= GAMBAR ================= */
+let lastTs = 0, sizeChk = 0;
+function frame(ts) { requestAnimationFrame(frame); frameCore(ts); }
+function frameCore(ts) {
+  let dt = (ts - lastTs) / 1000; lastTs = ts;
+  if (!(dt > 0)) dt = 0; if (dt > .05) dt = .05; // lonjakan bingkai dijepit, lalu disimulasikan per irisan
+  if ((window.innerWidth !== vw || window.innerHeight !== vh) && window.innerWidth > 0 && ++sizeChk > 10) { sizeChk = 0; layout(); }
+  time += dt;
+  if (mode === "play") {
+    sim.step(slowT > 0 ? dt * .35 : dt); slowT -= dt; handleEvents(); if (mode === "play") ambience(sim, dt);
+    if (sim.idle > IDLE_WARN && !screeched) { screeched = true; SFX.screech(); }
+    if (sim.idle < 1) screeched = false;
+    if (DEMO && END && sim.t > END && !sim.dead) { sim.die(Q.get("cause") || "angkot"); handleEvents(); }
+    if (world) world.gc(floor(sim.cam) - 12);
+    if (DEMO) demoFx();
+  } else if (mode === "over") deadT += dt;
+  else if (mode === "dying") { deadT += dt; if (deadT >= .9 + (sim.dead === "elang" ? .35 : 0)) endGame(); }
+  if (mode === "title" || mode === "leaving" || COVER) { if (!COVER) { tSim.step(dt); tSim.ev.length = 0; } tWorld.gc(floor(tSim.cam) - 12); }
+  render(dt);
+  if (!$("sKoleksi").hidden) drawPreview();
+}
+function render(dt) {
+  const g = ctx, titleish = mode === "title" || mode === "leaving" || COVER;
+  const S = titleish ? tSim : sim;
+  anchorY = titleish ? titleAnchor : playAnchor;
+  if (!titleish && anchorT > 0) { anchorT -= dt; const q = max(0, anchorT / .35); anchorY = playAnchor + (titleAnchor - playAnchor) * q * q; }
+  const target = S.cam;
+  if (titleish) { tcam += (target - tcam) * min(1, dt * 3); vcam = tcam; }
+  else vcam += (target - vcam) * min(1, dt * 7);
+  if (COVER) vcam = S.cam;
+  shake *= pow(.02, dt); if (shake < .2) shake = 0;
+  const sx = shake ? (rnd() - .5) * shake : 0, sy = shake ? (rnd() - .5) * shake : 0;
+  g.setTransform(dpr, 0, 0, dpr, sx * dpr, sy * dpr);
+  const t = S.dead && !isFlat(S.dead) ? S.t + deadT : S.t; // tabrakan: lalu lintas berhenti sejenak
+  drawWorld(S, t, dt);
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (gx0 > 2 && !COVER) { g.fillStyle = "rgba(12,18,40,.4)"; g.fillRect(0, 0, gx0, vh); g.fillRect(gx0 + PW, 0, vw - gx0 - PW, vh); g.fillStyle = "rgba(255,255,255,.25)"; g.fillRect(gx0 - 2, 0, 2, vh); g.fillRect(gx0 + PW, 0, 2, vh); }
+  if (!titleish) drawEagleFx(S, dt);
+  drawParticles(dt); drawTexts(dt);
+  if (speedT > 0) { speedT -= dt; g.globalAlpha = speedT / .3; g.strokeStyle = "#fff"; g.lineWidth = 3; g.lineCap = "round"; for (let k = 0; k < 5; k++) { const yy = speedY + (k - 2) * C * .2, len = C * (.8 + (k % 3) * .4); g.beginPath(); g.moveTo(speedX - C * 1.6 - len, yy); g.lineTo(speedX - C * 1.6, yy); g.moveTo(speedX + C * 1.6, yy); g.lineTo(speedX + C * 1.6 + len, yy); g.stroke(); } g.globalAlpha = 1; }
+  if (BAN.t > 0) drawBanner(dt);
+  if (flash > 0) { flash -= dt; g.globalAlpha = max(0, flash); g.fillStyle = flashCol; g.fillRect(0, 0, vw, vh); g.globalAlpha = 1; }
+  if (titleish) renderLogo(dt);
+}
+function isFlat(c) { return !!c && !/kali|hanyut|elang|kereta/.test(c); }
+function drawWorld(S, t, dt) {
+  const g = ctx, u = C, w = S.w;
+  const top = ceil(vcam + anchorY / u) + 2, bot = floor(vcam - (vh - anchorY) / u) - 1;
+  gcRows(w, bot, top);
+  const dead = S.dead;
+  const dr = floor(S.oy() + 1e-6);
+  for (let r = top; r >= bot; r--) {
+    const L = w.lane(r), y = anchorY - (r - vcam) * u;
+    const rc = rowCanvas(w, L, r);
+    if (rc.pad) g.drawImage(rc, 0, y - 1.5 * u, vw, 2 * u); else g.drawImage(rc, 0, rc.height / 2, rc.width, rc.height / 2, 0, y - .5 * u, vw, u);
+    drawDyn(S, L, r, y, t, dt);
+    if (r === dr && !(dead === "elang" || dead === "kereta")) drawOyen(S, dt);
+  }
+  if (dead === "elang" || dead === "kereta") drawOyen(S, dt);
+}
+function drawDyn(S, L, r, y, t, dt) {
+  const g = ctx, u = C, yb = y + u / 2, vl = -gx0 / u - 4, vr = (vw - gx0) / u + 1;
+  if (L.t === L_R) {
+    const hz = ngWarn(L, t), hzOn = hz && sin(t * 20) > 0, stop = ngStop(L, t);
+    for (let i = 0; i < L.o.length; i++) {
+      const vx = vehX(L, i, t); if (vx > vr || vx + L.len < vl) continue;
+      const sp = vehSprite(L.ty, L.cl[i]), x = gx0 + vx * u - .15 * u;
+      let yy = yb - sp.h;
+      if (L.ty === 1 && !stop) yy += sin(t * 9 + i * 2) * u * .025; // angkot bergoyang
+      if (L.b === 4 || B_NIGHT) { const hx = L.dir > 0 ? x + sp.w : x; g.fillStyle = "rgba(255,240,170,.22)"; g.beginPath(); g.moveTo(hx, yb - u * .5); g.lineTo(hx + L.dir * u * 1.4, yb - u * .85); g.lineTo(hx + L.dir * u * 1.4, yb - u * .1); g.closePath(); g.fill(); }
+      if (L.dir > 0) g.drawImage(sp.cv, x, yy, sp.w, sp.h);
+      else { g.save(); g.translate(x + sp.w, yy); g.scale(-1, 1); g.drawImage(sp.cv, 0, 0, sp.w, sp.h); g.restore(); }
+      if (hzOn) { // lampu hazard sebelum dan selama ngetem
+        for (const hx of [x + u * .25, x + sp.w - u * .12]) { g.fillStyle = "rgba(255,190,40,.4)"; g.beginPath(); g.arc(hx, yb - u * .42, u * .2, 0, TAU); g.fill(); g.beginPath(); g.arc(hx, yb - u * .42, u * .08, 0, TAU); fl(g, "#ffb21a", u * .03); }
+      }
+      if ((L.ty === 3 || L.ty === 7) && rnd() < dt * 6) part(x + sp.w / 2, yb - u * .95, (rnd() - .5) * u * .3, -u * .8, .8, u * .1, 4, -30);
+    }
+  } else if (L.t === L_W) {
+    g.strokeStyle = "rgba(255,255,255,.35)"; g.lineWidth = u * .035; g.lineCap = "round";
+    for (let k = 0; k < 7; k++) { const px = mod(k * 3.1 + L.dir * t * L.v * .6 + L.row * 1.7, COLS + 8) - 4, py = yb - u * (.25 + (k % 3) * .22); g.beginPath(); g.moveTo(gx0 + px * u, py); g.lineTo(gx0 + (px + .35) * u, py); g.stroke(); }
+    for (let i = 0; i < L.o.length; i++) {
+      const fx = vehX(L, i, t); if (fx > vr || fx + L.ln[i] < vl) continue;
+      const sp = floatSprite(L.fk, L.ln[i], L.b), x = gx0 + fx * u - .1 * u, ph = matPh(L, i, t);
+      let yy = yb - sp.h + sin(t * 2.5 + i) * u * .02;
+      if (ph >= 0 && ph >= MAT_T - MAT_S - 1) { // peringatan 1 detik: gelembung dan tikar menggelap, lalu tenggelam
+        const sunkNow = ph >= MAT_T - MAT_S, f = sunkNow ? 1 : ph - (MAT_T - MAT_S - 1);
+        g.globalAlpha = sunkNow ? .18 : 1 - f * .35; yy += (sunkNow ? .12 : f * .06) * u;
+        g.drawImage(sp.cv, x, yy, sp.w, sp.h); g.globalAlpha = 1;
+        if (!sunkNow) { g.fillStyle = "rgba(20,40,20," + (f * .45) + ")"; rr(g, x + u * .1, yy + sp.h - u * .85, sp.w - u * .2, u * .55, u * .25); g.fill(); }
+        if (rnd() < dt * 10) part(x + rnd() * sp.w, yb - u * .4, 0, -u * .5, .5, u * .06, 1, -20);
+      } else g.drawImage(sp.cv, x, yy, sp.w, sp.h);
+    }
+  } else if (L.t === L_T) {
+    const warn = railWarn(L, t), on = warn && sin(t * 14) > 0;
+    if (warn) { g.fillStyle = "rgba(255,40,60," + (on ? .22 : .08) + ")"; g.fillRect(0, yb - u, vw, u); }
+    const k = trainK(L, t);
+    for (let j = max(0, k); j <= k + 1; j++) { const s = trainSpan(L, t, j); if (s[1] < vl || s[0] > vr) continue; drawTrain(g, gx0 + s[0] * u, gx0 + s[1] * u, yb, u, L.dir); }
+    const arr = trainArr(L, max(0, k + (t > trainArr(L, max(0, k)) + .8 ? 1 : 0))), down = max(0, min(1, (t - (arr - WARN)) / .45, 1 - (t - arr - .8) / .45));
+    for (const e of [0, 1]) signal(g, e ? gx0 + PW - u * .2 : gx0 + u * .2, yb - u * .92, u, on, down, e ? -1 : 1, warn);
+  } else if (L.t === L_G && L.ik >= 0 && !S.got.has(r)) drawFish(g, gx0 + (L.ik + .5) * u, yb - u * .4, u, L.gold, time);
+}
+// tiang sinyal perlintasan: dua lampu merah bergantian dan palang yang turun
+function signal(g, x, y, u, on, down, dir, warn) {
+  g.save(); g.translate(x, y);
+  const a = -PI / 2 * (1 - down);
+  g.save(); g.rotate(dir > 0 ? a : -a); g.scale(dir, 1);
+  rr(g, 0, -u * .05, u * 1.5, u * .1, u * .04); fl(g, "#fff", u * .03);
+  g.fillStyle = "#ef4a5a"; for (let k = 0; k < 4; k++) g.fillRect(u * (.15 + k * .36), -u * .05, u * .16, u * .1);
+  g.restore();
+  g.fillStyle = "#4a4a58"; g.fillRect(-u * .03, -u * .75, u * .06, u * .8);
+  g.strokeStyle = "#fff"; g.lineWidth = u * .07; g.beginPath(); g.moveTo(-u * .16, -u * .86); g.lineTo(u * .16, -u * .64); g.moveTo(u * .16, -u * .86); g.lineTo(-u * .16, -u * .64); g.stroke();
+  for (const e of [-1, 1]) { const lit = warn && (on ? e < 0 : e > 0); g.beginPath(); g.arc(e * u * .1, -u * .5, u * .07, 0, TAU); fl(g, lit ? "#ff3040" : "#5a2028", u * .02); if (lit) { g.fillStyle = "rgba(255,60,60,.35)"; g.beginPath(); g.arc(e * u * .1, -u * .5, u * .2, 0, TAU); g.fill(); } }
+  g.restore();
+}
+function drawOyen(S, dt) {
+  const g = ctx, u = C, dead = S.dead, sk = SKINS[skinNow];
+  let { x, y } = oyScreen(S), air = 0, sx = 1, sy = 1, mood = 0, rot = 0, scl = 1;
+  const p = S.prog();
+  if (S.hop) {
+    if (p < .28) { sx = 1.14; sy = .84; } else { air = sin((p - .28) / .72 * PI) * u * .42; sx = .92; sy = 1.1; }
+  } else if (press && !dead && S === sim) { sx = 1.12; sy = .86; } // jari menempel: ancang-ancang
+  else if (landT < .14) { const q = sin(landT / .14 * PI); sx = 1 + q * .16; sy = 1 - q * .2; }
+  landT += dt;
+  if (bumpT > 0 && !dead) { bumpT -= dt; const q = sin((.18 - bumpT) / .18 * PI) * u * .16; x += FV[bumpDir][0] * q; y += FV[bumpDir][1] * q; }
+  if (!S.hop && S.w.lane(S.r).t === L_W) y += sin(time * 5) * u * .02;
+  if (!S.hop && !dead) sy *= 1 + sin(time * 3.2) * .025;
+  let face = S.face;
+  if (dead) {
+    const d = deadT;
+    if (dead === "kali" || dead === "hanyut") { mood = 2; face = DOWN; y += u * .18 + sin(d * 8) * u * .04; g.save(); g.beginPath(); g.rect(0, 0, vw, y - u * .08); g.clip(); g.translate(x, y); drawCat(g, sk, face, { u, mood, tail: time * 8 }); g.restore(); g.fillStyle = "rgba(255,255,255,.6)"; ell(g, x, y - u * .08, u * .42 + sin(d * 6) * u * .05, u * .1); g.fill(); return; }
+    if (dead === "kereta") { mood = 1; const k = min(1, d / .9); x = dieX + d * u * 2.2; y = dieY - d * u * 4.5 + d * d * u * 1.5; rot = d * 11; scl = 1 - k * .6; }
+    else if (dead === "elang") { eagleT = d; const k = min(1, d / .35); if (d > .35) { x = dieX - (d - .35) * u * 4; y = dieY - (d - .35) * u * 9; } mood = 2; face = DOWN; air = u * .15 * k; }
+    else { mood = 1; sx = 1.55; sy = .3; face = DOWN; }
+  }
+  g.save(); g.translate(x, y); if (rot) g.rotate(rot); if (scl !== 1) g.scale(scl, scl);
+  if (COVER) { g.scale(1.45, 1.45); mood = 3; }
+  drawCat(g, sk, face, { u, sx, sy, air, tail: time * 7, mood });
+  g.restore();
+  if (dead && sy < .5) { for (let k = 0; k < 3; k++) { const a = time * 5 + k * TAU / 3; g.save(); g.translate(x + cos(a) * u * .35, y - u * .35 + sin(a) * u * .12); g.fillStyle = "#ffd23a"; g.beginPath(); for (let q = 0; q < 10; q++) { const aa = -PI / 2 + q * PI / 5, rr2 = q & 1 ? u * .04 : u * .1; g.lineTo(cos(aa) * rr2, sin(aa) * rr2); } g.closePath(); g.fill(); g.lineWidth = 1.5; g.strokeStyle = INK; g.stroke(); g.restore(); } }
+  if (dead === "elang") { const d = deadT, k = min(1, d / .35), ex = d <= .35 ? dieX + (1 - k) * u * 4 : x, ey = d <= .35 ? dieY - u * .9 - (1 - k) * u * 7 : y - u * .9; drawEagle(g, ex, ey, u, time * 22, 1.1); }
+}
+let skinNow = 0;
+// bayangan elang berputar saat Oyen terlalu lama diam
+function drawEagleFx(S, dt) {
+  if (S.dead || S.idle < IDLE_WARN) return;
+  const g = ctx, o = oyScreen(S), k = (S.idle - IDLE_WARN) / (IDLE_MAX - IDLE_WARN), R = C * (2.2 - k * 2), a = time * 3;
+  g.fillStyle = "rgba(20,10,30," + (.18 + k * .25) + ")"; ell(g, o.x + cos(a) * R, o.y + sin(a) * R * .45, C * (.7 + k * .5), C * (.25 + k * .15)); g.fill();
+  if (sin(time * 16) > 0) { g.font = fontPx(C * .8); g.textAlign = "center"; g.lineWidth = C * .14; g.strokeStyle = INK; g.strokeText("!", o.x, o.y - C * 1.2); g.fillStyle = "#ff4d5e"; g.fillText("!", o.x, o.y - C * 1.2); }
+}
+function drawParticles(dt) {
+  const g = ctx;
+  for (let i = 0; i < PN; i++) {
+    if (pL[i] <= 0) continue;
+    pL[i] -= dt; if (pL[i] <= 0) continue;
+    pVY[i] += pG[i] * dt; pX[i] += pVX[i] * dt; pY[i] += pVY[i] * dt;
+    const k = pK[i], f = pL[i] / pM[i];
+    g.globalAlpha = min(1, f * 1.6); g.fillStyle = PCOL[k];
+    if (k === 3 || k >= 5) { g.fillRect(pX[i] - pS[i], pY[i] - pS[i] * .5, pS[i] * 2, pS[i]); }
+    else { g.beginPath(); g.arc(pX[i], pY[i], pS[i] * (k === 0 || k === 4 ? 1.6 - f * .6 : 1), 0, TAU); g.fill(); }
+  }
+  g.globalAlpha = 1;
+}
+function drawTexts(dt) {
+  const g = ctx; g.textAlign = "center"; g.textBaseline = "middle"; g.lineJoin = "round";
+  for (let i = 0; i < TN; i++) {
+    if (tL[i] <= 0) continue;
+    tL[i] -= dt * 1.1; tY[i] -= dt * C * 1.2;
+    const a = min(1, tL[i] * 2.5), s = tSz[i] * (1 + max(0, tL[i] - .85) * 2);
+    g.globalAlpha = a; g.font = fontPx(s); g.lineWidth = s * .22; g.strokeStyle = INK; g.strokeText(tTx[i], tX[i], tY[i]); g.fillStyle = tC[i]; g.fillText(tTx[i], tX[i], tY[i]);
+  }
+  g.globalAlpha = 1;
+}
+function drawBanner(dt) {
+  const g = ctx; BAN.t -= dt; const k = 1 - BAN.t / BAN.d, e = k < .15 ? k / .15 : 1, side = !BAN.mid && gx0 > 200;
+  // ukuran dasar dijepit supaya tulisan muat di lebar yang tersedia
+  let base = BAN.mid ? min(PW * .14, 64) : min(PW * .1, 46);
+  g.font = fontPx(base); const room = (side ? gx0 : PW) * .88, tw = g.measureText(BAN.s).width * 1.15; if (tw > room) base *= room / tw;
+  const sz = base * (.6 + .4 * (1 - pow(1 - e, 3)) + sin(e * PI) * .12);
+  g.save(); g.translate(BAN.mid ? gx0 + PW / 2 : side ? gx0 / 2 : gx0 + PW / 2, BAN.mid ? vh * .3 : side ? vh * .4 : sT + 118); g.rotate(-.05);
+  g.globalAlpha = (BAN.t < .3 ? BAN.t / .3 : 1) * BAN.a; g.font = fontPx(sz); g.textAlign = "center"; g.textBaseline = "middle"; g.lineJoin = "round";
+  g.lineWidth = sz * .3; g.strokeStyle = INK; g.strokeText(BAN.s, 0, sz * .08); g.strokeText(BAN.s, 0, 0);
+  const c = BAN_COL[BAN.col], gr = g.createLinearGradient(0, -sz * .5, 0, sz * .4); gr.addColorStop(0, c[0]); gr.addColorStop(.5, c[1]); gr.addColorStop(1, c[2]);
+  g.fillStyle = gr; g.fillText(BAN.s, 0, 0); g.restore(); g.globalAlpha = 1;
+}
+
+/* ================= LOGO ================= */
+let LOGO = null;
+function buildLogo(x, y, w, h) {
+  const f1 = h * .52, f2 = h * .2, tiles = [];
+  for (const ch of "OYEN") {
+    const s = f1 * 1.15, c = mk(s * dpr), g = c.getContext("2d"); g.scale(dpr, dpr);
+    g.font = fontPx(f1); g.textAlign = "center"; g.textBaseline = "middle"; g.lineJoin = "round";
+    g.lineWidth = f1 * .26; g.strokeStyle = INK; g.strokeText(ch, s / 2, s / 2 + f1 * .1); g.strokeText(ch, s / 2, s / 2);
+    const gr = g.createLinearGradient(0, s / 2 - f1 * .4, 0, s / 2 + f1 * .35); gr.addColorStop(0, "#fff3a0"); gr.addColorStop(.35, "#ffc23a"); gr.addColorStop(.8, "#ff8a1a"); gr.addColorStop(1, "#e8551a");
+    g.fillStyle = gr; g.fillText(ch, s / 2, s / 2);
+    g.fillStyle = "rgba(255,255,255,.75)"; ell(g, s / 2 - f1 * .15, s / 2 - f1 * .25, f1 * .08, f1 * .04); g.fill();
+    c.s = s; c.w = g.measureText(ch).width + f1 * .1; tiles.push(c);
+  }
+  const pw = w * .9, ph = f2 * 1.55, P = mk((pw + 12) * dpr, (ph + 12) * dpr), q = P.getContext("2d"); q.scale(dpr, dpr);
+  rr(q, 6, 8, pw, ph, ph * .3); q.fillStyle = INK; q.fill();
+  rr(q, 6, 4, pw, ph, ph * .3); q.fillStyle = "#56627e"; q.fill(); q.lineWidth = 4; q.strokeStyle = INK; q.stroke();
+  q.save(); rr(q, 6, 4, pw, ph, ph * .3); q.clip(); q.fillStyle = "rgba(255,255,255,.14)"; for (let k = 0; k < 14; k++) q.fillRect(6 + k * pw / 12, 4, pw / 26, ph); q.restore();
+  q.font = fontPx(f2); q.textAlign = "center"; q.textBaseline = "middle"; q.lineJoin = "round"; q.lineWidth = f2 * .28; q.strokeStyle = INK; q.strokeText("NYEBRANG", 6 + pw / 2, 4 + ph / 2 + 2); q.fillStyle = "#ffe36a"; q.fillText("NYEBRANG", 6 + pw / 2, 4 + ph / 2 + 2);
+  LOGO = { x, y, w, h, f1, tiles, P, pw, ph };
+}
+function renderLogo(dt) {
+  const L = LOGO; if (!L || $("sTitle").hidden) return;
+  const g = ctx, cx = L.x + L.w / 2, tw = L.tiles.reduce((a, c) => a + c.w * .95, 0);
+  let x = cx - tw / 2; const ty = L.y + L.f1 * .62;
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  for (let i = 0; i < 4; i++) {
+    const c = L.tiles[i], hop = pow(max(0, sin(time * 2.6 - i * .6)), 8), px = x + c.w * .475, py = ty - hop * L.f1 * .22;
+    g.save(); g.translate(px, py); g.rotate((i & 1 ? .06 : -.06) + hop * .06); g.scale(1 + hop * .05, 1 - hop * .04);
+    if (i === 0) for (const e of [-1, 1]) { const f = L.f1; g.beginPath(); g.moveTo(e * f * .06, -f * .3); g.lineTo(e * f * .3, -f * .78); g.lineTo(e * f * .44, -f * .18); g.closePath(); g.fillStyle = "#ff9a3a"; g.lineWidth = f * .09; g.strokeStyle = INK; g.stroke(); g.fill(); g.beginPath(); g.moveTo(e * f * .17, -f * .33); g.lineTo(e * f * .29, -f * .62); g.lineTo(e * f * .36, -f * .3); g.closePath(); g.fillStyle = "#ffb3c1"; g.fill(); }
+    g.drawImage(c, -c.s / 2, -c.s / 2, c.s, c.s); g.restore();
+    x += c.w * .95;
+  }
+  const wob = sin(time * 2.2) * .02;
+  g.save(); g.translate(cx, L.y + L.h - L.ph * .62); g.rotate(-.04 + wob);
+  g.drawImage(L.P, -(L.pw + 12) / 2, -(L.ph + 12) / 2, L.pw + 12, L.ph + 12); g.restore();
+}
+function drawPreview() {
+  const c = $("kCv"), g = c.getContext("2d"), W = 150, H = 120;
+  if (c.width !== W * dpr) { c.width = W * dpr; c.height = H * dpr; }
+  g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+  g.fillStyle = "#9adf66"; g.fillRect(0, 0, W, H); g.fillStyle = "#8ad358"; g.fillRect(0, H * .55, W, H * .45);
+  const hp = max(0, sin(time * 4)), s = wallet(), id = SKINS[kSel][0];
+  g.save(); g.translate(W / 2, H * .86);
+  drawCat(g, SKINS[kSel], DOWN, { u: 76, air: hp * 22, sx: hp > .1 ? .94 : 1.08, sy: hp > .1 ? 1.08 : .92, tail: time * 6, mood: hp > .5 ? 3 : 0 });
+  g.restore();
+  if (!skinOpen(s, id) && id !== "oyen") { g.fillStyle = "rgba(43,26,16,.35)"; g.fillRect(0, 0, W, H); g.font = fontPx(30); g.textAlign = "center"; g.textBaseline = "middle"; g.lineWidth = 7; g.strokeStyle = INK; g.strokeText("?", W - 20, 22); g.fillStyle = "#ffe36a"; g.fillText("?", W - 20, 22); }
+}
+
+/* ================= UJI (?uji=1) ================= */
+function laneSig(L) { return JSON.stringify(L, (k, v) => v instanceof Uint8Array ? Array.from(v) : typeof v === "number" ? +v.toFixed(9) : v); }
+function fixWorld(rows) { const w = new World(1, 0); w.fix = rows; return w; }
+function grassL(row) { return { row, t: L_G, b: 0, blk: new Uint8Array(COLS), ik: -1, gold: false }; }
+function runUji() {
+  const out = []; let ok = true; const T0 = performance.now();
+  const chk = (c, m) => { if (!c) ok = false; out.push((c ? "ok    " : "GAGAL ") + m); };
+  // a) determinisme
+  const sig = (seed) => { const w = new World(seed); let s = ""; for (let r = 0; r <= 500; r++) s += laneSig(w.lane(r)) + "\n"; return s; };
+  const s1 = sig(4242), s2 = sig(4242), s3 = sig(4243);
+  chk(s1 === s2 && s1 !== s3, "a) baris 0-500 sama persis untuk benih sama (" + (s1.length / 1024).toFixed(0) + " KB data), berbeda untuk benih lain");
+  // b) tutorial, sungai pertama >= 15, rel pertama >= 25
+  let tut = true, fr = 99, ft = 99, danger = 0, rows = 0, maxRun = 0;
+  for (let sd = 1; sd <= 30; sd++) {
+    const w = new World(sd * 977), pat = [L_G, L_G, L_R, L_G, L_G, L_R, L_G, L_G];
+    for (let r = 0; r < 8; r++) { const L = w.lane(r); if (L.t !== pat[r] || (L.t === L_R && L.v > 1.1)) tut = false; }
+    let run = 0;
+    for (let r = 0; r < 300; r++) {
+      const L = w.lane(r);
+      if (L.t === L_W) fr = min(fr, r); if (L.t === L_T) ft = min(ft, r);
+      if (L.t !== L_G) { run++; if (r >= 200) danger++; } else run = 0;
+      if (r >= 200) rows++;
+      const lim = round(2 + 3 * w.d(r)); if (run > lim) maxRun = max(maxRun, 99);
+      maxRun = max(maxRun, run);
+    }
+  }
+  chk(tut, "b) 8 baris pertama: rumput, rumput, jalan pelan, rumput, rumput, jalan pelan, rumput, rumput (30 benih)");
+  chk(fr >= 15 && ft >= 25, "b) sungai pertama di baris " + fr + ", rel pertama di baris " + ft);
+  chk(maxRun <= 5 && danger / rows > .5 && danger / rows < .9, "b) bahaya beruntun maks " + maxRun + "; porsi bahaya di baris 200-300: " + (danger / rows * 100).toFixed(0) + "%");
+  // c) jendela waktu jalan: celah kosong di setiap kolom >= 2.2 x waktu lompat
+  const rn = KIT.rng(99); let worst = 99, bad = 0;
+  for (let n = 0; n < 300; n++) {
+    const d = rn(), L = laneRoad(100, KIT.rng((rn() * 1e9) >>> 0), d, (rn() * 5) | 0, rn() < .5 ? 1 : -1, false);
+    if (n & 1) { L.nP = 3 + rn() * 4.5; L.nO = rn() * L.nP; } // separuh dipaksa ngetem
+    const H = (L.P / L.v) * (L.nP ? L.nP / (L.nP - NG_STOP) : 1);
+    for (const c of [0, 4, 8]) {
+      let free = 0, seenHit = false, minFree = 99;
+      for (let t = 0; t < H * 2; t += .01) { if (roadHit(L, c + .5, t, 0)) { if (seenHit && free > 0) minFree = min(minFree, free); seenHit = true; free = 0; } else free += .01; }
+      if (minFree < WIN - .02) bad++; worst = min(worst, minFree);
+    }
+  }
+  chk(bad === 0, "c) 300 lajur jalan acak d 0..1 (150 ngetem): jendela tersempit " + worst.toFixed(2) + " dtk >= " + WIN.toFixed(2) + " dtk");
+  // c) angkot ngetem: benar-benar berhenti NG_STOP detik, muncul di dunia nyata, dan menabrak = sebab "ngetem"
+  const ngL = { row: 1, t: L_R, b: 0, ty: 1, len: 1.7, dir: 1, v: 1, o: [EXT], cl: [0], P: 60, ph: 0, nP: 5, nO: 4 };
+  const still = abs(vehX(ngL, 0, .01) - vehX(ngL, 0, 1)) < 1e-9, moved = abs(vehX(ngL, 0, 1.3) - vehX(ngL, 0, 1)) > .2;
+  let ngN = 0, rdN = 0; { const w = new World(8080); for (let r = 0; r < 400; r++) { const L = w.lane(r); if (L.t === L_R && r >= 10) { rdN++; if (L.nP) ngN++; } } }
+  let sN = new Sim(fixWorld({ 0: grassL(0), 1: ngL, 2: grassL(2) })); sN.r = 1; sN.x = 4.5; sN.step(.01);
+  chk(still && moved && ngN > 5 && sN.dead === "ngetem", "c) ngetem: diam " + NG_STOP + " dtk lalu jalan lagi; " + ngN + "/" + rdN + " lajur jalan di 400 baris; tabrak = " + sN.dead);
+  // d) sungai selalu bisa diseberangi (BFS per potongan) dan pelampung lewat tiap kolom <= 2.5 dtk
+  let chunks = 0, pass = 0, rg = 0, rivers = 0, rgBad = 0, fb = 0, safeOk = true, rails = [];
+  for (const seed of [11, 222, 3333]) {
+    const w = new World(seed);
+    for (let k = 0; k < 40; k++) {
+      const lanes = []; for (let i = 0; i < CH; i++) lanes.push(w.lane(k * CH + i));
+      chunks++; if (chunkPassable(w, lanes, k * CH, firstRow(w, k + 1), [7.7, 29.3])) pass++;
+      for (const L of lanes) { if (L.t === L_W) { rivers++; const gp = riverGap(L); rg = max(rg, gp); if (gp > RIVER_MAX + .05) rgBad++; } if (L.t === L_T) rails.push(L); }
+      if (!safeRunsOk(lanes.map((L) => L.t === L_G ? { t: L_G, blk: L.blk.slice() } : L), false)) safeOk = false;
+    }
+    fb += w.regen >= 100 ? 1 : 0;
+  }
+  chk(pass === chunks && fb === 0, "d) BFS menemukan jalan di " + pass + "/" + chunks + " potongan (3 benih x 40), tanpa cadangan darurat");
+  chk(rgBad === 0, "d) " + rivers + " lajur sungai: kolom tak tertutup paling lama " + rg.toFixed(2) + " dtk (<= 2.5)");
+  // e) rintangan tidak pernah menyegel lajur
+  let sealed = 0;
+  for (let n = 0; n < 400; n++) {
+    const r0 = KIT.rng(n + 1), run = []; for (let i = 0; i < 1 + ((r0() * 4) | 0); i++) run.push(laneGrass(50 + i, r0, 0, 4 + ((r0() * 4) | 0), false));
+    safeRunsOk(run, true); if (!safeRunsOk(run, false)) sealed++;
+  }
+  chk(safeOk && sealed === 0, "e) flood fill: semua deret aman di potongan tersambung; 400 tata letak padat diperbaiki tanpa segel");
+  // f) peringatan kereta >= 1.4 dtk sebelum masuk lapangan
+  let fOk = true; for (let k = 0; k < 60; k++) rails.push(laneRail(30, KIT.rng(k + 7), k / 60, 0));
+  for (const L of rails) for (let j = 0; j < 8; j++) {
+    const a = trainArr(L, j);
+    for (let tt = a - 1.4; tt <= a; tt += .02) if (!railWarn(L, tt)) fOk = false;
+    for (let tt = max(0, a - L.Tp + .9); tt < a - .001; tt += .02) for (let x = .5; x < COLS; x++) if (railHit(L, x, tt, 0)) fOk = false;
+  }
+  chk(fOk && rails.every((L) => trainArr(L, 0) >= WARN), "f) " + rails.length + " rel: lampu menyala >= 1.4 dtk sebelum kereta, kereta tak pernah muncul tanpa peringatan");
+  // g) tabrakan, rakit membawa Oyen, hanyut di tepi
+  const road = { row: 1, t: L_R, b: 0, ty: 1, len: 1.7, dir: 1, v: .001, o: [3.8 + EXT], cl: [0], P: 60, ph: 0 };
+  let s = new Sim(fixWorld({ 0: grassL(0), 1: road, 2: grassL(2) })); s.r = 1; s.x = 4.5; s.step(.01);
+  chk(s.dead === "angkot", "g) kendaraan menutupi sel = Oyen tertabrak (" + (s.dead || "hidup") + ")");
+  s = new Sim(fixWorld({ 0: grassL(0), 1: road, 2: grassL(2) })); s.r = 1; s.x = 1.5; s.step(.01);
+  chk(!s.dead, "g) sel di luar kendaraan aman");
+  const river = { row: 1, t: L_W, b: 0, fk: 0, dir: 1, v: 1.5, o: [EXT + 0], ln: [9.5], sp: [-1], P: 60, ph: 0 };
+  s = new Sim(fixWorld({ 0: grassL(0), 1: river, 2: grassL(2) })); s.r = 1; s.x = 4; const x0 = s.x; s.step(.1);
+  chk(!s.dead && abs(s.x - x0 - 1.5 * .1) < 1e-9, "g) rakit membawa Oyen tepat v x dt: +" + (s.x - x0).toFixed(4));
+  s = new Sim(fixWorld({ 0: grassL(0), 1: river, 2: grassL(2) })); s.r = 1; s.x = 8.9; s.step(.2);
+  chk(s.dead === "hanyut", "g) terbawa melewati tepi = " + (s.dead || "hidup"));
+  s = new Sim(fixWorld({ 0: grassL(0), 1: { ...river, o: [EXT + 6], ln: [2] }, 2: grassL(2) })); s.input(UP); s.step(.3);
+  chk(s.dead === "kali", "g) mendarat di air di antara kayu = kecebur (" + (s.dead || "hidup") + ")");
+  s = new Sim(fixWorld({ 0: grassL(0), 1: grassL(1) })); s.x = .5; const bl = s.input(LEFT); s.w.fix[1].blk[4] = 1; s.x = 4.5; s.step(.2); const b2 = s.input(UP);
+  chk(!bl && !b2 && s.r === 0, "g) lompat ke luar tepi dan ke rintangan ditolak");
+  // g) nyaris membayar ikan, hanya sekali per baris baru (tidak bisa dipanen bolak-balik)
+  const nr = { row: 1, t: L_R, b: 0, ty: 1, len: 1.7, dir: 1, v: .001, o: [5 + EXT], cl: [0], P: 60, ph: 0 };
+  s = new Sim(fixWorld({ 0: grassL(0), 1: nr, 2: grassL(2), 3: grassL(3) }), { calm: true });
+  s.input(UP); s.step(.3); const n1 = s.fish; s.input(DOWN); s.step(.3); s.input(UP); s.step(.3);
+  chk(!s.dead && n1 === 1 && s.fish === 1 && s.near === 1, "g) nyaris = +1 ikan (" + n1 + "), mundur-maju lagi tidak menambah (" + s.fish + ")");
+  const rl = { row: 1, t: L_T, b: 0, dir: 1, Tp: 100, ph: .0525 };
+  s = new Sim(fixWorld({ 0: grassL(0), 1: rl, 2: grassL(2) }), { calm: true }); s.r = 1; s.max = 1; s.input(UP); s.step(.4);
+  chk(!s.dead && s.fish === 3 && s.ev.some((e) => e[0] === "near" && e[3] === "kereta"), "g) nyaris kereta di belakang Oyen = +3 ikan (" + s.fish + ", " + (s.dead || "hidup") + ")");
+  // h) skor hanya bertambah pada baris maksimum baru
+  const allG = {}; for (let r = 0; r < 30; r++) allG[r] = grassL(r);
+  s = new Sim(fixWorld(allG), { calm: true }); const seq = [UP, UP, UP, DOWN, UP, UP]; const sc = [];
+  for (const d of seq) { s.input(d); s.step(.2); sc.push(s.max); }
+  chk(sc.join(",") === "1,2,3,3,3,4", "h) skor per lompatan " + sc.join(",") + " (mundur tidak menambah)");
+  // i) elang datang tepat di ambang diam
+  s = new Sim(fixWorld(allG)); s.step(6.9); const alive1 = !s.dead; s.step(.15);
+  const eag = s.dead === "elang";
+  s = new Sim(fixWorld(allG)); s.step(6); s.input(UP); s.step(6); const alive2 = !s.dead; s.step(1.2);
+  chk(alive1 && eag && alive2 && s.dead === "elang", "i) elang datang di " + IDLE_MAX + " dtk diam, tidak sebelumnya; maju mengulang hitungan");
+  // j) pemain otomatis bertahan 200 baris di d=1; pemain acak selalu berakhir tanpa NaN
+  const bl2 = [];
+  for (const seed of [5, 66, 777]) {
+    const w = new World(seed, 1), q = new Sim(w), b = new Bot(q, false, seed); q.pre = () => b.tick();
+    while (!q.dead && q.max < 200 && q.t < 300) q.step(1 / 60);
+    bl2.push(q.max + (q.dead ? "(" + q.dead + ")" : ""));
+  }
+  chk(bl2.every((v) => v === "200"), "j) pemain pencari jalan di d=1: " + bl2.join(", ") + " baris");
+  let nanOk = true, ends = [];
+  for (const seed of [1, 2, 3]) {
+    const q = new Sim(new World(seed)), r2 = KIT.rng(seed); let nt = 0;
+    while (!q.dead && q.t < 120) { if (q.t >= nt) { q.input([UP, UP, UP, LEFT, RIGHT, DOWN][(r2() * 6) | 0]); nt = q.t + .05 + r2() * .4; } q.step(1 / 30); if (![q.x, q.t, q.cam, q.oy()].every(isFinite)) nanOk = false; }
+    ends.push(q.max + ":" + (q.dead || "hidup"));
+  }
+  chk(nanOk && ends.every((e) => !/hidup/.test(e)), "j) pemain acak: " + ends.join(", ") + ", semua angka sah");
+  const tq = new Sim(new World(20260928, .15), { calm: true }), tb = new Bot(tq, true, 5); tq.pre = () => tb.tick(); tq.step(20);
+  chk(!tq.dead && tq.max > 3, "j) demo layar judul 20 dtk tanpa mati, sampai baris " + tq.max);
+  // k) tantangan, bintang Harian, kostum
+  const link = KIT.challengeLink(SLUG, 123456789, 77), hash0 = location.hash;
+  try { history.replaceState(null, "", location.pathname + location.search + link.slice(link.indexOf("#"))); } catch (e) { }
+  const rc = KIT.readChallenge();
+  try { history.replaceState(null, "", location.pathname + location.search + hash0); } catch (e) { }
+  chk(rc && rc.seed === 123456789 && rc.score === 77 && /\/oyen-nyebrang\/#t=/.test(link), "k) tautan tantangan bolak-balik: " + link.replace(/^https?:\/\/[^/]+/, ""));
+  chk([39, 40, 89, 90, 149, 150].map(starsFor).join("") === "011223", "k) bintang Harian di 40, 90, 150");
+  const wl = { fish: 250, owned: ["oyen"], badges: [], best: 0, cans: 0 };
+  const b1 = buySkin(wl, "telon"), bdup = buySkin(wl, "telon"), c1 = openCan(wl), c2 = openCan(wl), poor = buySkin(wl, "hitam");
+  chk(b1 && !bdup && c1 && c1 !== "telon" && c2 && !poor && wl.fish === 25, "k) beli kostum, tolak beli dua kali, kaleng pertama 25 (" + c1 + ") lalu 100 (" + c2 + "), ikan kurang ditolak (sisa " + wl.fish + ")");
+  const w2 = { fish: 9999, owned: ["oyen"], badges: [], best: 0, cans: 0 }, got = []; let id;
+  while ((id = openCan(w2))) got.push(id);
+  chk(got.length === 5 && new Set(got).size === 5 && got.indexOf("astro") < 0 && w2.fish === 9999 - 25 - 400, "k) Buka Kaleng tidak pernah kembar: " + got.join(", "));
+  chk(!buySkin({ fish: 999, owned: ["oyen"], badges: [], best: 0, cans: 0 }, "astro") && skinOpen({ owned: [], badges: [], best: 300 }, "astro") && skinOpen({ owned: [], badges: ["b100"], best: 0 }, "garong"), "k) Astronot hanya lewat 300 langkah; Garong terbuka lewat lencana");
+  // akhir permainan: kemajuan bersama, baris nyaris rekor (data pemain dipulihkan)
+  const keys = ["best", "last", "fish", "badges", "ranks", "harian", "hari", "skins", "skin", "cans"], snap = {}, P0 = lsGet();
+  for (const k of keys) { snap[k] = KST.get(k, undefined); }
+  const memSnap = Object.assign({}, MEM), recOrig = KIT.progress.record, calls = [];
+  KIT.progress.record = function (o) { calls.push(o); return recOrig.call(this, o); };
+  try {
+    // data tersimpan berjenis salah (format lama/rusak) tidak boleh mematikan game
+    Object.assign(MEM, { badges: 5, ranks: 7, skins: 5, harian: "x", hari: 3, last: 9, skin: { a: 1 }, cans: "zz", fish: { a: 1 } });
+    let bad = "";
+    try { wallet(); curSkin(); kSel = 0; paintKoleksi(); openCan(wallet()); daily(); openTantang(); $("sTantang").hidden = true; } catch (e) { bad = e.message; }
+    startGame("normal", 4242); recPrev = 60; sim.max = 45; sim.dead = "angkot";
+    try { endGame(); } catch (e) { bad = bad || e.message; }
+    chk(!bad && mode === "over" && !$("sOver").hidden, "k) simpanan rusak (badges=5, skins=5, ranks=7, ...): layar hasil tetap tampil" + (bad ? " GALAT " + bad : ""));
+    chk(calls.length === 1 && calls[0].game === SLUG && calls[0].score === 45, "k) akhir permainan memanggil KIT.progress.record({game, score})");
+    const sm = sim; mode = "play"; $("rAgain").click(); const g1 = sim === sm; mode = "over"; $("rAgain").click();
+    chk(g1 && sim !== sm && mode === "play", "k) Main lagi diabaikan saat permainan berjalan (klik susulan iklan), bekerja di layar hasil");
+    sim.max = 45; sim.dead = "angkot"; mode = "over";
+    chk($("rRec").textContent === "Rekor 60 · kurang 16" && $("rCause").textContent.indexOf("angkot") > 0, "k) layar hasil: " + $("rRec").textContent + " · " + $("rCause").textContent);
+  } finally {
+    KIT.progress.record = recOrig;
+    for (const k of keys) { if (snap[k] === undefined) KST.remove(k); else KST.set(k, snap[k]); delete MEM[k]; }
+    Object.assign(MEM, memSnap); lsSet(P0);
+    chal = null; toTitle();
+  }
+  out.push("waktu " + (performance.now() - T0).toFixed(0) + " ms");
+  const el = document.createElement("pre"); el.id = "uji"; el.textContent = (ok ? "UJI LULUS" : "UJI GAGAL") + "\n" + out.join("\n");
+  document.body.appendChild(el); document.title = ok ? "UJI LULUS" : "UJI GAGAL";
+  return ok;
+}
+const PKEY = "dehayuk.kemajuan";
+function lsGet() { try { return localStorage.getItem(PKEY); } catch (e) { return null; } }
+function lsSet(v) { try { if (v == null) localStorage.removeItem(PKEY); else localStorage.setItem(PKEY, v); } catch (e) { } }
+
+/* ================= DEMO & SAMPUL ================= */
+const END = parseFloat(Q.get("end") || "0"), FX = Q.get("fx") === "1";
+let fxDone = false;
+function demoFx() {
+  if (!FX || fxDone || !sim || sim.t < 2.2 || sim.dead) return;
+  fxDone = true; sim.near++; sim.fish++; sim.ev.push(["near", sim.r, 1]); banner("Lincah!", 1.4, 2); burst(gx0 + PW / 2, vh * .45, 20, C * 3, [2, 3, 6], 300);
+}
+function coverScene() {
+  const w = new World(3, .3); w.fix = {};
+  const gr = (row, blk, ik) => { const L = grassL(row); for (const [c, t] of blk) L.blk[c] = t; if (ik != null) { L.ik = ik; L.gold = true; } return L; };
+  const road = (row, ty, dir, xs, cl) => ({ row, t: L_R, b: 0, ty, len: VT[ty][1], dir, v: .001, o: xs.map((x) => x + EXT), cl, P: 60, ph: 0 });
+  w.fix[0] = gr(0, [[0, 3], [7, 2], [8, 1]]);
+  w.fix[1] = road(1, 0, 1, [2.55, -7], [3, 1]);
+  w.fix[2] = road(2, 1, -1, [5.45, -7.5], [4, 1]);
+  w.fix[3] = gr(3, [[0, 1], [8, 2]], 2);
+  w.fix[4] = { row: 4, t: L_W, b: 0, fk: 0, dir: 1, v: .001, o: [EXT - 1.2, EXT + 3.6, EXT + 8.2], ln: [3.4, 2.6, 3.2], sp: [-1, -1, -1], P: 60, ph: 0 };
+  w.fix[5] = gr(5, [[1, 1], [6, 1]]);
+  w.fix[6] = gr(6, [[3, 1], [8, 1]]); w.fix[7] = gr(7, [[0, 1], [5, 1]]); w.fix[8] = gr(8, []);
+  const s = new Sim(w, { calm: true });
+  s.hop = { fr: 1, tr: 2, fx: 4.5, tx: 4.5, t0: -HOP * .62, dir: UP }; s.face = DOWN; s.cam = 1.62;
+  return { w, s };
+}
+
+/* ================= MULAI ================= */
+function boot() {
+  if (COVER) document.documentElement.classList.add("cover");
+  if (Q.get("noanim") === "1") document.documentElement.classList.add("dk-noanim");
+  try { if (matchMedia("(pointer:fine)").matches) $("hint").textContent = "↑ maju · ← → belok · ↓ mundur"; } catch (e) { }
+  if (COVER) { const c = coverScene(); tWorld = c.w; tSim = c.s; }
+  else { tWorld = new World(20260928, .15); tSim = new Sim(tWorld, { calm: true }); tBot = new Bot(tSim, true, 5); tSim.pre = () => tBot.tick(); }
+  skinNow = COVER ? 0 : curSkin();
+  layout();
+  chal = KIT.readChallenge();
+  window.addEventListener("hashchange", () => { chal = KIT.readChallenge(); if (mode === "title") toTitle(); });
+  toTitle(); tcam = tSim.cam;
+  if (!COVER) KIT.music.start(MUSIC);
+  if (UJI) setTimeout(runUji, 30);
+  if (DEMO) setTimeout(() => { const h = Q.get("mode") === "harian"; if (chal && !h) startGame("chal", chal.seed); else startGame(h ? "daily" : "normal", h ? KIT.dailySeed(SLUG) : +(Q.get("seed") || 777)); }, 50);
+  const sp = Q.get("s");
+  if (sp) setTimeout(() => { if (sp === "harian") openHarian(); else if (sp === "tantang") openTantang(); else if (sp === "koleksi") openKoleksi(); else if (sp === "setelan") KIT.ui.openSettings(); else if (sp === "pause") pause(); }, DEMO ? parseFloat(Q.get("st") || "2500") : 80);
+  if (DEMO || COVER) { let ft = 0; lastTs = 0; setInterval(() => { ft += 1000 / 60; frameCore(ft); }, 16); } else requestAnimationFrame((t) => { lastTs = t; frame(t); });
+  if (document.fonts && document.fonts.load) document.fonts.load("800 40px 'Baloo 2'").then(() => { measureTitle(); RC.clear(); }).catch(() => { });
+}
+boot();
+</script>
+</body>
+</html>

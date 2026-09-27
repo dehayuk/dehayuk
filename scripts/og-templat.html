@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="id">
+<meta charset="utf-8">
+<!-- Templat gambar pratinjau situs (og.png 1200x630), dipotret oleh scripts/buat-situs.js bila og.png belum ada. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&family=Nunito:wght@800&display=swap">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #0D0F1C; }
+  body { position: relative; font-family: "Nunito", "Segoe UI", sans-serif; color: #F2F3FB; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(2px); }
+  .b1 { width: 520px; height: 520px; right: -120px; top: -160px; background: radial-gradient(circle at 40% 40%, #7B5CFF, #3A22A0 70%); opacity: .85; }
+  .b2 { width: 380px; height: 380px; right: 180px; bottom: -200px; background: radial-gradient(circle at 50% 40%, #F28A4B, #B23F3A 75%); opacity: .8; }
+  .b3 { width: 240px; height: 240px; left: -80px; bottom: -90px; background: radial-gradient(circle, #2E9A5C, #155E38 75%); opacity: .7; }
+  .tiles { position: absolute; right: 50px; top: 250px; display: grid; grid-template-columns: repeat(3, 84px); gap: 16px; transform: rotate(-8deg); }
+  .tiles i { width: 84px; height: 84px; border-radius: 26px; border: 5px solid #0D0F1C; box-shadow: 0 10px 0 rgba(0,0,0,.35); }
+  .wrap { position: absolute; left: 80px; top: 130px; display: flex; flex-direction: column; gap: 22px; }
+  .brand { display: flex; align-items: center; gap: 26px; }
+  .mark { width: 150px; height: 150px; border-radius: 42px; display: grid; place-items: center; background: linear-gradient(145deg, #FFD978, #F4C152); box-shadow: inset 0 -10px 0 #C9952A, 0 16px 30px rgba(0,0,0,.4); font: 800 104px/1 "Baloo 2", "Trebuchet MS", sans-serif; color: #3B2A05; padding-top: 12px; }
+  .word { font: 800 132px/1 "Baloo 2", "Trebuchet MS", sans-serif; letter-spacing: -1px; }
+  .word span { color: #F4C152; }
+  .tag { font-size: 40px; color: #D6D9EE; }
+  .pill { align-self: flex-start; background: #F4C152; color: #3B2A05; font-size: 30px; padding: 12px 30px; border-radius: 999px; box-shadow: inset 0 -5px 0 #C9952A; }
+</style>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div class="tiles"><i style="background:#F28A4B"></i><i style="background:#7440D6"></i><i style="background:#2F6CD6"></i><i style="background:#D6336C"></i><i style="background:#2E9A5C"></i><i style="background:#F4C152"></i></div>
+<div class="wrap">
+  <div class="brand"><div class="mark">D</div><div class="word">Deha<span>yuk</span></div></div>
+  <div class="tag">Game ringan buatan Indonesia</div>
+  <div class="pill">Main gratis di HP dan komputer</div>
+</div>

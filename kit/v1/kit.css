@@ -1,0 +1,99 @@
+/* Dehayuk Kit — tampilan bersama semua gim Dehayuk.
+   Gim cukup memuat berkas ini, lalu memakai kelas dk-*.
+   Warna garis tepi bisa diganti per gim lewat --dk-ink. */
+/* Fonta Baloo 2 + Nunito dimuat oleh <link> di tiap halaman (bukan @import, agar tidak dimuat dua kali). */
+
+:root{
+  --dk-ink:#3d1a0c;
+  --dk-fd:'Baloo 2','Arial Rounded MT Bold','Trebuchet MS',system-ui,sans-serif;
+  --dk-fb:Nunito,'Segoe UI',system-ui,sans-serif;
+  --dk-p1:#fff9ea;--dk-p2:#ffeac4;--dk-pe:#f5d59c;--dk-lbl:#8a5a3a;
+  --dk-st:env(safe-area-inset-top,0px);--dk-sb:env(safe-area-inset-bottom,0px);
+  --dk-sl:env(safe-area-inset-left,0px);--dk-sr:env(safe-area-inset-right,0px)
+}
+[hidden]{display:none!important}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--dk-fb);color:var(--dk-ink)}
+button,a{font-family:var(--dk-fd);-webkit-tap-highlight-color:transparent;touch-action:manipulation;cursor:pointer;color:inherit;text-decoration:none}
+
+/* teks putih bergaris tebal ala gim */
+.dk-ol{color:#fff;text-shadow:0 2px 0 var(--dk-ink),2px 0 0 var(--dk-ink),-2px 0 0 var(--dk-ink),0 -2px 0 var(--dk-ink),1.5px 1.5px 0 var(--dk-ink),-1.5px 1.5px 0 var(--dk-ink),1.5px -1.5px 0 var(--dk-ink),-1.5px -1.5px 0 var(--dk-ink),0 4px 0 var(--dk-ink)}
+
+/* tombol tebal */
+.dk-btn{--c1:#8ef06a;--c2:#3dbb2c;--cs:#27881b;position:relative;border:3px solid var(--dk-ink);border-radius:20px;background:linear-gradient(var(--c1),var(--c2));
+  box-shadow:0 5px 0 var(--dk-ink),inset 0 -5px 0 var(--cs),inset 0 3px 0 rgba(255,255,255,.55);font-weight:800;font-size:22px;line-height:1;padding:12px 18px 14px;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .08s,box-shadow .08s;color:#fff}
+.dk-btn svg{width:24px;height:24px;flex:none;filter:drop-shadow(0 2px 0 var(--dk-ink))}
+.dk-btn.dk-pr{transform:translateY(4px) scale(.95);box-shadow:0 1px 0 var(--dk-ink),inset 0 -3px 0 var(--cs),inset 0 3px 0 rgba(255,255,255,.55)}
+.dk-btn.dk-circle{width:50px;height:50px;border-radius:50%;padding:0}
+.dk-btn.dk-circle svg{width:26px;height:26px}
+
+/* tombol ikon bulat berlabel: <button class="dk-round dk-blue"><i>ikon</i><span>Label</span></button> */
+.dk-round{--c1:#7fd8ff;--c2:#2f9df0;--cs:#1b6fc0;display:inline-flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;padding:0}
+.dk-round>i{position:relative;display:grid;place-items:center;width:58px;height:58px;border-radius:50%;border:3px solid var(--dk-ink);background:linear-gradient(var(--c1),var(--c2));
+  box-shadow:0 5px 0 var(--dk-ink),inset 0 -5px 0 var(--cs),inset 0 3px 0 rgba(255,255,255,.55);font:800 20px/1 var(--dk-fd);font-style:normal;transition:transform .08s,box-shadow .08s}
+.dk-round>i svg{width:28px;height:28px;filter:drop-shadow(0 2px 0 var(--dk-ink))}
+.dk-round>span{font:800 13px/1 var(--dk-fd);color:#fff;text-shadow:0 2px 0 var(--dk-ink),1.5px 0 0 var(--dk-ink),-1.5px 0 0 var(--dk-ink),0 -1.5px 0 var(--dk-ink),1px 1px 0 var(--dk-ink),-1px 1px 0 var(--dk-ink)}
+.dk-round.dk-pr>i{transform:translateY(4px) scale(.94);box-shadow:0 1px 0 var(--dk-ink),inset 0 -3px 0 var(--cs),inset 0 3px 0 rgba(255,255,255,.55)}
+.dk-dot{position:absolute;right:-4px;top:-4px;width:17px;height:17px;border-radius:50%;background:#ff3b5c;border:3px solid var(--dk-ink);animation:dk-pulse 1s infinite}
+
+/* layar lapis dan panel */
+.dk-overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-start;justify-content:center;pointer-events:auto;overflow-y:auto;overscroll-behavior:contain;
+  padding:calc(var(--dk-st) + 26px) 16px calc(var(--dk-sb) + 16px)}
+.dk-overlay::before{content:"";position:fixed;inset:0;background:rgba(30,10,45,.58);z-index:-1}
+.dk-overlay.dk-in::before{animation:dk-fade .2s}
+.dk-panel{position:relative;width:100%;max-width:340px;background:linear-gradient(var(--dk-p1),var(--dk-p2));border:4px solid var(--dk-ink);border-radius:28px;
+  box-shadow:0 8px 0 var(--dk-ink),inset 0 -6px 0 var(--dk-pe),inset 0 4px 0 #fff;padding:40px 16px 20px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.dk-overlay>.dk-panel{margin:auto}
+.dk-panel:focus{outline:none}
+.dk-in .dk-panel{animation:dk-pop .42s cubic-bezier(.2,1.5,.4,1)}
+.dk-ribbon{--c1:#ff7a7a;--c2:#e8384f;--cs:#b82239;position:absolute;top:-26px;left:50%;transform:translateX(-50%);white-space:nowrap;font:800 28px/1 var(--dk-fd);padding:9px 30px 12px;
+  background:linear-gradient(var(--c1),var(--c2));border:4px solid var(--dk-ink);border-radius:16px;box-shadow:0 5px 0 var(--dk-ink),inset 0 -5px 0 var(--cs),inset 0 3px 0 rgba(255,255,255,.4)}
+.dk-close{position:absolute!important;right:-12px;top:-14px;width:44px!important;height:44px!important}
+.dk-close svg{width:20px!important;height:20px!important}
+.dk-stack{display:flex;flex-direction:column;gap:14px;width:100%;align-items:stretch}
+.dk-row{display:flex;gap:10px;width:100%}
+.dk-row .dk-btn{flex:1;font-size:19px;padding:11px 8px 13px}
+.dk-lbl{font:800 15px/1.2 var(--dk-fd);color:var(--dk-lbl);text-align:center}
+
+/* sakelar setelan */
+.dk-tg{display:flex;align-items:center;gap:12px;width:100%;background:#fff;border:3px solid var(--dk-ink);border-radius:18px;padding:8px 10px;box-shadow:0 4px 0 var(--dk-ink)}
+.dk-tg>i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;border:3px solid var(--dk-ink);background:var(--c2,#ffb21a)}
+.dk-tg>i svg{width:22px;height:22px}
+.dk-tg>b{flex:1;font:800 20px/1 var(--dk-fd)}
+.dk-switch{width:66px;height:36px;border-radius:999px;border:3px solid var(--dk-ink);background:#c9b8a8;position:relative;transition:background .2s;padding:0}
+.dk-switch::after{content:"";position:absolute;top:2px;left:2px;width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--dk-ink);transition:transform .2s cubic-bezier(.3,1.6,.5,1)}
+.dk-switch.on{background:#3dbb2c}.dk-switch.on::after{transform:translateX(30px)}
+
+/* warna: berlaku untuk tombol, tombol bulat, pita, dan sakelar; ditaruh setelah bentuk dasar agar menang */
+.dk-green{--c1:#8ef06a;--c2:#3dbb2c;--cs:#27881b}
+.dk-blue{--c1:#7fd8ff;--c2:#2f9df0;--cs:#1b6fc0}
+.dk-orange{--c1:#ffb36b;--c2:#ff7a2b;--cs:#d2520e}
+.dk-pink{--c1:#ff9fc3;--c2:#ff5c93;--cs:#d63a72}
+.dk-purple{--c1:#c9a3ff;--c2:#8f5cf0;--cs:#6a3cc8}
+.dk-yellow{--c1:#ffe36a;--c2:#ffb21a;--cs:#d98300}
+.dk-red{--c1:#ff8a8a;--c2:#e8384f;--cs:#b82239}
+
+/* pesan singkat */
+.dk-toast{position:fixed;left:50%;bottom:calc(var(--dk-sb) + 24px);transform:translateX(-50%);background:var(--dk-ink);color:#fff;font:800 16px/1 var(--dk-fd);
+  padding:10px 18px 12px;border-radius:999px;white-space:nowrap;z-index:95;pointer-events:none;animation:dk-toastin .3s cubic-bezier(.2,1.5,.4,1)}
+
+@keyframes dk-pop{from{transform:scale(.3);opacity:.6}}
+@keyframes dk-fade{from{opacity:0}}
+@keyframes dk-pulse{50%{transform:scale(1.07)}}
+@keyframes dk-bob{50%{transform:translateY(-6px) rotate(-1.5deg)}}
+@keyframes dk-wig{50%{transform:rotate(3deg) scale(1.05)}}
+@keyframes dk-toastin{from{transform:translateX(-50%) scale(.3);opacity:0}}
+.dk-noanim *{animation:none!important;transition:none!important}
+
+/* layar pendek (ponsel mendatar): panel lebih rapat, lapisan bisa digulir */
+@media (max-height:500px){
+  .dk-overlay{padding:calc(var(--dk-st) + 24px) 12px calc(var(--dk-sb) + 10px)}
+  .dk-panel{padding:30px 12px 12px;gap:8px;border-radius:22px}
+  .dk-ribbon{font-size:22px;padding:6px 22px 9px;top:-21px}
+  .dk-stack{gap:9px}
+  .dk-btn{font-size:18px;padding:9px 14px 11px;border-radius:16px}
+  .dk-row .dk-btn{font-size:16px;padding:8px 6px 10px}
+  .dk-tg{padding:5px 8px}
+}

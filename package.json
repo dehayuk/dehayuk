@@ -6,6 +6,8 @@
   "scripts": {
     "build": "node scripts/build-www.js",
     "cek": "node scripts/cek-mutu.js",
+    "situs": "node scripts/buat-situs.js",
+    "uji": "node scripts/uji-game.js",
     "serve": "node server.js"
   },
   "dependencies": {

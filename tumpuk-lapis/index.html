@@ -1,0 +1,1272 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#6fc8ff">
+<title>Tumpuk Lapis</title>
+<meta name="description" content="Tumpuk kue lapis setinggi mungkin. Satu ketuk, satu lapis: jatuhkan pas di atas untuk PAS! beruntun.">
+<link rel="canonical" href="https://dehayuk.netlify.app/tumpuk-lapis/">
+<meta property="og:title" content="Tumpuk Lapis">
+<meta property="og:description" content="Satu ketuk, satu lapis. Seberapa tinggi menara kue lapismu?">
+<meta property="og:image" content="https://dehayuk.netlify.app/tumpuk-lapis/sampul.jpg">
+<meta property="og:url" content="https://dehayuk.netlify.app/tumpuk-lapis/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/kit/kit.css">
+<style>
+:root{--dk-ink:#4a1d2e;--dk-lbl:#8a4a5a;--dk-p1:#fffaf2;--dk-p2:#ffe6ec;--dk-pe:#f5c9d4}
+html,body{background:#6fc8ff}
+body{position:fixed;inset:0}
+canvas{display:block}
+#cv{position:fixed;inset:0;width:100%;height:100%;touch-action:none}
+#col{position:fixed;top:0;bottom:0;pointer-events:none;z-index:10}
+#probe{position:fixed;left:0;top:0;width:0;height:0;padding:var(--dk-st) var(--dk-sr) var(--dk-sb) var(--dk-sl);visibility:hidden}
+.scr{position:absolute;inset:0}
+#sTitle{display:flex;flex-direction:column;align-items:center;padding:calc(var(--dk-st) + 66px) 14px var(--padb,180px)}
+#sTitle>*{pointer-events:auto}
+.home{position:absolute!important;left:calc(var(--dk-sl) + 12px);top:calc(var(--dk-st) + 12px);width:44px!important;height:44px!important}
+.home svg{width:22px!important;height:22px!important;filter:none!important}
+.pill{display:flex;align-items:center;gap:5px;background:rgba(74,29,46,.72);border:3px solid var(--dk-ink);border-radius:999px;padding:3px 12px 3px 6px;font:800 17px/1.2 var(--dk-fd);white-space:nowrap}
+.pill svg{width:22px;height:22px;flex:none}
+.best{position:absolute;right:calc(var(--dk-sr) + 12px);top:calc(var(--dk-st) + 16px);color:#ffe36a}
+.chip{position:absolute;left:50%;top:calc(var(--dk-st) + 16px);transform:translateX(-50%);font-size:15px;color:#fff}
+.chip .strk{display:flex;align-items:center;gap:3px;margin-left:3px;padding-left:7px;border-left:2px solid rgba(255,255,255,.25)}
+#logo{flex:none;width:min(90%,370px,calc(30vh * 1.55));aspect-ratio:1.55/1}
+.tmid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;width:100%;min-height:0}
+.chal{font:800 17px/1.15 var(--dk-fd);text-align:center;background:#ff5c93;border:3px solid var(--dk-ink);border-radius:14px;padding:6px 14px 8px;box-shadow:0 4px 0 var(--dk-ink);transform:rotate(-3deg);animation:dk-wig 1.4s ease-in-out infinite;max-width:300px}
+#bMain{font-size:40px;padding:14px 46px 18px;border-radius:28px;animation:dk-pulse 1.1s ease-in-out infinite}
+#bMain svg{width:34px;height:34px}
+#bMain.dk-pr{animation:none}
+.icons{display:flex;gap:12px;justify-content:center}
+.dstar{position:absolute;right:-8px;bottom:-6px;display:flex;align-items:center;gap:1px;background:#fff;border:2.5px solid var(--dk-ink);border-radius:999px;padding:0 5px 0 2px;font:800 12px/16px var(--dk-fd);color:var(--dk-ink)}
+.dstar svg{width:13px!important;height:13px!important;filter:none!important}
+.ent>*{animation:dk-pop .5s cubic-bezier(.2,1.5,.4,1) backwards}
+.ent>:nth-child(2){animation-delay:.08s}.ent>:nth-child(3){animation-delay:.16s}
+.leave{animation:leave .28s ease-in forwards}
+@keyframes leave{to{transform:translateY(40px) scale(.9);opacity:0}}
+.cover .tmid,.cover .home,.cover .best,.cover .chip{display:none!important}
+.cover #logo{position:absolute;left:3vw;top:50%;transform:translateY(-54%);width:50vw;max-width:none}
+#hud{position:absolute;left:0;right:0;top:0;padding:calc(var(--dk-st) + 8px) 10px 0;display:flex;align-items:flex-start;justify-content:space-between;pointer-events:none}
+#hud>*{pointer-events:auto}
+#hud .dk-circle{width:46px;height:46px}
+.sc{position:absolute;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;pointer-events:none!important}
+#hScore{font:800 50px/1 var(--dk-fd);font-variant-numeric:tabular-nums;transition:transform .1s}
+#hScore.bump{transform:scale(1.18)}
+.sc small{margin-top:4px;font:800 12px/1 var(--dk-fd);background:#ff5c93;border:2px solid var(--dk-ink);border-radius:999px;padding:2px 8px 3px}
+.hbest{margin-top:6px;color:#ffe36a;font-size:16px;pointer-events:none!important}
+.hbest svg{width:19px;height:19px}
+.hbest.live{background:#ff3d7f;color:#fff;animation:dk-pulse .7s ease-in-out infinite}
+.cchip{margin-top:5px;display:flex;align-items:center;gap:4px;background:linear-gradient(#ffe36a,#ffb21a);border:2.5px solid var(--dk-ink);border-radius:999px;padding:1px 9px 2px 4px;box-shadow:0 2px 0 var(--dk-ink)}
+.cchip svg{width:18px;height:18px}
+.cchip b{font:800 15px/1 var(--dk-fd)}
+.vhid{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.kst{flex:1;min-width:0}
+.kbar{display:block;height:8px;margin-top:3px;border:2px solid var(--dk-ink);border-radius:99px;background:#f3dde4;overflow:hidden}
+.kbar i{display:block;height:100%;width:0;background:linear-gradient(#ffb3d9,#ff5c93);transition:width .8s}
+#hint{position:absolute;left:0;right:0;bottom:calc(var(--dk-sb) + 16%);text-align:center;font:800 24px/1.1 var(--dk-fd);pointer-events:none;animation:dk-pulse 1s ease-in-out infinite;transition:opacity .4s}
+#hint.off{opacity:0}
+#cd{position:absolute;left:0;right:0;top:40%;text-align:center;font:800 110px/1 var(--dk-fd);pointer-events:none}
+#cd.go{animation:dk-pop .4s cubic-bezier(.2,1.5,.4,1)}
+.big{font:800 60px/1 var(--dk-fd);font-variant-numeric:tabular-nums}
+.rtop{display:flex;align-items:center;gap:4px;width:100%}
+.bcol{flex:none;width:108px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.stage{position:relative;width:96px;height:92px;display:grid;place-items:center}
+.stage.lk .rays{display:none}
+.stage .rays{position:absolute;inset:-16px;border-radius:50%;background:repeating-conic-gradient(rgba(255,200,60,.6) 0 12deg,transparent 12deg 24deg);-webkit-mask:radial-gradient(circle,#000 30%,transparent 70%);mask:radial-gradient(circle,#000 30%,transparent 70%);animation:spin 8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.stage div{position:relative;width:88px;height:88px;animation:dk-bob 2.2s ease-in-out infinite}
+.stage svg{width:100%;height:100%;display:block}
+.rrank{font:800 14px/1.05 var(--dk-fd);text-align:center;max-width:108px}
+.rrank.new::after{content:"baru!";display:block;width:max-content;margin:3px auto 0;padding:1px 8px 2px;font-size:12px;background:#ff3d7f;color:#fff;border:2px solid var(--dk-ink);border-radius:99px}
+.rsc{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px}
+.rrec{font:800 13px/1.2 var(--dk-fd);color:var(--dk-lbl);text-align:center;white-space:pre-line}
+.rbar{width:100%;height:14px;border:3px solid var(--dk-ink);border-radius:999px;background:#f3dde4;overflow:hidden;box-shadow:inset 0 2px 0 rgba(0,0,0,.1)}
+.rbar i{display:block;height:100%;width:0;background:linear-gradient(#ffe36a,#ffb21a);border-radius:999px}
+.rbar.rec i{background:linear-gradient(#ffb3d9,#ff5c93)}
+.rmisc{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+.stars{display:flex;gap:1px}.stars svg{width:28px;height:28px}
+.goals{display:flex;gap:8px}
+.goal{display:flex;flex-direction:column;align-items:center;gap:3px;background:#fff;border:3px solid var(--dk-ink);border-radius:14px;box-shadow:0 3px 0 var(--dk-ink);padding:5px 8px 6px;min-width:70px}
+.goal span{display:flex}.goal svg{width:18px;height:18px}
+.goal b{font:800 15px/1 var(--dk-fd);text-align:center}
+.goal i{font:800 11px/1 var(--dk-fd);font-style:normal;color:var(--dk-lbl)}
+.strk2{display:flex;align-items:center;gap:4px;font:800 15px/1 var(--dk-fd)}.strk2 svg{width:20px;height:20px}
+.kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 6px;width:100%}
+.kb{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.kb svg{width:58px;height:58px}
+.kb b{font:800 13px/1.05 var(--dk-fd)}.kb span{font:800 11px/1 var(--dk-fd);color:var(--dk-lbl)}
+.kb.lk b{color:#b7a3aa}
+.plates{display:flex;gap:6px;width:100%;justify-content:center}
+.pl{flex:1;max-width:64px;display:flex;flex-direction:column;align-items:center;gap:2px;background:#fff;border:3px solid var(--dk-ink);border-radius:14px;padding:4px 2px 5px;box-shadow:0 3px 0 var(--dk-ink);font:800 10px/1.05 var(--dk-fd);text-align:center}
+.pl svg{width:44px;height:28px}
+.pl.on{background:#8ef06a}.pl.lk{opacity:.55}
+#rNormal{font-size:17px;padding:8px 10px 10px}
+.rek{position:absolute;right:-18px;top:-30px;width:96px;height:96px;display:grid;place-items:center;transform:rotate(12deg);z-index:2}
+.rek::before,.rek::after{content:"";position:absolute;clip-path:polygon(50% 0,61% 16%,79% 7%,80% 27%,100% 30%,88% 47%,100% 64%,80% 69%,79% 90%,61% 82%,50% 100%,39% 82%,21% 90%,20% 69%,0 64%,12% 47%,0 30%,20% 27%,21% 7%,39% 16%)}
+.rek::before{inset:0;background:var(--dk-ink)}
+.rek::after{inset:5px;background:linear-gradient(#ffe36a,#ffb21a)}
+.rek span{position:relative;z-index:1;font:800 17px/.95 var(--dk-fd);text-align:center}
+.rek.go{animation:stamp .5s cubic-bezier(.2,1.6,.4,1) backwards}
+@keyframes stamp{from{transform:rotate(-30deg) scale(3);opacity:0}}
+.stats{display:flex;gap:10px;width:100%}
+.st{flex:1;display:flex;align-items:center;gap:8px;background:#fff;border:3px solid var(--dk-ink);border-radius:16px;box-shadow:0 4px 0 var(--dk-ink);padding:6px 10px}
+.st svg{width:30px;height:30px;flex:none}
+.st div{display:flex;flex-direction:column}
+.st b{font:800 24px/1 var(--dk-fd)}
+.st span{font:800 12px/1.1 var(--dk-fd);color:var(--dk-lbl)}
+.note{font:800 17px/1.1 var(--dk-fd);padding:5px 14px 7px;border-radius:12px;border:3px solid var(--dk-ink);background:#7fd8ff}
+.note.done{background:#ffe36a;color:var(--dk-ink);text-shadow:none}
+.verd{font:800 30px/1 var(--dk-fd);padding:6px 22px 9px;border-radius:14px;border:4px solid var(--dk-ink);box-shadow:0 4px 0 var(--dk-ink);background:linear-gradient(#ff8a8a,#e8384f);transform:rotate(-3deg);text-align:center}
+.verd.win{background:linear-gradient(#8ef06a,#3dbb2c)}
+.verd small{display:block;font-size:13px;margin-top:3px}
+.xp{font:800 14px/1 var(--dk-fd);background:var(--dk-ink);color:#ffe36a;border-radius:999px;padding:5px 12px 6px}
+#rAgain{font-size:26px;padding:14px 10px 17px}
+.cal{width:104px;height:106px;border:4px solid var(--dk-ink);border-radius:20px;background:#fff;box-shadow:0 5px 0 var(--dk-ink);overflow:hidden;display:flex;flex-direction:column;transform:rotate(-4deg)}
+.cal i{display:block;height:30px;background:linear-gradient(#ff7a7a,#e8384f);border-bottom:4px solid var(--dk-ink);font:800 16px/27px var(--dk-fd);font-style:normal;color:#fff;text-align:center}
+.cal b{flex:1;display:grid;place-items:center;font:800 50px/1 var(--dk-fd)}
+.mini{display:flex;flex-direction:column;align-items:center;transform:rotate(-5deg)}
+.mini i{height:11px;border:2.5px solid var(--dk-ink);border-radius:4px;margin-top:-2.5px}
+@media (max-height:500px){
+  #sTitle{padding-top:calc(var(--dk-st) + 56px)}
+  #logo{width:min(60%,280px,calc(33vh * 1.55))}
+  .tmid{gap:10px}
+  #bMain{font-size:28px;padding:9px 34px 12px}
+  #bMain svg{width:26px;height:26px}
+  .dk-round>i{width:46px;height:46px}.dk-round>i svg{width:23px;height:23px}
+  #sOver .dk-panel{max-width:640px;display:grid;grid-template-columns:1fr 1fr;column-gap:16px;row-gap:8px;align-items:center}
+  #sOver .rtop{grid-column:1;grid-row:1}#sOver .rbar{grid-column:1;grid-row:2}#sOver .rmisc{grid-column:1;grid-row:3}#sOver .stats{grid-column:1;grid-row:4}
+  #sOver .dk-stack{grid-column:2;grid-row:1/5}
+  .big{font-size:44px}.stage{width:76px;height:74px}.stage div{width:70px;height:70px}.bcol{width:88px}
+  #rAgain{font-size:20px;padding:9px 8px 11px}
+  .rek{width:64px;height:64px;top:22px;right:calc(50% + 2px)}.rek span{font-size:13px}
+  .st{padding:3px 8px}.st b{font-size:20px}.st svg{width:24px;height:24px}
+  .cal{display:none}
+  #sKoleksi .dk-panel{max-width:620px}
+  .kgrid{grid-template-columns:repeat(9,1fr);gap:4px 2px}.kb svg{width:38px;height:38px}.kb span{display:none}.kb b{font-size:10px}
+  .pl{max-width:74px}
+  #hScore{font-size:38px}
+  .sc{flex-direction:row;align-items:center;gap:8px}.sc small{margin-top:0}
+  .cchip{margin-top:0}
+  #cd{font-size:80px;top:34%}
+}
+.ovbot #sOver{padding-bottom:calc(var(--dk-sb) + 10px)}
+.ovbot #sOver>.dk-panel{margin:auto auto 0}
+.ovbot #sOver::before{background:linear-gradient(rgba(30,10,45,0) 0,rgba(30,10,45,.15) 30%,rgba(30,10,45,.6) 55%)}
+.ovside #sOver>.dk-panel{margin:auto 4vw auto auto}
+.ovside #sOver::before{background:linear-gradient(90deg,rgba(30,10,45,0) 35%,rgba(30,10,45,.6) 62%)}
+@media (max-height:760px) and (max-aspect-ratio:13/10){
+  #sOver .dk-panel{padding-top:34px;gap:8px}
+  #sOver .big{font-size:48px}#sOver .stage{width:74px;height:72px}#sOver .stage div{width:68px;height:68px}#sOver .bcol{width:92px}
+  #sOver .st{padding:4px 8px}#sOver .st b{font-size:20px}#sOver .st svg{width:24px;height:24px}
+  #sOver .dk-stack{gap:9px}#rAgain{font-size:22px;padding:10px 8px 13px}#sOver .dk-row .dk-btn{padding:8px 6px 10px}
+  #sOver .rek{width:78px;height:78px;right:-8px;top:-22px}#sOver .rek span{font-size:14px}
+}
+#uji{position:fixed;left:4px;top:4px;right:4px;bottom:4px;overflow:auto;z-index:99;background:rgba(0,0,0,.86);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px}
+</style>
+</head>
+<body>
+<canvas id="cv" role="img" aria-label="Menara kue lapis"></canvas>
+<div id="sr" class="vhid" aria-live="polite"></div>
+<div id="probe"></div>
+<div id="col">
+  <section id="sTitle" class="scr">
+    <a href="/" class="dk-btn dk-yellow dk-circle home" aria-label="Beranda"><svg viewBox="0 0 24 24"><path fill="#4a1d2e" d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z"/></svg></a>
+    <div class="pill chip dk-ol" id="tProg"><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#4a1d2e" stroke-width="2" stroke-linejoin="round" d="M12 2.8l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 16.7l-5.4 2.9 1.1-6.1-4.5-4.3 6.1-.8z"/></svg><span id="tLv">Lv 1</span><span class="strk" id="tStrk" hidden><svg viewBox="0 0 24 24"><path fill="#ff8a1a" stroke="#4a1d2e" stroke-width="2" stroke-linejoin="round" d="M12 2.5c1.2 3.6 5.5 5.6 5.5 11a5.5 5.5 0 0 1-11 0c0-2.8 1.4-4.4 2.8-5.4-.1 2.1.8 3.2 2 3.4-.7-3.2.2-6.4.7-9z"/><path fill="#ffe36a" d="M12 12.5c.9 1.5 2.3 2.3 2.3 4a2.3 2.3 0 0 1-4.6 0c0-1.2.9-2.1 2.3-4z"/></svg><span id="tStrkN">1 hari</span></span></div>
+    <div class="pill best dk-ol" id="tBest"><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#4a1d2e" stroke-width="2" stroke-linejoin="round" d="M3 18h18l1-11-6 4-4-7-4 7-6-4z"/></svg><span>0</span></div>
+    <div id="logo"></div>
+    <div class="tmid ent" id="tMid">
+      <div class="chal dk-ol" id="tChal" hidden>Temanmu menumpuk 0 lapis. Kalahkan!</div>
+      <button class="dk-btn dk-green dk-ol" id="bMain"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#4a1d2e" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></svg>MAIN</button>
+      <div class="icons">
+        <button class="dk-round dk-yellow" id="bHarian"><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><rect x="4" y="5.5" width="16" height="15" rx="3" fill="#fff" stroke="#4a1d2e" stroke-width="2"/><path d="M4.5 10h15" stroke="#e8384f" stroke-width="4"/><path d="M8.5 3.5v4M15.5 3.5v4" stroke="#4a1d2e" stroke-width="2.6"/><rect x="9.5" y="13" width="5" height="5" rx="1.2" fill="#ff5c93"/></svg><b class="dk-dot" id="dDaily" hidden></b><b class="dstar" id="dStarN" hidden></b></i><span>Harian</span></button>
+        <button class="dk-round dk-pink" id="bTantang" aria-label="Tantang"><i class="dk-ol" aria-hidden="true">VS</i><span>Tantang</span></button>
+        <button class="dk-round dk-blue" id="bKoleksi"><i><svg viewBox="0 0 24 24"><path d="M12 13v9" stroke="#4a1d2e" stroke-width="3" stroke-linecap="round"/><path d="M12 13v9" stroke="#e0b070" stroke-width="1.4" stroke-linecap="round"/><circle cx="12" cy="9" r="7" fill="#ffd23a" stroke="#4a1d2e" stroke-width="2"/><path d="M12 5.3l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z" fill="#fff"/><circle cx="17.5" cy="3.8" r="2.4" fill="#ff3b5c" stroke="#4a1d2e" stroke-width="1.4"/></svg></i><span>Koleksi</span></button>
+        <button class="dk-round dk-purple" id="bSetelan"><i><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.2" stroke="#4a1d2e" stroke-width="6.5" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="7.2" stroke="#fff" stroke-width="4" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="6" fill="#fff" stroke="#4a1d2e" stroke-width="2"/><circle cx="12" cy="12" r="2.4" fill="#8f5cf0" stroke="#4a1d2e" stroke-width="1.6"/></svg></i><span>Setelan</span></button>
+      </div>
+    </div>
+  </section>
+
+  <div id="hud" hidden>
+    <button class="dk-btn dk-orange dk-circle" id="bPause" aria-label="Jeda"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4.5" height="14" rx="1.5" fill="#fff" stroke="#4a1d2e" stroke-width="1.8"/><rect x="13.5" y="5" width="4.5" height="14" rx="1.5" fill="#fff" stroke="#4a1d2e" stroke-width="1.8"/></svg></button>
+    <div class="sc"><b class="dk-ol" id="hScore">0</b><small class="dk-ol" id="hTag" hidden>Harian</small><div class="cchip" id="hCombo" hidden><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#4a1d2e" stroke-width="2" stroke-linejoin="round" d="M12 2.8l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 16.7l-5.4 2.9 1.1-6.1-4.5-4.3 6.1-.8z"/></svg><b class="dk-ol" id="hComboN">Pas x2</b></div></div>
+    <div class="pill hbest dk-ol" id="hBestP" hidden><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#4a1d2e" stroke-width="2" stroke-linejoin="round" d="M3 18h18l1-11-6 4-4-7-4 7-6-4z"/></svg><span id="hBest">0</span></div>
+  </div>
+  <div id="hint" class="dk-ol" hidden>Ketuk untuk menjatuhkan</div>
+  <div id="cd" class="dk-ol" hidden>3</div>
+
+  <section id="sPause" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-blue dk-ol">Jeda</div>
+      <div class="dk-stack">
+        <button class="dk-btn dk-green dk-ol" id="pGo"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#4a1d2e" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></svg>Lanjut</button>
+        <button class="dk-btn dk-yellow dk-ol" id="pRe"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#4a1d2e" stroke-width="5"/><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#fff" stroke-width="2.6"/><path d="M13.5 3.5h5v5z" fill="#fff" stroke="#4a1d2e" stroke-width="1.8" stroke-linejoin="round"/></svg>Ulang</button>
+        <button class="dk-btn dk-orange dk-ol" id="pMenu"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#4a1d2e" stroke-width="1.8" stroke-linejoin="round" d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z"/></svg>Menu</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="sOver" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-ol">Selesai!</div>
+      <div class="rek dk-ol" id="rRek" hidden><span>Rekor<br>baru!</span></div>
+      <div class="rtop">
+        <div class="bcol"><div class="stage"><div class="rays"></div><div id="rBadge"></div></div><div class="rrank dk-ol" id="rRank">Lapis Pertama</div></div>
+        <div class="rsc"><div class="dk-lbl" id="rMode">Lapis</div><div class="big dk-ol" id="rScore">0</div><div class="rrec" id="rRec"></div></div>
+      </div>
+      <div class="rbar" id="rBarW"><i id="rBar"></i></div>
+      <div class="stats">
+        <div class="st"><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#4a1d2e" stroke-width="1.8" stroke-linejoin="round" d="M12 2.8l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 16.7l-5.4 2.9 1.1-6.1-4.5-4.3 6.1-.8z"/></svg><div><b id="rCombo">0</b><span>Pas beruntun terbaik</span></div></div>
+        <div class="st"><svg viewBox="0 0 24 24" stroke="#4a1d2e" stroke-width="1.8" stroke-linejoin="round"><path d="M5 14h14l-1.5 7h-11z" fill="#ff8fb8"/><path d="M4 14c0-4 3-6 8-6s8 2 8 6z" fill="#fff"/><circle cx="12" cy="5.5" r="2.5" fill="#ff3b5c"/></svg><div class="kst"><b id="rKrim">+0</b><span id="rKrimL">krim</span><i class="kbar"><i id="rKrimBar"></i></i></div></div>
+      </div>
+      <div class="rmisc"><div class="verd dk-ol" id="rVerd" hidden></div><div class="stars" id="rStars" hidden></div><div class="note done" id="rDone" hidden>Sudah main hari ini</div><div class="xp" id="rXp" hidden></div></div>
+      <div class="dk-stack">
+        <button class="dk-btn dk-green dk-ol" id="rAgain"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#4a1d2e" stroke-width="5"/><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#fff" stroke-width="2.6"/><path d="M13.5 3.5h5v5z" fill="#fff" stroke="#4a1d2e" stroke-width="1.8" stroke-linejoin="round"/></svg>Main lagi</button>
+        <button class="dk-btn dk-purple dk-ol" id="rNormal" hidden>Main biasa</button>
+        <div class="dk-row">
+          <button class="dk-btn dk-blue dk-ol" id="rShare"><svg viewBox="0 0 24 24" stroke="#4a1d2e" stroke-width="1.8"><path d="M7 12l10-6M7 12l10 6" stroke-width="4.5"/><path d="M7 12l10-6M7 12l10 6" stroke="#fff" stroke-width="2"/><circle cx="6.5" cy="12" r="3.3" fill="#fff"/><circle cx="17.5" cy="5.5" r="3.3" fill="#fff"/><circle cx="17.5" cy="18.5" r="3.3" fill="#fff"/></svg>Bagikan</button>
+          <button class="dk-btn dk-orange dk-ol" id="rMenu"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#4a1d2e" stroke-width="1.8" stroke-linejoin="round" d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z"/></svg>Menu</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sHarian" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-ol">Harian</div>
+      <button class="dk-btn dk-red dk-circle dk-close" data-close aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#4a1d2e" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
+      <div class="cal"><i id="dMonth">SEP</i><b id="dDay">28</b></div>
+      <div class="big dk-ol" style="font-size:32px" id="dN">Hari ke-1</div>
+      <div class="goals" id="dGoals"></div>
+      <div class="strk2 dk-ol"><svg viewBox="0 0 24 24"><path fill="#ff8a1a" stroke="#4a1d2e" stroke-width="2" stroke-linejoin="round" d="M12 2.5c1.2 3.6 5.5 5.6 5.5 11a5.5 5.5 0 0 1-11 0c0-2.8 1.4-4.4 2.8-5.4-.1 2.1.8 3.2 2 3.4-.7-3.2.2-6.4.7-9z"/><path fill="#ffe36a" d="M12 12.5c.9 1.5 2.3 2.3 2.3 4a2.3 2.3 0 0 1-4.6 0c0-1.2.9-2.1 2.3-4z"/></svg><span id="dStrkN">1 hari beruntun</span></div>
+      <div class="dk-lbl" id="dInfo">Lapis sama untuk semua. 1 kesempatan.</div>
+      <div class="dk-stack"><button class="dk-btn dk-green dk-ol" id="dPlay"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#4a1d2e" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></svg><span>Main</span></button></div>
+    </div>
+  </section>
+
+  <section id="sKoleksi" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-blue dk-ol">Koleksi</div>
+      <button class="dk-btn dk-red dk-circle dk-close" data-close aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#4a1d2e" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
+      <div class="dk-lbl" id="kInfo">0/9 hiasan</div>
+      <div class="kgrid" id="kGrid"></div>
+      <div class="dk-lbl">Piring</div>
+      <div class="plates" id="kPlates"></div>
+    </div>
+  </section>
+
+  <section id="sTantang" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-purple dk-ol">Tantang</div>
+      <button class="dk-btn dk-red dk-circle dk-close" data-close aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#4a1d2e" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
+      <div class="mini"><i style="width:44px;background:#ff8fb8"></i><i style="width:56px;background:#fff4f7"></i><i style="width:66px;background:#7fd67a"></i><i style="width:78px;background:#ff8fb8"></i><i style="width:90px;background:#fff4f7"></i></div>
+      <div class="dk-lbl" id="cInfo">Skor terakhirmu</div>
+      <div class="big dk-ol" id="cScore">0</div>
+      <div class="dk-stack"><button class="dk-btn dk-pink dk-ol" id="cSend"><svg viewBox="0 0 24 24" stroke="#4a1d2e" stroke-width="1.8"><path d="M7 12l10-6M7 12l10 6" stroke-width="4.5"/><path d="M7 12l10-6M7 12l10 6" stroke="#fff" stroke-width="2"/><circle cx="6.5" cy="12" r="3.3" fill="#fff"/><circle cx="17.5" cy="5.5" r="3.3" fill="#fff"/><circle cx="17.5" cy="18.5" r="3.3" fill="#fff"/></svg><span>Kirim</span></button></div>
+    </div>
+  </section>
+</div>
+<script src="/kit/kit.js"></script>
+<script>
+"use strict";
+const KIT = window.DehayukKit, SLUG = "tumpuk-lapis", ST = KIT.store(SLUG), TAU = Math.PI * 2;
+const Q = new URLSearchParams(location.search);
+const DEMO = Q.get("demo") === "1", COVER = Q.get("cover") === "1", UJI = Q.get("uji") === "1";
+
+/* ================= INTI PERMAINAN (tanpa DOM) ================= */
+// satuan dunia: dasar 100 x 100, tebal tiap lapis 10
+const LH = 10, BASE = 100, MAXV = 2.3, GROW = 4, GROW_AT = 5, CHAL_MAX = 9999, NEAR = 8, NAPAS = 15;
+const r2 = (x) => Math.round(x * 100) / 100; // cegah galat pecahan menumpuk
+// irisan satu sumbu: lapis lama [pl,ph], lapis baru [cl,ch]
+function slice(pl, ph, cl, ch) {
+  const lo = r2(Math.max(pl, cl)), hi = r2(Math.min(ph, ch)), w = r2(hi - lo), side = cl > pl ? 1 : cl < pl ? -1 : 0;
+  if (w <= 0) return { lo, hi, w: 0, over: true, cut: r2(ch - cl), side };
+  return { lo, hi, w, over: false, cut: r2(ch - cl - w), side };
+}
+// lebar menara per detik: naik cepat sampai 1,45, lalu terus naik pelan sampai 2,3 [ANGKA SEMENTARA, perlu uji main]
+function speedBase(i) { const v = 0.75 + 0.012 * i; return Math.min(MAXV, v <= 1.45 ? v : 1.45 + (i - 58) * 0.006); }
+function tolOf(W) { return Math.max(1.6, 0.03 * W); }
+function bandOf(i) { return Math.floor(i / 20) % 5; }
+function starsFor(n, combo) { return n >= 60 && combo >= 8 ? 3 : n >= 40 ? 2 : n >= 20 ? 1 : 0; }
+function fmtChal(seed, score) { return "#t=" + (seed >>> 0).toString(36) + "-" + Math.max(0, score | 0); }
+function parseChal(h) {
+  const m = /#t=([0-9a-z]+)-(\d+)/i.exec(h || ""); if (!m) return null;
+  const seed = parseInt(m[1], 36) >>> 0, score = parseInt(m[2], 10);
+  return seed && score <= CHAL_MAX ? { seed, score } : null; // skor mustahil = tautan diabaikan
+}
+
+function Core() { this.reset(1); }
+Core.prototype.reset = function (seed) {
+  this.seed = (seed >>> 0) || 1; this.rng = KIT.rng(this.seed); this.P = [null];
+  this.L = [{ cx: 0, cz: 0, w: BASE, d: BASE, gold: false, i: 0 }];
+  this.n = 0; this.combo = 0; this.bestCombo = 0; this.krim = 0; this.goldPerf = 0; this.perfects = 0; this.over = false; this.res = null;
+  this.spawn();
+};
+// parameter tiap lapis diambil berurutan dari benih: tak bergantung pada ketukan
+Core.prototype.gen = function (i) {
+  while (this.P.length <= i) {
+    const k = this.P.length, r = this.rng, side = r() < 0.5 ? -1 : 1, jit = 0.94 + r() * 0.12, g = r();
+    this.P.push({ side, jit, gold: k >= 8 && g < 1 / 12, napas: k % NAPAS === 0 });
+  }
+  return this.P[i];
+};
+Core.prototype.speedOf = function (i) { const p = this.gen(i); return Math.min(MAXV, speedBase(i) * p.jit * (p.napas ? 0.8 : 1)); };
+Core.prototype.spawn = function () {
+  const i = this.n + 1, p = this.gen(i), top = this.L[this.n], axis = i % 2 ? 0 : 1, W = axis ? top.d : top.w, S = Math.max(W, 40);
+  const spd = this.speedOf(i) * S, A = W + Math.max(0.25 * S, 0.36 * spd); // selalu mulai di luar menara, >= 0,35 dtk sebelum bisa menumpuk
+  this.cur = { i, axis, W, S, spd, A, side: p.side, gold: p.gold, napas: p.napas, t: 0, crossed: false };
+};
+// gelombang segitiga (bolak-balik), laju rata
+Core.prototype.offsetAt = function (t) {
+  const c = this.cur, per = 4 * c.A, p = (Math.max(0, t) * c.spd) % per;
+  return c.side * (p < 2 * c.A ? c.A - p : p - 3 * c.A);
+};
+Core.prototype.offset = function () { return this.offsetAt(this.cur.t); };
+Core.prototype.top = function () { return this.L[this.n]; };
+// lapis baru "siap" setelah pertama kali masuk di atas menara; ketukan sebelum itu diabaikan (ketuk ganda tak pernah membunuh)
+Core.prototype.armed = function () { const c = this.cur; if (!c || c.t < 0) return false; if (!c.crossed && Math.abs(this.offset()) < c.W) c.crossed = true; return c.crossed; };
+Core.prototype.dropAt = function (o) {
+  if (this.over) return null;
+  const c = this.cur, top = this.L[this.n], ax = c.axis, W = c.W, pc = ax ? top.cz : top.cx, tol = tolOf(W);
+  o = r2(o);
+  const res = { i: c.i, axis: ax, o, gold: c.gold, perfect: false, grew: 0, cut: 0, side: 0, near: false, over: false, prevCombo: this.combo, top };
+  let lo, hi;
+  if (Math.abs(o) <= tol) {
+    res.perfect = true; this.combo++; this.perfects++;
+    let nw = W;
+    if (this.combo >= GROW_AT && W < BASE) nw = Math.min(BASE, r2(W + GROW)); // tumbuh mulai pas ke-5 beruntun
+    res.grew = r2(nw - W); lo = r2(pc - nw / 2); hi = r2(pc + nw / 2);
+    this.krim += Math.min(10, this.combo); if (c.gold) { this.krim += 5; this.goldPerf++; }
+  } else {
+    const s = slice(r2(pc - W / 2), r2(pc + W / 2), r2(pc + o - W / 2), r2(pc + o + W / 2));
+    this.combo = 0; res.side = s.side || 1;
+    if (s.over || s.w < 1) { this.over = true; res.over = true; res.fallLo = r2(pc + o - W / 2); res.fallHi = r2(pc + o + W / 2); this.res = res; return res; }
+    lo = s.lo; hi = s.hi; res.cut = s.cut; res.near = s.w < NEAR;
+    res.fallLo = s.side > 0 ? s.hi : r2(s.lo - s.cut); res.fallHi = s.side > 0 ? r2(s.hi + s.cut) : s.lo;
+  }
+  if (this.combo > this.bestCombo) this.bestCombo = this.combo;
+  const cc = r2((lo + hi) / 2), ww = r2(hi - lo);
+  this.L.push(ax ? { cx: top.cx, cz: cc, w: top.w, d: ww, gold: c.gold, i: c.i } : { cx: cc, cz: top.cz, w: ww, d: top.d, gold: c.gold, i: c.i });
+  this.n++; res.lo = lo; res.hi = hi; this.res = res; this.spawn();
+  return res;
+};
+
+/* ================= UJI ================= */
+function runUji() {
+  const out = []; let ok = true;
+  const chk = (c, m) => { if (!c) ok = false; out.push((c ? "ok    " : "GAGAL ") + m); };
+  const fin = (g) => g.L.every((l) => isFinite(l.cx) && isFinite(l.cz) && isFinite(l.w) && isFinite(l.d)) && isFinite(g.krim) && (!g.cur || [g.cur.A, g.cur.spd, g.cur.W].every(isFinite));
+  // a) irisan
+  const a = slice(0, 100, 30, 130);
+  chk(a.lo === 30 && a.hi === 100 && a.w === 70 && a.cut === 30 && a.side === 1, "a) [0,100] vs [30,130] = [30,100], lebar 70, potong 30 di sisi +");
+  // b) meleset total
+  const b = slice(0, 100, 100, 200), g = new Core(); g.reset(5);
+  const rb = g.dropAt(g.cur.W + 0.5);
+  chk(b.over && b.w === 0 && rb.over && g.over, "b) [100,200] vs [0,100] = meleset, permainan selesai");
+  // c) dalam toleransi: pas
+  g.reset(7); g.L[0].w = 80; g.spawn();
+  let t = tolOf(80), r = g.dropAt(t * 0.9);
+  chk(r.perfect && g.top().w === 80 && g.top().cx === 0 && g.combo === 1, "c) geser " + r2(t * 0.9) + " (tol " + r2(t) + ") = pas, lebar tetap 80, kombo 1");
+  // d) sedikit di luar toleransi
+  g.reset(7); g.L[0].w = 80; g.spawn(); g.dropAt(0); g.dropAt(0);
+  const W3 = g.cur.W; t = tolOf(W3); r = g.dropAt(t + 0.3);
+  chk(!r.perfect && g.combo === 0 && g.top().w === r2(W3 - r2(t + 0.3)) && r.cut === r2(t + 0.3), "d) geser tol+0,3 = terpotong " + r.cut + ", kombo kembali 0");
+  // e) tumbuh
+  g.reset(9); g.L[0].w = 60; g.L[0].d = 60; g.spawn();
+  const ew = []; for (let q = 0; q < 6; q++) { g.dropAt(0); ew.push(g.top().w + "x" + g.top().d); }
+  chk(ew.join(",") === "60x60,60x60,60x60,60x60,64x60,64x64", "e) pas ke-1..4 tetap; ke-5 tumbuh +4 di X, ke-6 di Z (" + ew.slice(3).join(",") + ")");
+  g.reset(9); g.L[0].w = 98; g.spawn(); g.combo = 5; g.dropAt(0);
+  const capOk = g.top().w === 100;
+  g.reset(9); g.L[0].w = 60; g.L[0].d = 60; g.spawn(); g.combo = 5; g.dropAt(8); g.dropAt(0);
+  chk(capOk && g.combo === 1 && g.top().d === 60 && g.L[1].w === 52, "e) tumbuh dibatasi 100; setelah putus, pas pertama tidak tumbuh");
+  // f) sumbu bergantian
+  g.reset(11); const axes = []; for (let i = 0; i < 4; i++) { axes.push(g.cur.axis ? "Z" : "X"); g.dropAt(0); }
+  chk(axes.join(",") === "X,Z,X,Z", "f) sumbu " + axes.join(","));
+  // g) kurva laju
+  let mono = true, capv = true; for (let i = 1; i < 5000; i++) if (speedBase(i) < speedBase(i - 1)) mono = false;
+  g.reset(13); for (let i = 1; i < 3000; i++) if (g.speedOf(i) > MAXV + 1e-9) capv = false;
+  chk(mono && capv && speedBase(9999) === MAXV && MAXV === 2.3 && speedBase(0) === 0.75 && speedBase(100) > 1.6 && tolOf(20) === 1.6, "g) laju dasar 0,75 naik terus sampai 2,3 (lapis 60 = " + speedBase(60).toFixed(3) + ", lapis 100 = " + speedBase(100).toFixed(3) + "); toleransi paling kecil 1,6");
+  // h) benih sama = urutan sama
+  const g1 = new Core(), g2 = new Core(); g1.reset(20260928); g2.reset(20260928);
+  let same = true, golds = 0;
+  for (let i = 0; i < 200; i++) g2.dropAt(i % 3 ? 0 : 2); // ketukan berbeda tak mengubah urutan
+  for (let i = 1; i <= 200; i++) { const p = g1.gen(i), q = g2.gen(i); if (p.side !== q.side || p.jit !== q.jit || p.gold !== q.gold || p.napas !== q.napas) same = false; if (p.gold) golds++; }
+  const g3 = new Core(); g3.reset(20260929); let diff = false; for (let i = 1; i <= 200; i++) if (g3.gen(i).side !== g1.gen(i).side) diff = true;
+  chk(same && diff && golds > 5, "h) benih sama = sisi, laju, lapis emas sama (200 lapis, " + golds + " emas); benih lain berbeda");
+  // i) lintasan selalu melewati menara
+  let pathOk = true, minWait = 9;
+  const pchk = (c) => { const c0 = c.cur, w = (c0.A - c0.W) / c0.spd; minWait = Math.min(minWait, w); if (Math.abs(c.offsetAt(0)) < c0.W || c0.A < c0.W || w < 0.35) pathOk = false; };
+  g.reset(17); for (let i = 0; i < 200; i++) { pchk(g); g.dropAt(0); }
+  g.reset(17); g.L[0].w = 5; g.L[0].d = 5; g.spawn(); for (let i = 0; i < 50; i++) { pchk(g); g.dropAt(0); }
+  let hit0 = false; g.reset(3); for (let k = 0; k < 2000; k++) if (Math.abs(g.offsetAt(k / 400)) < 1) hit0 = true;
+  chk(pathOk && hit0, "i) mulai di luar menara, lintasan menutupi lebar penuh, tunggu minimal " + minWait.toFixed(2) + " dtk");
+  // j) bot sempurna & bot acak
+  g.reset(19); let died = false; for (let i = 0; i < 200; i++) if (g.dropAt(0).over) died = true;
+  const perfOk = !died && g.n === 200 && fin(g);
+  let ends = 0, nan = false, maxN = 0; const rn = KIT.rng(77);
+  for (let s = 1; s <= 300; s++) {
+    g.reset(s * 131);
+    for (let k = 0; k < 100000 && !g.over; k++) g.dropAt(g.offsetAt(rn() * 10));
+    if (g.over) ends++; if (!fin(g)) nan = true; maxN = Math.max(maxN, g.n);
+  }
+  chk(perfOk && ends === 300 && !nan, "j) bot sempurna 200 lapis tanpa mati; 300 bot acak selalu berakhir (tertinggi " + maxN + "), tanpa NaN");
+  // k) tantangan
+  const h = fmtChal(3735928559, 47), p = parseChal(h), link = KIT.challengeLink(SLUG, 3735928559, 47);
+  chk(p && p.seed === 3735928559 && p.score === 47 && link.endsWith("/" + SLUG + "/" + h) && !parseChal("#t=0-5"), "k) " + h + " dibaca ulang sama persis");
+  // l) bintang Harian
+  chk(starsFor(19, 30) === 0 && starsFor(20, 0) === 1 && starsFor(40, 0) === 2 && starsFor(60, 7) === 2 && starsFor(60, 8) === 3, "l) bintang: 20 = 1, 40 = 2, 60 + pas x8 = 3");
+  // m) tema
+  chk(bandOf(0) === 0 && bandOf(19) === 0 && bandOf(20) === 1 && bandOf(99) === 4 && bandOf(100) === 0, "m) tema di lapis 0/19/20/99 = " + [0, 19, 20, 99].map(bandOf).join("/"));
+  // n) ketuk ganda: ketukan sebelum lapis masuk di atas menara diabaikan, sesudahnya tetap nyata
+  g.reset(23); g.dropAt(0); let early = false; for (let tt = -0.12; tt <= 0.3; tt += 0.01) { g.cur.t = tt; if (g.armed()) early = true; }
+  g.cur.t = g.cur.A / g.cur.spd; const armMid = g.armed(); g.cur.t = (g.cur.A + g.cur.W + 5) / g.cur.spd; const armPast = g.armed(), missPast = g.dropAt(g.offset()).over;
+  chk(!early && armMid && armPast && missPast, "n) ketukan 0-0,3 dtk setelah jatuh ditelan; setelah lewat menara tetap meleset sungguhan");
+  // o) tautan tantangan dengan skor mustahil diabaikan
+  chk(!parseChal("#t=zz-99999999999") && !parseChal("#t=zz-10000") && parseChal("#t=zz-9999").score === 9999, "o) skor tantangan di atas " + CHAL_MAX + " diabaikan");
+  // p) alur layar: data pemain disalin dulu lalu dipulihkan; kemajuan bersama tidak disentuh
+  const PFX = "dehayuk." + SLUG + ".", snap = {}; let lsOk = true;
+  try { for (let q = 0; q < localStorage.length; q++) { const k = localStorage.key(q); if (k && k.indexOf(PFX) === 0) snap[k] = localStorage.getItem(k); } } catch (e) { lsOk = false; }
+  const recOrig = KIT.progress.record, toastOrig = KIT.ui.toast; KIT.progress.record = () => ({ gain: 0, level: 1, leveledUp: false, xp: 0 }); KIT.ui.toast = () => { };
+  const stack = (k) => { for (let q = 0; q < k; q++) core.dropAt(0); };
+  const finish = () => { core.over = true; endGame(); };
+  try {
+    ST.set("best", 0); ST.set("krimTotal", 0); ST.set("harian", null); ST.set("badges", []);
+    // ketuk ganda di permainan sungguhan
+    startGame("normal", 4242); core.cur.t = core.cur.A / core.cur.spd; tapDrop(); const n1 = core.n; core.cur.t += 0.2; tapDrop();
+    chk(n1 === 1 && core.n === 1 && !core.over && mode === "play", "p1) ketuk kedua 0,2 dtk kemudian tidak menjatuhkan apa pun");
+    // Main lagi saat bermain (klik ulang dari iklan app) diabaikan
+    stack(2); $("rAgain").click(); $("rMenu").click();
+    chk(core.n === 3 && mode === "play", "p2) rAgain/rMenu saat bermain diabaikan, menara tetap " + core.n);
+    // rekor pertama, rekor terlewati, rekor meleset
+    startGame("normal", 4242); recPrev = 0; stack(4); finish();
+    const t1 = $("rRec").textContent, lk = $("rBadge").parentNode.classList.contains("lk"), kt1 = krimTotal(), k1 = core.krim;
+    chk(t1 === "Rekor pertamamu!\nKurang 6 lapis → Lapis Pertama" && lk && $("rRek").hidden, "p3) rekor pertama menunjuk hiasan berikutnya: " + t1.replace("\n", " / "));
+    chk(kt1 === k1 && k1 > 0 && /\/150 ke Piring rotan$/.test($("rKrimL").textContent), "p4) krim disimpan seumur hidup (" + $("rKrimL").textContent + ")");
+    $("rAgain").click(); recPrev = 12; stack(15); finish();
+    chk($("rRec").textContent === "+3 dari rekor lama\nKurang 10 lapis → Tukang Kue", "p5) rekor terlewati: " + $("rRec").textContent.replace("\n", " / "));
+    $("rAgain").click(); recPrev = 40; stack(12); finish();
+    chk($("rRec").textContent === "Rekor 40 · kurang 29" && !$("rBarW").classList.contains("rec"), "p6) rekor meleset: " + $("rRec").textContent);
+    // Harian: satu percobaan resmi, latihan tak menimpa, tanggal = tanggal mulai
+    startGame("daily", KIT.dailySeed(SLUG)); toTitle(); openHarian();
+    const dd = daily(), dLbl = $("dPlay").textContent.trim(); $("sHarian").hidden = true;
+    chk(dd && !dd.done && dLbl === "Latihan", "p7) keluar dari Harian menghabiskan percobaan resmi, tombol jadi Latihan");
+    ST.set("harian", { d: KIT.dateKey(), score: 21, combo: 3, done: true });
+    startGame("practice", KIT.dailySeed(SLUG)); stack(30); finish();
+    chk(daily().score === 21 && daily().done, "p8) latihan tidak menimpa catatan Harian (tetap 21)");
+    const hn = ST.get("hariN", 0), hd = ST.get("hariD", "");
+    startGame("daily", KIT.dailySeed(SLUG)); dailyKey = "2000-01-01"; stack(3); finish();
+    const old = ST.get("harian", null);
+    chk(old && old.d === "2000-01-01" && old.done, "p9) Harian yang lewat tengah malam dicatat pada tanggal mulai");
+    ST.set("hariN", hn); ST.set("hariD", hd);
+    // Tantang: Main lagi mengulang benih dan target yang sama
+    chal = { seed: 98765, score: 10 }; startGame("chal", 98765); stack(3); finish(); $("rAgain").click();
+    chk(kind === "chal" && seedNow === 98765 && chal && chal.score === 10, "p10) Main lagi setelah tantangan mengulang benih " + seedNow + " dan target " + (chal && chal.score));
+  } catch (err) { chk(false, "p) galat: " + err.message); }
+  finally {
+    KIT.progress.record = recOrig; KIT.ui.toast = toastOrig;
+    if (lsOk) try { const del = []; for (let q = 0; q < localStorage.length; q++) { const k = localStorage.key(q); if (k && k.indexOf(PFX) === 0 && !(k in snap)) del.push(k); } del.forEach((k) => localStorage.removeItem(k)); for (const k in snap) localStorage.setItem(k, snap[k]); } catch (e) { }
+    chal = null; chalLast = null; toTitle();
+  }
+  const el = document.createElement("pre"); el.id = "uji"; el.textContent = (ok ? "UJI LULUS" : "UJI GAGAL") + "\n" + out.join("\n");
+  document.body.appendChild(el); document.title = ok ? "UJI LULUS" : "UJI GAGAL";
+  return ok;
+}
+
+/* ================= SENI ================= */
+const INK = "#4a1d2e", HK = 1.2; // HK: tinggi lapis terhadap lantai isometrik 2:1
+// tema: warna lapis bergiliran, langit [atas, tengah, bawah], gaya garis (0 halus, 1 spekuk, 2 putih, 3 cokelat)
+const BANDS = [
+  { nama: "Kue Lapis", lay: ["#ff8fb8", "#fff4f7", "#7fd67a"], sky: ["#5cc2ff", "#a9e2ff", "#fff1cf"], str: 0 },
+  { nama: "Lapis Legit", lay: ["#b8692e", "#f3c565"], sky: ["#ff9d5c", "#ffc98a", "#fff0c2"], str: 1 },
+  { nama: "Lapis Pelangi", lay: ["#ff5a6e", "#ff9a3c", "#ffd93d", "#5fd068", "#3fb8ff", "#6c7bff", "#b86cff"], sky: ["#7e8cff", "#b7b2ff", "#ffd0ea"], str: 2 },
+  { nama: "Lapis Talas", lay: ["#9b6bd6", "#f4e7c9"], sky: ["#5b3aa6", "#9a6fd0", "#f2b6dd"], str: 0 },
+  { nama: "Lapis Surabaya", lay: ["#ffd23f", "#ffe68a", "#6b3a1e"], sky: ["#1f2d6e", "#4b3f9e", "#c07bb8"], str: 3 }
+];
+function hx(h) { const n = parseInt(h.slice(1), 16); return [n >> 16, n >> 8 & 255, n & 255]; }
+function mx(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
+function rgb(c, a) { return a == null ? "rgb(" + (c[0] | 0) + "," + (c[1] | 0) + "," + (c[2] | 0) + ")" : "rgba(" + (c[0] | 0) + "," + (c[1] | 0) + "," + (c[2] | 0) + "," + a + ")"; }
+function dk(c, k) { return [c[0] * k, c[1] * k, c[2] * k]; }
+const BL = BANDS.map((b) => b.lay.map(hx)), SKY = BANDS.map((b) => b.sky.map(hx)), WHITE3 = [255, 255, 255], NIGHT = [16, 14, 44], GOLD = hx("#ffcf3a");
+// warna lapis ke-i; 5 lapis pertama tiap tema berbaur mulus dari tema sebelumnya
+function layerRGB(i) {
+  const b = bandOf(i), l = BL[b], c = l[i % l.length], k = i % 20;
+  if (i >= 20 && k < 5) { const p = BL[(b + 4) % 5]; return mx(p[i % p.length], c, (k + 1) / 5); }
+  return c;
+}
+function colsOf(ci, gold) {
+  const t = gold ? GOLD : layerRGB(ci), b = bandOf(ci);
+  return { t: rgb(t), l: rgb(dk(t, 0.86)), r: rgb(dk(t, 0.7)), o: rgb(dk(t, 0.42)), s1: rgb(dk(t, 0.72)), hi: rgb(mx(t, WHITE3, 0.6), 0.5), str: gold ? 2 : BANDS[b].str, gold };
+}
+function lcol(L) { return L.C || (L.C = colsOf(L.ci == null ? L.i : L.ci, L.gold)); }
+
+const $ = (id) => document.getElementById(id);
+const cv = $("cv"), ctx = cv.getContext("2d"), colEl = $("col");
+let vw = 0, vh = 0, dpr = 1, S0 = 1, colX = 0, colW = 0, sT = 0, sB = 0, LAND = false;
+// proyeksi: layarX = OX + (Z - X)*KZ ; layarY = OY + ((X+Z)/2 - Y*HK - CAM)*KZ
+let OX = 0, OY = 0, KZ = 1, CAM = 0;
+function sxy(X, Y, Z) { return [OX + (Z - X) * KZ, OY + ((X + Z) * 0.5 - Y * HK - CAM) * KZ]; }
+function poly4(a, b, c, d, e, f, g, h) { const q = ctx; q.beginPath(); q.moveTo(a, b); q.lineTo(c, d); q.lineTo(e, f); q.lineTo(g, h); q.closePath(); q.fill(); }
+// satu lapis: muka atas terang, kiri sedang, kanan gelap, garis lapis di sisi, tepi gelap 2 px
+function drawBox(x0, x1, z0, z1, y0, y1, C) {
+  const k = KZ, m = 0.5 / k, g = ctx;
+  if (x1 - x0 < 2 * m) { const c = (x0 + x1) / 2; x0 = c - m; x1 = c + m; } // paling tipis 1 px
+  if (z1 - z0 < 2 * m) { const c = (z0 + z1) / 2; z0 = c - m; z1 = c + m; }
+  const yt = y1 * HK + CAM, yb = y0 * HK + CAM;
+  const ax = OX + (z0 - x0) * k, bx = OX + (z0 - x1) * k, cx = OX + (z1 - x1) * k, dx = OX + (z1 - x0) * k;
+  const vA = (x0 + z0) * 0.5, vB = (x1 + z0) * 0.5, vC = (x1 + z1) * 0.5, vD = (x0 + z1) * 0.5;
+  const aT = OY + (vA - yt) * k, bT = OY + (vB - yt) * k, bB = OY + (vB - yb) * k, cT = OY + (vC - yt) * k, cB = OY + (vC - yb) * k, dT = OY + (vD - yt) * k, dB = OY + (vD - yb) * k;
+  if (Math.max(bB, cB, dB) < -20 || Math.min(aT, bT, dT) > vh + 20) return;
+  const hp = bB - bT;
+  g.fillStyle = C.l; poly4(bx, bT, cx, cT, cx, cB, bx, bB);
+  g.fillStyle = C.r; poly4(cx, cT, dx, dT, dx, dB, cx, cB);
+  if (hp >= 7) { // garis lapis kue
+    const st = C.str, fr = st === 1 ? [0.34, 0.68] : [0.5];
+    g.strokeStyle = st === 1 ? "#4a220c" : st === 2 ? "rgba(255,255,255,.75)" : st === 3 ? "#5a2c12" : C.s1;
+    g.lineWidth = st === 1 ? Math.min(2.4, hp * 0.14) : Math.min(1.6, hp * 0.1);
+    g.beginPath();
+    for (const f of fr) { const yl = bT + hp * f, yc = cT + hp * f, yd = dT + hp * f; g.moveTo(bx, yl); g.lineTo(cx, yc); g.lineTo(dx, yd); }
+    g.stroke();
+  }
+  g.fillStyle = C.t; poly4(ax, aT, bx, bT, cx, cT, dx, dT);
+  g.fillStyle = C.hi; // kilau muka atas
+  poly4(ax, aT, (ax + bx) / 2, (aT + bT) / 2, (ax + cx) / 2 * 0.9 + ax * 0.1, (aT + cT) / 2 * 0.9 + aT * 0.1, (ax + dx) / 2, (aT + dT) / 2);
+  if (C.gold) { // kilap emas berjalan
+    const p = (time * 0.7) % 1.6 - 0.3, p0 = Math.max(0, p), p1 = Math.min(1, p + 0.14);
+    if (p1 > p0) { g.fillStyle = "rgba(255,255,255,.7)"; poly4(ax + (bx - ax) * p0, aT + (bT - aT) * p0, ax + (bx - ax) * p1, aT + (bT - aT) * p1, dx + (cx - dx) * p1, dT + (cT - dT) * p1, dx + (cx - dx) * p0, dT + (cT - dT) * p0); }
+  }
+  g.lineWidth = Math.max(0.5, Math.min(2, hp * 0.2)); g.strokeStyle = C.o; g.lineJoin = "round";
+  g.beginPath(); g.moveTo(bx, bT); g.lineTo(ax, aT); g.lineTo(dx, dT); g.lineTo(dx, dB); g.lineTo(cx, cB); g.lineTo(bx, bB); g.closePath();
+  g.moveTo(bx, bT); g.lineTo(cx, cT); g.lineTo(dx, dT); g.moveTo(cx, cT); g.lineTo(cx, cB); g.stroke();
+}
+function drawLayer(L, i, sq) {
+  const y0 = i * LH, y1 = y0 + LH * (sq || 1);
+  drawBox(L.cx - L.w / 2, L.cx + L.w / 2, L.cz - L.d / 2, L.cz + L.d / 2, y0, y1, lcol(L));
+}
+
+/* ---------- piring ---------- */
+const PLATES = [
+  { id: "biasa", nama: "Piring biasa", top: "#ffffff", rim: "#c9d8ea", ring: "#b5cfee", butuh: null },
+  { id: "rotan", nama: "Piring rotan", top: "#ecc27a", rim: "#b07a36", ring: "#c48a42", butuh: "l25", krim: 150 },
+  { id: "kayu", nama: "Nampan kayu", top: "#c07d45", rim: "#7a4520", ring: "#9a5a2c", butuh: "l50", krim: 400 },
+  { id: "daun", nama: "Daun pisang", top: "#5cc45a", rim: "#2f8a38", ring: "#3f9f45", butuh: "c10", krim: 800 },
+  { id: "emas", nama: "Piring emas", top: "#ffe07a", rim: "#d99a1a", ring: "#f1b82a", butuh: "l100", krim: 2000 }
+]; // harga krim [ANGKA SEMENTARA]
+let plateSel = 0;
+function drawPlate(pi) {
+  const P = PLATES[pi], g = ctx, k = KZ, cx = OX, cy = OY + (-CAM + 3) * k, rx = 140 * k, ry = 70 * k, th = Math.max(3, 9 * k);
+  if (cy - ry > vh + 10) return;
+  g.fillStyle = "rgba(40,10,30,.18)"; g.beginPath(); g.ellipse(cx + 6 * k, cy + th + 7 * k, rx * 1.02, ry * 1.02, 0, 0, TAU); g.fill();
+  g.fillStyle = P.rim; g.beginPath(); g.ellipse(cx, cy + th, rx, ry, 0, 0, Math.PI); g.lineTo(cx - rx, cy); g.ellipse(cx, cy, rx, ry, 0, Math.PI, 0, true); g.closePath(); g.fill();
+  g.lineWidth = 2; g.strokeStyle = INK; g.stroke();
+  let fill = P.top;
+  if (P.id === "emas") { const gr = g.createLinearGradient(cx - rx, cy - ry, cx + rx, cy + ry); gr.addColorStop(0, "#fff4b0"); gr.addColorStop(0.5, "#ffd23a"); gr.addColorStop(1, "#e9a412"); fill = gr; }
+  g.fillStyle = fill; g.beginPath(); g.ellipse(cx, cy, rx, ry, 0, 0, TAU); g.fill(); g.stroke();
+  g.strokeStyle = P.ring; g.lineWidth = Math.max(1.5, 3 * k); g.beginPath(); g.ellipse(cx, cy, rx * 0.8, ry * 0.8, 0, 0, TAU); g.stroke();
+  if (P.id === "rotan") { g.strokeStyle = P.rim; g.lineWidth = Math.max(1, 1.6 * k); g.beginPath(); for (let a = 0; a < TAU; a += TAU / 36) { g.moveTo(cx + Math.cos(a) * rx * 0.82, cy + Math.sin(a) * ry * 0.82); g.lineTo(cx + Math.cos(a + 0.09) * rx * 0.98, cy + Math.sin(a + 0.09) * ry * 0.98); } g.stroke(); }
+  if (P.id === "kayu") { g.strokeStyle = "rgba(90,45,15,.35)"; g.lineWidth = Math.max(1, 1.4 * k); for (let q = 0.3; q < 0.8; q += 0.16) { g.beginPath(); g.ellipse(cx + rx * 0.1, cy, rx * q, ry * q * 0.8, 0.1, 0, TAU); g.stroke(); } }
+  if (P.id === "daun") { g.strokeStyle = "#2f8a38"; g.lineWidth = Math.max(1, 2 * k); g.beginPath(); g.moveTo(cx - rx, cy); g.lineTo(cx + rx, cy); for (let q = -0.8; q <= 0.8; q += 0.2) { g.moveTo(cx + q * rx, cy); g.lineTo(cx + (q + 0.14) * rx, cy - ry * 0.75 * Math.sqrt(1 - q * q)); g.moveTo(cx + q * rx, cy); g.lineTo(cx + (q + 0.14) * rx, cy + ry * 0.75 * Math.sqrt(1 - q * q)); } g.stroke(); }
+  if (P.id === "emas") { g.fillStyle = "#fff6c8"; for (let a = 0; a < TAU; a += TAU / 24) { g.beginPath(); g.arc(cx + Math.cos(a) * rx * 0.9, cy + Math.sin(a) * ry * 0.9, Math.max(1.2, 2.2 * k), 0, TAU); g.fill(); } }
+  g.strokeStyle = "rgba(255,255,255,.75)"; g.lineWidth = Math.max(2, 4 * k); g.lineCap = "round"; g.beginPath(); g.ellipse(cx, cy, rx * 0.92, ry * 0.9, 0, Math.PI * 1.08, Math.PI * 1.45); g.stroke(); g.lineCap = "butt";
+}
+
+/* ---------- ceri & lilin ---------- */
+function drawCherry(x, y, r) {
+  const g = ctx; g.lineCap = "round";
+  g.strokeStyle = INK; g.lineWidth = r * 0.45; g.beginPath(); g.moveTo(x, y - r * 0.6); g.quadraticCurveTo(x + r * 0.2, y - r * 1.8, x + r * 1.1, y - r * 2.2); g.stroke();
+  g.strokeStyle = "#5aa83a"; g.lineWidth = r * 0.22; g.stroke();
+  g.fillStyle = "#e8243f"; g.strokeStyle = INK; g.lineWidth = Math.max(1.5, r * 0.18); g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); g.stroke();
+  g.fillStyle = "rgba(255,255,255,.85)"; g.beginPath(); g.ellipse(x - r * 0.35, y - r * 0.35, r * 0.28, r * 0.18, -0.6, 0, TAU); g.fill(); g.lineCap = "butt";
+}
+function drawCandle(x, y, h, col) {
+  const g = ctx, w = h * 0.26;
+  g.fillStyle = col; g.strokeStyle = INK; g.lineWidth = Math.max(1.2, h * 0.07); g.fillRect(x - w / 2, y - h, w, h); g.strokeRect(x - w / 2, y - h, w, h);
+  g.fillStyle = "rgba(255,255,255,.7)"; for (let q = 0.2; q < 1; q += 0.3) g.fillRect(x - w / 2, y - h * q, w, h * 0.08);
+  const f = h * 0.34, fl = 1 + Math.sin(time * 18 + x) * 0.12;
+  g.fillStyle = "#ffb21a"; g.beginPath(); g.moveTo(x, y - h - f * 1.5 * fl); g.quadraticCurveTo(x + f * 0.6, y - h - f * 0.4, x, y - h); g.quadraticCurveTo(x - f * 0.6, y - h - f * 0.4, x, y - h - f * 1.5 * fl); g.fill();
+  g.fillStyle = "#fff4a0"; g.beginPath(); g.arc(x, y - h - f * 0.45, f * 0.22, 0, TAU); g.fill();
+}
+// hiasan puncak: dua lilin mengapit ceri
+function drawTopping(x, y, s) {
+  drawCandle(x - 14 * s, y + 2 * s, 20 * s, "#7fd8ff"); drawCandle(x + 14 * s, y + 2 * s, 20 * s, "#ff9fc3");
+  drawCherry(x, y - 4 * s, 7.5 * s);
+}
+
+/* ---------- latar: langit, awan, kampung, bintang ---------- */
+let CLOUD = null, SIL = null, STARS = [];
+function mk(w, h) { const c = document.createElement("canvas"); c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h || w)); return c; }
+function buildBg() {
+  CLOUD = mk(180 * dpr, 80 * dpr); { const g = CLOUD.getContext("2d"); g.scale(dpr, dpr);
+    const puff = [[40, 52, 26], [74, 38, 32], [112, 46, 28], [140, 56, 20], [90, 60, 26]];
+    g.fillStyle = "rgba(190,215,240,.9)"; for (const [x, y, r] of puff) { g.beginPath(); g.arc(x, y + 5, r, 0, TAU); g.fill(); }
+    g.fillStyle = "#fff"; for (const [x, y, r] of puff) { g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); } }
+  const sh = Math.round(Math.min(190, vh * 0.26)), sw = Math.ceil(vw);
+  SIL = mk(sw * dpr, sh * dpr); { const g = SIL.getContext("2d"), rn = KIT.rng(9); g.scale(dpr, dpr);
+    // bukit jauh, lalu deretan rumah kampung dan masjid berkubah
+    g.fillStyle = "rgba(120,170,215,.55)"; g.beginPath(); g.moveTo(0, sh);
+    for (let x = 0; x <= sw; x += 20) g.lineTo(x, sh * 0.45 + Math.sin(x * 0.012) * sh * 0.12 + Math.sin(x * 0.031) * sh * 0.05); g.lineTo(sw, sh); g.fill();
+    g.fillStyle = "rgba(78,128,178,.8)"; const base = sh * 0.82, mq = sw * (sw > 700 ? 0.22 : 0.18);
+    for (let x = -10; x < sw; ) {
+      const w = 34 + rn() * 30, h = 16 + rn() * 14;
+      if (Math.abs(x + w / 2 - mq) < 70) { x += w; continue; }
+      g.fillRect(x + 4, base - h, w - 8, h + 30); g.beginPath(); g.moveTo(x - 2, base - h + 2); g.lineTo(x + w / 2, base - h - w * 0.36); g.lineTo(x + w + 2, base - h + 2); g.fill();
+      if (rn() < 0.3) { g.fillRect(x + w + 6, base - 50, 3, 60); g.beginPath(); g.ellipse(x + w + 7, base - 50, 13, 5, -0.4, 0, TAU); g.ellipse(x + w + 7, base - 50, 13, 5, 0.4, 0, TAU); g.fill(); }
+      x += w + 6 + rn() * 12;
+    }
+    g.fillStyle = "rgba(60,108,160,.9)"; // masjid
+    g.fillRect(mq - 42, base - 36, 84, 70); g.beginPath(); g.arc(mq, base - 36, 30, Math.PI, 0); g.fill();
+    g.fillRect(mq - 2, base - 84, 4, 20); g.beginPath(); g.arc(mq, base - 86, 4, 0, TAU); g.fill();
+    g.fillRect(mq + 52, base - 88, 12, 120); g.beginPath(); g.moveTo(mq + 49, base - 88); g.lineTo(mq + 58, base - 110); g.lineTo(mq + 67, base - 88); g.fill();
+    g.fillStyle = "rgba(255,240,190,.55)"; for (let q = -1; q <= 1; q++) g.fillRect(mq + q * 22 - 5, base - 20, 10, 16);
+    SIL.w = sw; SIL.h = sh; }
+  if (!STARS.length) { const rn = KIT.rng(21); for (let i = 0; i < 70; i++) STARS.push([rn(), rn() * 0.8, 0.6 + rn() * 1.6, rn() * TAU]); }
+}
+const CLOUDS = [[0.12, 0.1, 0.8, 7], [0.78, 0.3, 1.1, 5], [0.4, 0.55, 0.7, 9], [0.9, 0.75, 0.9, 6], [0.2, 0.95, 1.2, 4], [0.62, 1.2, 0.8, 8]];
+let skyCache = "", skyGrad = null;
+function drawBackdrop(camL, plateY) {
+  const g = ctx, b = Math.floor(Math.max(0, camL) / 20), t = b > 0 ? Math.min(1, (camL - b * 20) / 5) : 1, cur = SKY[b % 5], prev = SKY[(b + 4) % 5];
+  const night = Math.max(0, Math.min(0.6, (camL - 40) / 70));
+  const c = [0, 1, 2].map((j) => mx(mx(prev[j], cur[j], t), NIGHT, night * (1 - j * 0.3)));
+  const key = c.map((x) => rgb(x)).join("|") + vh;
+  if (key !== skyCache) { skyCache = key; skyGrad = g.createLinearGradient(0, 0, 0, vh); skyGrad.addColorStop(0, rgb(c[0])); skyGrad.addColorStop(0.55, rgb(c[1])); skyGrad.addColorStop(1, rgb(c[2])); }
+  g.fillStyle = skyGrad; g.fillRect(0, 0, vw, vh);
+  const sa = Math.max(0, Math.min(1, (camL - 46) / 8));
+  if (sa > 0) {
+    for (const s of STARS) { g.globalAlpha = sa * (0.55 + 0.45 * Math.sin(time * 2 + s[3])); g.fillStyle = "#fff"; g.beginPath(); g.arc(s[0] * vw, s[1] * vh, s[2], 0, TAU); g.fill(); }
+    g.globalAlpha = sa; const mxp = vw * 0.82, myp = vh * 0.14, mr = Math.min(34, vw * 0.07);
+    g.fillStyle = "rgba(255,246,208,.25)"; g.beginPath(); g.arc(mxp, myp, mr * 1.6, 0, TAU); g.fill();
+    g.fillStyle = "#fff6d0"; g.beginPath(); g.arc(mxp, myp, mr, 0, TAU); g.fill();
+    g.fillStyle = rgb(c[0]); g.beginPath(); g.arc(mxp + mr * 0.45, myp - mr * 0.25, mr * 0.85, 0, TAU); g.fill();
+    g.globalAlpha = 1;
+  }
+  const ca = 1 - night * 1.2, span = vh * 1.5, lift = -CAM * KZ * 0.22;
+  if (ca > 0.05) for (const q of CLOUDS) {
+    const y = ((q[1] * span + lift) % span + span) % span - vh * 0.25, x = ((q[0] * (vw + 240) + time * q[3]) % (vw + 240)) - 200;
+    g.globalAlpha = ca * 0.85; g.drawImage(CLOUD, x, y, 180 * q[2], 80 * q[2]);
+  }
+  g.globalAlpha = 1;
+  const sa2 = Math.max(0, Math.min(1, 1 - camL / 24));
+  if (sa2 > 0 && SIL) { const yb = vh + (plateY - vh * 0.75) * 0.45; g.globalAlpha = sa2; g.drawImage(SIL, 0, yb - SIL.h, SIL.w, SIL.h); g.globalAlpha = 1; }
+}
+
+/* ---------- logo ---------- */
+let LOGO = null;
+function letterSprite(ch, fs, cols, spek) {
+  const t = mk(4), q = t.getContext("2d"), font = "800 " + fs + "px 'Baloo 2','Arial Rounded MT Bold',sans-serif";
+  q.font = font; const mw = q.measureText(ch).width, pad = fs * 0.2, W = mw + pad * 2, H = fs * 1.2;
+  const c = mk(W * dpr, H * dpr), g = c.getContext("2d"); g.scale(dpr, dpr);
+  g.font = font; g.textAlign = "center"; g.textBaseline = "alphabetic"; g.lineJoin = "round";
+  const x = W / 2, by = fs * 0.95, top = by - fs * 0.7;
+  g.fillStyle = INK; g.strokeStyle = INK; g.lineWidth = fs * 0.2; g.strokeText(ch, x, by + fs * 0.1); g.fillText(ch, x, by + fs * 0.1);
+  g.strokeText(ch, x, by);
+  const n = 5, gr = g.createLinearGradient(0, top, 0, by + fs * 0.02);
+  for (let k = 0; k < n; k++) { const col = cols[k % cols.length]; gr.addColorStop(k / n, col); gr.addColorStop((k + 1) / n - 0.002, col); }
+  g.fillStyle = gr; g.fillText(ch, x, by);
+  if (spek) { g.save(); g.globalCompositeOperation = "source-atop"; g.fillStyle = "rgba(74,34,12,.8)"; for (let k = 1; k < n; k++) g.fillRect(0, top + (by - top) * k / n - fs * 0.015, W, fs * 0.03); g.restore(); }
+  g.save(); g.globalCompositeOperation = "source-atop"; g.fillStyle = "rgba(255,255,255,.35)"; g.fillRect(0, top - fs * 0.1, W, fs * 0.16); g.restore();
+  c.w = W; c.h = H; c.by = by; return c;
+}
+function buildLogo(x, y, w, h) {
+  const f1 = Math.min(h * 0.44, w / 4.3), f2 = Math.min(h * 0.56, w / 3.7);
+  const L1 = [..."TUMPUK"].map((ch) => letterSprite(ch, f1, ["#ff8fb8", "#fff4f7", "#7fd67a"], false));
+  const L2 = [..."LAPIS"].map((ch) => letterSprite(ch, f2, ["#f3c565", "#b8692e", "#ffd96b"], true));
+  LOGO = { x, y, w, h, L1, L2, f1, f2 };
+}
+function measureLogo() {
+  const el = $("logo"); if (!el) return;
+  const r = el.getBoundingClientRect(); if (r.width < 10) return;
+  buildLogo(r.left, r.top, r.width, r.height);
+}
+function drawLogo() {
+  const L = LOGO; if (!L) return;
+  const g = ctx, rows = [[L.L1, L.f1, L.y + L.h * 0.02, 0], [L.L2, L.f2, L.y + L.h * 0.4, 1]];
+  let kx = 0, ky = 0;
+  for (const [arr, fs, ty, ri] of rows) {
+    const tot = arr.reduce((s, c) => s + c.w - fs * 0.34, 0) + fs * 0.34;
+    let x = L.x + L.w / 2 - tot / 2;
+    for (let i = 0; i < arr.length; i++) {
+      const c = arr[i], hop = Math.pow(Math.max(0, Math.sin(time * 2.2 - i * 0.5 - ri * 1.7)), 10);
+      const rot = (i & 1 ? 0.05 : -0.05) * (ri ? -1 : 1) + hop * 0.06, cx = x + c.w / 2, cy = ty + c.h / 2 - hop * fs * 0.16;
+      const co = Math.cos(rot), si = Math.sin(rot);
+      g.setTransform(co * dpr, si * dpr, -si * dpr, co * dpr, cx * dpr, cy * dpr); g.drawImage(c, -c.w / 2, -c.h / 2, c.w, c.h);
+      if (!ri && i === arr.length - 1) { kx = cx + c.w * 0.18; ky = cy - c.h * 0.3; }
+      x += c.w - fs * 0.34;
+    }
+  }
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  drawCherry(kx, ky - Math.abs(Math.sin(time * 2.2)) * 4, L.f1 * 0.16);
+}
+
+/* ================= EFEK ================= */
+// partikel disimpan dalam koordinat proyeksi dunia (u,v) agar ikut kamera
+const PN = 400, pU = new Float32Array(PN), pV = new Float32Array(PN), pVU = new Float32Array(PN), pVV = new Float32Array(PN), pL = new Float32Array(PN), pM = new Float32Array(PN), pS = new Float32Array(PN), pR = new Float32Array(PN), pK = new Uint8Array(PN), pC = new Array(PN).fill("#fff");
+let pHead = 0;
+function part(u, v, vu, vv, life, size, col, kind) { const i = pHead; pHead = (pHead + 1) % PN; pU[i] = u; pV[i] = v; pVU[i] = vu; pVV[i] = vv; pL[i] = life; pM[i] = life; pS[i] = size; pC[i] = col; pK[i] = kind || 0; pR[i] = Math.random() * TAU; }
+function wuv(X, Y, Z) { return [Z - X, (X + Z) * 0.5 - Y * HK]; }
+function crumbs(X, Y, Z, col, n, du) {
+  const [u, v] = wuv(X, Y, Z);
+  for (let k = 0; k < n; k++) part(u + (Math.random() - 0.5) * 8, v + (Math.random() - 0.5) * 6, du * (30 + Math.random() * 60) + (Math.random() - 0.5) * 40, -40 - Math.random() * 60, 0.7 + Math.random() * 0.4, 2 + Math.random() * 2.6, col, 0);
+}
+function sparkles(X, Y, Z, n, col) {
+  const [u, v] = wuv(X, Y, Z);
+  for (let k = 0; k < n; k++) { const a = Math.random() * TAU, s = 40 + Math.random() * 90; part(u + Math.cos(a) * 20, v + Math.sin(a) * 8, Math.cos(a) * s, Math.sin(a) * s * 0.6 - 50, 0.6 + Math.random() * 0.5, 5 + Math.random() * 5, col || "#fff6b0", 1); }
+}
+let FALL = [], RINGS = [], GLOWS = [], TXT = [], TOPS = [];
+let shake = 0, desT = 0, bobT = 0, sqT = 0, wobT = 0, flash = 0, vign = 0, timeScale = 1;
+function fontPx(n) { return "800 " + (n | 0) + "px 'Baloo 2','Arial Rounded MT Bold',sans-serif"; }
+const FONTS = []; for (let i = 0; i < 160; i++) FONTS.push(fontPx(i));
+function ftext(X, Y, Z, s, size, col) { const [u, v] = wuv(X, Y, Z); TXT.push({ u, v, s, size, col, l: 1 }); if (TXT.length > 12) TXT.shift(); }
+const BN = [{ s: "", t: 0, d: 1, gr: null, sz: 44 }, { s: "", t: 0, d: 1, gr: null, sz: 40 }];
+const BN_COL = [["#fffbd0", "#ffd32e", "#ff7a1a"], ["#fff0f7", "#ff7ab8", "#ff3d7f"]];
+function banner(k, s, dur, sz) {
+  const B = BN[k]; B.s = s; B.t = dur; B.d = dur; B.sz = Math.min(sz, vw * 0.11);
+  const f = B.sz, g = ctx.createLinearGradient(0, -f * 0.5, 0, f * 0.4), c = BN_COL[k];
+  g.addColorStop(0, c[0]); g.addColorStop(0.5, c[1]); g.addColorStop(1, c[2]); B.gr = g;
+}
+function clearFx() { FALL = []; RINGS = []; GLOWS = []; TXT = []; TOPS = []; pL.fill(0); BN[0].t = 0; BN[1].t = 0; shake = desT = bobT = sqT = wobT = flash = vign = 0; }
+const PRAISE = ["PAS!", "PAS!", "MANTAP!", "MANTAP!", "LUAR BIASA!", "LUAR BIASA!", "SEMPURNA!!", "SEMPURNA!!", "SEMPURNA!!", "SEMPURNA!!", "DEWA LAPIS!!!"];
+const PRAISE_COL = ["#ffffff", "#ffffff", "#c8f7ff", "#c8f7ff", "#ffe36a", "#ffe36a", "#ffb3e0", "#ffb3e0", "#ffb3e0", "#ffb3e0", "#ffd23a"];
+
+/* ================= SUARA ================= */
+const A = KIT.audio, PENTA = [0, 2, 4, 7, 9];
+const SFX = {
+  tap() { A.tone({ freq: 880, dur: 0.06, vol: 0.22, slideTo: 1320 }); },
+  drop() { A.tone({ freq: 320, dur: 0.08, type: "triangle", vol: 0.42, slideTo: 170 }); A.noise({ dur: 0.04, vol: 0.12, filter: 900 }); },
+  slice() { A.noise({ dur: 0.12, vol: 0.2, filter: 3800, type: "highpass" }); A.noise({ dur: 0.07, vol: 0.1, filter: 1400, delay: 0.03 }); },
+  // lonceng pentatonik naik satu anak tangga per kombo, kembali setelah 2 oktaf
+  perfect(c) {
+    const k = (c - 1) % 10, s = 12 * Math.floor(k / 5) + PENTA[k % 5], f = 523.25 * Math.pow(2, s / 12);
+    A.tone({ freq: f, dur: 0.32, type: "triangle", vol: 0.26 }); A.tone({ freq: f * 2, dur: 0.22, vol: 0.1, delay: 0.02 }); A.tone({ freq: f * 3, dur: 0.12, vol: 0.04, delay: 0.03 });
+    A.noise({ dur: 0.05, vol: 0.06, filter: 7000, type: "highpass" });
+  },
+  regrow() { [261.6, 329.6, 392, 523.3].forEach((f, i) => A.tone({ freq: f, dur: 0.6, vol: 0.08, attack: 0.09, type: "sine", delay: i * 0.015 })); },
+  gold() { [1047, 1319, 1568, 2093, 2637].forEach((f, i) => A.tone({ freq: f, dur: 0.14, vol: 0.1, delay: 0.08 + i * 0.05 })); },
+  fanfare() { [523, 659, 784, 1047].forEach((f, i) => A.tone({ freq: f, dur: 0.2, type: "square", vol: 0.07, delay: i * 0.1 })); A.tone({ freq: 1047, dur: 0.55, type: "triangle", vol: 0.2, delay: 0.42 }); A.tone({ freq: 1319, dur: 0.55, type: "triangle", vol: 0.14, delay: 0.42 }); },
+  near() { A.tone({ freq: 520, dur: 0.07, type: "square", vol: 0.06, slideTo: 470 }); A.tone({ freq: 560, dur: 0.07, type: "square", vol: 0.06, slideTo: 500, delay: 0.08 }); },
+  miss() { A.tone({ freq: 150, dur: 0.5, type: "sine", vol: 0.55, slideTo: 45 }); A.noise({ dur: 0.25, vol: 0.22, filter: 260, type: "lowpass" }); A.tone({ freq: 400, dur: 0.55, type: "triangle", vol: 0.12, slideTo: 110, delay: 0.1 }); },
+  count() { A.tone({ freq: 660, dur: 0.1, vol: 0.2 }); },
+  go() { A.tone({ freq: 990, dur: 0.2, vol: 0.22, slideTo: 1320 }); },
+  rec() { [659, 784, 988, 1319].forEach((f, k) => A.tone({ freq: f, dur: 0.25, type: "square", vol: 0.08, delay: k * 0.08 })); [1319, 1568, 2093].forEach((f, k) => A.tone({ freq: f, dur: 0.4, vol: 0.14, delay: 0.35 + k * 0.1 })); },
+  tick() { A.tone({ freq: 1500, dur: 0.03, vol: 0.05 }); }
+};
+// gamelan ringan: tangga nada mirip slendro, lembut
+const MUSIC = { step: 0.21, root: 50, scale: [0, 2, 5, 7, 9, 12, 14, 17, 19, 21], chords: [0, 0, 5, 7], lead: "sine", melody: [5, -1, 4, -1, 2, 3, -1, 2, 0, -1, -1, 2, 3, -1, 5, -1, 7, -1, 6, 5, -1, 3, 2, -1, 3, -1, 2, -1, 0, -1, -1, -1] };
+
+/* ================= HIASAN (lencana) ================= */
+const BADGES = [
+  { id: "l10", nama: "Lapis Pertama", syarat: "10 lapis", c: ["#ffd0e0", "#ff6f9f"], em: "10" },
+  { id: "l25", nama: "Tukang Kue", syarat: "25 lapis", c: ["#ffe9b0", "#f0a830"], em: "25" },
+  { id: "l50", nama: "Koki Lapis", syarat: "50 lapis", c: ["#e6f0ff", "#7f96c0"], em: "50" },
+  { id: "l100", nama: "Menara Lapis", syarat: "100 lapis", c: ["#fff3a0", "#e0a000"], em: "100" },
+  { id: "c10", nama: "Tangan Dingin", syarat: "Pas x10", c: ["#c9f3ff", "#35a9e0"], em: "x10" },
+  { id: "c25", nama: "Tak Tergoyahkan", syarat: "Pas x25", c: ["#e2ccff", "#8f5cf0"], em: "x25" },
+  { id: "g5", nama: "Emas Murni", syarat: "5 pas emas", c: ["#fff6c0", "#ffb21a"], em: "★" },
+  { id: "band", nama: "Keliling Nusantara", syarat: "5 tema", c: ["#c8f8b0", "#3dbb2c"], em: "5" },
+  { id: "rajin", nama: "Rajin", syarat: "Harian 7 hari", c: ["#ffd2b8", "#ff7a2b"], em: "7" }
+];
+const HEIGHTS = [10, 25, 50, 100];
+// hiasan kue berbentuk tusuk: medali di atas lidi, ceri kecil bila sudah didapat
+function topperSVG(i, locked) {
+  const b = BADGES[i], id = "tg" + i + (locked ? "l" : ""), fs = b.em.length >= 3 ? 12 : 16;
+  const a = locked ? "#cbbcc2" : b.c[0], z = locked ? "#9d8a92" : b.c[1];
+  return '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="' + a + '"/><stop offset="1" stop-color="' + z + '"/></linearGradient></defs>' +
+    '<path d="M32 40v21" stroke="#4a1d2e" stroke-width="5.5" stroke-linecap="round"/><path d="M32 40v21" stroke="' + (locked ? "#b8a7ae" : "#f0cf96") + '" stroke-width="2.5" stroke-linecap="round"/>' +
+    '<path d="M32 3.5l4.3 3.3 5.3-.9 2 5 5 2-.9 5.3 3.3 4.3-3.3 4.3.9 5.3-5 2-2 5-5.3-.9L32 42.5l-4.3-3.3-5.3.9-2-5-5-2 .9-5.3L13 23.5l3.3-4.3-.9-5.3 5-2 2-5 5.3.9z" fill="url(#' + id + ')" stroke="#4a1d2e" stroke-width="2.6" stroke-linejoin="round"/>' +
+    '<circle cx="32" cy="23" r="12.5" fill="none" stroke="' + z + '" stroke-width="2" opacity=".75"/>' +
+    (locked ? '<text x="32" y="29.5" text-anchor="middle" font-family="Baloo 2,Arial Rounded MT Bold,sans-serif" font-weight="800" font-size="17" fill="#fff" opacity=".85">?</text>' :
+      '<text x="32" y="' + (23 + fs * 0.36) + '" text-anchor="middle" font-family="Baloo 2,Arial Rounded MT Bold,sans-serif" font-weight="800" font-size="' + fs + '" fill="#fff" stroke="#4a1d2e" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round">' + b.em + '</text>' +
+      '<circle cx="46" cy="7" r="4.6" fill="#e8243f" stroke="#4a1d2e" stroke-width="1.8"/><path d="M46 3c1-2 2.5-2.6 4-2.6" stroke="#4a1d2e" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="44.6" cy="5.6" r="1.3" fill="#fff" opacity=".8"/>') + '</svg>';
+}
+function plateSVG(i) {
+  const P = PLATES[i], top = P.id === "emas" ? "#ffd84a" : P.top;
+  return '<svg viewBox="0 0 44 28" aria-hidden="true"><ellipse cx="22" cy="16.5" rx="19" ry="9" fill="' + P.rim + '" stroke="#4a1d2e" stroke-width="2"/><ellipse cx="22" cy="13" rx="19" ry="9" fill="' + top + '" stroke="#4a1d2e" stroke-width="2"/><ellipse cx="22" cy="13" rx="14" ry="6.2" fill="none" stroke="' + P.ring + '" stroke-width="1.6"/></svg>';
+}
+function starPath(cx, cy, R, r) { let d = ""; for (let k = 0; k < 10; k++) { const a = -Math.PI / 2 + k * Math.PI / 5, q = k & 1 ? r : R; d += (k ? "L" : "M") + (cx + Math.cos(a) * q).toFixed(1) + " " + (cy + Math.sin(a) * q).toFixed(1); } return d + "Z"; }
+const STAR_S = starPath(12, 12.8, 10.5, 4.8);
+function starSVG(on) { return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + STAR_S + '" fill="' + (on ? "#ffd23a" : "#e6d6dc") + '" stroke="#4a1d2e" stroke-width="2" stroke-linejoin="round"/></svg>'; }
+
+/* ================= STATUS ================= */
+const core = new Core(), demo = new Core(), coverCore = new Core();
+let mode = "title", kind = "normal", seedNow = 1, dailyKey = "", OVR = null, camX = 0.5, chal = null, chalLast = null, time = 0, endT = 0, recPrev = 0, recHit = false, cdT = 0, cdShown = 0, demoDead = 0, skyL = 0;
+let camZ = 1, camA = 0.38, lastRes = null;
+function best() { return ST.get("best", 0) | 0; }
+function daily() { const d = ST.get("harian", null); return d && d.d === KIT.dateKey() ? d : null; }
+function isDailyRun() { return (kind === "daily" || kind === "practice") && seedNow === KIT.dailySeed(SLUG); }
+function badgesGot() { const g = ST.get("badges", []); return Array.isArray(g) ? g : []; }
+function krimTotal() { return Math.max(0, ST.get("krimTotal", 0) | 0); }
+function plateOk(i, kt) { const P = PLATES[i]; return !P.butuh || badgesGot().indexOf(P.butuh) >= 0 || (kt == null ? krimTotal() : kt) >= P.krim; }
+// piring terkunci termurah: sasaran krim berikutnya
+function nextPlate(kt) { let b = -1; PLATES.forEach((P, i) => { if (!plateOk(i, kt) && (b < 0 || P.krim < PLATES[b].krim)) b = i; }); return b; }
+function readChal() { const c = KIT.readChallenge(); return c && c.score <= CHAL_MAX ? c : null; }
+function loadPlate() { plateSel = ST.get("plate", 0) | 0; if (!PLATES[plateSel] || !plateOk(plateSel)) plateSel = 0; }
+function activeCore() { return COVER ? coverCore : mode === "title" || mode === "leaving" ? demo : core; }
+
+/* ================= TATA LETAK ================= */
+function layout() {
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+  vw = window.innerWidth; vh = window.innerHeight;
+  const ps = getComputedStyle($("probe")); sT = parseFloat(ps.paddingTop) || 0; sB = parseFloat(ps.paddingBottom) || 0;
+  cv.width = Math.round(vw * dpr); cv.height = Math.round(vh * dpr);
+  LAND = vw / vh > 1.3;
+  const de = document.documentElement; de.classList.toggle("ovbot", !LAND); de.classList.toggle("ovside", LAND && vw >= 820 && vh >= 500);
+  S0 = Math.max(0.3, Math.min(vw * 0.56, vh * 0.46) / 200);
+  colW = COVER ? vw : Math.min(vw, LAND ? 560 : 480); colX = Math.round((vw - colW) / 2);
+  colEl.style.left = colX + "px"; colEl.style.width = colW + "px";
+  document.documentElement.style.setProperty("--padb", Math.round(vh * (LAND ? 0.08 : vh > 760 ? 0.3 : 0.24) + sB) + "px");
+  skyCache = ""; buildBg(); measureLogo(); if (mode === "over") setOvr();
+}
+// kamera: puncak menara di ~38% tinggi layar, zum mundur 3% tiap 10 lapis (paling jauh 25%)
+function camTarget(c) {
+  const n = c.n, top = c.L[n], topV = (top.cx + top.cz) * 0.5 - (n + 1) * LH * HK;
+  if (COVER) { const h = (n + 1) * LH * HK + 120; return { z: Math.min(0.9 * vh / (h * S0), vw * 0.3 / (140 * S0)), a: 0.5, c: (topV - 75 + 45) / 2 }; }
+  let z = Math.max(0.75, Math.pow(0.97, Math.floor(n / 10))), a = vh < 500 ? 0.55 : 0.38, base = vh < 500 ? 0.88 : 0.75, x = 0.5; // layar pendek: puncak lebih rendah, bebas dari HUD
+  if (mode === "title" || mode === "leaving") {
+    if (LAND && vh >= 500) { z = 0.6; a = 0.55; base = 0.84; x = 0.8; } // menara di samping kolom menu
+    else if (LAND) { z = 0.5; a = 0.88; base = 0.99; }
+    else if (vh > 760) { z = 0.74; a = 0.8; base = 0.9; }
+    else { z = 0.66; a = 0.8; base = 0.93; }
+  }
+  const topU = topV - 70, botU = 95;
+  if (mode === "over" && OVR) { // hasil: seluruh menara di ruang yang tak tertutup panel
+    const fit = Math.min(0.9, (OVR.bot - OVR.top) * vh / ((botU - topU) * S0), OVR.w * vw / (300 * S0));
+    return { z: fit, a: (OVR.top + OVR.bot) / 2, c: (topU + botU) / 2, x: OVR.x };
+  }
+  if ((mode === "ending" && endT > 0.55) || mode === "over") { // tarik mundur: seluruh menara terlihat
+    const fit = Math.min(z, 0.8 * vh / ((botU - topU) * S0));
+    return { z: fit, a: 0.5, c: (topU + botU) / 2, x };
+  }
+  return { z, a, c: Math.min(topV, -(base - a) * vh / (S0 * z)), x };
+}
+function camUpdate(dt, snap) {
+  const t = camTarget(activeCore()), k = snap ? 1 : 1 - Math.exp(-dt * (mode === "ending" ? 2.8 : 5));
+  camZ += (t.z - camZ) * k; camA += (t.a - camA) * k; CAM += (t.c - CAM) * k; camX += ((t.x == null ? 0.5 : t.x) - camX) * k;
+}
+// ruang layar yang tak tertutup panel hasil (pecahan layar)
+function setOvr() {
+  const de = document.documentElement, p = $("sOver").querySelector(".dk-panel");
+  if (de.classList.contains("ovside")) OVR = { x: 0.3, top: (sT + 20) / vh, bot: 0.94, w: 0.5 };
+  else if (de.classList.contains("ovbot") && p) { const top = Math.max(0.2, (p.offsetTop - 34) / vh); OVR = { x: 0.5, top: (sT + 12) / vh, bot: top, w: 0.9 }; }
+  else OVR = null;
+}
+
+/* ================= JATUHKAN ================= */
+function doDrop(c, loud, oForce) {
+  const cur = c.cur; if (!cur || c.over) return null;
+  const top = c.top(), res = c.dropAt(oForce == null ? c.offset() : oForce); if (!res) return null;
+  lastRes = res;
+  const ax = cur.axis, y0 = cur.i * LH, y1 = y0 + LH, C = cur.C || colsOf(cur.i, cur.gold), ym = (y0 + y1) / 2;
+  const zc = top.cz, xc = top.cx;
+  if (res.over || res.cut > 0) {
+    const lo = res.fallLo, hi = res.fallHi, b = ax ? [xc - top.w / 2, xc + top.w / 2, lo, hi] : [lo, hi, zc - top.d / 2, zc + top.d / 2];
+    FALL.push({ b, y0, y1, C, vy: -20, dy: 0, a: 0, va: (res.side > 0 ? 1 : -1) * (ax ? 1 : -1) * (1.4 + Math.random() * 1.6) * (res.over ? 0.6 : 1), t: 0, behind: res.side < 0 });
+    if (FALL.length > 14) FALL.shift();
+    const cutAt = res.over ? (lo + hi) / 2 : res.side > 0 ? res.hi : res.lo, du = (ax ? 1 : -1) * res.side;
+    const n = 6 + ((Math.random() * 5) | 0);
+    if (ax) crumbs(xc, ym, cutAt, C.t, n, du); else crumbs(cutAt, ym, zc, C.t, n, -du);
+  }
+  if (res.over) { c.cur = null; if (loud) onMiss(); return res; }
+  const L = c.top(), yTop = (c.n) * LH + LH;
+  sqT = 0.12; bobT = 0.15;
+  if (res.perfect) {
+    RINGS.push({ L, y: yTop, t: 0, rb: c.combo >= 5 }); flash = Math.max(flash, 0.12);
+    if (loud && c.combo >= 5) camZ *= 1.03; // hentak kamera kecil, kembali sendiri
+    if (loud && c.combo === 10) { banner(1, "DEWA LAPIS!", 1.4, 44); KIT.vibrate([15, 20, 15]); }
+    const tier = Math.min(10, c.combo);
+    ftext(L.cx, yTop + 16, L.cz, PRAISE[tier], 30 + Math.min(18, c.combo * 1.6), PRAISE_COL[tier]);
+    if (res.grew) {
+      GLOWS.push({ L, i: c.n, t: 0 }); sparkles(L.cx, yTop, L.cz, 6, "#ffe36a"); ftext(L.cx, yTop - 4, L.cz, "MELEBAR +" + res.grew, 24, "#ffe36a");
+      if (loud) { SFX.regrow(); if (c === core && !ST.get("tipGrow", 0)) { KIT.ui.toast("Pas beruntun = lapis melebar!"); ST.set("tipGrow", 1); } }
+    }
+    if (res.gold) { sparkles(L.cx, yTop, L.cz, 14); if (loud) { SFX.gold(); ftext(L.cx + 30, yTop + 4, L.cz - 30, "+5 krim", 22, "#ffe36a"); } }
+    if (loud) { SFX.perfect(c.combo); KIT.vibrate(15); }
+  } else {
+    if (loud) SFX.slice();
+    if (res.near) { wobT = 0.35; vign = 0.25; ftext(L.cx, yTop + 14, L.cz, "Tipis!", 28, "#ffb3b8"); if (loud) { SFX.near(); setTimeout(() => SFX.near(), 240); } }
+  }
+  if (loud) { SFX.drop(); if (!res.perfect) KIT.vibrate(6); }
+  if (c.n % 25 === 0) {
+    TOPS.push({ L, y: yTop, t: 0 }); banner(0, "LAPIS " + c.n + "!", 1.8, 54); sparkles(L.cx, yTop, L.cz, 18, "#ff9fc3");
+    if (loud) { SFX.fanfare(); KIT.vibrate([20, 30, 20]); }
+  } else if (c.n % 20 === 0) banner(0, BANDS[bandOf(c.n)].nama + "!", 1.6, 40);
+  c.cur.t = -0.12; // jeda singkat sebelum lapis berikut bergerak
+  if (c === core && loud) afterDrop(res);
+  return res;
+}
+function afterDrop(res) {
+  const hs = $("hScore"); hs.textContent = core.n; hs.classList.remove("bump"); void hs.offsetWidth; hs.classList.add("bump");
+  setTimeout(() => hs.classList.remove("bump"), 110);
+  const cc = $("hCombo"); cc.hidden = core.combo < 2; if (core.combo >= 2) $("hComboN").textContent = "Pas x" + core.combo;
+  if (core.n % 5 === 0) $("sr").textContent = core.n + " lapis";
+  if (!recHit && recPrev > 0 && core.n > recPrev) { recHit = true; banner(1, "Rekor baru!", 1.6, 40); setTimeout(() => SFX.rec(), 180); $("hBestP").classList.add("live"); }
+  if (recHit) $("hBest").textContent = core.n;
+  const h = $("hint"); if (!h.hidden) { h.classList.add("off"); ST.set("hint", 1); setTimeout(() => { h.hidden = true; }, 400); }
+  if (DEMO && FREEZE && core.n >= FREEZE && res.perfect) setTimeout(() => { timeScale = 0; }, 140);
+}
+function onMiss() {
+  mode = "ending"; endT = 0; shake = 11; desT = 0.3;
+  SFX.miss(); KIT.vibrate([50, 40, 90]);
+  $("hCombo").hidden = true;
+}
+// ketukan sebelum lapis baru masuk di atas menara ditelan: ketuk ganda tak pernah membunuh
+function tapDrop() {
+  if (mode !== "play" || !core.cur) return;
+  if (!core.armed()) { SFX.tick(); return; }
+  doDrop(core, true);
+}
+function skipEnding() { if (mode === "ending" && endT > 0.9) endT = 2.36; } // lewati sisa tarik mundur, drama awal tetap
+
+/* ================= ALUR ================= */
+function startGame(k, seed) {
+  kind = k; seedNow = (seed >>> 0) || ((Math.random() * 4294967295) >>> 0) || 1;
+  dailyKey = KIT.dateKey(); // Harian dicatat pada tanggal mulai, walau selesai lewat tengah malam
+  if (k === "daily") ST.set("harian", { d: dailyKey, score: 0, combo: 0, done: false });
+  core.reset(seedNow); core.cur.t = -0.25; OVR = null; clearFx(); timeScale = 1;
+  endT = 0; recPrev = best(); recHit = false; lastRes = null;
+  hideAll(); $("hud").hidden = false; $("hBest").textContent = recPrev; $("hBestP").classList.remove("live"); $("hBestP").hidden = recPrev <= 0; $("hScore").textContent = "0"; $("sr").textContent = "";
+  $("hCombo").hidden = true;
+  const tag = $("hTag"); tag.hidden = k === "normal"; tag.textContent = k === "daily" ? "Harian" : k === "practice" ? "Latihan" : "Tantangan";
+  const h = $("hint"); h.hidden = !!ST.get("hint", 0) || DEMO; h.classList.remove("off");
+  mode = "play"; skyL = 0; camUpdate(0, true);
+  try { document.activeElement && document.activeElement.blur(); } catch (e) { }
+  if (document.hidden) pause(); // tab tersembunyi saat peralihan judul
+}
+function endGame() {
+  mode = "over";
+  const sc = core.n, rec = sc > recPrev && sc > 0, today = dailyKey || KIT.dateKey();
+  if (rec) ST.set("best", sc);
+  ST.set("last", { seed: seedNow, score: sc });
+  if (kind === "daily") {
+    ST.set("harian", { d: today, score: sc, combo: core.bestCombo, done: true });
+    if (ST.get("hariD", "") !== today) { ST.set("hariD", today); ST.set("hariN", (ST.get("hariN", 0) | 0) + 1); }
+  }
+  // hiasan baru
+  const got = badgesGot(), earn = [];
+  HEIGHTS.forEach((h, i) => { if (sc >= h) earn.push(BADGES[i].id); });
+  if (core.bestCombo >= 10) earn.push("c10"); if (core.bestCombo >= 25) earn.push("c25");
+  if (core.goldPerf >= 5) earn.push("g5"); if (sc >= 80) earn.push("band");
+  if ((ST.get("hariN", 0) | 0) >= 7) earn.push("rajin");
+  const fresh = earn.filter((id) => got.indexOf(id) < 0);
+  if (fresh.length) ST.set("badges", got.concat(fresh));
+  // krim jadi tabungan seumur hidup untuk membuka piring
+  const kt0 = krimTotal(), kt = kt0 + core.krim; if (core.krim > 0) ST.set("krimTotal", kt);
+  const plNew = PLATES.filter((P, i) => !plateOk(i, kt0) && plateOk(i, kt)).map((P) => P.nama);
+  const pr = KIT.progress.record({ game: SLUG, score: sc, mutu: Math.min(1, sc / 60) });
+  $("hud").hidden = true; $("hint").hidden = true;
+  $("rMode").textContent = kind === "daily" ? "Harian · Hari ke-" + KIT.dayNumber() : kind === "practice" ? "Latihan" : kind === "chal" ? "Tantangan" : "Lapis";
+  $("rCombo").textContent = core.bestCombo; $("rKrim").textContent = "+" + core.krim;
+  const np = nextPlate(kt), kb = $("rKrimBar");
+  $("rKrimL").textContent = np >= 0 ? kt + "/" + PLATES[np].krim + " ke " + PLATES[np].nama : kt + " krim · semua piring";
+  kb.style.width = "0%"; setTimeout(() => { kb.style.width = (np >= 0 ? Math.min(100, kt / PLATES[np].krim * 100) : 100) + "%"; }, 400);
+  $("rRek").hidden = true;
+  let r = -1; HEIGHTS.forEach((h, i) => { if (sc >= h) r = i; });
+  $("rBadge").innerHTML = topperSVG(Math.max(0, r), r < 0); $("rBadge").parentNode.classList.toggle("lk", r < 0);
+  const rk = $("rRank"); rk.textContent = r < 0 ? "Hiasan di 10 lapis" : BADGES[r].nama; rk.classList.toggle("new", r >= 0 && fresh.indexOf(BADGES[r].id) >= 0);
+  // bilah menarik ke sasaran berikutnya: rekor lama bila belum terlewati, selain itu hiasan tinggi berikutnya
+  const nx = HEIGHTS.find((h) => h > sc), nb = nx ? BADGES[HEIGHTS.indexOf(nx)] : null, beat = rec && recPrev > 0;
+  let rt, full, pink = false;
+  if (!rec && recPrev > 0) { rt = "Rekor " + recPrev + " · kurang " + (recPrev - sc + 1); full = recPrev; }
+  else if (nb) { rt = (beat ? "+" + (sc - recPrev) + " dari rekor lama\n" : recPrev > 0 ? "" : "Rekor pertamamu!\n") + "Kurang " + (nx - sc) + " lapis → " + nb.nama; full = nx; }
+  else { rt = beat ? "+" + (sc - recPrev) + " dari rekor lama" : "Rekor pertamamu!"; full = sc; pink = true; }
+  $("rRec").textContent = rt; full = Math.max(1, full);
+  const barW = $("rBarW"), bar = $("rBar");
+  barW.classList.toggle("rec", pink); bar.style.width = "0%";
+  const dr = isDailyRun(), stars = $("rStars"); stars.hidden = !dr;
+  if (dr) { const s = starsFor(sc, core.bestCombo); let h = ""; for (let i = 0; i < 3; i++) h += starSVG(i < s); stars.innerHTML = h; }
+  const done = $("rDone"); done.hidden = !dr; done.textContent = kind === "practice" ? "Latihan · tidak dihitung" : "Sudah main hari ini";
+  const vd = $("rVerd"); vd.hidden = true; vd.className = "verd dk-ol";
+  $("rNormal").hidden = kind !== "chal";
+  if (kind === "chal" && chal) {
+    vd.hidden = false;
+    if (sc > chal.score) { vd.innerHTML = "MENANG!<small>Target " + chal.score + " lapis terlewati</small>"; vd.classList.add("win"); }
+    else vd.innerHTML = "KALAH<small>Kurang " + (chal.score - sc + 1) + " lapis lagi</small>";
+    chalLast = chal; chal = null; try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { }
+  }
+  const xp = $("rXp"); xp.hidden = false; xp.textContent = (pr.leveledUp ? "Naik level! " : "+" + pr.gain + " XP · ") + "Lv " + pr.level;
+  KIT.ui.show($("sOver")); setOvr();
+  let lastTick = 0;
+  KIT.ui.countUp($("rScore"), sc, Math.min(1400, 400 + sc * 14), (v) => {
+    bar.style.width = Math.min(100, v / full * 100) + "%";
+    if (v - lastTick >= Math.max(1, sc / 30)) { lastTick = v; SFX.tick(); }
+  }).then(() => {
+    if (mode !== "over") return;
+    if (beat) { const e = $("rRek"); e.hidden = false; e.classList.remove("go"); void e.offsetWidth; e.classList.add("go"); KIT.ui.confetti(160); SFX.rec(); KIT.vibrate([30, 40, 30]); }
+    if (fresh.length) KIT.ui.toast("Hiasan baru: " + BADGES.find((b) => b.id === fresh[fresh.length - 1]).nama + "!");
+    else if (plNew.length) KIT.ui.toast("Piring baru: " + plNew[plNew.length - 1] + "!");
+  });
+}
+
+/* ================= LAYAR ================= */
+const SCR = ["sTitle", "sPause", "sOver", "sHarian", "sTantang", "sKoleksi"];
+function hideAll() { for (const id of SCR) $(id).hidden = true; $("cd").hidden = true; }
+function resetDemo() { demo.reset((Math.random() * 4294967295) >>> 0 || 7); for (let i = 0; i < 7; i++) demo.dropAt(i % 3 ? 0 : 3); demo.cur.t = -0.3; demoDead = 0; ai.i = -1; }
+function toTitle() {
+  hideAll(); $("hud").hidden = true; $("hint").hidden = true; mode = "title"; clearFx(); timeScale = 1;
+  loadPlate(); resetDemo(); skyL = 0;
+  $("tBest").querySelector("span").textContent = best();
+  const p = KIT.progress.get();
+  $("tLv").textContent = "Lv " + p.level;
+  $("tStrk").hidden = p.streak <= 0; $("tStrkN").textContent = p.streak + " hari";
+  const dd = daily(); $("dDaily").hidden = !!dd;
+  const ds = $("dStarN"); ds.hidden = !(dd && dd.done);
+  if (dd && dd.done) ds.innerHTML = starSVG(true) + starsFor(dd.score, dd.combo | 0);
+  const c = $("tChal"); c.hidden = !chal; if (chal) c.textContent = "Temanmu menumpuk " + chal.score + " lapis. Kalahkan!";
+  $("sTitle").hidden = false;
+  const m = $("tMid"); m.classList.remove("ent", "leave"); void m.offsetWidth; m.classList.add("ent");
+  camUpdate(0, true); measureLogo();
+}
+function leaveTitle(fn) { $("tMid").classList.add("leave"); mode = "leaving"; setTimeout(fn, 260); }
+function openHarian() {
+  const d = new Date(), M = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
+  $("dMonth").textContent = M[d.getMonth()]; $("dDay").textContent = d.getDate();
+  $("dN").textContent = "Hari ke-" + KIT.dayNumber();
+  const dd = daily(), s = dd && dd.done ? starsFor(dd.score, dd.combo | 0) : 0, G = [["20 lapis", ""], ["40 lapis", ""], ["60 lapis", "+ pas x8"]];
+  let h = "";
+  for (let i = 0; i < 3; i++) { let st = ""; for (let j = 0; j <= i; j++) st += starSVG(s > i); h += '<div class="goal"><span>' + st + "</span><b>" + G[i][0] + "</b>" + (G[i][1] ? "<i>" + G[i][1] + "</i>" : "") + "</div>"; }
+  $("dGoals").innerHTML = h;
+  const p = KIT.progress.get();
+  $("dStrkN").textContent = p.streak > 0 ? p.streak + " hari beruntun" : "Mulai beruntun hari ini";
+  $("dInfo").textContent = dd ? (dd.done ? "Sudah main hari ini: " + dd.score + " lapis · kembali besok!" : "Percobaan hari ini tidak selesai") : "Lapis sama untuk semua. 1 kesempatan.";
+  $("dPlay").querySelector("span").textContent = dd ? "Latihan" : "Main";
+  $("dPlay").className = "dk-btn dk-ol " + (dd ? "dk-yellow" : "dk-green");
+  KIT.ui.show($("sHarian"));
+}
+function openTantang() {
+  const L = ST.get("last", null);
+  if (L) { $("cScore").textContent = L.score; $("cInfo").textContent = "Lapis terakhirmu"; $("cSend").querySelector("span").textContent = "Kirim"; }
+  else { $("cScore").textContent = "?"; $("cInfo").textContent = "Main dulu, lalu kirim skormu"; $("cSend").querySelector("span").textContent = "Main"; }
+  KIT.ui.show($("sTantang"));
+}
+function openKoleksi() {
+  const got = badgesGot(); let h = "";
+  for (let i = 0; i < BADGES.length; i++) { const on = got.indexOf(BADGES[i].id) >= 0; h += '<div class="kb' + (on ? "" : " lk") + '">' + topperSVG(i, !on) + "<b>" + BADGES[i].nama + "</b><span>" + BADGES[i].syarat + "</span></div>"; }
+  $("kGrid").innerHTML = h; $("kInfo").textContent = got.length + "/" + BADGES.length + " hiasan · " + krimTotal() + " krim";
+  paintPlates(); KIT.ui.show($("sKoleksi"));
+}
+function paintPlates() {
+  let h = "";
+  for (let i = 0; i < PLATES.length; i++) {
+    const ok = plateOk(i);
+    h += '<button class="pl' + (i === plateSel ? " on" : "") + (ok ? "" : " lk") + '" data-p="' + i + '" aria-label="' + PLATES[i].nama + (ok ? "" : ", terkunci") + '"' + (ok ? "" : ' aria-disabled="true"') + ">" + plateSVG(i) + (ok ? PLATES[i].nama.replace("Piring ", "").replace("Nampan ", "") : PLATES[i].krim + " krim") + "</button>";
+  }
+  $("kPlates").innerHTML = h;
+}
+$("kPlates").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-p]"); if (!b) return; const i = +b.dataset.p;
+  if (!plateOk(i)) { KIT.ui.toast(PLATES[i].krim + " krim atau hiasan " + BADGES.find((x) => x.id === PLATES[i].butuh).nama); SFX.tap(); return; }
+  plateSel = i; ST.set("plate", i); SFX.tap(); paintPlates();
+});
+function shareScore(seed, score) {
+  KIT.share({ title: "Tumpuk Lapis", text: "Aku numpuk " + score + " lapis di Tumpuk Lapis! Kuat nyaingin?", url: KIT.challengeLink(SLUG, seed, score) });
+}
+function pause() {
+  if (mode !== "play" && mode !== "count") return;
+  mode = "pause"; $("cd").hidden = true; KIT.ui.show($("sPause"));
+}
+function resume() { if (mode !== "pause") return; $("sPause").hidden = true; mode = "count"; cdT = 3; cdShown = 0; }
+
+/* ================= INPUT ================= */
+function on(id, fn) { $(id).addEventListener("click", (e) => { SFX.tap(); fn(e); }); }
+on("bMain", () => leaveTitle(() => chal ? startGame("chal", chal.seed) : startGame("normal")));
+on("bHarian", openHarian); on("bTantang", openTantang); on("bKoleksi", openKoleksi); on("bSetelan", () => KIT.ui.openSettings());
+on("dPlay", () => { const k = daily() ? "practice" : "daily"; $("sHarian").hidden = true; leaveTitle(() => startGame(k, KIT.dailySeed(SLUG))); });
+on("cSend", () => { const L = ST.get("last", null); if (L) shareScore(L.seed, L.score); else { $("sTantang").hidden = true; leaveTitle(() => startGame("normal")); } });
+on("bPause", pause);
+on("pGo", resume);
+on("pRe", () => mode === "pause" && startGame(kind === "daily" ? "practice" : kind, kind === "normal" ? 0 : seedNow));
+on("pMenu", () => { if (mode === "pause") toTitle(); });
+on("rAgain", () => {
+  if (mode !== "over") return; // klik ulang dari iklan app saat sudah bermain diabaikan
+  if (kind === "chal") { chal = chalLast; startGame("chal", seedNow); return; } // tantangan diulang dengan benih yang sama
+  const same = kind === "daily" || kind === "practice"; startGame(same ? "practice" : "normal", same ? seedNow : 0);
+});
+on("rNormal", () => { if (mode === "over") startGame("normal"); });
+on("rShare", () => { if (mode === "over") shareScore(seedNow, core.n); });
+on("rMenu", () => { if (mode === "over") toTitle(); });
+for (const b of document.querySelectorAll("[data-close]")) b.addEventListener("click", () => { SFX.tap(); b.closest(".dk-overlay").hidden = true; });
+cv.addEventListener("pointerdown", (e) => { if (mode === "play") { e.preventDefault(); tapDrop(); } else skipEnding(); });
+document.addEventListener("keydown", (e) => {
+  if ((e.key === " " || e.key === "Enter") && (mode === "play" || mode === "ending")) { e.preventDefault(); if (!e.repeat) { if (mode === "play") tapDrop(); else skipEnding(); } return; }
+  if (e.key === "Escape" || e.key === "p") {
+    if (mode === "play" || mode === "count") pause(); else if (mode === "pause") resume();
+    else if (e.key === "Escape") { // tutup panel teratas (bukan layar hasil)
+      const ov = [...document.querySelectorAll(".dk-overlay")].filter((o) => !o.hidden && o.id !== "sOver" && o.id !== "sPause").pop();
+      if (ov) { const x = ov.querySelector("[data-close],[data-x]"); if (x) x.click(); else ov.hidden = true; }
+    }
+  }
+});
+document.addEventListener("visibilitychange", () => { if (document.hidden) pause(); });
+window.addEventListener("contextmenu", (e) => e.preventDefault());
+let rsT = 0; window.addEventListener("resize", () => { clearTimeout(rsT); rsT = setTimeout(layout, 120); });
+
+/* ================= PEMAIN OTOMATIS (judul & demo) ================= */
+const ai = { i: -1, tgt: 0, prev: null, rn: KIT.rng(4242) };
+function aiTick(c, skill) {
+  const cur = c.cur; if (!cur || c.over || cur.t < 0.4) { ai.prev = null; return false; }
+  if (ai.i !== cur.i) { ai.i = cur.i; const tol = tolOf(cur.W), r = ai.rn(); ai.tgt = r < skill ? (ai.rn() * 2 - 1) * tol * 0.6 : (ai.rn() < 0.5 ? -1 : 1) * (tol + 1 + ai.rn() * Math.min(12, cur.W * 0.25)); ai.prev = null; }
+  const o = c.offset(), p = ai.prev; ai.prev = o;
+  return p != null && (p - ai.tgt) * (o - ai.tgt) <= 0;
+}
+const FREEZE = parseInt(Q.get("freeze") || "0", 10), END = parseFloat(Q.get("end") || "0");
+let demoTotal = 0;
+function demoPlay(dt) {
+  demoTotal += dt;
+  if (END && demoTotal > END && core.cur && core.cur.t >= 0) { doDrop(core, true, core.cur.A); return; }
+  if (aiTick(core, 0.86)) doDrop(core, true, ai.tgt);
+}
+
+/* ================= GAMBAR ================= */
+let lastTs = 0, sizeChk = 0;
+function frame(ts) { requestAnimationFrame(frame); frameCore(ts); }
+function frameCore(ts) {
+  let dt = (ts - lastTs) / 1000; lastTs = ts;
+  if (!(dt > 0)) dt = 0; if (dt > 0.05) dt = 0.05;
+  const raw = dt;
+  if ((window.innerWidth !== vw || window.innerHeight !== vh) && window.innerWidth > 0 && ++sizeChk > 10) { sizeChk = 0; layout(); }
+  dt *= timeScale;
+  if (mode === "pause" || mode === "count") dt = 0; // jeda membekukan semua gerak
+  time += dt;
+  if (mode === "play") { if (core.cur) { core.cur.t += dt; core.armed(); } if (DEMO) demoPlay(dt); }
+  else if (mode === "count") {
+    cdT -= raw; const n = Math.ceil(cdT), el = $("cd");
+    if (cdT <= 0) { el.hidden = true; mode = "play"; SFX.go(); }
+    else if (n !== cdShown) { cdShown = n; el.hidden = false; el.textContent = n; el.classList.remove("go"); void el.offsetWidth; el.classList.add("go"); SFX.count(); }
+  } else if (mode === "ending") { endT += dt; if (endT > 2.35) endGame(); }
+  else if ((mode === "title" || mode === "leaving") && !COVER) {
+    if (demo.cur) demo.cur.t += dt;
+    if (aiTick(demo, 0.9)) doDrop(demo, false, ai.tgt);
+    if (demo.over) { demoDead += dt; if (demoDead > 1.8) { resetDemo(); FALL = []; camUpdate(0, true); } }
+  }
+  camUpdate(dt, false);
+  render(dt);
+}
+function render(dt) {
+  const c = activeCore(), g = ctx;
+  shake *= Math.pow(0.02, dt); if (shake < 0.3) shake = 0;
+  if (desT > 0) desT -= dt; if (bobT > 0) bobT -= dt; if (sqT > 0) sqT -= dt; if (wobT > 0) wobT -= dt; if (flash > 0) flash -= dt; if (vign > 0) vign -= dt;
+  skyL += (c.n - skyL) * Math.min(1, dt * 2);
+  KZ = S0 * camZ;
+  OX = (COVER ? vw * 0.71 : vw * camX) + (mode === "over" ? Math.sin(time * 0.6) * 5 : 0) + (shake ? (Math.random() - 0.5) * shake : 0) + (wobT > 0 ? Math.sin(wobT * 70) * 4 * wobT / 0.35 : 0);
+  OY = camA * vh + (shake ? (Math.random() - 0.5) * shake : 0) + (bobT > 0 ? Math.sin((1 - bobT / 0.15) * Math.PI) * 2 : 0);
+  g.setTransform(dpr, 0, 0, dpr, 0, 0); g.globalAlpha = 1;
+  drawBackdrop(COVER ? 0 : skyL, OY + (-CAM + 3) * KZ);
+  drawPlate(plateSel);
+  drawFall(dt, true);
+  const n = c.n, mg = 95 * KZ;
+  for (let i = 0; i <= n; i++) {
+    const L = c.L[i], sy = OY + ((L.cx + L.cz) * 0.5 - (i + 1) * LH * HK - CAM) * KZ;
+    if (sy - mg > vh) continue; if (sy + mg < 0) break;
+    drawLayer(L, i, i === n && sqT > 0 && i > 0 ? 1 - 0.15 * (sqT / 0.12) : 1);
+  }
+  const cur = c.cur;
+  if (cur && !c.over) {
+    const top = c.L[n], o = c.offset(), y0 = cur.i * LH;
+    if (!cur.C) cur.C = colsOf(cur.i, cur.gold);
+    if (cur.axis) drawBox(top.cx - top.w / 2, top.cx + top.w / 2, top.cz + o - top.d / 2, top.cz + o + top.d / 2, y0, y0 + LH, cur.C);
+    else drawBox(top.cx + o - top.w / 2, top.cx + o + top.w / 2, top.cz - top.d / 2, top.cz + top.d / 2, y0, y0 + LH, cur.C);
+  }
+  for (let j = RINGS.length - 1; j >= 0; j--) { // cincin putih dari tepi lapis yang pas
+    const R = RINGS[j]; R.t += dt; if (R.t > 0.45) { RINGS.splice(j, 1); continue; }
+    const L = R.L, s = 1 + R.t * 0.9, hw = L.w / 2 * s + 3, hd = L.d / 2 * s + 3;
+    const p = [[L.cx - hw, L.cz - hd], [L.cx + hw, L.cz - hd], [L.cx + hw, L.cz + hd], [L.cx - hw, L.cz + hd]].map(([X, Z]) => sxy(X, R.y, Z));
+    g.globalAlpha = 1 - R.t / 0.45; g.strokeStyle = R.rb ? "hsl(" + ((R.t * 900 + j * 50) % 360 | 0) + ",100%,72%)" : "#fff"; g.lineWidth = 4 * (1 - R.t / 0.45) + 1; g.lineJoin = "round";
+    g.beginPath(); g.moveTo(p[0][0], p[0][1]); for (let q = 1; q < 4; q++) g.lineTo(p[q][0], p[q][1]); g.closePath(); g.stroke(); g.globalAlpha = 1;
+  }
+  for (let j = GLOWS.length - 1; j >= 0; j--) { // tepi emas saat lapis tumbuh
+    const G = GLOWS[j]; G.t += dt; if (G.t > 0.6) { GLOWS.splice(j, 1); continue; }
+    const L = G.L, y1 = (G.i + 1) * LH, y0 = G.i * LH, a = sxy(L.cx + L.w / 2, y1, L.cz - L.d / 2), b = sxy(L.cx + L.w / 2, y1, L.cz + L.d / 2), d = sxy(L.cx - L.w / 2, y1, L.cz + L.d / 2), bb = sxy(L.cx + L.w / 2, y0, L.cz + L.d / 2);
+    g.globalAlpha = 1 - G.t / 0.6; g.strokeStyle = "#ffd23a"; g.lineWidth = 6; g.lineCap = "round";
+    g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.lineTo(d[0], d[1]); g.moveTo(b[0], b[1]); g.lineTo(bb[0], bb[1]); g.stroke();
+    g.strokeStyle = "#fff8c0"; g.lineWidth = 2; g.stroke(); g.globalAlpha = 1; g.lineCap = "butt";
+  }
+  drawFall(dt, false);
+  drawParticles(dt);
+  for (let j = TOPS.length - 1; j >= 0; j--) { // lilin & ceri meletup keluar
+    const T = TOPS[j]; T.t += dt; if (T.t > 2) { TOPS.splice(j, 1); continue; }
+    const L = T.L, p = sxy(L.cx, T.y, L.cz), e = Math.min(1, T.t / 0.35), s = (e < 1 ? 1.25 * Math.sin(e * Math.PI / 2) : 1 + Math.sin(T.t * 8) * 0.03) * Math.max(0.7, KZ * 1.3);
+    g.globalAlpha = T.t > 1.6 ? (2 - T.t) / 0.4 : 1; drawTopping(p[0], p[1] - 30 * e * KZ - 10, s); g.globalAlpha = 1;
+  }
+  if (COVER && c.n) { const L = c.L[c.n], p = sxy(L.cx, (c.n + 1) * LH, L.cz); drawTopping(p[0], p[1] - 6, KZ * 2.6); }
+  drawTexts(dt);
+  if (desT > 0) { g.globalCompositeOperation = "saturation"; g.globalAlpha = Math.min(1, desT / 0.3); g.fillStyle = "#888"; g.fillRect(0, 0, vw, vh); g.globalCompositeOperation = "source-over"; g.globalAlpha = 1; }
+  if (vign > 0) { const gr = g.createRadialGradient(vw / 2, vh / 2, Math.min(vw, vh) * 0.3, vw / 2, vh / 2, Math.max(vw, vh) * 0.75); gr.addColorStop(0, "rgba(255,30,60,0)"); gr.addColorStop(1, "rgba(255,30,60," + (0.3 * vign / 0.25).toFixed(3) + ")"); g.fillStyle = gr; g.fillRect(0, 0, vw, vh); }
+  if (flash > 0) { g.globalAlpha = flash * 0.9; g.fillStyle = "#fff"; g.fillRect(0, 0, vw, vh); g.globalAlpha = 1; }
+  if (mode === "ending" && endT < 0.6) { g.globalAlpha = 0.18 * (1 - endT / 0.6); g.fillStyle = "#3a0a1a"; g.fillRect(0, 0, vw, vh); g.globalAlpha = 1; }
+  if (mode === "title" || mode === "leaving" || COVER) drawLogo();
+}
+function drawFall(dt, behind) {
+  const g = ctx;
+  for (let j = FALL.length - 1; j >= 0; j--) {
+    const F = FALL[j]; if (F.behind !== behind) continue;
+    if (behind) { F.t += dt; F.vy += 900 * dt; F.dy += F.vy * dt; F.a += F.va * dt; }
+    if (F.t > 1.5) { FALL.splice(j, 1); continue; }
+    const b = F.b, c = sxy((b[0] + b[1]) / 2, (F.y0 + F.y1) / 2, (b[2] + b[3]) / 2);
+    g.globalAlpha = F.t < 1.2 ? 1 : Math.max(0, 1 - (F.t - 1.2) / 0.3);
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.translate(c[0], c[1] + F.dy * KZ); g.rotate(F.a); g.translate(-c[0], -c[1]);
+    drawBox(b[0], b[1], b[2], b[3], F.y0, F.y1, F.C);
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.globalAlpha = 1;
+  }
+  if (!behind) for (const F of FALL) if (!F.behind) { F.t += dt; F.vy += 900 * dt; F.dy += F.vy * dt; F.a += F.va * dt; }
+}
+function drawParticles(dt) {
+  const g = ctx;
+  for (let i = 0; i < PN; i++) {
+    if (pL[i] <= 0) continue; pL[i] -= dt; if (pL[i] <= 0) continue;
+    const k = pK[i]; pVV[i] += (k ? 160 : 520) * dt; pU[i] += pVU[i] * dt; pV[i] += pVV[i] * dt; pR[i] += dt * 6;
+    const l = pL[i] / pM[i], x = OX + pU[i] * KZ, y = OY + (pV[i] - CAM) * KZ, s = pS[i] * Math.max(0.6, KZ) * (k ? (l > 0.8 ? (1 - l) * 5 : 1) : 1);
+    g.globalAlpha = l < 0.35 ? l / 0.35 : 1; g.fillStyle = pC[i];
+    if (k) { g.beginPath(); g.moveTo(x, y - s); g.quadraticCurveTo(x, y, x + s, y); g.quadraticCurveTo(x, y, x, y + s); g.quadraticCurveTo(x, y, x - s, y); g.quadraticCurveTo(x, y, x, y - s); g.fill(); }
+    else { g.fillRect(x - s / 2, y - s / 2, s, s); g.fillStyle = "rgba(74,29,46,.35)"; g.fillRect(x - s / 2, y + s * 0.2, s, s * 0.3); }
+  }
+  g.globalAlpha = 1;
+}
+function drawTexts(dt) {
+  const g = ctx; g.textAlign = "center"; g.textBaseline = "middle"; g.lineJoin = "round";
+  for (let j = TXT.length - 1; j >= 0; j--) {
+    const T = TXT[j]; T.l -= dt * 1.1; if (T.l <= 0) { TXT.splice(j, 1); continue; }
+    const age = 1 - T.l; T.v -= 26 * dt;
+    const s = age < 0.12 ? 0.5 + age / 0.12 * 0.75 : age < 0.26 ? 1.25 - (age - 0.12) / 0.14 * 0.25 : 1;
+    const x = Math.max(80, Math.min(vw - 80, OX + T.u * KZ)), y = OY + (T.v - CAM) * KZ - 18;
+    g.globalAlpha = T.l < 0.3 ? T.l / 0.3 : 1; g.font = FONTS[Math.min(159, Math.round(T.size * s))];
+    g.lineWidth = T.size * 0.22; g.strokeStyle = INK; g.strokeText(T.s, x, y + 2); g.strokeText(T.s, x, y); g.fillStyle = T.col; g.fillText(T.s, x, y);
+  }
+  for (let k = 0; k < 2; k++) {
+    const B = BN[k]; if (B.t <= 0) continue;
+    B.t -= dt; const age = B.d - B.t, s = age < 0.18 ? 0.3 + age / 0.18 : age < 0.32 ? 1.3 - (age - 0.18) / 0.14 * 0.3 : 1;
+    g.globalAlpha = B.t < 0.3 ? Math.max(0, B.t / 0.3) : 1;
+    const f = B.sz, y = Math.max(sT + 120, vh * 0.2) + k * f * 1.3 - age * 8;
+    g.setTransform(dpr * s, 0, 0, dpr * s, vw / 2 * dpr, y * dpr); g.rotate(-0.05 + Math.sin(time * 7) * 0.02);
+    g.font = FONTS[Math.min(159, Math.round(f))]; g.lineWidth = f * 0.26; g.strokeStyle = INK; g.strokeText(B.s, 0, f * 0.1); g.strokeText(B.s, 0, 0);
+    g.fillStyle = B.gr || "#fff"; g.fillText(B.s, 0, 0);
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  g.globalAlpha = 1;
+}
+
+/* ================= MULAI ================= */
+function buildCover() {
+  coverCore.reset(2026); const offs = [0, 0, 6, 0, 0, -5, 0, 0, 0, 4, 0, 0, -3, 0, 0, 0, 5, 0, 0, 0, -4, 0, 0, 0, 3, 0, 0, 0, 0, 0];
+  for (let i = 0; i < 30; i++) coverCore.dropAt(offs[i]);
+  coverCore.L.forEach((L, i) => { L.ci = i * 3 + (i % 3); L.gold = false; L.C = null; });
+  coverCore.cur = null;
+}
+function boot() {
+  if (COVER) { document.documentElement.classList.add("cover"); buildCover(); }
+  if (Q.get("noanim") === "1") document.documentElement.classList.add("dk-noanim");
+  loadPlate(); layout();
+  chal = readChal();
+  window.addEventListener("hashchange", () => { chal = readChal(); if (mode === "title") toTitle(); });
+  toTitle();
+  KIT.music.start(MUSIC);
+  if (UJI) runUji();
+  if (DEMO && !COVER) setTimeout(() => startGame(Q.get("mode") === "harian" ? "daily" : Q.get("mode") === "chal" && chal ? "chal" : "normal", Q.get("mode") === "harian" ? KIT.dailySeed(SLUG) : chal ? chal.seed : 777), 50);
+  const s = Q.get("s");
+  if (s) setTimeout(() => {
+    if (s === "harian") openHarian(); else if (s === "tantang") openTantang(); else if (s === "koleksi") openKoleksi(); else if (s === "setelan") KIT.ui.openSettings(); else if (s === "pause") pause();
+  }, DEMO ? parseFloat(Q.get("st") || "2500") : 80);
+  if (DEMO || COVER) { let ft = 0; lastTs = 0; setInterval(() => { ft += 1000 / 60; frameCore(ft); }, 16); } else requestAnimationFrame((t) => { lastTs = t; frame(t); });
+  if (document.fonts && document.fonts.load) document.fonts.load("800 40px 'Baloo 2'").then(() => { measureLogo(); }).catch(() => { });
+}
+boot();
+</script>
+</body>
+</html>

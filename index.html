@@ -5,6 +5,17 @@
 <meta name="theme-color" content="#0D0F1C">
 <title>Dehayuk</title>
 <meta name="description" content="Dehayuk: game ringan buatan Indonesia. Langsung main di browser atau pasang di HP Android.">
+<link rel="canonical" href="https://dehayuk.netlify.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Dehayuk">
+<meta property="og:locale" content="id_ID">
+<meta property="og:title" content="Dehayuk: game ringan buatan Indonesia">
+<meta property="og:description" content="Langsung main di browser HP atau komputer, gratis dan tanpa unduh. Ada juga app Android.">
+<meta property="og:url" content="https://dehayuk.netlify.app/">
+<meta property="og:image" content="https://dehayuk.netlify.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&display=swap">
@@ -35,6 +46,10 @@
   a { color: inherit; text-decoration: none; }
   button { font: inherit; color: inherit; }
   a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .sr { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .skip { position: fixed; left: 12px; top: -60px; z-index: 50; background: var(--accent); color: var(--accent-ink); font-weight: 800; padding: 10px 16px; border-radius: 12px; }
+  .skip:focus { top: 10px; }
+  main:focus { outline: none; }
 
   /* Bilah atas */
   .top {
@@ -52,10 +67,14 @@
   .logo-word { font-family: var(--display); font-weight: 800; font-size: 25px; line-height: 1; }
   .logo-word span { color: var(--accent); }
   .search {
-    flex: 1; max-width: 460px; margin: 0 auto; display: none; align-items: center; gap: 10px; height: 42px; padding: 0 16px;
+    flex: 1; max-width: 460px; margin: 0 auto; display: none; align-items: center; gap: 10px; height: 42px; padding: 0 12px 0 16px;
     background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; color: var(--muted);
   }
+  .search:focus-within { border-color: var(--accent); }
   .search svg { width: 18px; height: 18px; flex: none; }
+  .search input { flex: 1; min-width: 0; height: 100%; background: none; border: 0; color: var(--ink); font: 800 14.5px var(--body); outline: none; }
+  .search input::placeholder { color: var(--muted); }
+  .search kbd { font: 800 11.5px var(--body); color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 1px 7px; }
   .top-end { margin-left: auto; display: flex; gap: 8px; }
   .install {
     display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 16px; border-radius: 999px; white-space: nowrap;
@@ -84,7 +103,8 @@
   .sec-note { color: var(--muted); font-weight: 800; font-size: 13px; }
   .arrows { margin-left: auto; display: none; gap: 6px; }
   .arrows button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel-2); cursor: pointer; display: grid; place-items: center; }
-  .arrows button:hover { border-color: var(--accent); color: var(--accent); }
+  .arrows button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .arrows button:disabled { opacity: .35; cursor: default; }
   .arrows svg { width: 16px; height: 16px; }
 
   /* Baris bertema: latar berwarna tipis, ikon, dan satu kalimat */
@@ -100,8 +120,8 @@
   .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .thumb.wide { aspect-ratio: 16 / 10; }
   .thumb.sq { aspect-ratio: 1; }
-  .thumb.tall { aspect-ratio: 3 / 4; }
-  .badge { position: absolute; left: 8px; top: 8px; z-index: 2; font-size: 10.5px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; background: var(--new); color: #fff; padding: 3px 8px; border-radius: 7px; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+  /* Label BARU di kiri bawah, agar logo di bagian atas sampul tidak tertutup. */
+  .badge { position: absolute; left: 8px; bottom: 8px; z-index: 2; font-size: 10px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; background: var(--new); color: #fff; padding: 2px 8px; border-radius: 999px; box-shadow: 0 2px 6px rgba(0,0,0,.35); }
   .hover-info {
     position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 26px 12px 10px; display: flex; flex-direction: column; gap: 4px;
     background: linear-gradient(0deg, rgba(58,34,160,.96), rgba(58,34,160,.75) 60%, transparent); opacity: 0; transform: translateY(8px); transition: opacity .18s, transform .18s;
@@ -116,13 +136,19 @@
   .card { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
   .card b.name { font-weight: 800; font-size: 13.5px; line-height: 1.2; padding: 0 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .card small { color: var(--muted); font-weight: 800; font-size: 11.5px; padding: 0 2px; margin-top: -5px; }
+  /* Di layar sentuh nama tidak bisa muncul lewat kursor, jadi kartu di kisi menampilkan nama di bawah sampul. */
+  .card .tname { display: none; }
+  @media (hover: none) { .grid .card .tname { display: block; } }
+  /* Ikon persegi: gambar ikon bila ada, selain itu huruf pertama nama di atas warna game. */
+  .ltile { display: grid; place-items: center; background: var(--c, var(--panel-2)); color: #fff; font-family: var(--display); font-weight: 800; line-height: 1; text-shadow: 0 2px 0 rgba(0,0,0,.25); box-shadow: inset 0 -4px 0 rgba(0,0,0,.18); }
+  .ltile img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit; }
 
   /* Pilihan hari ini */
   .spot { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .hero { grid-column: 1 / -1; display: flex; flex-direction: column; border-radius: 22px; overflow: hidden; background: var(--panel); box-shadow: 0 14px 30px rgba(0,0,0,.4); }
   .hero > .thumb { border-radius: 0; box-shadow: none; aspect-ratio: 16 / 10; }
   .hero-bar { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
-  .hero-icon { width: 50px; height: 50px; border-radius: 13px; flex: none; }
+  .hero-icon { width: 50px; height: 50px; border-radius: 13px; flex: none; font-size: 28px; }
   .hero-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
   .hero-text b { font-family: var(--display); font-weight: 800; font-size: 21px; line-height: 1.05; }
   .hero-text small { color: #D6D9EE; font-weight: 700; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -131,41 +157,63 @@
     background: var(--accent); color: var(--accent-ink); font-family: var(--display); font-weight: 800; font-size: 18px; box-shadow: inset 0 -3px 0 #C9952A, 0 6px 14px rgba(0,0,0,.35);
   }
   .btn-play::before { content: ""; border-left: 11px solid currentColor; border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
+  .btn-cta { display: inline-flex; align-items: center; height: 44px; padding: 0 22px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-weight: 800; box-shadow: inset 0 -3px 0 #C9952A; }
   .spot .mini .thumb { aspect-ratio: 16 / 10; }
-  .spot .mini:nth-of-type(n+4) { display: none; }
+  @media (hover: none) { .spot .mini .tname { display: block; } }
+  .fill-in { aspect-ratio: 16 / 10; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; background: linear-gradient(135deg, #2C2275, var(--panel-2)); border: 1px solid var(--line); box-shadow: 0 8px 18px rgba(0,0,0,.35); transition: transform .18s ease; }
+  .fill-in b { font-family: var(--display); font-weight: 800; font-size: 18px; line-height: 1.1; }
+  .fill-in small { color: var(--muted); font-weight: 800; font-size: 12px; }
+  .fill-icons { display: flex; gap: 6px; margin-bottom: auto; }
+  .fill-icons i { width: 30px; height: 30px; border-radius: 9px; background: var(--t); display: grid; place-items: center; }
+  .fill-icons svg { width: 18px; height: 18px; color: #fff; }
+  @media (hover: hover) { .spot-fill:hover .fill-in { transform: translateY(-3px); border-color: var(--accent); } }
+  /* HP: kotak 2x2 menampilkan keempat kartu kecil; tablet 3 kolom hanya tiga agar baris rata. */
 
   /* Baris geser */
   .rail { display: grid; grid-auto-flow: column; grid-auto-columns: 62%; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--pad); scroll-behavior: smooth; scrollbar-width: none; margin: 0 calc(var(--pad) * -1); padding: 2px var(--pad) 8px; }
   .rail::-webkit-scrollbar { display: none; }
   .rail > * { scroll-snap-align: start; }
   .rail.small { grid-auto-columns: 28%; }
-  .rail.tall { grid-auto-columns: 40%; }
 
   .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 12px; }
-  .more-btn { align-self: center; height: 44px; padding: 0 24px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-2); font-weight: 800; cursor: pointer; }
+  .more-btn { align-self: center; height: 44px; padding: 0 24px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-2); font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; }
   .more-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Urutan daftar */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-2); font-weight: 800; font-size: 13.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .chip:hover:not([aria-pressed="true"]) { border-color: var(--accent); }
+  .chip i { width: 10px; height: 10px; border-radius: 50%; background: var(--t); display: inline-block; }
+  .list-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+  .list-head .sec-note { margin-left: auto; }
 
   /* Cari, Permainanku, Kategori */
   .page-title { margin: 0; font-family: var(--display); font-weight: 800; font-size: 28px; line-height: 1.1; }
   .page-sub { margin: -16px 0 0; color: var(--muted); font-weight: 700; }
+  .back-link { align-self: flex-start; margin-bottom: -18px; color: #B9A8FF; font-weight: 800; font-size: 13.5px; }
   .field { display: flex; align-items: center; gap: 10px; height: 50px; padding: 0 16px; border-radius: 16px; background: var(--panel-2); border: 1px solid var(--line); }
   .field svg { width: 20px; height: 20px; color: var(--muted); flex: none; }
   .field input { flex: 1; min-width: 0; background: none; border: 0; color: var(--ink); font: 800 16px var(--body); outline: none; }
   .empty { text-align: center; color: var(--muted); padding: 30px 10px; display: flex; flex-direction: column; align-items: center; gap: 12px; line-height: 1.5; }
   .empty b { color: var(--ink); font-family: var(--display); font-size: 19px; }
   .cats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .cat { position: relative; overflow: hidden; min-height: 96px; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; justify-content: flex-end; background: var(--t); box-shadow: 0 8px 18px rgba(0,0,0,.3); isolation: isolate; }
+  .cat { position: relative; overflow: hidden; min-height: 112px; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; justify-content: flex-end; background: var(--t); box-shadow: 0 8px 18px rgba(0,0,0,.3); isolation: isolate; }
   .cat::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(circle at 85% 15%, rgba(255,255,255,.3), transparent 55%), linear-gradient(180deg, transparent 40%, rgba(0,0,0,.25)); }
-  .cat svg { position: absolute; right: 12px; top: 12px; width: 34px; height: 34px; color: rgba(255,255,255,.9); }
+  .cat > svg { position: absolute; right: 12px; top: 12px; width: 30px; height: 30px; color: rgba(255,255,255,.9); }
   .cat b { font-family: var(--display); font-weight: 800; font-size: 19px; line-height: 1.1; }
   .cat small { font-weight: 800; font-size: 12px; opacity: .85; }
+  .cat-thumbs { position: absolute; left: 12px; top: 12px; display: flex; }
+  .cat-thumbs img { width: 46px; height: 29px; object-fit: cover; border-radius: 7px; border: 2px solid rgba(0,0,0,.25); box-shadow: 0 3px 8px rgba(0,0,0,.3); background: rgba(0,0,0,.2); }
+  .cat-thumbs img + img { margin-left: -14px; }
 
   /* Halaman main: game dimainkan di dalam portal */
   .player { display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; background: #05060D; box-shadow: 0 14px 34px rgba(0,0,0,.45); }
   .stage { position: relative; height: calc(100vh - var(--top-h) - 150px); min-height: 480px; background: #05060D; }
   .stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+  .fs-hint { position: absolute; left: 50%; top: 16px; transform: translateX(-50%); z-index: 2; background: rgba(13,15,28,.88); color: #fff; font-weight: 800; font-size: 13.5px; padding: 8px 16px; border-radius: 999px; pointer-events: none; }
   .pbar { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--panel); }
-  .pbar .thumb { width: 46px; height: 46px; border-radius: 12px; flex: none; box-shadow: none; }
+  .pbar .ltile { width: 46px; height: 46px; border-radius: 12px; flex: none; font-size: 26px; }
   .pbar-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
   .pbar-text b { font-family: var(--display); font-weight: 800; font-size: 20px; line-height: 1.1; }
   .pbar-text small { color: var(--muted); font-weight: 700; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -204,6 +252,11 @@
   .facts dd a { color: #B9A8FF; }
   .steps { margin: 0; padding-left: 22px; color: #D6D9EE; display: flex; flex-direction: column; gap: 4px; }
   .steps li::marker { color: var(--accent); font-weight: 800; }
+  /* Kerangka saat teks info game sedang dimuat. */
+  .skel { display: flex; flex-direction: column; gap: 10px; }
+  .skel i { display: block; height: 14px; border-radius: 7px; background: linear-gradient(90deg, var(--panel-2), #2A3052, var(--panel-2)); background-size: 200% 100%; animation: skel 1.2s linear infinite; }
+  .skel i:nth-child(3n) { width: 70%; }
+  @keyframes skel { to { background-position: -200% 0; } }
   .back-to-game {
     position: fixed; left: 50%; bottom: calc(var(--nav-h) + 16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 35;
     height: 46px; padding: 0 22px; border: 0; border-radius: 999px; cursor: pointer; background: var(--new); color: #fff; font-weight: 800; font-size: 14.5px;
@@ -221,12 +274,14 @@
 
   @media (min-width: 720px) {
     .search { display: flex; }
+    /* Kotak cari di bilah atas sudah bisa diketik, jadi kotak di halaman Cari tidak diulang. */
+    #vCari .field { display: none; }
     .rail { grid-auto-columns: 34%; }
     .rail.small { grid-auto-columns: 17%; }
-    .rail.tall { grid-auto-columns: 22%; }
     .grid { grid-template-columns: repeat(3, 1fr); }
     .cats { grid-template-columns: repeat(3, 1fr); }
     .spot { grid-template-columns: repeat(3, 1fr); }
+    .spot .mini:nth-of-type(n+5) { display: none; }
   }
   @media (min-width: 960px) {
     :root { --pad: 28px; }
@@ -246,18 +301,23 @@
     .side a[aria-current="page"] { background: var(--panel); }
     .side hr { border: 0; border-top: 1px solid var(--line); margin: 8px 6px; }
     .side .side-title { font-size: 11px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); padding: 4px 16px; white-space: nowrap; opacity: 0; transition: opacity .15s; }
-    .side:hover .side-title { opacity: 1; transition-delay: .12s; }
+    .side:hover .side-title, .side:focus-within .side-title { opacity: 1; transition-delay: .12s; }
     main { margin-left: var(--side-w); padding: 22px var(--pad) 40px; max-width: 1400px; }
     .arrows { display: flex; }
     .rail { grid-auto-columns: calc((100% - 5 * 12px) / 5.4); }
     .rail.small { grid-auto-columns: calc((100% - 8 * 12px) / 8.6); }
-    .rail.tall { grid-auto-columns: calc((100% - 6 * 12px) / 6.5); }
     .grid { grid-template-columns: repeat(5, 1fr); }
     .cats { grid-template-columns: repeat(4, 1fr); }
     .spot { grid-template-columns: repeat(4, 1fr); grid-template-rows: auto auto; }
     .spot .hero { grid-column: 1 / 3; grid-row: 1 / 3; }
     .spot .hero > .thumb { aspect-ratio: auto; flex: 1; min-height: 260px; }
     .spot .mini:nth-of-type(n+4) { display: flex; }
+    /* 1 sampai 3 game pendamping: satu kolom di kanan kartu utama, tanpa lubang di kisi. */
+    .spot.few { grid-template-columns: 2fr 1fr; grid-template-rows: none; max-width: 1100px; }
+    .spot.few .hero { grid-column: 1; grid-row: 1 / span 2; }
+    .spot.few .hero > .thumb { aspect-ratio: 16 / 10; flex: none; min-height: 0; }
+    .spot.few .mini { grid-column: 2; }
+    .spot.few .mini .thumb, .spot.few .fill-in { aspect-ratio: auto; flex: 1; min-height: 150px; }
     .spot.solo { grid-template-columns: 1fr; max-width: 880px; }
     .spot.solo .hero { grid-column: auto; grid-row: auto; }
     .spot.solo .hero > .thumb { aspect-ratio: 16 / 10; flex: none; }
@@ -277,15 +337,17 @@
   @media (prefers-reduced-motion: reduce) {
     .thumb, .hover-info { transition: none; }
     .rail { scroll-behavior: auto; }
+    .skel i { animation: none; }
   }
 </style>
 
+<a class="skip" href="#konten">Langsung ke konten</a>
 <header class="top">
   <a class="logo" href="#" aria-label="Dehayuk, beranda">
     <span class="logo-mark" aria-hidden="true">D</span>
     <span class="logo-word">Deha<span>yuk</span></span>
   </a>
-  <a class="search" href="#cari"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Cari game</a>
+  <form class="search" role="search" id="topSearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><input id="topQ" type="search" placeholder="Cari game" autocomplete="off" aria-label="Cari game"><kbd aria-hidden="true">/</kbd></form>
   <div class="top-end">
     <a class="install" href="https://github.com/dehayuk/dehayuk/releases/latest/download/dehayuk.apk"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 3h2v10.2l3.6-3.6 1.4 1.4L12 17l-6-6 1.4-1.4 3.6 3.6zM5 19h14v2H5z"/></svg>Pasang app</a>
   </div>
@@ -293,7 +355,7 @@
 
 <nav class="side" id="side" aria-label="Menu"></nav>
 
-<main>
+<main id="konten" tabindex="-1">
   <div class="view" id="vHome"></div>
 
   <div class="view" id="vMain" hidden>
@@ -302,7 +364,7 @@
         <div class="player desk-only" id="player">
           <div class="stage" id="stage"></div>
           <div class="pbar">
-            <div class="thumb sq" id="pIcon"></div>
+            <div class="ltile" id="pIcon" aria-hidden="true"></div>
             <div class="pbar-text"><b id="pName"></b><small id="pHook"></small></div>
             <button class="pbtn icon save-btn" type="button" data-save aria-pressed="false" title="Simpan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg><span class="lbl">Simpan</span></button>
             <button class="pbtn icon" type="button" data-share title="Bagikan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 12h.01M18 6a2.5 2.5 0 1 0 0-.01M18 18a2.5 2.5 0 1 0 0-.01M6 12a2.5 2.5 0 1 0 0-.01M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span class="lbl">Bagikan</span></button>
@@ -324,10 +386,19 @@
     <button class="back-to-game" type="button" id="backToGame" hidden>↑ Kembali ke permainan</button>
   </div>
 
+  <div class="view" id="vHilang" hidden>
+    <div class="empty"><b>Game tidak ditemukan</b>Mungkin alamatnya salah ketik, atau game ini sudah tidak ada.<a class="btn-cta" href="#semua">Lihat semua game</a></div>
+  </div>
+
   <div class="view" id="vCari" hidden>
     <h1 class="page-title">Cari game</h1>
     <label class="field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><input id="q" type="search" placeholder="Nama game atau jenisnya" autocomplete="off" aria-label="Cari game"></label>
-    <div class="grid" id="results"></div>
+    <div class="sec" id="searchIdle"></div>
+    <section class="sec" id="searchHits" hidden>
+      <div class="sec-head"><h2 id="hitCount" aria-live="polite"></h2></div>
+      <div class="grid" id="results"></div>
+      <button class="more-btn" type="button" id="resultsMore" hidden>Muat lagi</button>
+    </section>
     <div class="empty" id="noResult" hidden><b>Belum ketemu</b>Coba kata lain, misalnya "buah" atau "santai".</div>
   </div>
 
@@ -341,15 +412,24 @@
       <div class="sec-head"><h2>Terakhir dimainkan</h2></div>
       <div class="grid" id="mine"></div>
     </section>
-    <div class="empty" id="mineEmpty" hidden><b>Belum ada game di sini</b>Game yang kamu buka atau simpan akan muncul di sini.<a class="btn-play" href="#">Cari game</a></div>
+    <div class="empty" id="mineEmpty" hidden><b>Belum ada game di sini</b>Game yang kamu mainkan atau simpan akan muncul di sini.<a class="btn-cta" href="#cari">Cari game</a></div>
   </div>
 
   <div class="view" id="vKategori" hidden>
+    <a class="back-link" id="catBack" href="#kategori" hidden>‹ Kategori</a>
     <h1 class="page-title" id="catTitle">Kategori</h1>
     <p class="page-sub" id="catSub" hidden></p>
     <div class="cats" id="cats"></div>
+    <div class="list-head" id="catSort" hidden></div>
     <div class="grid" id="catGrid" hidden></div>
     <button class="more-btn" type="button" id="catMore" hidden>Muat lagi</button>
+  </div>
+
+  <div class="view" id="vSemua" hidden>
+    <h1 class="page-title">Semua game</h1>
+    <div class="list-head" id="allSort"></div>
+    <div class="grid" id="allGrid"></div>
+    <button class="more-btn" type="button" id="allMore" hidden>Muat lagi</button>
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
@@ -364,44 +444,85 @@
   var DATA = window.DEHAYUK || { kategori: [], game: [] };
   var GAMES = DATA.game.slice();
   var bySlug = {}; GAMES.forEach(function (g) { bySlug[g.slug] = g; });
-  var MIN_ROW = 4;        // kategori tampil sebagai baris setelah punya minimal 4 game
   var ROW_MAX = 20;       // satu baris menampilkan paling banyak 20 game
-  var PAGE = 30;          // halaman kategori dan daftar semua game dimuat per 30 game
-  var NEW_DAYS = 30;      // label BARU selama 30 hari sejak ditambahkan
+  var PAGE = 30;          // daftar panjang dimuat per 30 game
+  var NEW_DAYS = 30;      // game dianggap baru selama 30 hari sejak ditambahkan
+  var MIN_ROW = GAMES.length < 12 ? 2 : 4;  // kategori tampil sebagai baris Beranda setelah punya sekian game
+  var HOME_GRID_MIN = 9;  // "Semua game" di Beranda baru tampil bila ada lebih dari 8 game
+  var HOME_GRID_MAX = 60; // di atas 60 game, "Semua game" pindah ke halaman sendiri
 
-  function inCat(id) { return GAMES.filter(function (g) { return g.kategori.indexOf(id) >= 0; }); }
+  // Peta kategori dihitung sekali saja, bukan di setiap perulangan.
+  var CAT_BY_ID = {}; DATA.kategori.forEach(function (c) { CAT_BY_ID[c.id] = c; });
+  var BY_CAT = {}; GAMES.forEach(function (g) { g.kategori.forEach(function (id) { (BY_CAT[id] = BY_CAT[id] || []).push(g); }); });
+  function inCat(id) { return BY_CAT[id] || []; }
+  function catById(id) { return CAT_BY_ID[id]; }
   var CATS = DATA.kategori.filter(function (c) { return inCat(c.id).length > 0; });
-  var ROW_CATS = CATS.filter(function (c) { return inCat(c.id).length >= MIN_ROW; });
-  function catById(id) { return DATA.kategori.filter(function (c) { return c.id === id; })[0]; }
 
-  // Di app Android kartu langsung membuka berkas game; di web membuka halaman main di portal.
+  // Di app Android kartu langsung membuka berkas game; di web membuka halaman info di portal.
   var inApp = document.documentElement.classList.contains("in-app");
   function gameUrl(g) { return inApp ? "/" + g.slug + "/index.html" : "/" + g.slug + "/"; }
   function hrefOf(g) { return inApp ? gameUrl(g) : "#main/" + g.slug; }
+  function labelOf(g) { return inApp ? "Main " + g.nama : g.nama + ", buka info game"; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function read(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
   function write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function sread(k) { try { return JSON.parse(sessionStorage.getItem(k)); } catch (e) { return null; } }
+  function swrite(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   function svgPath(d) { return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + d + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
+  function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 
   var today = new Date();
   var dayIndex = Math.floor((today.getTime() - today.getTimezoneOffset() * 60000) / 86400000);
   function isNew(g) { var t = Date.parse(g.ditambahkan); return t && (today.getTime() - t) / 86400000 < NEW_DAYS; }
+  var NEW_COUNT = GAMES.filter(isNew).length;
+  // Label BARU hanya bermakna bila game baru masih sedikit dibanding seluruh katalog.
+  var BADGE_ON = NEW_COUNT > 0 && NEW_COUNT / GAMES.length < 0.25;
   function genreOf(g) { var c = catById(g.kategori[0]); return g.genre || (c ? c.nama : ""); }
 
+  // Urutan populer: skor katalog lebih dulu, yang skornya sama diacak berbeda tiap hari.
+  function byPopular(a, b) { return (b.skor || 0) - (a.skor || 0) || hash(a.slug + dayIndex) - hash(b.slug + dayIndex); }
+  var SORTS = {
+    populer: ["Populer", function (list) { return list.slice().sort(byPopular); }],
+    terbaru: ["Terbaru", function (list) { return list.slice().sort(function (a, b) { return Date.parse(b.ditambahkan) - Date.parse(a.ditambahkan) || byPopular(a, b); }); }],
+    az: ["A–Z", function (list) { return list.slice().sort(function (a, b) { return a.nama.localeCompare(b.nama, "id"); }); }]
+  };
+  function sortPref() { var s = read("dehayuk.urutan"); return SORTS[s] ? s : "populer"; }
+
+  // Sampul kartu: versi kecil 480x300 (kartu/<slug>.webp), versi besar untuk layar lebar dan tajam.
+  var SIZES = {
+    rail: "(min-width: 960px) 20vw, (min-width: 720px) 34vw, 62vw",
+    small: "(min-width: 960px) 120px, (min-width: 720px) 17vw, 28vw",
+    grid: "(min-width: 960px) 19vw, (min-width: 720px) 32vw, 50vw",
+    mini: "(min-width: 960px) 25vw, 50vw",
+    hero: "(min-width: 960px) 50vw, 100vw",
+    side: "300px"
+  };
+  window.dkImgErr = function (img) { img.onerror = null; img.removeAttribute("srcset"); img.src = img.getAttribute("data-full"); };
+  function imgTag(g, sizes, eager) {
+    var small = "/kartu/" + g.slug + ".webp";
+    return '<img src="' + small + '" srcset="' + small + " 480w, " + g.sampul + ' 1024w" sizes="' + (SIZES[sizes] || SIZES.grid) + '" width="480" height="300" alt="" data-full="' + g.sampul + '" ' +
+      (eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"') + ' decoding="async" onerror="dkImgErr(this)">';
+  }
+  function iconTile(g, cls) {
+    return '<span class="ltile ' + (cls || "") + '" style="--c:' + g.warna + '" aria-hidden="true">' +
+      (g.ikon ? '<img src="' + esc(g.ikon) + '" alt="" width="256" height="256">' : esc(g.nama.charAt(0).toUpperCase())) + "</span>";
+  }
   function thumb(g, shape, opts) {
     opts = opts || {};
-    return '<div class="thumb ' + shape + '" style="--c:' + g.warna + '">' +
-      '<img src="' + g.sampul + '" alt="" loading="lazy" decoding="async">' +
-      (isNew(g) && !opts.plain ? '<span class="badge">Baru</span>' : "") +
+    return '<div class="thumb ' + shape + '" style="--c:' + g.warna + '">' + imgTag(g, opts.sizes, opts.eager) +
+      (BADGE_ON && opts.badge && isNew(g) ? '<span class="badge">Baru</span>' : "") +
       (opts.info ? '<span class="hover-info"><b>' + esc(g.nama) + "</b><span>" + esc(genreOf(g)) + "</span></span>" : "") + "</div>";
   }
-  // Kartu lebar dan tegak: nama muncul saat disentuh, karena judul sudah ada di sampul; kartu kecil: nama di bawah.
-  function card(g, shape, cls) {
+  // Kartu lebar: nama muncul saat kursor mendekat (judul sudah ada di sampul); di layar sentuh nama tampil di bawahnya.
+  // Kartu kecil persegi: nama selalu di bawah.
+  function card(g, shape, opts) {
+    opts = opts || {};
     var named = shape === "sq";
-    return '<a class="card ' + (cls || "") + '" href="' + hrefOf(g) + '" data-slug="' + g.slug + '" aria-label="Main ' + esc(g.nama) + '">' +
-      thumb(g, shape, { info: !named, plain: cls === "recent" }) +
-      (named ? '<b class="name">' + esc(g.nama) + "</b><small>" + esc(genreOf(g)) + "</small>" : "") + "</a>";
+    return '<a class="card ' + (opts.cls || "") + '" href="' + hrefOf(g) + '" data-slug="' + g.slug + '" aria-label="' + esc(labelOf(g)) + '">' +
+      thumb(g, shape, { info: !named, badge: opts.badge !== false, sizes: opts.sizes }) +
+      (named ? '<b class="name">' + esc(g.nama) + "</b><small>" + esc(genreOf(g)) + "</small>" : '<b class="name tname">' + esc(g.nama) + "</b>") + "</a>";
   }
+  function cards(list, sizes, opts) { return list.map(function (g) { return card(g, "wide", { sizes: sizes, badge: !(opts && opts.noBadge) }); }).join(""); }
   function arrows() {
     return '<div class="arrows"><button type="button" data-dir="-1" aria-label="Geser kiri">' + svgPath("M15 5l-7 7 7 7") + '</button><button type="button" data-dir="1" aria-label="Geser kanan">' + svgPath("M9 5l7 7-7 7") + "</button></div>";
   }
@@ -410,62 +531,83 @@
   }
 
   // ---------- Beranda: disusun sendiri dari katalog ----------
+  // Setiap game tampil paling banyak di satu baris bertema, agar Beranda tidak mengulang game yang sama.
   function renderHome() {
-    var html = "";
-    var pool = GAMES.filter(function (g) { return g.unggulan; });
-    if (!pool.length) pool = GAMES;
+    var recent = recentList();
+    var sig = dayIndex + "|" + recent.join(",") + "|" + GAMES.length + "|" + inApp;
+    var home = document.getElementById("vHome");
+    if (home.getAttribute("data-sig") === sig) return false;
+    var html = '<h1 class="sr">Dehayuk: game ringan buatan Indonesia</h1>', used = {};
+    var popular = SORTS.populer[1](GAMES);
+    var pool = popular.filter(function (g) { return g.unggulan; });
+    if (!pool.length) pool = popular;
     if (pool.length) {
       var hero = pool[dayIndex % pool.length];
-      var others = GAMES.filter(function (g) { return g !== hero; });
-      var start = others.length ? dayIndex % others.length : 0;
-      var minis = [];
-      for (var i = 0; i < Math.min(4, others.length); i++) minis.push(others[(start + i) % others.length]);
-      var solo = minis.length < 4;
-      html += '<section class="sec"><div class="sec-head"><h2>Pilihan hari ini</h2></div><div class="spot' + (solo ? " solo" : "") + '">' +
-        '<a class="hero" href="' + hrefOf(hero) + '" data-slug="' + hero.slug + '" aria-label="Main ' + esc(hero.nama) + '">' + thumb(hero, "wide") +
-        '<div class="hero-bar"><div class="thumb sq hero-icon" style="--c:' + hero.warna + '"><img src="' + hero.sampul + '" alt=""></div>' +
+      var minis = popular.filter(function (g) { return g !== hero; }).slice(0, 4);
+      used[hero.slug] = 1; minis.forEach(function (g) { used[g.slug] = 1; });
+      // Kisi Pilihan hari ini selalu penuh: 1 atau 3 pendamping ditambah kotak Jelajahi kategori.
+      var layout = minis.length === 0 ? " solo" : minis.length <= 2 ? " few" : "";
+      var fill = (minis.length === 1 || minis.length === 3) && CATS.length ? fillTile() : "";
+      html += '<section class="sec"><div class="sec-head"><h2>Pilihan hari ini</h2></div><div class="spot' + layout + '">' +
+        '<a class="hero" href="' + hrefOf(hero) + '" data-slug="' + hero.slug + '" aria-label="' + esc(labelOf(hero)) + '">' + thumb(hero, "wide", { sizes: "hero", eager: true }) +
+        '<div class="hero-bar">' + iconTile(hero, "hero-icon") +
         '<div class="hero-text"><b>' + esc(hero.nama) + "</b><small>" + esc(hero.ajakan) + '</small></div><span class="btn-play">Main</span></div></a>' +
-        (solo ? "" : minis.map(function (g) { return card(g, "wide", "mini"); }).join("")) + "</div></section>";
+        minis.map(function (g) { return card(g, "wide", { cls: "mini", sizes: "mini" }); }).join("") + fill + "</div></section>";
     }
-    var recent = recentList();
     if (recent.length && GAMES.length > 1) {
       html += '<section class="sec">' + rowHead("Terakhir dimainkan", "#permainanku") + '<div class="rail small">' +
-        recent.slice(0, 16).map(function (s) { return card(bySlug[s], "sq", "recent"); }).join("") + "</div></section>";
+        recent.slice(0, 16).map(function (s) { return card(bySlug[s], "sq", { cls: "recent", badge: false, sizes: "small" }); }).join("") + "</div></section>";
     }
-    var fresh = GAMES.filter(isNew).sort(function (a, b) { return Date.parse(b.ditambahkan) - Date.parse(a.ditambahkan); });
-    if (fresh.length >= MIN_ROW) {
-      html += '<section class="sec">' + rowHead("Game baru") + '<div class="rail">' + fresh.slice(0, ROW_MAX).map(function (g) { return card(g, "wide"); }).join("") + "</div></section>";
+    // Baris "Game baru" hanya bila tidak semua game masih baru; di dalamnya label BARU tidak diulang.
+    if (NEW_COUNT < GAMES.length) {
+      var fresh = SORTS.terbaru[1](GAMES.filter(function (g) { return isNew(g) && !used[g.slug]; })).slice(0, ROW_MAX);
+      if (fresh.length >= MIN_ROW) {
+        fresh.forEach(function (g) { used[g.slug] = 1; });
+        html += '<section class="sec">' + rowHead("Game baru") + '<div class="rail">' + cards(fresh, "rail", { noBadge: true }) + "</div></section>";
+      }
     }
-    ROW_CATS.forEach(function (c, i) {
-      var list = inCat(c.id);
-      var s = dayIndex % list.length;
-      var rotated = list.slice(s).concat(list.slice(0, s)).slice(0, ROW_MAX);
+    var rowIndex = 0;
+    CATS.forEach(function (c) {
+      var list = SORTS.populer[1](inCat(c.id)).filter(function (g) { return !used[g.slug]; }).slice(0, ROW_MAX);
+      if (list.length < MIN_ROW) return;
+      list.forEach(function (g) { used[g.slug] = 1; });
       // Selang-seling baris bertema berlatar warna dan baris polos, agar beranda tidak monoton.
-      if (i % 3 === 1) {
-        html += '<section class="sec">' + rowHead(esc(c.nama), "#k-" + c.id) + '<div class="rail">' + rotated.map(function (g) { return card(g, "wide"); }).join("") + "</div></section>";
+      if (rowIndex++ % 3 === 1) {
+        html += '<section class="sec">' + rowHead(esc(c.nama), "#k-" + c.id) + '<div class="rail">' + cards(list, "rail") + "</div></section>";
       } else {
         html += '<section class="sec theme" style="--t:' + c.warna + '"><div class="sec-head"><span class="theme-icon">' + svgPath(c.ikon) + '</span><h2><a href="#k-' + c.id + '">' + esc(c.nama) + "</a></h2>" + arrows() + "</div>" +
-          '<p class="theme-desc">' + esc(c.ajakan) + '</p><div class="rail">' + rotated.map(function (g) { return card(g, "wide"); }).join("") + "</div></section>";
+          '<p class="theme-desc">' + esc(c.ajakan) + '</p><div class="rail">' + cards(list, "rail") + "</div></section>";
       }
     });
-    if (GAMES.length > 1) {
-      html += '<section class="sec"><div class="sec-head"><h2>Semua game</h2><span class="sec-note" style="margin-left:auto">' + GAMES.length + ' game</span></div><div class="grid" id="allGrid"></div><button class="more-btn" type="button" id="allMore">Muat lagi</button></section>';
+    if (GAMES.length >= HOME_GRID_MIN && GAMES.length <= HOME_GRID_MAX) {
+      html += '<section class="sec"><div class="sec-head"><h2>Semua game</h2><span class="sec-note" style="margin-left:auto">' + GAMES.length + ' game</span></div><div class="grid" id="homeGrid"></div><button class="more-btn" type="button" id="homeMore">Muat lagi</button></section>';
+    } else if (GAMES.length > HOME_GRID_MAX) {
+      html += '<a class="more-btn" href="#semua">Lihat semua ' + GAMES.length + " game ›</a>";
     }
-    document.getElementById("vHome").innerHTML = html;
-    if (GAMES.length > 1) pager(document.getElementById("allGrid"), document.getElementById("allMore"), GAMES);
+    home.innerHTML = html;
+    home.setAttribute("data-sig", sig);
+    if (document.getElementById("homeGrid")) pager("home", document.getElementById("homeGrid"), document.getElementById("homeMore"), SORTS.populer[1](GAMES));
+    return true;
   }
 
-  // Daftar panjang dimuat per halaman, agar ribuan game tetap ringan.
-  function pager(grid, btn, list) {
-    var shown = 0;
-    function more() {
-      grid.insertAdjacentHTML("beforeend", list.slice(shown, shown + PAGE).map(function (g) { return card(g, "wide"); }).join(""));
-      shown += PAGE;
+  function fillTile() {
+    return '<a class="card mini spot-fill" href="#kategori"><span class="fill-in"><span class="fill-icons" aria-hidden="true">' +
+      CATS.slice(0, 4).map(function (c) { return '<i style="--t:' + c.warna + '">' + svgPath(c.ikon) + "</i>"; }).join("") +
+      "</span><b>Jelajahi kategori</b><small>" + GAMES.length + " game · " + CATS.length + " kategori</small></span></a>";
+  }
+
+  // Daftar panjang dimuat per halaman, agar ribuan game tetap ringan. Jumlah yang sudah dimuat diingat per halaman,
+  // jadi kembali ke daftar yang sama tidak mengulang dari awal.
+  function pager(key, grid, btn, list, sizes) {
+    var shown = 0, want = Math.max(PAGE, Number(POS[key + "#n"]) || 0);
+    function more(n) {
+      grid.insertAdjacentHTML("beforeend", cards(list.slice(shown, shown + n), sizes || "grid"));
+      shown += n; POS[key + "#n"] = shown; savePos();
       btn.hidden = shown >= list.length;
     }
     grid.innerHTML = "";
-    btn.onclick = more;
-    more();
+    btn.onclick = function () { more(PAGE); };
+    more(want);
   }
 
   function recentList() { return (read("dehayuk.recent") || []).filter(function (s) { return bySlug[s]; }); }
@@ -476,12 +618,29 @@
       if (rail) rail.scrollBy({ left: rail.clientWidth * 0.85 * Number(arrow.dataset.dir), behavior: "smooth" });
       return;
     }
+    // Di web "Terakhir dimainkan" dicatat oleh kit saat game benar-benar dimainkan.
+    // Di app kartu langsung membuka game, jadi ketukan kartu juga dicatat sebagai cadangan.
+    if (!inApp) return;
     var a = ev.target.closest && ev.target.closest("a[data-slug]");
     if (!a || !bySlug[a.dataset.slug]) return;
     var list = recentList().filter(function (s) { return s !== a.dataset.slug; });
     list.unshift(a.dataset.slug);
     write("dehayuk.recent", list.slice(0, 30));
   });
+
+  // Panah baris hanya tampil bila barisnya memang bisa digeser, dan mati di ujung.
+  function syncArrows() {
+    document.querySelectorAll(".sec").forEach(function (sec) {
+      var ar = sec.querySelector(".arrows"), rail = sec.querySelector(".rail");
+      if (!ar || !rail || !rail.offsetParent) return;
+      var max = rail.scrollWidth - rail.clientWidth;
+      ar.style.visibility = max > 4 ? "" : "hidden";
+      var b = ar.querySelectorAll("button");
+      b[0].disabled = rail.scrollLeft <= 2; b[1].disabled = rail.scrollLeft >= max - 2;
+      if (!rail._dk) { rail._dk = 1; rail.addEventListener("scroll", function () { b[0].disabled = rail.scrollLeft <= 2; b[1].disabled = rail.scrollLeft >= rail.scrollWidth - rail.clientWidth - 2; }, { passive: true }); }
+    });
+  }
+  window.addEventListener("resize", syncArrows);
 
   // ---------- Menu ----------
   var ICON = {
@@ -493,24 +652,88 @@
   function navItem(id, label, path, href) { return '<a href="' + href + '" data-nav="' + id + '" title="' + esc(label) + '">' + svgPath(path) + '<span class="lbl">' + esc(label) + "</span></a>"; }
   var MAIN_NAV = [["home", "Beranda", ICON.home, "#"], ["cari", "Cari", ICON.cari, "#cari"], ["permainanku", "Permainanku", ICON.permainanku, "#permainanku"], ["kategori", "Kategori", ICON.kategori, "#kategori"]];
   document.getElementById("nav").innerHTML = MAIN_NAV.map(function (n) { return navItem.apply(null, n); }).join("");
-  document.getElementById("side").innerHTML = MAIN_NAV.map(function (n) { return navItem.apply(null, n); }).join("") +
+  var side = document.getElementById("side");
+  side.innerHTML = MAIN_NAV.map(function (n) { return navItem.apply(null, n); }).join("") +
     (CATS.length ? '<hr><span class="side-title">Kategori</span>' : "") + CATS.map(function (c) { return navItem("k-" + c.id, c.nama, c.ikon, "#k-" + c.id); }).join("");
+  // Esc menutup menu samping yang terbuka oleh fokus papan ketik, lalu fokus pindah ke isi halaman.
+  side.addEventListener("keydown", function (e) { if (e.key === "Escape") { try { document.getElementById("konten").focus(); } catch (x) {} } });
   document.getElementById("cats").innerHTML = CATS.map(function (c) {
-    return '<a class="cat" href="#k-' + c.id + '" style="--t:' + c.warna + '">' + svgPath(c.ikon) + "<b>" + esc(c.nama) + "</b><small>" + inCat(c.id).length + " game</small></a>";
+    var peek = SORTS.populer[1](inCat(c.id)).slice(0, 3);
+    return '<a class="cat" href="#k-' + c.id + '" style="--t:' + c.warna + '"><span class="cat-thumbs" aria-hidden="true">' +
+      peek.map(function (g) { return '<img src="/kartu/' + g.slug + '.webp" alt="" width="46" height="29" loading="lazy" data-full="' + g.sampul + '" onerror="dkImgErr(this)">'; }).join("") + "</span>" +
+      svgPath(c.ikon) + "<b>" + esc(c.nama) + "</b><small>" + inCat(c.id).length + " game</small></a>";
   }).join("");
 
   // ---------- Cari ----------
-  var q = document.getElementById("q");
-  function renderSearch() {
-    var s = q.value.trim().toLowerCase();
-    var hits = GAMES.filter(function (g) {
-      var text = (g.nama + " " + (g.genre || "") + " " + g.ajakan + " " + g.kategori.map(function (id) { var c = catById(id); return c ? c.nama : id; }).join(" ")).toLowerCase();
-      return !s || text.indexOf(s) >= 0;
-    });
-    document.getElementById("results").innerHTML = hits.slice(0, 60).map(function (g) { return card(g, "wide"); }).join("");
-    document.getElementById("noResult").hidden = !!hits.length;
+  // Teks cari dibuat sekali per game: huruf kecil tanpa tanda baca, dan bentuk rapat tanpa spasi/tanda hubung,
+  // agar "jatuhbuah", "blok ledak", dan "ledak blok" tetap ketemu.
+  function norm(s) { s = String(s || "").toLowerCase(); try { s = s.normalize("NFD").replace(/[̀-ͯ]/g, ""); } catch (e) {} return s.replace(/[^a-z0-9\s-]/g, " "); }
+  var INDEX = GAMES.map(function (g) {
+    var name = norm(g.nama);
+    return { g: g, name: name, tight: name.replace(/[\s-]+/g, ""), genre: norm((g.genre || "") + " " + (g.tag || []).join(" ")),
+      cats: norm(g.kategori.map(function (id) { var c = catById(id); return c ? c.nama : id; }).join(" ")), hook: norm(g.ajakan) };
+  });
+  function searchScore(e, words, tight) {
+    var total = 0;
+    for (var i = 0; i < words.length; i++) {
+      var w = words[i], s = 0, at = e.name.indexOf(w);
+      if (at === 0 || (at > 0 && /[\s-]/.test(e.name.charAt(at - 1)))) s = 40;
+      else if (at > 0 || e.tight.indexOf(w) >= 0) s = 30;
+      else if (e.genre.indexOf(w) >= 0) s = 12;
+      else if (e.cats.indexOf(w) >= 0) s = 8;
+      else if (e.hook.indexOf(w) >= 0) s = 4;
+      if (!s) return tight.length > 2 && e.tight.indexOf(tight) >= 0 ? 35 : 0;
+      total += s;
+    }
+    return total;
   }
-  q.addEventListener("input", renderSearch);
+  var q = document.getElementById("q"), topQ = document.getElementById("topQ");
+  function renderSearch() {
+    var raw = q.value.trim(), words = norm(raw).split(/[\s-]+/).filter(Boolean), tight = words.join("");
+    document.getElementById("searchIdle").hidden = !!words.length;
+    document.getElementById("searchHits").hidden = !words.length;
+    if (!words.length) {
+      // Tanpa kata cari: pilihan kategori dan game populer, bukan seluruh katalog.
+      document.getElementById("noResult").hidden = true;
+      document.getElementById("searchIdle").innerHTML = '<div class="chips">' + CATS.map(function (c) { return '<a class="chip" href="#k-' + c.id + '" style="--t:' + c.warna + '"><i></i>' + esc(c.nama) + "</a>"; }).join("") + "</div>" +
+        '<div class="sec-head"><h2>Populer</h2></div><div class="grid">' + cards(SORTS.populer[1](GAMES).slice(0, 10), "grid") + "</div>";
+      return;
+    }
+    var hits = INDEX.map(function (e) { return { g: e.g, s: searchScore(e, words, tight) }; }).filter(function (h) { return h.s > 0; })
+      .sort(function (a, b) { return b.s - a.s || byPopular(a.g, b.g); }).map(function (h) { return h.g; });
+    document.getElementById("hitCount").textContent = hits.length + " game ditemukan";
+    document.getElementById("searchHits").hidden = !hits.length;
+    document.getElementById("noResult").hidden = !!hits.length;
+    POS["cari#n"] = 0;
+    pager("cari", document.getElementById("results"), document.getElementById("resultsMore"), hits);
+  }
+  q.addEventListener("input", function () { topQ.value = q.value; renderSearch(); });
+  topQ.addEventListener("input", function () {
+    q.value = topQ.value;
+    if (location.hash !== "#cari") location.hash = "cari"; else renderSearch();
+  });
+  document.getElementById("topSearch").addEventListener("submit", function (e) { e.preventDefault(); if (location.hash !== "#cari") location.hash = "cari"; });
+  // Tombol "/" langsung ke kotak cari.
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target; if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+    e.preventDefault();
+    if (topQ.offsetParent) topQ.focus(); else location.hash = "cari";
+  });
+
+  // ---------- Urutan daftar (Populer, Terbaru, A–Z), diingat per pengunjung ----------
+  function sortChips(el, onPick) {
+    var cur = sortPref();
+    el.innerHTML = '<div class="chips" role="group" aria-label="Urutkan">' + Object.keys(SORTS).map(function (k) {
+      return '<button class="chip" type="button" data-sort="' + k + '" aria-pressed="' + (k === cur) + '">' + SORTS[k][0] + "</button>";
+    }).join("") + '</div><span class="sec-note"></span>';
+    el.onclick = function (e) {
+      var b = e.target.closest && e.target.closest("[data-sort]"); if (!b) return;
+      write("dehayuk.urutan", b.getAttribute("data-sort"));
+      onPick();
+    };
+    return SORTS[cur][1];
+  }
 
   // ---------- Halaman main ----------
   var stage = document.getElementById("stage"), current = null;
@@ -518,12 +741,12 @@
   function renderPlayer(g) {
     if (!g) { stage.innerHTML = ""; current = null; document.title = "Dehayuk"; return; }
     document.title = g.nama + " · Dehayuk";
-    if (current === g.slug && (!wide.matches || stage.firstChild)) return;
+    if (current === g.slug && (!wide.matches || stage.querySelector("iframe"))) return;
     current = g.slug;
     stage.innerHTML = "";
     if (wide.matches) {
       var f = document.createElement("iframe");
-      f.src = gameUrl(g); f.title = g.nama; f.allow = "fullscreen; autoplay"; f.setAttribute("allowfullscreen", "");
+      f.src = gameUrl(g); f.title = g.nama + " (Esc untuk keluar layar penuh)"; f.allow = "fullscreen; autoplay"; f.setAttribute("allowfullscreen", "");
       // Tombol kembali milik game disembunyikan; bilah portal sudah ada di atasnya.
       f.addEventListener("load", function () {
         try { var st = f.contentDocument.createElement("style"); st.textContent = 'a[href="/"]{visibility:hidden!important}'; f.contentDocument.head.appendChild(st); } catch (e) {}
@@ -531,48 +754,64 @@
       stage.appendChild(f);
     }
     var icon = document.getElementById("pIcon");
-    icon.setAttribute("style", "--c:" + g.warna);
-    icon.innerHTML = '<img src="' + g.sampul + '" alt="">';
+    icon.outerHTML = iconTile(g).replace('class="ltile ', 'id="pIcon" class="ltile ');
     document.getElementById("pName").textContent = g.nama;
     document.getElementById("pHook").textContent = genreOf(g) + " · " + g.ajakan;
-    document.getElementById("pMobile").innerHTML = thumb(g, "wide", { plain: true }) +
+    document.getElementById("pMobile").innerHTML = thumb(g, "wide", { sizes: "hero", eager: true }) +
       '<div class="pinfo"><h1>' + esc(g.nama) + "</h1><p>" + esc(g.ajakan) + '</p><a class="btn-play" href="' + gameUrl(g) + '">Main</a></div>';
-    document.getElementById("gInfo").innerHTML = infoHTML(g);
+    var box = document.getElementById("gInfo");
+    box.innerHTML = infoHTML(g, null, true);
+    loadInfo(g, function (d) { if (current === g.slug) { box.innerHTML = infoHTML(g, d, false); syncSave(); } });
     syncSave();
-    // Putar selanjutnya: yang sekategori lebih dulu. Di layar lebar tampil di kolom kanan, selain itu di bawah.
-    var same = GAMES.filter(function (x) { return x !== g && x.kategori.some(function (k) { return g.kategori.indexOf(k) >= 0; }); });
-    var rest = GAMES.filter(function (x) { return x !== g && same.indexOf(x) < 0; });
-    var more = same.concat(rest).slice(0, 15);
-    var cards = more.map(function (x) { return card(x, "wide"); }).join("");
+    // Putar selanjutnya: yang berbagi tag atau kategori lebih dulu. Di layar lebar tampil di kolom kanan, selain itu di bawah.
+    function near(x) {
+      var t = (x.tag || []).filter(function (w) { return (g.tag || []).indexOf(w) >= 0; }).length;
+      var k = x.kategori.filter(function (id) { return g.kategori.indexOf(id) >= 0; }).length;
+      return t * 3 + k;
+    }
+    var more = SORTS.populer[1](GAMES.filter(function (x) { return x !== g; })).sort(function (a, b) { return near(b) - near(a); }).slice(0, 15);
+    var list = cards(more, "side");
     document.getElementById("playLayout").classList.toggle("has-next", more.length > 0);
-    document.getElementById("upList").innerHTML = cards;
+    document.getElementById("upList").innerHTML = list;
     document.getElementById("moreSec").hidden = !more.length;
-    document.getElementById("more").innerHTML = cards;
+    document.getElementById("more").innerHTML = cards(more, "grid");
+  }
+
+  // Teks panjang game (deskripsi, cara main, kontrol) ada di /info/<slug>.json, dimuat hanya saat dibuka.
+  var INFO = {};
+  function loadInfo(g, cb) {
+    if (g.deskripsi) return cb(g);
+    if (INFO[g.slug]) return cb(INFO[g.slug]);
+    if (!window.fetch) return cb(null);
+    fetch("/info/" + g.slug + ".json").then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { if (d) INFO[g.slug] = d; cb(d); }, function () { cb(null); });
   }
 
   // Halaman informasi game, disusun dari katalog: sama rapinya untuk satu game atau seribu.
   var BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
   function tanggal(s) { var d = new Date(s + "T00:00:00"); return isNaN(d) ? "" : d.getDate() + " " + BULAN[d.getMonth()] + " " + d.getFullYear(); }
-  function infoHTML(g) {
+  function infoHTML(g, d, loading) {
+    d = d || {};
     var cats = g.kategori.map(catById).filter(Boolean);
     var facts = [
       ["Pengembang", "Dehayuk"],
       ["Kategori", cats.map(function (c) { return '<a href="#k-' + c.id + '">' + esc(c.nama) + "</a>"; }).join(", ")],
       ["Jenis", esc(genreOf(g))],
       ["Dirilis", tanggal(g.ditambahkan)],
-      ["Diperbarui", tanggal(g.diperbarui || g.ditambahkan)],
+      ["Diperbarui", d.diperbarui ? tanggal(d.diperbarui) : ""],
       ["Perangkat", "HP, tablet, dan komputer · app Android"],
-      ["Orientasi layar", esc(g.orientasi || "Tegak")],
+      ["Orientasi layar", esc(d.orientasi || "")],
       ["Bahasa", "Indonesia"]
     ].filter(function (f) { return f[1]; });
+    var body = loading ? '<div class="skel" aria-label="Memuat info game"><i></i><i></i><i></i><i></i><i></i><i></i></div>' :
+      (d.deskripsi && d.deskripsi.length ? "<h2>Tentang " + esc(g.nama) + "</h2>" + d.deskripsi.map(function (p) { return "<p>" + esc(p) + "</p>"; }).join("") : "<p>" + esc(g.ajakan) + "</p>") +
+      (d.caraMain && d.caraMain.length ? '<h2>Cara main</h2><ol class="steps">' + d.caraMain.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ol>" : "") +
+      (d.kontrol ? "<h2>Kontrol</h2><p>" + esc(d.kontrol) + "</p>" : "");
     return '<nav class="crumbs" aria-label="Lokasi"><a href="#">Beranda</a>»' + (cats[0] ? '<a href="#k-' + cats[0].id + '">' + esc(cats[0].nama) + "</a>»" : "") + "<span>" + esc(g.nama) + "</span></nav>" +
       "<h1>" + esc(g.nama) + "</h1>" +
       '<div class="actions"><button class="pbtn icon save-btn" type="button" data-save aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg><span class="lbl">Simpan</span></button>' +
       '<button class="pbtn icon" type="button" data-share><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6a2.5 2.5 0 1 0 0-.01M18 18a2.5 2.5 0 1 0 0-.01M6 12a2.5 2.5 0 1 0 0-.01M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span class="lbl">Bagikan</span></button></div>' +
-      '<dl class="facts">' + facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + f[1] + "</dd>"; }).join("") + "</dl>" +
-      (g.deskripsi && g.deskripsi.length ? "<h2>Tentang " + esc(g.nama) + "</h2>" + g.deskripsi.map(function (p) { return "<p>" + esc(p) + "</p>"; }).join("") : "<p>" + esc(g.ajakan) + "</p>") +
-      (g.caraMain && g.caraMain.length ? '<h2>Cara main</h2><ol class="steps">' + g.caraMain.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ol>" : "") +
-      (g.kontrol ? "<h2>Kontrol</h2><p>" + esc(g.kontrol) + "</p>" : "");
+      '<dl class="facts">' + facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + f[1] + "</dd>"; }).join("") + "</dl>" + body;
   }
 
   // Simpan (favorit) dan Bagikan: nyata, tersimpan di perangkat pemain, tanpa server.
@@ -589,7 +828,7 @@
   function toast(msg) {
     var t = document.getElementById("toast");
     t.textContent = msg; t.hidden = false;
-    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 2200);
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 2600);
   }
   document.addEventListener("click", function (ev) {
     var save = ev.target.closest && ev.target.closest("[data-save]");
@@ -603,9 +842,10 @@
     }
     var share = ev.target.closest && ev.target.closest("[data-share]");
     if (share && current) {
+      // Yang dibagikan halaman info statis /main/<slug>/: punya judul dan sampul, jadi pratinjau WhatsApp tampil lengkap.
       var g = bySlug[current];
-      var base = /^https?:$/.test(location.protocol) && !inApp ? location.origin + location.pathname : "https://dehayuk.netlify.app/";
-      var url = base + "#main/" + g.slug, text = g.nama + " di Dehayuk: " + g.ajakan;
+      var base = /^https?:$/.test(location.protocol) && !inApp ? location.origin : "https://dehayuk.netlify.app";
+      var url = base + "/main/" + g.slug + "/", text = g.nama + " di Dehayuk: " + g.ajakan;
       if (navigator.share) { navigator.share({ title: g.nama, text: text, url: url }).catch(function () {}); return; }
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(function () { toast("Link disalin, tinggal tempel"); }, function () { window.open("https://wa.me/?text=" + encodeURIComponent(text + " " + url)); });
       else window.open("https://wa.me/?text=" + encodeURIComponent(text + " " + url));
@@ -614,48 +854,95 @@
 
   // Tombol "Kembali ke permainan" muncul setelah pemain menggulir melewati permainan.
   var backBtn = document.getElementById("backToGame");
-  window.addEventListener("scroll", function () { backBtn.hidden = !current || window.scrollY < 480; }, { passive: true });
   backBtn.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
   document.getElementById("pFull").addEventListener("click", function () {
     var fn = stage.requestFullscreen || stage.webkitRequestFullscreen;
     if (fn) { try { var p = fn.call(stage); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
   });
+  // Petunjuk keluar dari layar penuh, tampil sebentar di dalam panggung.
+  document.addEventListener("fullscreenchange", function () {
+    var old = stage.querySelector(".fs-hint"); if (old) old.remove();
+    if (document.fullscreenElement !== stage) return;
+    var h = document.createElement("div"); h.className = "fs-hint"; h.setAttribute("role", "status"); h.textContent = "Tekan Esc untuk keluar layar penuh";
+    stage.appendChild(h); setTimeout(function () { h.remove(); }, 3500);
+  });
+
+  // ---------- Posisi gulir: kembali ke tempat yang sama saat pemain menekan Kembali ----------
+  try { history.scrollRestoration = "manual"; } catch (e) {}
+  var POS = sread("dehayuk.pos") || {}, STACK = sread("dehayuk.jejak") || [], shownKey = null, posTimer = 0;
+  function savePos() { clearTimeout(posTimer); posTimer = setTimeout(function () { swrite("dehayuk.pos", POS); }, 150); }
+  window.addEventListener("scroll", function () {
+    if (shownKey !== null) { POS[shownKey] = Math.round(window.scrollY); savePos(); }
+    backBtn.hidden = !current || window.scrollY < 480;
+  }, { passive: true });
+  window.addEventListener("pagehide", function () { swrite("dehayuk.pos", POS); });
+  // Jejak halaman: halaman yang dituju sama dengan halaman sebelumnya berarti pemain menekan Kembali;
+  // halaman sama dengan yang terakhir berarti halaman dimuat ulang atau pemain pulang dari game.
+  function isReturn(key) {
+    var n = STACK.length;
+    if (n && STACK[n - 1] === key) return true;
+    if (n > 1 && STACK[n - 2] === key) { STACK.pop(); return true; }
+    STACK.push(key); if (STACK.length > 50) STACK.shift();
+    return false;
+  }
 
   // ---------- Pindah halaman lewat tanda # agar tombol Kembali di HP bekerja wajar ----------
   function show() {
-    var h = decodeURIComponent(location.hash.replace("#", ""));
-    var view = h.indexOf("main/") === 0 && bySlug[h.slice(5)] ? "main" : h === "cari" ? "cari" : h === "permainanku" ? "permainanku" : h === "kategori" || h.indexOf("k-") === 0 ? "kategori" : "home";
-    ["Home", "Main", "Cari", "Permainanku", "Kategori"].forEach(function (v) { document.getElementById("v" + v).hidden = v.toLowerCase() !== view; });
+    var h = decodeURIComponent(location.hash.replace("#", "")), key = h || "beranda";
+    var view = h.indexOf("main/") === 0 ? (bySlug[h.slice(5)] ? "main" : "hilang") : h === "cari" ? "cari" : h === "permainanku" ? "permainanku" : h === "semua" ? "semua" : h === "kategori" || h.indexOf("k-") === 0 ? "kategori" : "home";
+    var back = isReturn(key);
+    swrite("dehayuk.jejak", STACK);
+    shownKey = null;
+    ["Home", "Main", "Hilang", "Cari", "Permainanku", "Kategori", "Semua"].forEach(function (v) { document.getElementById("v" + v).hidden = v.toLowerCase() !== view; });
     document.querySelectorAll("[data-nav]").forEach(function (a) {
       var on = a.dataset.nav === (h.indexOf("k-") === 0 ? h : view) || (a.closest(".nav") && a.dataset.nav === "kategori" && h.indexOf("k-") === 0);
       if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
     renderPlayer(view === "main" ? bySlug[h.slice(5)] : null);
     backBtn.hidden = true;
+    if (!back) POS[key + "#n"] = 0;
     if (view === "home") renderHome();
+    if (view === "hilang") document.title = "Game tidak ditemukan · Dehayuk";
     if (view === "kategori") {
       var c = h.indexOf("k-") === 0 ? catById(h.slice(2)) : null;
       var list = c ? inCat(c.id) : [];
       document.getElementById("catTitle").textContent = c ? c.nama : "Kategori";
       document.getElementById("catSub").textContent = c ? c.ajakan + " · " + list.length + " game" : "";
       document.getElementById("catSub").hidden = !c;
+      document.getElementById("catBack").hidden = !c;
       document.getElementById("cats").hidden = !!c;
       document.getElementById("catGrid").hidden = !c;
-      if (c) pager(document.getElementById("catGrid"), document.getElementById("catMore"), list); else document.getElementById("catMore").hidden = true;
+      document.getElementById("catSort").hidden = !c;
+      if (c) {
+        var drawCat = function () { var sorter = sortChips(document.getElementById("catSort"), function () { POS[key + "#n"] = 0; drawCat(); }); pager(key, document.getElementById("catGrid"), document.getElementById("catMore"), sorter(list)); };
+        drawCat();
+      } else document.getElementById("catMore").hidden = true;
     }
-    if (view === "cari") { renderSearch(); setTimeout(function () { try { q.focus(); } catch (e) {} }, 50); }
+    if (view === "semua") {
+      var drawAll = function () { var sorter = sortChips(document.getElementById("allSort"), function () { POS[key + "#n"] = 0; drawAll(); }); pager(key, document.getElementById("allGrid"), document.getElementById("allMore"), sorter(GAMES)); };
+      drawAll();
+      document.querySelector("#allSort .sec-note").textContent = GAMES.length + " game";
+    }
+    if (view === "cari") {
+      renderSearch();
+      setTimeout(function () { try { (topQ.offsetParent ? topQ : q).focus(); } catch (e) {} }, 50);
+    }
     if (view === "permainanku") {
       var r = recentList(), sv = savedList();
-      document.getElementById("saved").innerHTML = sv.map(function (s) { return card(bySlug[s], "wide"); }).join("");
+      document.getElementById("saved").innerHTML = sv.map(function (s) { return card(bySlug[s], "wide", { sizes: "grid" }); }).join("");
       document.getElementById("savedSec").hidden = !sv.length;
-      document.getElementById("mine").innerHTML = r.map(function (s) { return card(bySlug[s], "wide"); }).join("");
+      document.getElementById("mine").innerHTML = r.map(function (s) { return card(bySlug[s], "wide", { sizes: "grid" }); }).join("");
       document.getElementById("mineSec").hidden = !r.length;
       document.getElementById("mineEmpty").hidden = !!(r.length || sv.length);
     }
-    window.scrollTo(0, 0);
+    window.scrollTo(0, back ? POS[key] || 0 : 0);
+    shownKey = key;
+    syncArrows();
   }
   if (wide.addEventListener) wide.addEventListener("change", function () { current = null; show(); });
   window.addEventListener("hashchange", show);
+  // Kembali dari game lewat tombol Kembali browser: halaman dari cache bfcache diperbarui (misalnya "Terakhir dimainkan").
+  window.addEventListener("pageshow", function (e) { if (e.persisted && !location.hash.replace("#", "")) { if (renderHome()) syncArrows(); } });
   show();
 })();
 </script>

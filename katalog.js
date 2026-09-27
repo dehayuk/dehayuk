@@ -1,8 +1,16 @@
 // Katalog Dehayuk: satu-satunya tempat mendaftarkan game dan kategori.
-// Portal, app Android, dan aturan iklan membaca daftar ini sendiri, jadi menambah game cukup:
-//   1. buat folder game (misalnya /nama-game/index.html dan sampul.jpg 16:10),
-//   2. tambahkan satu entri di DEHAYUK.game di bawah.
-// Kategori baru tampil di portal setelah punya minimal 4 game, agar tidak ada rak kosong.
+// Portal, app Android, halaman info, peta situs, dan aturan iklan membaca daftar ini sendiri.
+// Menambah game:
+//   1. buat folder game (/<slug>/index.html dan sampul.jpg 16:10);
+//   2. tambahkan satu entri di DEHAYUK.game. Teks panjang (deskripsi, caraMain, kontrol, orientasi,
+//      diperbarui) boleh ditulis di entri itu juga;
+//   3. jalankan "npm run situs": teks panjang dipindah ke info/<slug>.json, berkas ini ditulis ulang ringkas,
+//      lalu sampul kecil, halaman info, dan peta situs dibuat. "npm run cek" gagal bila langkah ini terlupa.
+// Isian pilihan: skor (angka urutan populer, makin besar makin depan), tag (daftar kata untuk pencarian
+// dan "Putar selanjutnya"), ikon (alamat gambar persegi 256x256; tanpa ikon dipakai huruf pertama nama).
+// Kategori tampil sebagai baris di Beranda setelah punya minimal 4 game (2 selama katalog di bawah 12 game),
+// dan di halaman Kategori serta menu samping begitu punya 1 game.
+// Slug tidak boleh diganti setelah tayang: rekor, simpanan, dan link tantangan pemain memakai slug.
 window.DEHAYUK = {
   kategori: [
     { id: "santai", nama: "Santai", ajakan: "Main tanpa buru-buru, cocok sambil rebahan.", warna: "#E0712B", ikon: "M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 9h2a2 2 0 0 1 0 4h-2M7 3v3M11 3v3" },
@@ -13,55 +21,9 @@ window.DEHAYUK = {
     { id: "bareng", nama: "Main Bareng", ajakan: "Seru bersama teman dan keluarga.", warna: "#2E9A5C", ikon: "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20a6.5 6.5 0 0 1 13 0zM16 11a3 3 0 1 0 0-6M17 14a5 5 0 0 1 4.5 6" }
   ],
   game: [
-    {
-      slug: "jatuh-buah",
-      nama: "Jatuh Buah",
-      genre: "Gabung buah",
-      ajakan: "Satukan buah kembar sampai jadi Durian sang raja buah!",
-      kategori: ["santai", "otak"],
-      warna: "#F28A4B",
-      sampul: "/jatuh-buah/sampul.jpg",
-      ditambahkan: "2026-09-27",
-      diperbarui: "2026-09-27",
-      orientasi: "Tegak",
-      unggulan: true,
-      deskripsi: [
-        "Jatuh Buah adalah game gabung buah yang santai tapi bikin penasaran. Jatuhkan buah ke dalam peti kayu, dan setiap kali dua buah yang sama bersentuhan, keduanya bersatu menjadi buah yang lebih besar.",
-        "Ada 11 buah Nusantara untuk dikumpulkan, dari ceri, rambutan, duku, dan salak sampai nangka dan Durian sang raja buah yang bermahkota. Gabungkan dua Durian untuk perayaan besar dan bonus 1.000 poin.",
-        "Setiap hari ada tantangan Harian dengan urutan buah yang sama untuk semua pemain, jadi skormu bisa diadu dengan teman. Kirim juga tantangan lewat WhatsApp dan lihat siapa yang lebih jago."
-      ],
-      caraMain: [
-        "Geser untuk membidik, lalu lepas untuk menjatuhkan buah.",
-        "Dua buah yang sama akan bergabung menjadi buah berikutnya.",
-        "Buah yang lebih besar memberi poin lebih banyak, dan gabungan beruntun memberi Kombo.",
-        "Permainan selesai bila buah menumpuk melewati garis merah selama dua detik."
-      ],
-      kontrol: "Di HP: sentuh dan geser. Di komputer: arahkan dan klik mouse, atau tombol panah dan spasi."
-    },
-    {
-      slug: "blok-ledak",
-      nama: "Blok Ledak",
-      genre: "Puzzle balok",
-      ajakan: "Susun balok, penuhi baris, ledakkan!",
-      kategori: ["otak", "santai"],
-      warna: "#7440D6",
-      sampul: "/blok-ledak/sampul.jpg",
-      ditambahkan: "2026-09-27",
-      diperbarui: "2026-09-27",
-      orientasi: "Tegak",
-      unggulan: true,
-      deskripsi: [
-        "Blok Ledak adalah puzzle balok yang gampang dimainkan tapi susah berhenti. Seret balok jeli warna-warni ke papan 8x8, penuhi satu baris atau kolom, dan baloknya meledak jadi kepingan berkilau.",
-        "Hapus beberapa garis sekaligus untuk bonus besar, dan terus menghapus berturut-turut untuk membangun Kombo. Kosongkan seluruh papan untuk teriakan BERSIH! dan kumpulkan lencana dari Perunggu sampai Mahkota.",
-        "Main Harian dengan balok yang sama untuk semua orang dan kejar tiga bintang, atau kirim tautan tantangan ke teman lewat WhatsApp dan lihat siapa yang skornya lebih tinggi."
-      ],
-      caraMain: [
-        "Seret balok dari baki ke papan.",
-        "Penuhi satu baris atau kolom untuk meledakkannya.",
-        "Hapus garis berturut-turut untuk menjaga Kombo tetap menyala.",
-        "Permainan selesai bila tidak ada balok yang muat di papan."
-      ],
-      kontrol: "Di HP: sentuh dan seret. Di komputer: klik dan seret dengan mouse."
-    }
+    { slug: "jatuh-buah", nama: "Jatuh Buah", genre: "Gabung buah", ajakan: "Satukan buah kembar sampai jadi Durian sang raja buah!", kategori: ["santai","otak"], warna: "#F28A4B", sampul: "/jatuh-buah/sampul.jpg", ditambahkan: "2026-09-27", unggulan: true },
+    { slug: "blok-ledak", nama: "Blok Ledak", genre: "Puzzle balok", ajakan: "Susun balok, penuhi baris, ledakkan!", kategori: ["otak","santai"], warna: "#7440D6", sampul: "/blok-ledak/sampul.jpg", ditambahkan: "2026-09-27", unggulan: true },
+    { slug: "tumpuk-lapis", nama: "Tumpuk Lapis", genre: "Tumpuk tepat waktu", ajakan: "Satu ketuk, satu lapis: seberapa tinggi menara kue lapismu?", kategori: ["refleks","santai"], warna: "#FF8FB8", sampul: "/tumpuk-lapis/sampul.jpg", ditambahkan: "2026-09-28", unggulan: true },
+    { slug: "oyen-nyebrang", nama: "Oyen Nyebrang", genre: "Nyebrang jalan", ajakan: "Bantu Oyen nyebrang jalan, kali, dan rel sejauh mungkin!", kategori: ["refleks","santai"], warna: "#F2902E", sampul: "/oyen-nyebrang/sampul.jpg", ditambahkan: "2026-09-28", unggulan: true }
   ]
 };

@@ -1,5 +1,7 @@
 # Pengaturan Netlify untuk situs Dehayuk: halaman depan di akar, setiap game di foldernya sendiri (misal /jatuh-buah/).
-# Semua halaman berupa berkas HTML biasa, jadi tidak ada langkah build.
+# Semua halaman berupa berkas HTML biasa, jadi tidak ada langkah build di Netlify:
+# berkas buatan (katalog ringkas, info/, kartu/, main/, sitemap.xml, robots.txt, _redirects) dibuat di laptop
+# dengan "npm run situs" lalu ikut di-commit.
 # Setiap push ke cabang main di GitHub otomatis ditayangkan ulang oleh Netlify.
 [build]
   publish = "."
@@ -23,7 +25,43 @@
   force = true
 
 [[redirects]]
+  from = "/.github/*"
+  to = "/"
+  status = 302
+  force = true
+
+[[redirects]]
   from = "/STANDAR-GAME.md"
+  to = "/"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/package.json"
+  to = "/"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/package-lock.json"
+  to = "/"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/server.js"
+  to = "/"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/capacitor.config.json"
+  to = "/"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/kartu/sidik.json"
   to = "/"
   status = 302
   force = true
@@ -33,10 +71,33 @@
 [[headers]]
   for = "/*.jpg"
   [headers.values]
-    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=2592000"
 
 [[headers]]
-  for = "/kit/*"
+  for = "/kartu/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=2592000"
+
+[[headers]]
+  for = "/og.png"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=2592000"
+
+# Kit bernomor versi (/kit/v1/) tidak pernah berubah perilaku, jadi disimpan lama. Versi baru (v2) perlu aturan sendiri.
+# Perbaikan bug di v1 tetap sampai ke pemain paling lambat seminggu.
+[[headers]]
+  for = "/kit/v1/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=2592000"
+
+# Alamat lama /kit/kit.js dan /kit/kit.css (salinan v1) tetap pendek, seperti sebelumnya.
+[[headers]]
+  for = "/kit/kit.js"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/kit/kit.css"
   [headers.values]
     Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
 
@@ -44,3 +105,8 @@
   for = "/katalog.js"
   [headers.values]
     Cache-Control = "public, max-age=300, stale-while-revalidate=3600"
+
+[[headers]]
+  for = "/info/*"
+  [headers.values]
+    Cache-Control = "public, max-age=300, stale-while-revalidate=86400"
