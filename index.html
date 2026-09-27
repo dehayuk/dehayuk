@@ -183,6 +183,31 @@
   .cat b { font-family: var(--display); font-weight: 800; font-size: 19px; line-height: 1.1; }
   .cat small { font-weight: 800; font-size: 12px; opacity: .85; }
 
+  /* Halaman main: game dimainkan di dalam portal */
+  .player { display: flex; flex-direction: column; gap: 0; border-radius: 20px; overflow: hidden; background: #05060D; box-shadow: 0 14px 34px rgba(0,0,0,.45); }
+  .stage { position: relative; height: calc(100vh - var(--top-h) - 150px); min-height: 480px; background: #05060D; }
+  .stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: #05060D; }
+  .pbar { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--panel); }
+  .pbar .thumb { width: 46px; height: 46px; border-radius: 12px; flex: none; box-shadow: none; }
+  .pbar .thumb svg { inset: 10%; width: 80%; height: 80%; }
+  .pbar-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .pbar-text b { font-family: var(--display); font-weight: 800; font-size: 20px; line-height: 1.1; }
+  .pbar-text small { color: var(--muted); font-weight: 700; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pbtn { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel-2); font-weight: 800; font-size: 13.5px; cursor: pointer; white-space: nowrap; }
+  .pbtn svg { width: 18px; height: 18px; }
+  .pbtn:hover { border-color: var(--accent); color: var(--accent); }
+  .pcover { position: relative; }
+  .pcover .thumb { aspect-ratio: 16 / 11; border-radius: 22px; }
+  .pcover .thumb svg { inset: 12% 20% 22%; width: 60%; height: 66%; }
+  .pinfo { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; margin-top: -34px; position: relative; z-index: 2; }
+  .pinfo .thumb { width: 76px; height: 76px; border-radius: 20px; border: 3px solid var(--bg); }
+  .pinfo .thumb svg { inset: 10%; width: 80%; height: 80%; }
+  .pinfo h1 { margin: 4px 0 0; font-family: var(--display); font-weight: 800; font-size: 27px; line-height: 1.1; }
+  .pinfo p { margin: 0; color: var(--muted); font-weight: 700; line-height: 1.45; max-width: 34ch; }
+  .pinfo .btn-play { height: 54px; font-size: 21px; padding: 0 34px 0 28px; margin-top: 8px; }
+  .desk-only { display: none; }
+  @media (min-width: 960px) { .desk-only { display: flex; } .mob-only { display: none; } }
+
   footer { color: var(--muted); font-size: 12px; text-align: center; }
   footer a { display: inline-block; padding: 10px 6px; text-decoration: underline; }
 
@@ -248,6 +273,22 @@
     <div id="rows" class="view"></div>
   </div>
 
+  <div class="view" id="vMain" hidden>
+    <div class="player desk-only" id="player">
+      <div class="stage" id="stage"></div>
+      <div class="pbar">
+        <div class="thumb sq" id="pIcon"></div>
+        <div class="pbar-text"><b id="pName"></b><small id="pHook"></small></div>
+        <button class="pbtn" type="button" id="pFull"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Layar penuh</button>
+      </div>
+    </div>
+    <div class="mob-only" id="pMobile" style="flex-direction:column"></div>
+    <section class="sec">
+      <div class="sec-head"><h2>Game lainnya</h2></div>
+      <div class="grid sq" id="more"></div>
+    </section>
+  </div>
+
   <div class="view" id="vCari" hidden>
     <h1 class="page-title">Cari game</h1>
     <label class="field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><input id="q" type="search" placeholder="Nama game atau jenisnya" autocomplete="off" aria-label="Cari game"></label>
@@ -290,7 +331,8 @@
   };
   // Di app Android, tautan harus menunjuk berkas .html; di web cukup foldernya.
   var inApp = document.documentElement.classList.contains("in-app");
-  function hrefOf(g) { return inApp ? "/" + g.slug + "/index.html" : "/" + g.slug + "/"; }
+  function gameUrl(g) { return inApp ? "/" + g.slug + "/index.html" : "/" + g.slug + "/"; }
+  function hrefOf(g) { return inApp ? gameUrl(g) : "#main/" + g.slug; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function read(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
   function write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -372,8 +414,8 @@
   // Pindah halaman lewat tanda # agar tombol Kembali di HP bekerja wajar.
   function show() {
     var h = location.hash.replace("#", "");
-    var view = h === "cari" ? "cari" : h === "permainanku" ? "permainanku" : h === "kategori" || h.indexOf("k-") === 0 ? "kategori" : "home";
-    ["Home", "Cari", "Permainanku", "Kategori"].forEach(function (v) { document.getElementById("v" + v).hidden = v.toLowerCase() !== view; });
+    var view = h.indexOf("main/") === 0 && bySlug[h.slice(5)] ? "main" : h === "cari" ? "cari" : h === "permainanku" ? "permainanku" : h === "kategori" || h.indexOf("k-") === 0 ? "kategori" : "home";
+    ["Home", "Main", "Cari", "Permainanku", "Kategori"].forEach(function (v) { document.getElementById("v" + v).hidden = v.toLowerCase() !== view; });
     var navId = h.indexOf("k-") === 0 ? h : view;
     document.querySelectorAll("[data-nav]").forEach(function (a) {
       if (a.dataset.nav === navId || (a.closest(".nav") && a.dataset.nav === "kategori" && h.indexOf("k-") === 0)) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
@@ -386,10 +428,45 @@
       grid.hidden = !c;
       if (c) grid.innerHTML = inCat(c.id).map(function (g) { return card(g, "wide"); }).join("");
     }
+    renderPlayer(view === "main" ? bySlug[h.slice(5)] : null);
     if (view === "cari") { renderSearch(); setTimeout(function () { try { q.focus(); } catch (e) {} }, 50); }
     renderRecent();
     window.scrollTo(0, 0);
   }
+  // Halaman main: di komputer game dimainkan di dalam portal, di HP sampul besar lalu layar penuh.
+  var stage = document.getElementById("stage"), current = null;
+  var wide = window.matchMedia ? window.matchMedia("(min-width: 960px)") : { matches: false };
+  function renderPlayer(g) {
+    if (!g) { stage.innerHTML = ""; current = null; document.title = "Dehayuk"; return; }
+    document.title = g.name + " · Dehayuk";
+    if (current !== g.slug || (wide.matches && !stage.firstChild)) {
+      current = g.slug;
+      stage.innerHTML = "";
+      if (wide.matches) {
+        var f = document.createElement("iframe");
+        f.src = gameUrl(g); f.title = g.name; f.allow = "fullscreen; autoplay"; f.setAttribute("allowfullscreen", "");
+        // Tombol kembali milik game disembunyikan; bilah portal sudah ada di atasnya.
+        f.addEventListener("load", function () {
+          try { var st = f.contentDocument.createElement("style"); st.textContent = "a[href=\"/\"]{visibility:hidden!important}"; f.contentDocument.head.appendChild(st); } catch (e) {}
+        });
+        stage.appendChild(f);
+      }
+      document.getElementById("pIcon").setAttribute("style", "--c:" + g.c);
+      document.getElementById("pIcon").innerHTML = g.svg;
+      document.getElementById("pName").textContent = g.name;
+      document.getElementById("pHook").textContent = g.tag + " · " + g.hook;
+      document.getElementById("pMobile").innerHTML =
+        '<div class="pcover"><div class="thumb" style="--c:' + g.c + '">' + g.svg + '</div></div>' +
+        '<div class="pinfo"><div class="thumb sq" style="--c:' + g.c + '">' + g.svg + '</div><h1>' + esc(g.name) + '</h1><p>' + esc(g.hook) + '</p><a class="btn-play" href="' + gameUrl(g) + '">Main</a></div>';
+      document.getElementById("more").innerHTML = GAMES.filter(function (x) { return x !== g; }).map(function (x) { return card(x, "sq"); }).join("");
+    }
+  }
+  document.getElementById("pFull").addEventListener("click", function () {
+    var el = document.getElementById("stage");
+    var fn = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (fn) { try { var p = fn.call(el); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
+  });
+  if (wide.addEventListener) wide.addEventListener("change", function () { current = null; show(); });
   window.addEventListener("hashchange", show);
   show();
 })();
