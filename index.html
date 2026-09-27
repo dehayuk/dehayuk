@@ -2,7 +2,7 @@
 <html lang="id">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0E3534">
+<meta name="theme-color" content="#0D0F1C">
 <title>Dehayuk</title>
 <meta name="description" content="Dehayuk: kumpulan game ringan buatan Indonesia. Main di browser atau pasang di HP Android.">
 <script>
@@ -11,245 +11,386 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;800&display=swap">
 <style>
   :root {
     color-scheme: dark;
-    --ground: #0E3534;
-    --board: #15504D;
-    --board-edge: #1E6763;
-    --tile: #F4C152;
-    --tile-shade: #C9952A;
-    --tile-ink: #3B2A05;
-    --ink: #EAF6F3;
-    --muted: #9EC6C0;
+    --bg: #0D0F1C;
+    --panel: #161A2E;
+    --panel-2: #1F2440;
+    --line: #2B3155;
+    --ink: #F2F3FB;
+    --muted: #A5AACB;
+    --accent: #F4C152;
+    --accent-2: #FFD978;
+    --accent-ink: #3B2A05;
+    --new: #7B5CFF;
     --display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
     --body: "Nunito", "Segoe UI", system-ui, sans-serif;
+    --top-h: 62px;
+    --side-w: 76px;
+    --nav-h: 64px;
   }
   [hidden] { display: none !important; }
   *, *::before, *::after { box-sizing: border-box; }
-  body { margin: 0; background: var(--ground); color: var(--ink); font-family: var(--body); font-size: 15px; }
-  .wrap { max-width: 720px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 40px; display: flex; flex-direction: column; gap: 28px; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; overflow-x: clip; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; -webkit-tap-highlight-color: transparent; }
+  main { overflow-x: clip; }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  svg text { font-family: var(--display); font-weight: 800; }
 
-  .brand { display: flex; flex-direction: column; gap: 6px; }
-  .wordmark { font-family: var(--display); font-weight: 800; font-size: 44px; line-height: 1; letter-spacing: .5px; margin: 0; }
-  .wordmark span { color: var(--tile); }
-  .tagline { margin: 0; color: var(--muted); font-size: 16px; max-width: 46ch; line-height: 1.5; }
-
-  .section-label { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin: 0 0 -14px; }
-  .games { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
-
-  .game {
-    background: var(--board); border: 1px solid var(--board-edge); border-radius: 16px;
-    padding: 18px; display: flex; flex-direction: column; gap: 14px;
+  /* Bilah atas */
+  .top {
+    position: sticky; top: 0; z-index: 30; height: calc(var(--top-h) + env(safe-area-inset-top, 0px));
+    padding: env(safe-area-inset-top, 0px) 16px 0; display: flex; align-items: center; gap: 14px;
+    background: rgba(13, 15, 28, .92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,.06);
   }
-  .game h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 26px; line-height: 1.1; }
-  .game p { margin: 0; color: var(--muted); line-height: 1.5; }
-  .features { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
-  .features li { font-size: 12px; font-weight: 800; color: var(--ink); background: var(--ground); border: 1px solid var(--board-edge); padding: 3px 9px; border-radius: 999px; }
-  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
-  .btn {
-    display: inline-block; text-decoration: none; text-align: center; border-radius: 10px;
-    padding: 10px 16px; font-family: var(--body); font-weight: 800; font-size: 14px;
-    border: 1px solid var(--board-edge); color: var(--ink); background: transparent;
+  .logo { display: flex; align-items: center; gap: 9px; flex: none; }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; flex: none;
+    background: linear-gradient(145deg, var(--accent-2), var(--accent)); box-shadow: inset 0 -3px 0 #C9952A;
+    font-family: var(--display); font-weight: 800; font-size: 22px; color: var(--accent-ink); line-height: 1; padding-top: 3px;
   }
-  .btn.main { background: var(--tile); color: var(--tile-ink); border: 0; box-shadow: inset 0 -3px 0 var(--tile-shade); font-family: var(--display); font-size: 17px; }
-  .btn small { display: block; font-weight: 600; font-size: 11px; color: var(--muted); }
-  .btn.install { align-self: flex-start; margin-top: 8px; border-color: var(--tile-shade); text-align: left; }
-  a:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  .logo-word { font-family: var(--display); font-weight: 800; font-size: 25px; line-height: 1; letter-spacing: .2px; }
+  .logo-word span { color: var(--accent); }
+  .search {
+    flex: 1; max-width: 460px; margin: 0 auto; display: none; align-items: center; gap: 10px; height: 42px; padding: 0 16px;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; color: var(--muted); cursor: text;
+  }
+  .search svg { width: 18px; height: 18px; flex: none; }
+  .top-end { margin-left: auto; display: flex; gap: 8px; }
+  .install {
+    display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 16px; border-radius: 999px; white-space: nowrap;
+    background: var(--accent); color: var(--accent-ink); font-weight: 800; font-size: 13.5px; box-shadow: inset 0 -3px 0 #C9952A;
+  }
+  .install svg { width: 16px; height: 16px; }
 
-  /* Ikon tiap game: gambar yang menggambarkan cara mainnya (bukan nama game), tinggi sama untuk semua.
-     Dibuat dengan CSS, tanpa berkas gambar. */
-  .art { height: 38px; display: flex; align-items: flex-end; gap: 5px; }
-  .art .letter {
-    width: 30px; height: 30px; border-radius: 7px; display: grid; place-items: center; font-style: normal;
-    background: var(--tile); color: var(--tile-ink); box-shadow: inset 0 -3px 0 var(--tile-shade);
-    font-family: var(--display); font-weight: 800; font-size: 17px;
+  /* Menu samping (komputer) dan menu bawah (HP) */
+  .side { display: none; }
+  .nav a, .side a {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    color: var(--muted); font-size: 11px; font-weight: 800; border-radius: 14px;
   }
-  .art.blocks { display: grid; grid-template-columns: repeat(5, 16px); grid-template-rows: repeat(2, 16px); gap: 3px; align-content: end; }
-  .art .block { width: 16px; height: 16px; border-radius: 4px; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .25); }
-  .art .tube {
-    width: 22px; height: 38px; border: 2px solid #C9A46A; border-top: 0; border-radius: 0 0 11px 11px;
-    display: flex; flex-direction: column-reverse; align-items: center; gap: 1px; padding-bottom: 2px;
+  .nav svg, .side svg { width: 24px; height: 24px; }
+  .nav a[aria-current="page"], .side a[aria-current="page"] { color: var(--accent); }
+  .nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: grid; grid-template-columns: repeat(4, 1fr);
+    height: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(13, 15, 28, .96); border-top: 1px solid rgba(255,255,255,.07);
   }
-  .art .ball { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset -2px -2px 0 rgba(0, 0, 0, .25); }
+  .nav a[aria-current="page"] svg { filter: drop-shadow(0 0 8px rgba(244,193,82,.55)); }
 
-  .art .fruit { border-radius: 50%; box-shadow: inset -3px -3px 0 rgba(0, 0, 0, .22); }
-  .art.boat { position: relative; width: 96px; background: #8A5A2B; border-radius: 19px; align-items: center; justify-content: center; gap: 4px; padding: 0 5px; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .25); }
-  .art .pits { display: grid; grid-template-columns: repeat(4, 11px); gap: 4px; }
-  .art .pit { width: 11px; height: 11px; border-radius: 50%; background: radial-gradient(circle at 50% 60%, #F3E6C8 0 2px, #4A2E12 2.5px); }
-  .art .store { width: 10px; height: 26px; border-radius: 6px; background: #4A2E12; }
-  .art.paper { position: relative; width: 38px; background: #FDFCF6; border-radius: 4px; }
-  .art.paper i { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #2B3A55; }
-  .art.paper b { position: absolute; }
-  .art.pairs { display: grid; grid-template-columns: repeat(3, 11px); grid-template-rows: repeat(3, 11px); gap: 2px; position: relative; }
-  .art .cell { width: 11px; height: 11px; border-radius: 3px; background: #2E8A84; }
-  .art .cell.twin { background: var(--tile); box-shadow: inset 0 -2px 0 var(--tile-shade); }
-  .art .link { position: absolute; background: #5FE3F0; border-radius: 2px; }
-  .art.cake { flex-direction: column; align-items: center; justify-content: flex-end; gap: 1px; width: 60px; }
-  .art .layer { height: 6px; border-radius: 3px; }
-  .art .plate { width: 60px; height: 3px; border-radius: 2px; background: #EAF6F3; }
+  main { padding: 18px 16px calc(var(--nav-h) + 28px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 26px; min-width: 0; }
+  .view { display: flex; flex-direction: column; gap: 26px; min-width: 0; }
+  .sec { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .sec-head h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 21px; line-height: 1.15; }
+  .sec-head a { color: var(--muted); font-weight: 800; font-size: 13px; white-space: nowrap; padding: 6px 0; }
+
+  /* Sampul game: warna sendiri, gambar, dan kilau */
+  .thumb {
+    position: relative; overflow: hidden; border-radius: 18px; isolation: isolate; background: var(--c);
+    box-shadow: 0 8px 18px rgba(0,0,0,.35); transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .thumb::before {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background:
+      radial-gradient(circle at 78% 22%, rgba(255,255,255,.32), transparent 52%),
+      repeating-linear-gradient(135deg, rgba(255,255,255,.07) 0 14px, transparent 14px 28px),
+      linear-gradient(180deg, transparent 45%, rgba(0,0,0,.28));
+  }
+  .thumb svg { position: absolute; filter: drop-shadow(0 6px 8px rgba(0,0,0,.28)); }
+  .thumb.sq { aspect-ratio: 1; }
+  .thumb.sq svg { inset: 11%; width: 78%; height: 78%; }
+  .thumb.wide { aspect-ratio: 16 / 10; }
+  .thumb.wide svg { right: 3%; top: 10%; height: 80%; width: auto; aspect-ratio: 1; }
+  .card.w b, .card.w small { display: none; }
+  .ttl {
+    position: absolute; left: 6%; bottom: 9%; max-width: 54%; font-family: var(--display); font-weight: 800; line-height: .92;
+    color: #fff; font-size: clamp(18px, 6.2vw, 30px); text-shadow: 0 3px 0 rgba(0,0,0,.35), 0 0 14px rgba(0,0,0,.25);
+    -webkit-text-stroke: 1.2px rgba(0,0,0,.28); paint-order: stroke fill; text-wrap: balance;
+  }
+  .badge {
+    position: absolute; left: 9px; top: 9px; z-index: 2; font-size: 10.5px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase;
+    background: var(--new); color: #fff; padding: 3px 8px; border-radius: 7px; box-shadow: 0 2px 6px rgba(0,0,0,.3);
+  }
+  .play-dot {
+    position: absolute; right: 10px; bottom: 10px; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+    background: #fff; opacity: 0; transform: scale(.7); transition: opacity .18s, transform .18s; box-shadow: 0 4px 10px rgba(0,0,0,.35);
+  }
+  .play-dot::before { content: ""; margin-left: 3px; border-left: 12px solid #17192B; border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+  @media (hover: hover) {
+    a:hover > .thumb, a:hover .thumb { transform: translateY(-3px) scale(1.02); box-shadow: 0 16px 28px rgba(0,0,0,.5); }
+    a:hover .play-dot { opacity: 1; transform: none; }
+  }
+  a:active .thumb { transform: scale(.97); }
+
+  .card { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+  .card b { font-weight: 800; font-size: 13.5px; line-height: 1.2; padding: 0 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .card small { color: var(--muted); font-weight: 800; font-size: 11.5px; padding: 0 2px; margin-top: -5px; }
+
+  /* Pilihan hari ini */
+  .spot { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .hero { grid-column: 1 / -1; position: relative; }
+  .hero > .thumb { aspect-ratio: 16 / 10; border-radius: 22px; }
+  .hero > .thumb svg { right: 6%; top: 6%; height: 76%; width: auto; aspect-ratio: 1; animation: bob 3.4s ease-in-out infinite; }
+  .hero-bar {
+    position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 12px; padding: 14px;
+    background: linear-gradient(0deg, rgba(8,9,20,.88), rgba(8,9,20,.55) 60%, transparent);
+    border-radius: 0 0 22px 22px;
+  }
+  .hero-icon { width: 50px; height: 50px; border-radius: 13px; flex: none; }
+  .hero-icon svg { inset: 10%; width: 80%; height: 80%; }
+  .hero-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .hero-text b { font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1.05; }
+  .hero-text small { color: #D6D9EE; font-weight: 700; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .btn-play {
+    flex: none; display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px 0 16px; border-radius: 999px;
+    background: var(--accent); color: var(--accent-ink); font-family: var(--display); font-weight: 800; font-size: 18px;
+    box-shadow: inset 0 -3px 0 #C9952A, 0 6px 14px rgba(0,0,0,.35);
+  }
+  .btn-play::before { content: ""; border-left: 11px solid currentColor; border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
+  .kicker { position: absolute; left: 14px; top: 14px; z-index: 2; font-size: 11px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; background: rgba(8,9,20,.55); padding: 5px 10px; border-radius: 999px; }
+  @keyframes bob { 50% { transform: translateY(-6px) rotate(-2deg); } }
+
+  /* Baris yang bisa digeser */
+  .rail { display: grid; grid-auto-flow: column; grid-auto-columns: 62%; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; scrollbar-width: none; margin: 0 -16px; padding: 2px 16px 8px; }
+  .rail::-webkit-scrollbar { display: none; }
+  .rail > * { scroll-snap-align: start; }
+  .rail.small { grid-auto-columns: 27%; }
+
+  .spot .extra { display: none; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 12px; }
+  .grid.sq { grid-template-columns: repeat(3, 1fr); }
+
+  /* Cari, Permainanku, Kategori */
+  .page-title { margin: 0; font-family: var(--display); font-weight: 800; font-size: 26px; }
+  .field { display: flex; align-items: center; gap: 10px; height: 50px; padding: 0 16px; border-radius: 16px; background: var(--panel-2); border: 1px solid var(--line); }
+  .field svg { width: 20px; height: 20px; color: var(--muted); flex: none; }
+  .field input { flex: 1; min-width: 0; background: none; border: 0; color: var(--ink); font: 800 16px var(--body); outline: none; }
+  .empty { text-align: center; color: var(--muted); padding: 30px 10px; display: flex; flex-direction: column; align-items: center; gap: 12px; line-height: 1.5; }
+  .empty b { color: var(--ink); font-family: var(--display); font-size: 19px; }
+  .cats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .cat {
+    position: relative; overflow: hidden; min-height: 96px; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; justify-content: flex-end;
+    background: var(--c); box-shadow: 0 8px 18px rgba(0,0,0,.3); isolation: isolate;
+  }
+  .cat::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(circle at 85% 15%, rgba(255,255,255,.3), transparent 55%), linear-gradient(180deg, transparent 40%, rgba(0,0,0,.25)); }
+  .cat svg { position: absolute; right: 12px; top: 12px; width: 34px; height: 34px; color: rgba(255,255,255,.9); }
+  .cat b { font-family: var(--display); font-weight: 800; font-size: 19px; line-height: 1.1; }
+  .cat small { font-weight: 800; font-size: 12px; opacity: .85; }
 
   footer { color: var(--muted); font-size: 12px; text-align: center; }
+  footer a { display: inline-block; padding: 10px 6px; text-decoration: underline; }
+
+  @media (min-width: 720px) {
+    .search { display: flex; }
+    .rail { grid-auto-columns: 34%; }
+    .rail.small { grid-auto-columns: 17%; }
+    .grid { grid-template-columns: repeat(3, 1fr); }
+    .grid.sq { grid-template-columns: repeat(5, 1fr); }
+    .cats { grid-template-columns: repeat(4, 1fr); }
+    .ttl { font-size: 26px; }
+  }
+  @media (min-width: 960px) {
+    .nav { display: none; }
+    .side {
+      display: flex; flex-direction: column; gap: 4px; position: fixed; left: 0; top: var(--top-h); bottom: 0; width: var(--side-w);
+      padding: 12px 6px; border-right: 1px solid rgba(255,255,255,.06); background: var(--bg); z-index: 20;
+    }
+    .side a { padding: 10px 2px; text-align: center; }
+    .side a:hover { background: var(--panel); color: var(--ink); }
+    .side hr { border: 0; border-top: 1px solid var(--line); margin: 6px 10px; }
+    main { margin-left: var(--side-w); padding: 22px 28px 40px; max-width: 1280px; }
+    .rail { margin: 0 -28px; padding: 2px 28px 8px; scroll-padding-inline: 28px; grid-auto-columns: 24%; }
+    .rail.small { grid-auto-columns: 12%; }
+    .spot { grid-template-columns: repeat(4, 1fr); grid-template-rows: auto auto; }
+    .hero { grid-column: 1 / 3; grid-row: 1 / 3; }
+    .hero > .thumb { aspect-ratio: auto; height: 100%; min-height: 320px; }
+    .spot .card:not(.hero) .thumb { aspect-ratio: 16 / 10; }
+    .spot .card:not(.hero) .thumb svg { inset: auto; right: 5%; top: 8%; height: 84%; width: auto; aspect-ratio: 1; }
+    .spot .extra { display: flex; }
+    .grid { grid-template-columns: repeat(4, 1fr); }
+    .grid.sq { grid-template-columns: repeat(6, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero > .thumb svg { animation: none; }
+    .thumb, .play-dot { transition: none; }
+  }
 </style>
 
-<div class="wrap">
-  <header class="brand">
-    <h1 class="wordmark">Deha<span>yuk</span></h1>
-    <p class="tagline">Kumpulan game ringan buatan Indonesia. Main di browser tanpa pasang apa pun, atau pasang di HP Android.</p>
-    <a class="btn install" href="https://github.com/dehayuk/dehayuk/releases/latest/download/dehayuk.apk">Pasang app Dehayuk<small>semua game dalam satu app · khusus HP Android</small></a>
-  </header>
+<header class="top">
+  <a class="logo" href="#" data-view="home" aria-label="Dehayuk, beranda">
+    <span class="logo-mark" aria-hidden="true">D</span>
+    <span class="logo-word">Deha<span>yuk</span></span>
+  </a>
+  <a class="search" href="#cari" data-view="cari"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Cari game</a>
+  <div class="top-end">
+    <a class="install" href="https://github.com/dehayuk/dehayuk/releases/latest/download/dehayuk.apk"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 3h2v10.2l3.6-3.6 1.4 1.4L12 17l-6-6 1.4-1.4 3.6 3.6zM5 19h14v2H5z"/></svg>Pasang app</a>
+  </div>
+</header>
 
-  <p class="section-label">Game</p>
-  <div class="games">
-    <article class="game">
-      <div class="art" aria-hidden="true"><i class="letter">K</i><i class="letter">A</i><i class="letter">T</i><i class="letter">A</i></div>
-      <h2>NalarGame</h2>
-      <p>Susun huruf menjadi kata dari ribuan kata bahasa Indonesia. Ada juga Mode Kilat, tebak kata jenaka, dan Tebak Aku bersama teman.</p>
-      <ul class="features">
-        <li>Tanpa batas</li>
-        <li>Harian</li>
-        <li>Tantang teman</li>
-      </ul>
-      <div class="actions">
-        <a class="btn main" href="/nalargame/">Main sekarang</a>
-      </div>
-    </article>
+<nav class="side" id="side" aria-label="Menu"></nav>
 
-    <article class="game">
-      <div class="art blocks" aria-hidden="true">
-        <i class="block" style="background:#F4C152"></i><i class="block" style="background:#F4C152"></i><i></i><i class="block" style="background:#6EC1FF"></i><i class="block" style="background:#6EC1FF"></i>
-        <i class="block" style="background:#FF7A70"></i><i class="block" style="background:#F4C152"></i><i class="block" style="background:#7FE0A3"></i><i class="block" style="background:#7FE0A3"></i><i class="block" style="background:#6EC1FF"></i>
-      </div>
-      <h2>Balok Ria</h2>
-      <p>Seret balok ke papan, penuhi baris atau kolom sampai meledak. Dua menit semainan, dan selalu ingin sekali lagi.</p>
-      <ul class="features">
-        <li>Tanpa batas</li>
-        <li>Harian</li>
-        <li>Tantang teman</li>
-      </ul>
-      <div class="actions">
-        <a class="btn main" href="/balok-ria/">Main sekarang</a>
-      </div>
-    </article>
-
-    <article class="game">
-      <div class="art" aria-hidden="true">
-        <span class="tube"><i class="ball" style="background:#FF7A70"></i><i class="ball" style="background:#6EC1FF"></i></span>
-        <span class="tube"><i class="ball" style="background:#6EC1FF"></i><i class="ball" style="background:#7FE0A3"></i><i class="ball" style="background:#FF7A70"></i></span>
-        <span class="tube"><i class="ball" style="background:#7FE0A3"></i></span>
-      </div>
-      <h2>Pilah Kelereng</h2>
-      <p>Kelerengnya tercampur! Pindahkan antar tabung bambu sampai setiap tabung berisi satu warna. Santai, tanpa waktu, dan levelnya tidak pernah habis.</p>
-      <ul class="features">
-        <li>Tanpa batas</li>
-        <li>Harian</li>
-        <li>Tantang teman</li>
-      </ul>
-      <div class="actions">
-        <a class="btn main" href="/pilah-kelereng/">Main sekarang</a>
-      </div>
-    </article>
-
-    <article class="game">
-      <div class="art" aria-hidden="true">
-        <i class="fruit" style="width:10px;height:10px;background:#E5484D"></i>
-        <i class="fruit" style="width:16px;height:16px;background:#F59A3B"></i>
-        <i class="fruit" style="width:23px;height:23px;background:#F4C152"></i>
-        <i class="fruit" style="width:32px;height:32px;background:#8FA83A"></i>
-      </div>
-      <h2>Jatuh Buah</h2>
-      <p>Jatuhkan buah ke bakul. Dua buah kembar bersatu jadi buah yang lebih besar, terus sampai durian sang raja buah, sebelum bakulnya penuh.</p>
-      <ul class="features">
-        <li>Tanpa batas</li>
-        <li>Harian</li>
-        <li>Tantang teman</li>
-      </ul>
-      <div class="actions">
-        <a class="btn main" href="/jatuh-buah/">Main sekarang</a>
-      </div>
-    </article>
-
-    <article class="game">
-      <div class="art boat" aria-hidden="true">
-        <i class="store"></i>
-        <span class="pits"><i class="pit"></i><i class="pit"></i><i class="pit"></i><i class="pit"></i><i class="pit"></i><i class="pit"></i><i class="pit"></i><i class="pit"></i></span>
-        <i class="store"></i>
-      </div>
-      <h2>Congklak</h2>
-      <p>Permainan warisan nenek moyang. Lawan komputer, atau main berdua bersama keluarga di satu HP.</p>
-      <ul class="features">
-        <li>Tanpa batas</li>
-        <li>Harian</li>
-        <li>Tantang teman</li>
-      </ul>
-      <div class="actions">
-        <a class="btn main" href="/congklak/">Main sekarang</a>
-      </div>
-    </article>
-
-    <article class="game">
-      <div class="art paper" aria-hidden="true">
-        <b style="left:4px;top:4px;width:15px;height:15px;background:#FFB3AE"></b>
-        <b style="left:19px;top:19px;width:15px;height:15px;background:#A9D8FF"></b>
-        <b style="left:4px;top:3px;width:30px;height:3px;background:#2B3A55;border-radius:2px"></b>
-        <i style="left:2px;top:2px"></i><i style="left:17px;top:2px"></i><i style="left:32px;top:2px"></i>
-        <i style="left:2px;top:17px"></i><i style="left:17px;top:17px"></i><i style="left:32px;top:17px"></i>
-        <i style="left:2px;top:32px"></i><i style="left:17px;top:32px"></i><i style="left:32px;top:32px"></i>
-      </div>
-      <h2>Titik Kotak</h2>
-      <p>Permainan titik-titik di belakang buku tulis. Tarik garis, tutup kotaknya, dan kuasai papan melawan komputer atau keluarga.</p>
-      <ul class="features">
-        <li>Tanpa batas</li>
-        <li>Harian</li>
-        <li>Tantang teman</li>
-      </ul>
-      <div class="actions">
-        <a class="btn main" href="/titik-kotak/">Main sekarang</a>
-      </div>
-    </article>
-
-    <article class="game">
-      <div class="art pairs" aria-hidden="true">
-        <i class="cell twin"></i><i></i><i></i>
-        <i class="cell"></i><i class="cell"></i><i></i>
-        <i class="cell"></i><i class="cell"></i><i class="cell twin"></i>
-        <b class="link" style="left:5px;top:4px;width:30px;height:3px"></b>
-        <b class="link" style="left:32px;top:4px;width:3px;height:30px"></b>
-      </div>
-      <h2>Sambung Kembar</h2>
-      <p>Temukan dua ubin kembar yang bisa disambung garis dengan paling banyak dua belokan, lalu bersihkan papan secepatnya.</p>
-      <ul class="features">
-        <li>Tanpa batas</li>
-        <li>Harian</li>
-        <li>Tantang teman</li>
-      </ul>
-      <div class="actions">
-        <a class="btn main" href="/sambung-kembar/">Main sekarang</a>
-      </div>
-    </article>
-
-    <article class="game">
-      <div class="art cake" aria-hidden="true">
-        <i class="layer" style="width:40px;background:#B784E8;margin-left:4px"></i>
-        <i class="layer" style="width:44px;background:#FF8FB1;margin-right:3px"></i>
-        <i class="layer" style="width:48px;background:#F4C152"></i>
-        <i class="layer" style="width:51px;background:#9C6B3F;margin-left:3px"></i>
-        <i class="layer" style="width:54px;background:#5CC98A"></i>
-        <i class="plate"></i>
-      </div>
-      <h2>Lapis Menjulang</h2>
-      <p>Ketuk tepat waktu dan susun kue lapis setinggi langit. Main sendiri, atau gantian berdua di satu HP.</p>
-      <ul class="features">
-        <li>Tanpa batas</li>
-        <li>Harian</li>
-        <li>Tantang teman</li>
-      </ul>
-      <div class="actions">
-        <a class="btn main" href="/lapis-menjulang/">Main sekarang</a>
-      </div>
-    </article>
+<main>
+  <div class="view" id="vHome">
+    <section class="sec">
+      <div class="sec-head"><h2>Pilihan hari ini</h2></div>
+      <div class="spot" id="spot"></div>
+    </section>
+    <section class="sec" id="recentSec" hidden>
+      <div class="sec-head"><h2>Terakhir dimainkan</h2><a href="#permainanku">Lihat semua ›</a></div>
+      <div class="rail small" id="recentRail"></div>
+    </section>
+    <div id="rows" class="view"></div>
   </div>
 
-  <footer>© 2026 Dehayuk · <a href="/privasi/" style="color: inherit">Kebijakan Privasi</a></footer>
-</div>
+  <div class="view" id="vCari" hidden>
+    <h1 class="page-title">Cari game</h1>
+    <label class="field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><input id="q" type="search" placeholder="Nama game atau jenisnya" autocomplete="off" aria-label="Cari game"></label>
+    <div class="grid sq" id="results"></div>
+    <div class="empty" id="noResult" hidden><b>Belum ketemu</b>Coba kata lain, misalnya "buah", "kata", atau "berdua".</div>
+  </div>
+
+  <div class="view" id="vPermainanku" hidden>
+    <h1 class="page-title">Permainanku</h1>
+    <div class="grid" id="mine"></div>
+    <div class="empty" id="mineEmpty" hidden><b>Belum ada game yang dimainkan</b>Game yang pernah kamu buka akan muncul di sini.<a class="btn-play" href="#">Cari game</a></div>
+  </div>
+
+  <div class="view" id="vKategori" hidden>
+    <h1 class="page-title" id="catTitle">Kategori</h1>
+    <div class="cats" id="cats"></div>
+    <div class="grid" id="catGrid" hidden></div>
+  </div>
+
+  <footer>© 2026 Dehayuk · Game ringan buatan Indonesia · <a href="/privasi/">Kebijakan Privasi</a></footer>
+</main>
+
+<nav class="nav" id="nav" aria-label="Menu utama"></nav>
+
+<script>
+(function () {
+  var GAMES = [{"slug":"nalargame","cat":["otak"],"hook":"Susun huruf jadi kata, ribuan kata bahasa Indonesia.","c":"#6A4BC4","svg":"<svg viewBox=\"0 0 100 100\"><g transform=\"rotate(-9 28 36)\"><rect x=\"12\" y=\"22\" width=\"32\" height=\"32\" rx=\"7\" fill=\"#C9952A\"/><rect x=\"12\" y=\"20\" width=\"32\" height=\"31\" rx=\"7\" fill=\"#F4C152\"/><text x=\"28\" y=\"44\" text-anchor=\"middle\" font-size=\"22\" fill=\"#3B2A05\">K</text></g><g transform=\"rotate(7 70 30)\"><rect x=\"54\" y=\"16\" width=\"32\" height=\"32\" rx=\"7\" fill=\"#C9952A\"/><rect x=\"54\" y=\"14\" width=\"32\" height=\"31\" rx=\"7\" fill=\"#F4C152\"/><text x=\"70\" y=\"38\" text-anchor=\"middle\" font-size=\"22\" fill=\"#3B2A05\">A</text></g><g transform=\"rotate(4 30 76)\"><rect x=\"14\" y=\"62\" width=\"32\" height=\"32\" rx=\"7\" fill=\"#C9952A\"/><rect x=\"14\" y=\"60\" width=\"32\" height=\"31\" rx=\"7\" fill=\"#F4C152\"/><text x=\"30\" y=\"84\" text-anchor=\"middle\" font-size=\"22\" fill=\"#3B2A05\">T</text></g><g transform=\"rotate(-6 70 72)\"><rect x=\"54\" y=\"58\" width=\"32\" height=\"32\" rx=\"7\" fill=\"#DDD3F7\"/><rect x=\"54\" y=\"56\" width=\"32\" height=\"31\" rx=\"7\" fill=\"#fff\"/><text x=\"70\" y=\"80\" text-anchor=\"middle\" font-size=\"22\" fill=\"#6A4BC4\">A</text></g></svg>","name":"NalarGame","tag":"Kata"},{"slug":"balok-ria","cat":["otak","santai"],"hook":"Penuhi baris atau kolom sampai meledak.","c":"#2F6CD6","svg":"<svg viewBox=\"0 0 100 100\"><rect x=\"12\" y=\"38\" width=\"76\" height=\"58\" rx=\"9\" fill=\"#1B3F82\"/><g fill=\"#274F9C\"><rect x=\"17\" y=\"43\" width=\"12\" height=\"12\" rx=\"3\"/><rect x=\"31\" y=\"43\" width=\"12\" height=\"12\" rx=\"3\"/><rect x=\"45\" y=\"43\" width=\"12\" height=\"12\" rx=\"3\"/><rect x=\"59\" y=\"43\" width=\"12\" height=\"12\" rx=\"3\"/><rect x=\"73\" y=\"43\" width=\"12\" height=\"12\" rx=\"3\"/><rect x=\"17\" y=\"57\" width=\"12\" height=\"12\" rx=\"3\"/><rect x=\"73\" y=\"57\" width=\"12\" height=\"12\" rx=\"3\"/></g><g fill=\"#FF7A70\"><rect x=\"31\" y=\"57\" width=\"12\" height=\"12\" rx=\"3\"/><rect x=\"45\" y=\"57\" width=\"12\" height=\"12\" rx=\"3\"/><rect x=\"59\" y=\"57\" width=\"12\" height=\"12\" rx=\"3\"/></g><g fill=\"#7FE0A3\"><rect x=\"17\" y=\"71\" width=\"12\" height=\"12\" rx=\"3\"/><rect x=\"31\" y=\"71\" width=\"12\" height=\"12\" rx=\"3\"/><rect x=\"17\" y=\"85\" width=\"12\" height=\"7\" rx=\"3\"/></g><g fill=\"#6EC1FF\"><rect x=\"59\" y=\"71\" width=\"12\" height=\"12\" rx=\"3\"/><rect x=\"73\" y=\"71\" width=\"12\" height=\"12\" rx=\"3\"/><rect x=\"73\" y=\"85\" width=\"12\" height=\"7\" rx=\"3\"/></g><g fill=\"#F4C152\"><rect x=\"45\" y=\"71\" width=\"12\" height=\"12\" rx=\"3\"/><rect x=\"31\" y=\"85\" width=\"12\" height=\"7\" rx=\"3\"/><rect x=\"45\" y=\"85\" width=\"12\" height=\"7\" rx=\"3\"/><rect x=\"59\" y=\"85\" width=\"12\" height=\"7\" rx=\"3\"/></g><g transform=\"rotate(-8 50 18)\" fill=\"#F4C152\"><rect x=\"30\" y=\"6\" width=\"13\" height=\"13\" rx=\"3\"/><rect x=\"44\" y=\"6\" width=\"13\" height=\"13\" rx=\"3\"/><rect x=\"58\" y=\"6\" width=\"13\" height=\"13\" rx=\"3\"/><rect x=\"44\" y=\"20\" width=\"13\" height=\"13\" rx=\"3\"/></g></svg>","name":"Balok Ria","tag":"Balok"},{"slug":"pilah-kelereng","cat":["otak","santai"],"hook":"Pilah kelereng sampai tiap tabung satu warna.","c":"#14907F","svg":"<svg viewBox=\"0 0 100 100\"><g fill=\"none\" stroke=\"#E8C98E\" stroke-width=\"3.5\"><path d=\"M16 22v58a9 9 0 0 0 18 0V22\"/><path d=\"M41 22v58a9 9 0 0 0 18 0V22\"/><path d=\"M66 22v58a9 9 0 0 0 18 0V22\"/></g><circle cx=\"25\" cy=\"80\" r=\"7\" fill=\"#FF7A70\"/><circle cx=\"25\" cy=\"65\" r=\"7\" fill=\"#6EC1FF\"/><circle cx=\"25\" cy=\"50\" r=\"7\" fill=\"#FF7A70\"/><circle cx=\"50\" cy=\"80\" r=\"7\" fill=\"#6EC1FF\"/><circle cx=\"50\" cy=\"65\" r=\"7\" fill=\"#6EC1FF\"/><circle cx=\"75\" cy=\"80\" r=\"7\" fill=\"#F4C152\"/><circle cx=\"75\" cy=\"65\" r=\"7\" fill=\"#F4C152\"/><circle cx=\"75\" cy=\"50\" r=\"7\" fill=\"#F4C152\"/><circle cx=\"50\" cy=\"12\" r=\"7\" fill=\"#FF7A70\"/><g fill=\"#fff\" opacity=\".55\"><circle cx=\"22.5\" cy=\"77.5\" r=\"2\"/><circle cx=\"22.5\" cy=\"62.5\" r=\"2\"/><circle cx=\"22.5\" cy=\"47.5\" r=\"2\"/><circle cx=\"47.5\" cy=\"77.5\" r=\"2\"/><circle cx=\"47.5\" cy=\"62.5\" r=\"2\"/><circle cx=\"72.5\" cy=\"77.5\" r=\"2\"/><circle cx=\"72.5\" cy=\"62.5\" r=\"2\"/><circle cx=\"72.5\" cy=\"47.5\" r=\"2\"/><circle cx=\"47.5\" cy=\"9.5\" r=\"2\"/></g></svg>","name":"Pilah Kelereng","tag":"Pilah warna"},{"slug":"jatuh-buah","cat":["santai"],"hook":"Satukan buah kembar sampai jadi durian!","c":"#E0712B","svg":"<svg viewBox=\"0 0 100 100\"><circle cx=\"62\" cy=\"12\" r=\"7\" fill=\"#E5484D\"/><path d=\"M62 5c1-3 3-4 5-4\" stroke=\"#2E7D32\" stroke-width=\"2\" fill=\"none\"/><g fill=\"#FFE0B0\" opacity=\".7\"><rect x=\"61\" y=\"-8\" width=\"2\" height=\"8\" rx=\"1\"/><rect x=\"56\" y=\"-4\" width=\"2\" height=\"6\" rx=\"1\"/></g><path d=\"M14 58h72l-6 30a8 8 0 0 1-8 6H28a8 8 0 0 1-8-6z\" fill=\"#B87A3D\"/><path d=\"M14 58h72\" stroke=\"#D9A866\" stroke-width=\"5\" stroke-linecap=\"round\"/><g stroke=\"#8E5A26\" stroke-width=\"2\" opacity=\".6\"><path d=\"M22 66h56M24 76h52M26 86h48\"/><path d=\"M34 60v32M50 60v34M66 60v32\"/></g><circle cx=\"50\" cy=\"44\" r=\"21\" fill=\"#8FA83A\"/><g fill=\"#6E8527\"><path d=\"M50 21l3 6h-6z\"/><path d=\"M36 26l5 4-6 2z\"/><path d=\"M64 26l1 6-6-2z\"/><path d=\"M30 38l6 1-4 5z\"/><path d=\"M70 38l-2 6-4-5z\"/></g><g fill=\"#B5C95A\"><circle cx=\"42\" cy=\"38\" r=\"2.4\"/><circle cx=\"52\" cy=\"34\" r=\"2.4\"/><circle cx=\"58\" cy=\"44\" r=\"2.4\"/><circle cx=\"46\" cy=\"48\" r=\"2.4\"/><circle cx=\"38\" cy=\"47\" r=\"2\"/></g><circle cx=\"27\" cy=\"52\" r=\"10\" fill=\"#FFB02E\"/><circle cx=\"24\" cy=\"49\" r=\"3\" fill=\"#fff\" opacity=\".45\"/><circle cx=\"76\" cy=\"53\" r=\"8\" fill=\"#E5484D\"/><circle cx=\"74\" cy=\"51\" r=\"2.4\" fill=\"#fff\" opacity=\".45\"/></svg>","name":"Jatuh Buah","tag":"Gabung buah"},{"slug":"congklak","cat":["tradisional","berdua","otak"],"hook":"Warisan nenek moyang. Lawan komputer atau keluarga.","c":"#B23F3A","svg":"<svg viewBox=\"0 0 100 100\"><ellipse cx=\"50\" cy=\"56\" rx=\"46\" ry=\"24\" fill=\"#6B3F18\"/><ellipse cx=\"50\" cy=\"52\" rx=\"46\" ry=\"24\" fill=\"#9A6532\"/><ellipse cx=\"50\" cy=\"49\" rx=\"42\" ry=\"19\" fill=\"#B07A43\" opacity=\".55\"/><ellipse cx=\"13\" cy=\"52\" rx=\"7\" ry=\"13\" fill=\"#4A2A0E\"/><ellipse cx=\"87\" cy=\"52\" rx=\"7\" ry=\"13\" fill=\"#4A2A0E\"/><g fill=\"#4A2A0E\"><circle cx=\"30\" cy=\"43\" r=\"6\"/><circle cx=\"43\" cy=\"43\" r=\"6\"/><circle cx=\"57\" cy=\"43\" r=\"6\"/><circle cx=\"70\" cy=\"43\" r=\"6\"/><circle cx=\"30\" cy=\"61\" r=\"6\"/><circle cx=\"43\" cy=\"61\" r=\"6\"/><circle cx=\"57\" cy=\"61\" r=\"6\"/><circle cx=\"70\" cy=\"61\" r=\"6\"/></g><g fill=\"#F3E6C8\"><circle cx=\"28\" cy=\"42\" r=\"1.8\"/><circle cx=\"32\" cy=\"44\" r=\"1.8\"/><circle cx=\"43\" cy=\"42\" r=\"1.8\"/><circle cx=\"41\" cy=\"45\" r=\"1.8\"/><circle cx=\"45\" cy=\"45\" r=\"1.8\"/><circle cx=\"57\" cy=\"43\" r=\"1.8\"/><circle cx=\"70\" cy=\"41\" r=\"1.8\"/><circle cx=\"68\" cy=\"44\" r=\"1.8\"/><circle cx=\"72\" cy=\"45\" r=\"1.8\"/><circle cx=\"30\" cy=\"61\" r=\"1.8\"/><circle cx=\"41\" cy=\"60\" r=\"1.8\"/><circle cx=\"45\" cy=\"62\" r=\"1.8\"/><circle cx=\"57\" cy=\"59\" r=\"1.8\"/><circle cx=\"55\" cy=\"63\" r=\"1.8\"/><circle cx=\"59\" cy=\"63\" r=\"1.8\"/><circle cx=\"70\" cy=\"61\" r=\"1.8\"/><circle cx=\"12\" cy=\"47\" r=\"1.8\"/><circle cx=\"14\" cy=\"52\" r=\"1.8\"/><circle cx=\"12\" cy=\"57\" r=\"1.8\"/><circle cx=\"87\" cy=\"49\" r=\"1.8\"/><circle cx=\"88\" cy=\"55\" r=\"1.8\"/></g><g fill=\"#F3E6C8\"><circle cx=\"46\" cy=\"20\" r=\"2.6\"/><circle cx=\"53\" cy=\"15\" r=\"2.6\"/><circle cx=\"58\" cy=\"23\" r=\"2.6\"/></g></svg>","name":"Congklak","tag":"Tradisional"},{"slug":"titik-kotak","cat":["tradisional","berdua","otak"],"hook":"Titik-titik di buku tulis: tutup kotaknya!","c":"#3A73C9","svg":"<svg viewBox=\"0 0 100 100\"><g transform=\"rotate(-5 50 50)\"><rect x=\"12\" y=\"12\" width=\"76\" height=\"76\" rx=\"6\" fill=\"#FDFCF6\"/><g stroke=\"#B9D4F2\" stroke-width=\"1.2\"><path d=\"M12 28h76M12 44h76M12 60h76M12 76h76\"/></g><path d=\"M24 12v76\" stroke=\"#F08A8A\" stroke-width=\"1.6\"/><rect x=\"30\" y=\"30\" width=\"20\" height=\"20\" fill=\"#FFB3AE\"/><rect x=\"50\" y=\"50\" width=\"20\" height=\"20\" fill=\"#A9D8FF\"/><rect x=\"30\" y=\"50\" width=\"20\" height=\"20\" fill=\"#FFB3AE\"/><text x=\"40\" y=\"45\" text-anchor=\"middle\" font-size=\"12\" fill=\"#C0392B\">K</text><text x=\"40\" y=\"65\" text-anchor=\"middle\" font-size=\"12\" fill=\"#C0392B\">K</text><text x=\"60\" y=\"65\" text-anchor=\"middle\" font-size=\"12\" fill=\"#1F5FAF\">A</text><g stroke=\"#2B3A55\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"><path d=\"M30 30h20v40H30zM50 50h20v20H50M30 50h20M50 30h20\"/></g><g fill=\"#2B3A55\"><circle cx=\"30\" cy=\"30\" r=\"3\"/><circle cx=\"50\" cy=\"30\" r=\"3\"/><circle cx=\"70\" cy=\"30\" r=\"3\"/><circle cx=\"30\" cy=\"50\" r=\"3\"/><circle cx=\"50\" cy=\"50\" r=\"3\"/><circle cx=\"70\" cy=\"50\" r=\"3\"/><circle cx=\"30\" cy=\"70\" r=\"3\"/><circle cx=\"50\" cy=\"70\" r=\"3\"/><circle cx=\"70\" cy=\"70\" r=\"3\"/></g></g></svg>","name":"Titik Kotak","tag":"Tradisional"},{"slug":"sambung-kembar","cat":["otak"],"hook":"Sambung ubin kembar, bersihkan papan!","c":"#2E9A5C","svg":"<svg viewBox=\"0 0 100 100\"><g fill=\"#fff\"><rect x=\"10\" y=\"10\" width=\"24\" height=\"24\" rx=\"6\"/><rect x=\"38\" y=\"38\" width=\"24\" height=\"24\" rx=\"6\"/><rect x=\"10\" y=\"38\" width=\"24\" height=\"24\" rx=\"6\"/><rect x=\"10\" y=\"66\" width=\"24\" height=\"24\" rx=\"6\"/><rect x=\"38\" y=\"66\" width=\"24\" height=\"24\" rx=\"6\"/><rect x=\"66\" y=\"66\" width=\"24\" height=\"24\" rx=\"6\"/></g><g fill=\"#D6EFE0\" opacity=\".35\"><rect x=\"38\" y=\"10\" width=\"24\" height=\"24\" rx=\"6\"/><rect x=\"66\" y=\"10\" width=\"24\" height=\"24\" rx=\"6\"/><rect x=\"66\" y=\"38\" width=\"24\" height=\"24\" rx=\"6\"/></g><path d=\"M22 22H78V78\" fill=\"none\" stroke=\"#5FE3F0\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M22 22H78V78\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\".8\"/><g fill=\"#F4C152\"><path d=\"M15 26c6 5 13 4 16-4-4 4-10 5-16 4z\"/><path d=\"M71 82c6 5 13 4 16-4-4 4-10 5-16 4z\"/></g><rect x=\"10\" y=\"10\" width=\"24\" height=\"24\" rx=\"6\" fill=\"none\" stroke=\"#F4C152\" stroke-width=\"3\"/><rect x=\"66\" y=\"66\" width=\"24\" height=\"24\" rx=\"6\" fill=\"none\" stroke=\"#F4C152\" stroke-width=\"3\"/><path d=\"M50 42l3 6 6 1-4.5 4 1 6-5.5-3-5.5 3 1-6-4.5-4 6-1z\" fill=\"#FF8FB1\"/><circle cx=\"22\" cy=\"50\" r=\"6\" fill=\"#6EC1FF\"/><path d=\"M22 72c-4-4-8 0-4 4l4 4 4-4c4-4 0-8-4-4z\" fill=\"#FF7A70\"/><path d=\"M44 78c4-8 8-8 12 0z\" fill=\"#7FB85A\"/></svg>","name":"Sambung Kembar","tag":"Cari pasangan"},{"slug":"lapis-menjulang","cat":["santai","berdua"],"hook":"Ketuk tepat waktu, susun kue lapis setinggi langit.","c":"#D14F86","svg":"<svg viewBox=\"0 0 100 100\"><rect x=\"30\" y=\"4\" width=\"44\" height=\"9\" rx=\"4.5\" fill=\"#B784E8\"/><g fill=\"#fff\" opacity=\".6\"><rect x=\"78\" y=\"6\" width=\"10\" height=\"2.4\" rx=\"1.2\"/><rect x=\"80\" y=\"10\" width=\"7\" height=\"2.4\" rx=\"1.2\"/></g><ellipse cx=\"50\" cy=\"92\" rx=\"40\" ry=\"5\" fill=\"#F4EDF7\"/><rect x=\"18\" y=\"77\" width=\"64\" height=\"11\" rx=\"5\" fill=\"#5CC98A\"/><rect x=\"20\" y=\"66\" width=\"60\" height=\"11\" rx=\"5\" fill=\"#9C6B3F\"/><rect x=\"23\" y=\"55\" width=\"56\" height=\"11\" rx=\"5\" fill=\"#F4C152\"/><rect x=\"21\" y=\"44\" width=\"54\" height=\"11\" rx=\"5\" fill=\"#FF8FB1\"/><rect x=\"25\" y=\"33\" width=\"50\" height=\"11\" rx=\"5\" fill=\"#5CC98A\"/><rect x=\"27\" y=\"22\" width=\"46\" height=\"11\" rx=\"5\" fill=\"#9C6B3F\"/><path d=\"M27 24c4 5 8-2 12 3s8-3 12 2 8-3 12 2 6-2 10 0v-6a5 5 0 0 0-5-5H32a5 5 0 0 0-5 5z\" fill=\"#fff\"/><g fill=\"#fff\" opacity=\".22\"><rect x=\"22\" y=\"79\" width=\"56\" height=\"3\" rx=\"1.5\"/><rect x=\"24\" y=\"68\" width=\"52\" height=\"3\" rx=\"1.5\"/><rect x=\"27\" y=\"57\" width=\"48\" height=\"3\" rx=\"1.5\"/><rect x=\"25\" y=\"46\" width=\"46\" height=\"3\" rx=\"1.5\"/><rect x=\"29\" y=\"35\" width=\"42\" height=\"3\" rx=\"1.5\"/></g></svg>","name":"Lapis Menjulang","tag":"Tepat waktu"}];
+  var NEW = { "jatuh-buah": 1, "congklak": 1, "titik-kotak": 1, "sambung-kembar": 1, "lapis-menjulang": 1 };
+  var CATS = [
+    { id: "otak", name: "Asah otak", c: "#6A4BC4", icon: "M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3zM9 18h6v2H9z" },
+    { id: "santai", name: "Santai", c: "#E0712B", icon: "M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 9h2a2 2 0 0 1 0 4h-2M7 3v3M11 3v3" },
+    { id: "tradisional", name: "Tradisional", c: "#B23F3A", icon: "M12 2l2.6 6.6L21 9l-5 4.6L17.5 21 12 17.3 6.5 21 8 13.6 3 9l6.4-.4z" },
+    { id: "berdua", name: "Main berdua", c: "#2E9A5C", icon: "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20a6.5 6.5 0 0 1 13 0zM16 11a3 3 0 1 0 0-6M17 14a5 5 0 0 1 4.5 6" }
+  ];
+  var ICON = {
+    home: "M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z",
+    cari: "M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM16.5 16.5L21 21",
+    permainanku: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3.5 2",
+    kategori: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"
+  };
+  // Di app Android, tautan harus menunjuk berkas .html; di web cukup foldernya.
+  var inApp = document.documentElement.classList.contains("in-app");
+  function hrefOf(g) { return inApp ? "/" + g.slug + "/index.html" : "/" + g.slug + "/"; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function read(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  var bySlug = {}; GAMES.forEach(function (g) { bySlug[g.slug] = g; });
+
+  function thumb(g, shape, extra, plain) {
+    return '<div class="thumb ' + shape + '" style="--c:' + g.c + '">' + (NEW[g.slug] && !plain ? '<span class="badge">Baru</span>' : "") +
+      g.svg + (shape === "wide" ? '<span class="ttl">' + esc(g.name) + "</span>" : "") + (extra || "") + '<span class="play-dot" aria-hidden="true"></span></div>';
+  }
+  function card(g, shape, plain) {
+    return '<a class="card' + (shape === "wide" ? " w" : "") + '" href="' + hrefOf(g) + '" data-slug="' + g.slug + '" aria-label="Main ' + esc(g.name) + '">' + thumb(g, shape, "", plain) +
+      "<b>" + esc(g.name) + "</b><small>" + esc(g.tag) + "</small></a>";
+  }
+  function inCat(id) { return GAMES.filter(function (g) { return g.cat.indexOf(id) >= 0; }); }
+
+  // Pilihan hari ini: satu game besar dan empat berikutnya, berganti setiap hari.
+  var now = new Date();
+  var day = Math.floor((now.getTime() - now.getTimezoneOffset() * 60000) / 86400000);
+  var order = GAMES.map(function (g, i) { return GAMES[(day + i) % GAMES.length]; });
+  var hero = order[0];
+  document.getElementById("spot").innerHTML =
+    '<a class="card hero" href="' + hrefOf(hero) + '" data-slug="' + hero.slug + '" aria-label="Main ' + esc(hero.name) + '">' +
+      '<div class="thumb" style="--c:' + hero.c + '">' + hero.svg + '</div>' +
+      '<div class="hero-bar"><div class="thumb sq hero-icon" style="--c:' + hero.c + '">' + hero.svg + '</div>' +
+      '<div class="hero-text"><b>' + esc(hero.name) + "</b><small>" + esc(hero.hook) + '</small></div><span class="btn-play">Main</span></div></a>' +
+    order.slice(1, 4).map(function (g) { return card(g, "sq"); }).join("") +
+    card(order[4], "sq").replace('class="card"', 'class="card extra"');
+
+  // Baris kategori.
+  document.getElementById("rows").innerHTML = CATS.map(function (c) {
+    return '<section class="sec"><div class="sec-head"><h2>' + c.name + '</h2><a href="#k-' + c.id + '">Lihat semua ›</a></div><div class="rail">' +
+      inCat(c.id).map(function (g) { return card(g, "wide"); }).join("") + "</div></section>";
+  }).join("") +
+  '<section class="sec"><div class="sec-head"><h2>Semua game</h2><span class="sec-note" style="color:var(--muted);font-weight:800;font-size:13px">' + GAMES.length + ' game</span></div><div class="grid">' +
+    GAMES.map(function (g) { return card(g, "wide"); }).join("") + "</div></section>";
+
+  function recentList() { return (read("dehayuk.recent") || []).filter(function (s) { return bySlug[s]; }); }
+  function renderRecent() {
+    var r = recentList();
+    document.getElementById("recentSec").hidden = !r.length;
+    document.getElementById("recentRail").innerHTML = r.slice(0, 8).map(function (s) { return card(bySlug[s], "sq", true); }).join("");
+    document.getElementById("mine").innerHTML = r.map(function (s) { return card(bySlug[s], "wide"); }).join("");
+    document.getElementById("mineEmpty").hidden = !!r.length;
+  }
+  document.addEventListener("click", function (ev) {
+    var a = ev.target.closest && ev.target.closest("a[data-slug]");
+    if (!a) return;
+    var list = recentList().filter(function (s) { return s !== a.dataset.slug; });
+    list.unshift(a.dataset.slug);
+    write("dehayuk.recent", list.slice(0, 12));
+  });
+
+  // Menu: samping di komputer, bawah di HP.
+  function navItem(id, label, path, href) {
+    return '<a href="' + href + '" data-nav="' + id + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + path + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' + label + "</a>";
+  }
+  var MAIN_NAV = [["home", "Beranda", ICON.home, "#"], ["cari", "Cari", ICON.cari, "#cari"], ["permainanku", "Permainanku", ICON.permainanku, "#permainanku"], ["kategori", "Kategori", ICON.kategori, "#kategori"]];
+  document.getElementById("nav").innerHTML = MAIN_NAV.map(function (n) { return navItem.apply(null, n); }).join("");
+  document.getElementById("side").innerHTML = MAIN_NAV.map(function (n) { return navItem.apply(null, n); }).join("") + "<hr>" +
+    CATS.map(function (c) { return navItem("k-" + c.id, c.name.replace("Main b", "B"), c.icon, "#k-" + c.id); }).join("");
+
+  document.getElementById("cats").innerHTML = CATS.map(function (c) {
+    return '<a class="cat" href="#k-' + c.id + '" style="--c:' + c.c + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + c.icon + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><b>' + c.name + "</b><small>" + inCat(c.id).length + " game</small></a>";
+  }).join("");
+
+  // Cari.
+  var q = document.getElementById("q");
+  function renderSearch() {
+    var s = q.value.trim().toLowerCase();
+    var hits = GAMES.filter(function (g) {
+      var text = (g.name + " " + g.tag + " " + g.hook + " " + g.cat.map(function (id) { var c = CATS.filter(function (x) { return x.id === id; })[0]; return c ? c.name : id; }).join(" ")).toLowerCase();
+      return !s || text.indexOf(s) >= 0;
+    });
+    document.getElementById("results").innerHTML = hits.map(function (g) { return card(g, "sq"); }).join("");
+    document.getElementById("noResult").hidden = !!hits.length;
+  }
+  q.addEventListener("input", renderSearch);
+
+  // Pindah halaman lewat tanda # agar tombol Kembali di HP bekerja wajar.
+  function show() {
+    var h = location.hash.replace("#", "");
+    var view = h === "cari" ? "cari" : h === "permainanku" ? "permainanku" : h === "kategori" || h.indexOf("k-") === 0 ? "kategori" : "home";
+    ["Home", "Cari", "Permainanku", "Kategori"].forEach(function (v) { document.getElementById("v" + v).hidden = v.toLowerCase() !== view; });
+    var navId = h.indexOf("k-") === 0 ? h : view;
+    document.querySelectorAll("[data-nav]").forEach(function (a) {
+      if (a.dataset.nav === navId || (a.closest(".nav") && a.dataset.nav === "kategori" && h.indexOf("k-") === 0)) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+    });
+    if (view === "kategori") {
+      var c = CATS.filter(function (x) { return "k-" + x.id === h; })[0];
+      document.getElementById("catTitle").textContent = c ? c.name : "Kategori";
+      document.getElementById("cats").hidden = !!c;
+      var grid = document.getElementById("catGrid");
+      grid.hidden = !c;
+      if (c) grid.innerHTML = inCat(c.id).map(function (g) { return card(g, "wide"); }).join("");
+    }
+    if (view === "cari") { renderSearch(); setTimeout(function () { try { q.focus(); } catch (e) {} }, 50); }
+    renderRecent();
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", show);
+  show();
+})();
+</script>
