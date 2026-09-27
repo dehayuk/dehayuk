@@ -11,3 +11,33 @@
   to = "/"
   status = 302
   force = true
+
+# Berkas kerja proyek juga tidak perlu dibuka lewat web.
+[[redirects]]
+  from = "/scripts/*"
+  to = "/"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/STANDAR-GAME.md"
+  to = "/"
+  status = 302
+  force = true
+
+# Penyimpanan di browser pengunjung, agar yang kembali tidak mengunduh ulang dan kredit Netlify hemat.
+# Halaman HTML tetap selalu diperiksa ulang, jadi pembaruan game langsung terlihat.
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/kit/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/katalog.js"
+  [headers.values]
+    Cache-Control = "public, max-age=300, stale-while-revalidate=3600"

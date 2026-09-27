@@ -2,12 +2,13 @@
 <html lang="id">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ff9e7a">
 <title>Jatuh Buah</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/kit/kit.css">
 <style>
 [hidden]{display:none!important}
 :root{--ink:#3d1a0c;--cream:#fff4dc;--fd:'Baloo 2','Arial Rounded MT Bold','Trebuchet MS',system-ui,sans-serif;--fb:Nunito,'Segoe UI',system-ui,sans-serif;
@@ -42,6 +43,9 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
 .home svg{width:22px;height:22px;filter:none}
 .best{position:absolute;right:calc(var(--sr) + 12px);top:calc(var(--st) + 16px);display:flex;align-items:center;gap:5px;background:rgba(61,26,12,.78);border:3px solid var(--ink);border-radius:999px;padding:3px 12px 3px 6px;font:800 17px/1.2 var(--fd);color:#ffe36a}
 .best svg{width:22px;height:22px}
+.chip{position:absolute;left:50%;top:calc(var(--st) + 16px);transform:translateX(-50%);display:flex;align-items:center;gap:4px;background:rgba(61,26,12,.78);border:3px solid var(--ink);border-radius:999px;padding:3px 11px 3px 5px;font:800 15px/1.2 var(--fd);white-space:nowrap}
+.chip svg{width:20px;height:20px;flex:none}
+.chip .strk{display:flex;align-items:center;gap:3px;margin-left:3px;padding-left:7px;border-left:2px solid rgba(255,255,255,.25)}
 #logo{flex:none;width:min(88%,360px,calc(30vh * 1.8));aspect-ratio:2/1.1;margin-top:40px;animation:bob 3s ease-in-out infinite;transform-origin:50% 80%}
 @keyframes bob{50%{transform:translateY(-6px) rotate(-1.5deg)}}
 .tmid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;width:100%;min-height:0}
@@ -71,11 +75,14 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
 .sc b.bump{transform:scale(1.18)}
 .sc small{margin-top:5px;display:flex;align-items:center;gap:3px;font:800 13px/1 var(--fd);background:rgba(61,26,12,.7);color:#ffe36a;border-radius:999px;padding:2px 8px 3px 4px}
 .sc small svg{width:15px;height:15px}
+.sc small.live{background:#ff3d7f;color:#fff;animation:pulse .7s ease-in-out infinite}
 .nx{width:54px;height:54px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff,#ffe9c2);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);position:relative;display:grid;place-items:center;pointer-events:none!important}
 .nx img{width:150%;height:150%;object-fit:contain;animation:bob 2s ease-in-out infinite}
 .nx i{position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);font:800 11px/1 var(--fd);font-style:normal;background:var(--ink);color:#fff;border-radius:6px;padding:2px 6px 3px;white-space:nowrap}
 /* overlay & panel */
-.ov{z-index:1;display:flex;align-items:center;justify-content:center;padding:calc(var(--st) + 20px) 16px calc(var(--sb) + 16px)}
+.ov{z-index:1;display:flex;align-items:flex-start;justify-content:center;padding:calc(var(--st) + 30px) 16px calc(var(--sb) + 16px);overflow-y:auto;overscroll-behavior:contain}
+.ov>.pn{margin:auto}
+.pn:focus{outline:none}
 .ov::before{content:"";position:fixed;inset:0;background:rgba(45,14,40,.55);z-index:-1}
 .ov.in::before{animation:fade .2s}
 @keyframes fade{from{opacity:0}}
@@ -106,6 +113,14 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
 @keyframes stamp{from{transform:rotate(-30deg) scale(3);opacity:0}}
 .note{font:800 17px/1.1 var(--fd);padding:5px 14px 7px;border-radius:12px;border:3px solid var(--ink);background:#7fd8ff}
 .note.win{background:#8ef06a}
+.rL,.rR{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+.rR{gap:12px}
+.rrec{font:800 14px/1.15 var(--fd);color:#8a5a3a;text-align:center}
+.rbar{width:100%;height:14px;border:3px solid var(--ink);border-radius:999px;background:#f3dfbd;overflow:hidden;box-shadow:inset 0 2px 0 rgba(0,0,0,.1)}
+.rbar i{display:block;height:100%;width:0;background:linear-gradient(#ffe36a,#ffb21a);border-radius:999px}
+.rbar.rec i{background:linear-gradient(#ffb3d9,#ff5c93)}
+.rmisc{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+.xp{font:800 14px/1 var(--fd);background:var(--ink);color:#ffe36a;border-radius:999px;padding:5px 12px 6px}
 #rAgain{font-size:26px;padding:14px 10px 17px}
 /* koleksi */
 .kg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
@@ -129,8 +144,28 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
 .cal{width:110px;height:112px;border:4px solid var(--ink);border-radius:20px;background:#fff;box-shadow:0 5px 0 var(--ink);overflow:hidden;display:flex;flex-direction:column;transform:rotate(-4deg)}
 .cal i{display:block;height:32px;background:linear-gradient(#ff7a7a,#e8384f);border-bottom:4px solid var(--ink);font:800 16px/28px var(--fd);font-style:normal;color:#fff;text-align:center}
 .cal b{flex:1;display:grid;place-items:center;font:800 52px/1 var(--fd);color:var(--ink)}
-#toast{position:absolute;left:50%;bottom:calc(var(--sb) + 24px);transform:translateX(-50%);background:var(--ink);color:#fff;font:800 16px/1 var(--fd);padding:10px 18px 12px;border-radius:999px;white-space:nowrap;z-index:60;animation:popin .3s cubic-bezier(.2,1.5,.4,1)}
 .noanim *{animation:none!important;transition:none!important}
+/* ponsel mendatar / layar pendek: panel rapat, lapisan penuh layar, bisa digulir */
+@media (max-height:500px){
+  .ov{position:fixed;padding:calc(var(--st) + 24px) 12px calc(var(--sb) + 10px)}
+  #sTitle{position:fixed}
+  .pn{padding:30px 12px 12px;gap:8px;border-radius:22px}
+  .rb{font-size:22px;padding:6px 22px 9px;top:-21px}
+  .col{gap:9px}
+  .pn .b:not(.rd){font-size:18px;padding:9px 14px 11px;border-radius:16px}
+  .pn .row .b{font-size:16px;padding:8px 6px 10px}
+  .big{font-size:42px}
+  .tg{padding:5px 8px}
+  #sOver .pn{max-width:600px;display:grid;grid-template-columns:1fr 1fr;column-gap:16px;row-gap:8px;align-items:center}
+  #sOver .rL{grid-column:1;grid-row:1}#sOver .rR{grid-column:2;grid-row:1;flex-direction:row;justify-content:center}
+  #sOver .rmisc{grid-column:1;grid-row:2}#sOver .col{grid-column:2;grid-row:2}
+  #sOver .stage{width:76px;height:76px}.stage .rays{inset:-16px}
+  #rAgain{font-size:20px;padding:9px 8px 11px}
+  .rek{width:70px;height:70px;top:30px;right:auto;left:calc(50% - 60px)}.rek span{font-size:14px}
+  .cal{display:none}
+  #sTantang .stage{width:70px!important;height:70px!important}
+  #sKoleksi .pn{max-width:520px}.kg{grid-template-columns:repeat(6,1fr)}
+}
 #uji{position:fixed;left:4px;top:4px;right:4px;z-index:99;background:rgba(0,0,0,.8);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px;pointer-events:none}
 </style>
 </head>
@@ -140,14 +175,15 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
 <div id="col">
   <section id="sTitle" class="scr">
     <a href="/" class="b home" aria-label="Beranda"><svg viewBox="0 0 24 24"><path fill="#3d1a0c" d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z"/></svg></a>
-    <div class="best ol" id="tBest"><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#3d1a0c" stroke-width="2" stroke-linejoin="round" d="M3 18h18l1-11-6 4-4-7-4 7-6-4z"/></svg><span>0</span></div>
+    <div class="chip ol" id="tProg"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#ffd23a" stroke="#3d1a0c" stroke-width="2" stroke-linejoin="round" d="M12 2.8l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 16.7l-5.4 2.9 1.1-6.1-4.5-4.3 6.1-.8z"/></svg><span id="tLv">Lv 1</span><span class="strk" id="tStrk" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#ff8a1a" stroke="#3d1a0c" stroke-width="2" stroke-linejoin="round" d="M12 2.5c1.2 3.6 5.5 5.6 5.5 11a5.5 5.5 0 0 1-11 0c0-2.8 1.4-4.4 2.8-5.4-.1 2.1.8 3.2 2 3.4-.7-3.2.2-6.4.7-9z"/><path fill="#ffe36a" d="M12 12.5c.9 1.5 2.3 2.3 2.3 4a2.3 2.3 0 0 1-4.6 0c0-1.2.9-2.1 2.3-4z"/></svg><span id="tStrkN">0 hari</span></span></div>
+    <div class="best ol" id="tBest" aria-label="Rekor"><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#3d1a0c" stroke-width="2" stroke-linejoin="round" d="M3 18h18l1-11-6 4-4-7-4 7-6-4z"/></svg><span>0</span></div>
     <canvas id="logo"></canvas>
     <div class="tmid ent" id="tMid">
       <div class="chal ol" id="tChal" hidden>Kalahkan skor 0!</div>
       <button class="b ol" id="bMain"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#3d1a0c" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></svg>MAIN</button>
       <div class="icons">
         <button class="ic" id="bHarian"><span class="b y ol"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><rect x="4" y="5.5" width="16" height="15" rx="3" fill="#fff" stroke="#3d1a0c" stroke-width="2"/><path d="M4.5 10h15" stroke="#e8384f" stroke-width="4"/><path d="M8.5 3.5v4M15.5 3.5v4" stroke="#3d1a0c"/><circle cx="12" cy="15.5" r="2.2" fill="#ff5c93" stroke="none"/></svg><i class="dot" id="dDaily" hidden></i></span><span class="ol">Harian</span></button>
-        <button class="ic" id="bTantang"><span class="b p ol" style="font-size:20px">VS</span><span class="ol">Tantang</span></button>
+        <button class="ic" id="bTantang" aria-label="Tantang"><span class="b p ol" style="font-size:20px" aria-hidden="true">VS</span><span class="ol">Tantang</span></button>
         <button class="ic" id="bKoleksi"><span class="b bl ol"><svg viewBox="0 0 24 24" stroke="#3d1a0c" stroke-width="1.8"><circle cx="7.5" cy="8" r="4" fill="#ff5a5f"/><circle cx="16.5" cy="8" r="4" fill="#ffc53d"/><circle cx="7.5" cy="16.5" r="4" fill="#8ef06a"/><circle cx="16.5" cy="16.5" r="4" fill="#c9a3ff"/></svg></span><span class="ol">Koleksi</span></button>
         <button class="ic" id="bSetelan"><span class="b pu ol"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.2" stroke="#3d1a0c" stroke-width="6.5" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="7.2" stroke="#fff" stroke-width="4" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="6" fill="#fff" stroke="#3d1a0c" stroke-width="2"/><circle cx="12" cy="12" r="2.4" fill="#8f5cf0" stroke="#3d1a0c" stroke-width="1.6"/></svg></span><span class="ol">Setelan</span></button>
       </div>
@@ -156,11 +192,11 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
 
   <div id="hud" hidden>
     <button class="b o rd" id="bPause" aria-label="Jeda"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4.5" height="14" rx="1.5" fill="#fff" stroke="#3d1a0c" stroke-width="1.8"/><rect x="13.5" y="5" width="4.5" height="14" rx="1.5" fill="#fff" stroke="#3d1a0c" stroke-width="1.8"/></svg></button>
-    <div class="sc"><b class="ol" id="hScore">0</b><small class="ol"><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#3d1a0c" stroke-width="2" stroke-linejoin="round" d="M3 18h18l1-11-6 4-4-7-4 7-6-4z"/></svg><span id="hBest">0</span></small></div>
+    <div class="sc"><b class="ol" id="hScore">0</b><small class="ol" id="hBestP"><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#3d1a0c" stroke-width="2" stroke-linejoin="round" d="M3 18h18l1-11-6 4-4-7-4 7-6-4z"/></svg><span id="hBest">0</span></small></div>
     <div class="nx"><img id="hNext" alt=""><i>Berikut</i></div>
   </div>
 
-  <section id="sPause" class="scr ov" hidden>
+  <section id="sPause" class="scr ov" hidden role="dialog" aria-modal="true" aria-label="Jeda">
     <div class="pn">
       <div class="rb bl ol">Jeda</div>
       <div class="col">
@@ -171,15 +207,21 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
     </div>
   </section>
 
-  <section id="sOver" class="scr ov" hidden>
+  <section id="sOver" class="scr ov" hidden role="dialog" aria-modal="true" aria-label="Selesai">
     <div class="pn">
       <div class="rb ol">Selesai!</div>
       <div class="rek ol" id="rRek" hidden><span>Rekor<br>baru!</span></div>
-      <div class="lbl" id="rMode">Skor</div>
-      <div class="big ol" id="rScore">0</div>
-      <div class="stage"><div class="rays"></div><img id="rImg" alt=""></div>
-      <div class="fname ol" id="rName">Ceri</div>
-      <div class="note ol" id="rNote" hidden></div>
+      <div class="rL">
+        <div class="lbl" id="rMode">Skor</div>
+        <div class="big ol" id="rScore">0</div>
+        <div class="rrec" id="rRec"></div>
+        <div class="rbar" id="rBarW"><i id="rBar"></i></div>
+      </div>
+      <div class="rR">
+        <div class="stage"><div class="rays"></div><img id="rImg" alt=""></div>
+        <div class="fname ol" id="rName">Ceri</div>
+      </div>
+      <div class="rmisc"><div class="note ol" id="rNote" hidden></div><div class="xp" id="rXp" hidden></div></div>
       <div class="col">
         <button class="b ol" id="rAgain"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#3d1a0c" stroke-width="5"/><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#fff" stroke-width="2.6"/><path d="M13.5 3.5h5v5z" fill="#fff" stroke="#3d1a0c" stroke-width="1.8" stroke-linejoin="round"/></svg>Main lagi</button>
         <div class="row">
@@ -190,31 +232,31 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
     </div>
   </section>
 
-  <section id="sKoleksi" class="scr ov" hidden>
+  <section id="sKoleksi" class="scr ov" hidden role="dialog" aria-modal="true" aria-label="Koleksi">
     <div class="pn">
       <div class="rb bl ol">Koleksi</div>
-      <button class="b x rd ol" data-close><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#3d1a0c" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
+      <button class="b x rd ol" data-close aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#3d1a0c" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
       <div class="prog" id="kProg">0/11</div>
       <div class="kg" id="kGrid"></div>
     </div>
   </section>
 
-  <section id="sSetelan" class="scr ov" hidden>
+  <section id="sSetelan" class="scr ov" hidden role="dialog" aria-modal="true" aria-label="Setelan">
     <div class="pn">
       <div class="rb pu ol">Setelan</div>
-      <button class="b x rd ol" data-close><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#3d1a0c" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
+      <button class="b x rd ol" data-close aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#3d1a0c" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
       <div class="col">
-        <div class="tg"><span class="ico"><svg viewBox="0 0 24 24" stroke="#3d1a0c" stroke-width="1.8" stroke-linejoin="round"><path d="M3 9.5h4l5-4.5v14l-5-4.5H3z" fill="#fff"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke-width="2.4" stroke-linecap="round"/></svg></span><b>Suara</b><button class="sw" data-k="snd" aria-label="Suara"></button></div>
-        <div class="tg"><span class="ico" style="background:#7fd8ff"><svg viewBox="0 0 24 24" stroke="#3d1a0c" stroke-width="1.8" stroke-linejoin="round"><path d="M9 17V5l11-2v12" fill="none" stroke-width="2.6"/><ellipse cx="6.5" cy="17.5" rx="3.3" ry="2.7" fill="#fff"/><ellipse cx="17.5" cy="15.5" rx="3.3" ry="2.7" fill="#fff"/></svg></span><b>Musik</b><button class="sw" data-k="mus" aria-label="Musik"></button></div>
-        <div class="tg"><span class="ico" style="background:#ff9fc3"><svg viewBox="0 0 24 24" stroke="#3d1a0c" stroke-width="1.8" stroke-linecap="round"><rect x="8" y="3.5" width="8" height="17" rx="2" fill="#fff"/><path d="M4.5 8v8M19.5 8v8M2 10.5v3M22 10.5v3" stroke-width="2.2"/></svg></span><b>Getar</b><button class="sw" data-k="vib" aria-label="Getar"></button></div>
+        <div class="tg"><span class="ico"><svg viewBox="0 0 24 24" stroke="#3d1a0c" stroke-width="1.8" stroke-linejoin="round"><path d="M3 9.5h4l5-4.5v14l-5-4.5H3z" fill="#fff"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke-width="2.4" stroke-linecap="round"/></svg></span><b>Suara</b><button class="sw" role="switch" aria-checked="false" data-k="snd" aria-label="Suara"></button></div>
+        <div class="tg"><span class="ico" style="background:#7fd8ff"><svg viewBox="0 0 24 24" stroke="#3d1a0c" stroke-width="1.8" stroke-linejoin="round"><path d="M9 17V5l11-2v12" fill="none" stroke-width="2.6"/><ellipse cx="6.5" cy="17.5" rx="3.3" ry="2.7" fill="#fff"/><ellipse cx="17.5" cy="15.5" rx="3.3" ry="2.7" fill="#fff"/></svg></span><b>Musik</b><button class="sw" role="switch" aria-checked="false" data-k="mus" aria-label="Musik"></button></div>
+        <div class="tg"><span class="ico" style="background:#ff9fc3"><svg viewBox="0 0 24 24" stroke="#3d1a0c" stroke-width="1.8" stroke-linecap="round"><rect x="8" y="3.5" width="8" height="17" rx="2" fill="#fff"/><path d="M4.5 8v8M19.5 8v8M2 10.5v3M22 10.5v3" stroke-width="2.2"/></svg></span><b>Getar</b><button class="sw" role="switch" aria-checked="false" data-k="vib" aria-label="Getar"></button></div>
       </div>
     </div>
   </section>
 
-  <section id="sHarian" class="scr ov" hidden>
+  <section id="sHarian" class="scr ov" hidden role="dialog" aria-modal="true" aria-label="Harian">
     <div class="pn">
       <div class="rb ol">Harian</div>
-      <button class="b x rd ol" data-close><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#3d1a0c" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
+      <button class="b x rd ol" data-close aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#3d1a0c" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
       <div class="cal"><i id="dMonth">SEP</i><b id="dDay">27</b></div>
       <div class="big ol" style="font-size:32px" id="dN">Hari ke-1</div>
       <div class="lbl" id="dInfo">Buah sama untuk semua. 1 kesempatan.</div>
@@ -224,21 +266,22 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
     </div>
   </section>
 
-  <section id="sTantang" class="scr ov" hidden>
+  <section id="sTantang" class="scr ov" hidden role="dialog" aria-modal="true" aria-label="Tantang">
     <div class="pn">
       <div class="rb pu ol">Tantang</div>
-      <button class="b x rd ol" data-close><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#3d1a0c" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
+      <button class="b x rd ol" data-close aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#3d1a0c" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
       <div class="stage" style="width:110px;height:110px"><div class="rays"></div><img id="cImg" alt=""></div>
       <div class="lbl" id="cInfo">Skor terakhirmu</div>
       <div class="big ol" id="cScore">0</div>
       <div class="col"><button class="b p ol" id="cSend"><svg viewBox="0 0 24 24" stroke="#3d1a0c" stroke-width="1.8"><path d="M7 12l10-6M7 12l10 6" stroke-width="4.5"/><path d="M7 12l10-6M7 12l10 6" stroke="#fff" stroke-width="2"/><circle cx="6.5" cy="12" r="3.3" fill="#fff"/><circle cx="17.5" cy="5.5" r="3.3" fill="#fff"/><circle cx="17.5" cy="18.5" r="3.3" fill="#fff"/></svg><span>Kirim</span></button></div>
     </div>
   </section>
-  <div id="toast" class="ol" hidden></div>
 </div>
 <canvas id="fx"></canvas>
+<script src="/kit/kit.js"></script>
 <script>
 "use strict";
+const KIT = window.DehayukKit, SLUG = "jatuh-buah";
 /* ================= INTI FISIKA (tanpa DOM) ================= */
 const W = 360, H = 600, DANGER = 104, SPAWN_Y = 48, DT = 1 / 120, GRAV = 1500, ITER = 6, MAXB = 110, CAP = 90;
 const OVER_T = 2, AGE_MIN = 1, DURIAN_BONUS = 1000, VMAX = 13, TAU = Math.PI * 2;
@@ -483,6 +526,57 @@ function runUji() {
   g.reset(10); const r10 = mulberry(3); for (let i = 0; i < 70; i++) g.spawn(i % 9, 20 + r10() * 320, 40 + r10() * 540);
   const t0 = performance.now(); for (let s = 0; s < 1200; s++) g.step(); const ms = performance.now() - t0;
   chk(ms < 2500, "1200 langkah dengan ~" + count(-1) + " buah: " + ms.toFixed(0) + " ms");
+  // 11 pindah setelan lama ke setelan bersama, sekali saja
+  const fakeLs = (o) => ({ getItem: (k) => (k in o ? o[k] : null) });
+  let applied = null;
+  const m1 = migrateSettings(fakeLs({ [KEY]: JSON.stringify({ best: 5, set: { snd: 0, mus: 1, vib: 0 } }) }), (p) => { applied = p; });
+  chk(applied && applied.suara === false && applied.musik === true && applied.getar === false && m1 === applied, "setelan lama {snd:0,mus:1,vib:0} disalin ke dehayuk.setelan");
+  applied = null;
+  const m2 = migrateSettings(fakeLs({ [KEY]: JSON.stringify({ set: { snd: 0, mus: 0, vib: 0 } }), "dehayuk.setelan": "{\"suara\":true}" }), (p) => { applied = p; });
+  const m3 = migrateSettings(fakeLs({ [KEY]: JSON.stringify({ best: 9 }) }), (p) => { applied = p; });
+  const m4 = migrateSettings(fakeLs({}), (p) => { applied = p; });
+  chk(m2 === null && m3 === null && m4 === null && applied === null, "tidak menimpa setelan bersama yang sudah ada, dan diam bila tak ada setelan lama");
+  let hasShared = false; try { hasShared = localStorage.getItem("dehayuk.setelan") != null || localStorage.getItem(KEY) == null || !JSON.parse(localStorage.getItem(KEY)).set; } catch (e) { hasShared = true; }
+  chk(hasShared, "setelan bersama ada setelah pemuatan (bila setelan lama pernah ada)");
+  // 12 sakelar Setelan menulis ke setelan kit, lalu dikembalikan
+  const set0 = KIT.settings.get(), swM = document.querySelector('.sw[data-k="mus"]');
+  paintSetelan(); swM.click();
+  const set1 = KIT.settings.get();
+  chk(set1.musik === !set0.musik && swM.getAttribute("aria-checked") === String(set1.musik) && swM.getAttribute("role") === "switch", "sakelar Musik mengubah KIT.settings dan aria-checked");
+  KIT.settings.set(set0); paintSetelan(); $("sSetelan").hidden = true;
+  // 13 akhir permainan mencatat kemajuan bersama; nyaris dan rekor baru di layar hasil (data pemain dipulihkan setelahnya)
+  const PK = "dehayuk.kemajuan", snapK = localStorage.getItem(KEY), snapP = localStorage.getItem(PK), svCopy = JSON.parse(JSON.stringify(SV));
+  const recOrig = KIT.progress.record; let calls = [];
+  KIT.progress.record = function (o) { calls.push(o); return recOrig.call(this, o); };
+  try {
+    const xp0 = KIT.progress.get().xp;
+    startGame("normal", 4242); recPrev = 500; core.score = 300;
+    const pr = endGame(); clearInterval(countUp.id);
+    chk(calls.length === 1 && calls[0].game === "jatuh-buah" && calls[0].score === 300, "endGame memanggil KIT.progress.record({game:'jatuh-buah', score})");
+    chk(KIT.progress.get().xp === xp0 + pr.gain && (pr.leveledUp || $("rXp").textContent === "+" + pr.gain + " XP · Lv " + pr.level), "XP bertambah dan tampil: " + $("rXp").textContent);
+    chk($("rRec").textContent === "Rekor 500 · kurang 201" && !$("rBarW").classList.contains("rec"), "nyaris: " + $("rRec").textContent);
+    startGame("normal", 4242); recPrev = 500; core.score = 650; endGame(); clearInterval(countUp.id);
+    chk($("rRec").textContent === "+150 dari rekor lama" && $("rBarW").classList.contains("rec"), "rekor baru: " + $("rRec").textContent);
+    startGame("normal", 4242); recPrev = 0; core.score = 40; endGame(); clearInterval(countUp.id);
+    chk($("rRec").textContent === "Rekor pertamamu!", "rekor pertama: " + $("rRec").textContent);
+    // rekor langsung saat bermain
+    startGame("normal", 4242); recPrev = 100; core.score = 101; handleEvents();
+    chk(recHit && recT > 0 && $("hBestP").classList.contains("live"), "melewati rekor saat bermain memunculkan spanduk dan menyalakan HUD rekor");
+    startGame("normal", 4242); recPrev = 0; core.score = 50; handleEvents();
+    chk(!recHit, "tanpa spanduk bila rekor lama 0");
+    // tantangan: tautan memakai format #t=benih-skor, dan Main lagi mengulang benih tantangan
+    chk(/\/jatuh-buah\/#t=[0-9a-z]+-77$/.test(KIT.challengeLink(SLUG, 123456, 77)), "tautan tantangan " + KIT.challengeLink(SLUG, 123456, 77));
+    chal = { seed: 98765, score: 10 }; startGame("chal", 98765); core.score = 3; endGame(); clearInterval(countUp.id);
+    $("rAgain").click();
+    chk(kind === "chal" && gameSeed === 98765 && chal && chal.score === 10, "Main lagi setelah tantangan mengulang benih tantangan");
+  } finally {
+    KIT.progress.record = recOrig; clearInterval(countUp.id);
+    try { if (snapK == null) localStorage.removeItem(KEY); else localStorage.setItem(KEY, snapK); if (snapP == null) localStorage.removeItem(PK); else localStorage.setItem(PK, snapP); } catch (e) { }
+    SV = svCopy; chal = null; chalLast = null; toTitle();
+  }
+  // 14 rrPath tanpa roundRect (WebView lama)
+  let rrOk = true; try { const fake = { moveTo() { }, lineTo() { }, arcTo() { }, closePath() { } }; rrPath(fake, 0, 0, 20, 10, [3, 6]); rrPath(fake, 0, 0, 20, 10, 40); rrPath(fake, 0, 0, 20, 10, [0, 0, 6, 6]); } catch (err) { rrOk = false; }
+  chk(rrOk, "rrPath() tetap jalan tanpa ctx.roundRect, termasuk jari-jari larik");
   const el = document.createElement("pre"); el.id = "uji"; el.textContent = (ok ? "UJI LULUS" : "UJI GAGAL") + "\n" + out.join("\n");
   document.body.appendChild(el);
   document.title = ok ? "UJI LULUS" : "UJI GAGAL";
@@ -723,70 +817,43 @@ function makeStar(s, col) {
 }
 
 /* ================= PENYIMPANAN ================= */
+// kunci lama tetap dibaca apa adanya (rekor, koleksi, harian); setelan kini milik kit bersama
 const KEY = "jatuhbuah.baru.v1";
 let SV = { best: 0, col: 0, set: { snd: 1, mus: 1, vib: 1 }, daily: null, last: null };
 try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && typeof s === "object") { SV = Object.assign(SV, s); SV.set = Object.assign({ snd: 1, mus: 1, vib: 1 }, s.set || {}); } } catch (e) { }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(SV)); } catch (e) { } }
+// pindahkan setelan lama Jatuh Buah ke "dehayuk.setelan" sekali saja: hanya bila setelan lama ada dan setelan bersama belum ada
+function migrateSettings(ls, apply) {
+  let old = null, shared = null;
+  try { const o = JSON.parse(ls.getItem(KEY) || "null"); old = o && typeof o === "object" && o.set && typeof o.set === "object" ? o.set : null; } catch (e) { old = null; }
+  try { shared = ls.getItem("dehayuk.setelan"); } catch (e) { shared = "?"; }
+  if (!old || shared != null) return null;
+  const patch = {};
+  if (old.snd != null) patch.suara = !!old.snd;
+  if (old.mus != null) patch.musik = !!old.mus;
+  if (old.vib != null) patch.getar = !!old.vib;
+  apply(patch); return patch;
+}
+try { migrateSettings(localStorage, (p) => KIT.settings.set(p)); } catch (e) { }
 
 /* ================= AUDIO ================= */
-let AC = null, MG = null, SG = null, musTimer = 0, musNext = 0, musStep = 0;
-function audioInit() {
-  if (AC) { if (AC.state === "suspended") AC.resume(); return; }
-  try {
-    AC = new (window.AudioContext || window.webkitAudioContext)();
-    const comp = AC.createDynamicsCompressor(); comp.connect(AC.destination);
-    SG = AC.createGain(); SG.gain.value = .5; SG.connect(comp);
-    MG = AC.createGain(); MG.gain.value = SV.set.mus ? .16 : 0; MG.connect(comp);
-    musNext = AC.currentTime + .2;
-    musTimer = setInterval(musTick, 90);
-  } catch (e) { AC = null; }
-}
-function env(o, g, t, a, d, v) { g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + a); g.gain.exponentialRampToValueAtTime(.0008, t + a + d); o.start(t); o.stop(t + a + d + .02); }
-function tone(f, d, type, v, f2, delay, dest) {
-  if (!AC) return;
-  const t = AC.currentTime + (delay || 0), o = AC.createOscillator(), g = AC.createGain();
-  o.type = type || "sine"; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
-  o.connect(g); g.connect(dest || SG); env(o, g, t, .006, d, v);
-}
-let noiseBuf = null;
-function noise(d, v, fq, delay) {
-  if (!AC) return;
-  if (!noiseBuf) { noiseBuf = AC.createBuffer(1, AC.sampleRate * .3, AC.sampleRate); const ch = noiseBuf.getChannelData(0); for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1; }
-  const t = AC.currentTime + (delay || 0), s = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
-  s.buffer = noiseBuf; f.type = "bandpass"; f.frequency.value = fq; f.Q.value = 1.2; s.connect(f); f.connect(g); g.connect(SG); env(s, g, t, .004, d, v);
-}
+// suara lewat KIT.audio: konteks dibuka pada sentuhan pertama (termasuk click/touchend/pointerup), setelan Suara/Musik dipatuhi kit
+const A = KIT.audio;
+function tone(f, d, type, v, f2, delay) { A.tone({ freq: f, dur: d, type: type, vol: v, slideTo: f2 || 0, delay: delay || 0 }); }
+function noise(d, v, fq, delay) { A.noise({ dur: d, vol: v, filter: fq, delay: delay || 0 }); }
 const SFX = {
-  ok: () => AC && SV.set.snd,
-  tap() { if (!this.ok()) return; tone(880, .06, "sine", .22, 1320); },
-  plop(lv) { if (!this.ok()) return; const f = 340 - lv * 30; tone(f, .13, "sine", .4, f * .45); noise(.05, .12, 900); },
-  pop(lv) { if (!this.ok()) return; const f = 330 * Math.pow(1.13, lv); tone(f, .16, "triangle", .32, f * 1.9); tone(f * 2, .1, "sine", .12, f * 3, .02); noise(.06, .14, 2400); },
-  combo(n) { if (!this.ok()) return; const b = 880 * Math.pow(1.06, Math.min(n, 10)); for (let k = 0; k < 3; k++) tone(b * [1, 1.26, 1.5][k], .14, "sine", .16, 0, k * .05); },
-  king() { if (!this.ok()) return; [523, 659, 784, 1047, 1319].forEach((f, k) => { tone(f, .3, "triangle", .3, 0, k * .09); tone(f * 2, .2, "sine", .08, 0, k * .09 + .02); }); noise(.4, .15, 5000, .3); },
-  over() { if (!this.ok()) return; [523, 440, 349, 262].forEach((f, k) => tone(f, .32, "triangle", .32, f * .97, k * .17)); },
-  rec() { if (!this.ok()) return; [659, 784, 988, 1319].forEach((f, k) => tone(f, .25, "square", .09, 0, k * .08)); [1319, 1568].forEach((f, k) => tone(f, .4, "sine", .15, 0, .35 + k * .1)); },
-  tick() { if (!this.ok()) return; tone(1500, .03, "sine", .06); }
+  tap() { tone(880, .06, "sine", .22, 1320); },
+  plop(lv) { const f = 340 - lv * 30; tone(f, .13, "sine", .4, f * .45); noise(.05, .12, 900); },
+  pop(lv) { const f = 330 * Math.pow(1.13, lv); tone(f, .16, "triangle", .32, f * 1.9); tone(f * 2, .1, "sine", .12, f * 3, .02); noise(.06, .14, 2400); },
+  combo(n) { const b = 880 * Math.pow(1.06, Math.min(n, 10)); for (let k = 0; k < 3; k++) tone(b * [1, 1.26, 1.5][k], .14, "sine", .16, 0, k * .05); },
+  king() { [523, 659, 784, 1047, 1319].forEach((f, k) => { tone(f, .3, "triangle", .3, 0, k * .09); tone(f * 2, .2, "sine", .08, 0, k * .09 + .02); }); noise(.38, .15, 5000, .3); },
+  over() { [523, 440, 349, 262].forEach((f, k) => tone(f, .32, "triangle", .32, f * .97, k * .17)); },
+  rec() { [659, 784, 988, 1319].forEach((f, k) => tone(f, .25, "square", .09, 0, k * .08)); [1319, 1568].forEach((f, k) => tone(f, .4, "sine", .15, 0, .35 + k * .1)); },
+  tick() { tone(1500, .03, "sine", .06); }
 };
-// musik latar prosedural: marimba lembut, pentatonik, 8 bar berulang
-const SCALE = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21];
-const CHORD = [0, 9, 5, 7, 0, 9, 5, 7];
-const MEL = [7, -1, 5, 6, 4, -1, 3, -1, 6, -1, 5, 4, 2, -1, 3, -1, 4, -1, 5, 7, 6, -1, 4, -1, 3, 4, 2, -1, 1, -1, -1, -1];
-function musTick() {
-  if (!AC || AC.state !== "running") return;
-  const spb = .3;
-  while (musNext < AC.currentTime + .35) {
-    const st = musStep % 64, bar = (st / 8) | 0, root = 48 + CHORD[bar];
-    if (SV.set.mus) {
-      if (st % 8 === 0) mnote(root - 12, .9, .5, "sine");
-      if (st % 8 === 4) mnote(root - 5, .5, .28, "sine");
-      if (st % 2 === 1) mnote(root + 12 + (st % 4 === 1 ? 4 : 7), .18, .1, "triangle");
-      const m = MEL[st % 32]; if (m >= 0 && (st < 32 || st % 4 !== 2)) mnote(60 + SCALE[m] + (bar > 3 ? 0 : 0), .35, .3, "triangle");
-    }
-    musNext += spb / 2; musStep++;
-  }
-}
-function mnote(m, d, v, type) { const f = 440 * Math.pow(2, (m - 69) / 12); const t = musNext, o = AC.createOscillator(), g = AC.createGain(); o.type = type; o.frequency.value = f; o.connect(g); g.connect(MG); env(o, g, t, .01, d, v); }
-function musicOn() { if (MG) MG.gain.setTargetAtTime(SV.set.mus ? .16 : 0, AC.currentTime, .2); }
-function vib(p) { if (SV.set.vib && navigator.vibrate) try { navigator.vibrate(p); } catch (e) { } }
+// musik latar prosedural: marimba lembut, pentatonik (pola yang sama seperti sebelumnya, kini diputar oleh kit)
+const MUSIC = { step: .15, root: 48, chords: [0, 9, 5, 7], lead: "triangle", melody: [7, -1, 5, 6, 4, -1, 3, -1, 6, -1, 5, 4, 2, -1, 3, -1, 4, -1, 5, 7, 6, -1, 4, -1, 3, 4, 2, -1, 1, -1, -1, -1] };
+function vib(p) { KIT.vibrate(p); }
 
 /* ================= TATA LETAK & GAMBAR ================= */
 const $ = (id) => document.getElementById(id);
@@ -888,8 +955,21 @@ function buildBg() {
   CLOUDS = [];
   for (let k = 0; k < 4; k++) { const c = cloud(70 + k * 22); c.x = (k * .31 + .1) * vw; c.y = 30 + k * 46 + (k & 1) * 30; c.v = 4 + k * 2.5; CLOUDS.push(c); }
 }
+// persegi bersudut bulat sebagai sub-jalur (tanpa beginPath), sama seperti ctx.roundRect;
+// cadangan manual untuk WebView < 99 yang belum punya roundRect (jari-jari boleh larik ala CSS)
+function rrPath(g, x, y, w, h, r) {
+  if (g.roundRect) { g.roundRect(x, y, w, h, r); return; }
+  let tl, tr, br, bl;
+  if (Array.isArray(r)) { const n = r.length; tl = r[0]; tr = n > 1 ? r[1] : tl; br = n > 2 ? r[2] : tl; bl = n > 3 ? r[3] : tr; }
+  else tl = tr = br = bl = r || 0;
+  const m = Math.min(w, h) / 2; tl = Math.min(tl, m); tr = Math.min(tr, m); br = Math.min(br, m); bl = Math.min(bl, m);
+  g.moveTo(x + tl, y); g.lineTo(x + w - tr, y); g.arcTo(x + w, y, x + w, y + tr, tr);
+  g.lineTo(x + w, y + h - br); g.arcTo(x + w, y + h, x + w - br, y + h, br);
+  g.lineTo(x + bl, y + h); g.arcTo(x, y + h, x, y + h - bl, bl);
+  g.lineTo(x, y + tl); g.arcTo(x, y, x + tl, y, tl); g.closePath();
+}
 function woodRect(g, x, y, w, h, r, c1, c2, c3, grain) {
-  g.beginPath(); g.roundRect(x, y, w, h, r);
+  g.beginPath(); rrPath(g, x, y, w, h, r);
   const gr = g.createLinearGradient(x, 0, x + w, 0); gr.addColorStop(0, c1); gr.addColorStop(.5, c2); gr.addColorStop(1, c3);
   g.fillStyle = gr; g.fill();
   if (grain) {
@@ -897,7 +977,7 @@ function woodRect(g, x, y, w, h, r, c1, c2, c3, grain) {
     for (let k = 0; k < h / 16; k++) { const yy = y + 8 + k * 16 + (k * 7 % 5); g.beginPath(); g.moveTo(x, yy); g.bezierCurveTo(x + w * .3, yy - 3, x + w * .7, yy + 3, x + w, yy); g.stroke(); }
     g.restore();
   }
-  g.lineWidth = 3.2; g.strokeStyle = "#3d1a0c"; g.beginPath(); g.roundRect(x, y, w, h, r); g.stroke();
+  g.lineWidth = 3.2; g.strokeStyle = "#3d1a0c"; g.beginPath(); rrPath(g, x, y, w, h, r); g.stroke();
 }
 function buildJar() {
   const T = 17 * S, B = 24 * S, iw = W * S, ih = H * S, up = 16 * S;
@@ -920,13 +1000,13 @@ function buildJar() {
   // depan
   JF = mk(JB.width, JB.height); g = JF.getContext("2d"); g.scale(dpr, dpr);
   woodRect(g, 4, oy + ih - 2, iw + T * 2 + 12, B + 4, [4, 4, 14, 14], "#b8662c", "#a45522", "#86421a", false);
-  g.fillStyle = "#3d1a0c"; g.beginPath(); g.roundRect(ox + iw * .08, oy + ih + B, 30 * S, 12 * S, [0, 0, 6, 6]); g.roundRect(ox + iw * .92 - 30 * S, oy + ih + B, 30 * S, 12 * S, [0, 0, 6, 6]); g.fill();
+  g.fillStyle = "#3d1a0c"; g.beginPath(); rrPath(g, ox + iw * .08, oy + ih + B, 30 * S, 12 * S, [0, 0, 6, 6]); rrPath(g, ox + iw * .92 - 30 * S, oy + ih + B, 30 * S, 12 * S, [0, 0, 6, 6]); g.fill();
   g.fillStyle = "rgba(255,210,150,.35)"; g.fillRect(8, oy + ih + 3, iw + T * 2 + 4, 4);
   for (const x of [ox - T, ox + iw]) {
     woodRect(g, x, oy - up, T, ih + up + 4, [T * .5, T * .5, 2, 2], "#e9a45a", "#c97a36", "#a45a24", true);
     g.fillStyle = "rgba(255,240,200,.45)"; g.fillRect(x + T * .22, oy - up + T * .6, T * .18, ih + up - T);
     for (const by of [.22, .72]) {
-      const y = oy + ih * by; g.beginPath(); g.roundRect(x - 3, y, T + 6, 12 * S, 4); g.fillStyle = "#ffcf5a"; g.fill(); g.lineWidth = 2.6; g.strokeStyle = "#3d1a0c"; g.stroke();
+      const y = oy + ih * by; g.beginPath(); rrPath(g, x - 3, y, T + 6, 12 * S, 4); g.fillStyle = "#ffcf5a"; g.fill(); g.lineWidth = 2.6; g.strokeStyle = "#3d1a0c"; g.stroke();
       g.fillStyle = "#3d1a0c"; circ(g, x + T / 2, y + 6 * S, 2.2 * S); g.fill();
     }
   }
@@ -997,7 +1077,7 @@ function confetti() {
 /* ================= STATUS PERMAINAN ================= */
 const core = new Core();
 let mode = "title", aimX = W / 2, aiming = false, heldT = 0, heldSc = 1, heldScV = 0, overT = 0, entry = 1, dispScore = 0, lastHud = -1;
-let kind = "normal", chal = null, gameSeed = 1, time = 0, recPrev = 0;
+let kind = "normal", chal = null, chalLast = null, gameSeed = 1, time = 0, recPrev = 0, recHit = false, recT = 0, aimPid = -1;
 const VS = new Float32Array(MAXB * 4); // squash, squashV, scale, scaleV
 const Q = new URLSearchParams(location.search), DEMO = Q.get("demo") === "1";
 function ymd(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
@@ -1009,45 +1089,52 @@ function startGame(k, seed) {
   kind = k; gameSeed = (seed >>> 0) || ((Math.random() * 4294967295) >>> 0) || 1; if (k === "daily") { SV.daily = { d: ymd(new Date()), score: 0, top: 0 }; save(); }
   core.reset(gameSeed);
   VS.fill(0); for (let i = 0; i < MAXB; i++) VS[i * 4 + 2] = 1;
-  dispScore = 0; lastHud = -1; heldT = .3; heldSc = .2; heldScV = 0; aimX = W / 2; entry = 0; overT = 0; comboT = 0; shake = 0; flash = 0; recPrev = SV.best;
+  dispScore = 0; lastHud = -1; heldT = .3; heldSc = .2; heldScV = 0; aimX = W / 2; aiming = false; aimPid = -1; entry = 0; overT = 0; comboT = 0; shake = 0; flash = 0; recPrev = SV.best; recHit = false; recT = 0;
   mark(core.next[0]);
-  hideAll(); $("hud").hidden = false; $("hBest").textContent = SV.best;
+  hideAll(); $("hud").hidden = false; $("hBest").textContent = SV.best; $("hBestP").classList.remove("live");
   updNext(); mode = "play";
 }
 function mark(lv) { if (!(SV.col & (1 << lv))) { SV.col |= 1 << lv; save(); } }
 function updNext() { $("hNext").src = UI[core.next[0]]; }
 function endGame() {
   mode = "over";
-  const sc = core.score; const rec = sc > SV.best && sc > 0;
-  if (rec) SV.best = sc;
+  const sc = core.score; const rec = sc > recPrev && sc > 0;
+  if (sc > SV.best) SV.best = sc;
   SV.last = { seed: gameSeed, score: sc, top: core.top };
   if (kind === "daily") SV.daily = { d: ymd(new Date()), score: sc, top: core.top };
   save();
+  const pr = KIT.progress.record({ game: SLUG, score: sc });
   $("hud").hidden = true;
   $("rMode").textContent = kind === "daily" ? "Harian · Hari ke-" + dayN() : kind === "practice" ? "Latihan" : kind === "chal" ? "Tantangan" : "Skor";
   $("rImg").src = UI[core.top]; $("rName").textContent = FR[core.top].n;
   $("rRek").hidden = true;
+  // jarak ke rekor: nyaris, atau selisih dari rekor lama
+  $("rRec").textContent = rec ? (recPrev > 0 ? "+" + (sc - recPrev) + " dari rekor lama" : "Rekor pertamamu!") : "Rekor " + recPrev + " · kurang " + (recPrev - sc + 1);
+  const barW = $("rBarW"), bar = $("rBar"), full = Math.max(1, rec ? sc : recPrev);
+  barW.classList.toggle("rec", rec); bar.style.width = "0%";
   const note = $("rNote"); note.hidden = true; note.className = "note ol";
   if (kind === "chal" && chal) {
     note.hidden = false;
     if (sc > chal.score) { note.textContent = "Menang! Skor " + chal.score + " terlewati"; note.classList.add("win"); }
     else note.textContent = "Kurang " + (chal.score - sc + 1) + " lagi";
-    chal = null; try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { }
+    chalLast = chal; chal = null; try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { }
   }
+  const xp = $("rXp"); xp.hidden = false; xp.textContent = (pr.leveledUp ? "Naik level! " : "+" + pr.gain + " XP · ") + "Lv " + pr.level;
   show($("sOver"));
-  countUp($("rScore"), sc, rec);
+  countUp($("rScore"), sc, rec, (v) => { bar.style.width = Math.min(100, v / full * 100) + "%"; });
+  return pr;
 }
-function countUp(el, to, rec) {
+function countUp(el, to, rec, onStep) {
   const t0 = performance.now(), dur = Math.min(1400, 400 + to * 2);
   let lastV = -1;
   clearInterval(countUp.id);
-  el.textContent = "0";
+  el.textContent = "0"; if (onStep) onStep(0);
   countUp.id = setInterval(() => {
     const k = Math.max(0, Math.min(1, (performance.now() - t0) / dur)), v = Math.round(to * (1 - Math.pow(1 - k, 3)));
-    if (v !== lastV) { el.textContent = v; if (((v / 9) | 0) !== ((lastV / 9) | 0)) SFX.tick(); lastV = v; }
+    if (v !== lastV) { el.textContent = v; if (onStep) onStep(v); if (((v / 9) | 0) !== ((lastV / 9) | 0)) SFX.tick(); lastV = v; }
     if (k >= 1) {
       clearInterval(countUp.id);
-      if (rec) { const r = $("rRek"); r.hidden = false; r.classList.remove("go"); void r.offsetWidth; r.classList.add("go"); confetti(); SFX.rec(); vib([30, 40, 30]); }
+      if (rec && mode === "over") { const r = $("rRek"); r.hidden = false; r.classList.remove("go"); void r.offsetWidth; r.classList.add("go"); confetti(); SFX.rec(); vib([30, 40, 30]); }
     }
   }, 33);
 }
@@ -1055,10 +1142,16 @@ function countUp(el, to, rec) {
 /* ================= LAYAR ================= */
 const SCR = ["sTitle", "sPause", "sOver", "sKoleksi", "sSetelan", "sHarian", "sTantang"];
 function hideAll() { for (const id of SCR) $(id).hidden = true; }
-function show(el) { el.hidden = false; el.classList.remove("in"); void el.offsetWidth; el.classList.add("in"); }
+function show(el) {
+  el.hidden = false; el.classList.remove("in"); void el.offsetWidth; el.classList.add("in"); el.scrollTop = 0;
+  const p = el.querySelector(".pn"); if (p) { p.tabIndex = -1; try { p.focus({ preventScroll: true }); } catch (e) { } }
+}
 function toTitle() {
   hideAll(); $("hud").hidden = true; mode = "title";
   $("tBest").querySelector("span").textContent = SV.best;
+  const pg = KIT.progress.get();
+  $("tLv").textContent = "Lv " + pg.level;
+  $("tStrk").hidden = pg.streak <= 0; $("tStrkN").textContent = pg.streak + " hari";
   $("dDaily").hidden = dailyDone();
   const c = $("tChal"); c.hidden = !chal; if (chal) c.textContent = "Kalahkan skor " + chal.score + "!";
   const t = $("sTitle"); t.hidden = false;
@@ -1083,10 +1176,13 @@ function openKoleksi() {
   $("kProg").textContent = n + "/11";
   show($("sKoleksi"));
 }
-function openSetelan() {
-  for (const b of document.querySelectorAll(".sw")) b.classList.toggle("on", !!SV.set[b.dataset.k]);
-  show($("sSetelan"));
+// sakelar Setelan tetap bergaya Jatuh Buah, tetapi membaca dan menulis setelan bersama kit
+const SETK = { snd: "suara", mus: "musik", vib: "getar" };
+function paintSetelan() {
+  const st = KIT.settings.get();
+  for (const b of document.querySelectorAll(".sw")) { const v = !!st[SETK[b.dataset.k]]; b.classList.toggle("on", v); b.setAttribute("aria-checked", v ? "true" : "false"); }
 }
+function openSetelan() { paintSetelan(); show($("sSetelan")); }
 function openHarian() {
   const d = new Date(), M = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
   $("dMonth").textContent = M[d.getMonth()]; $("dDay").textContent = d.getDate();
@@ -1103,20 +1199,11 @@ function openTantang() {
   else { $("cImg").src = UI[10]; $("cScore").textContent = "?"; $("cInfo").textContent = "Main dulu, lalu kirim skormu"; $("cSend").querySelector("span").textContent = "Main"; }
   show($("sTantang"));
 }
-let toastT = 0;
-function toast(s) { const t = $("toast"); t.textContent = s; t.hidden = false; t.style.animation = "none"; void t.offsetWidth; t.style.animation = ""; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2200); }
-async function share(seed, score) {
-  const url = location.origin + location.pathname + "#t=" + (seed >>> 0).toString(36) + "-" + score;
-  const text = "Skorku " + score + " di Jatuh Buah! Bisa kalahkan? ";
-  if (navigator.share) { try { await navigator.share({ title: "Jatuh Buah", text, url }); return; } catch (e) { if (e && e.name === "AbortError") return; } }
-  try { await navigator.clipboard.writeText(text + url); } catch (e) { }
-  try { window.open("https://wa.me/?text=" + encodeURIComponent(text + url), "_blank"); } catch (e) { }
-  toast("Tautan disalin");
+// tautan tantangan "#t=<benih>-<skor>"; di dalam aplikasi Android menunjuk ke https://dehayuk.netlify.app
+function share(seed, score) {
+  return KIT.share({ title: "Jatuh Buah", text: "Skorku " + score + " di Jatuh Buah! Bisa kalahkan?", url: KIT.challengeLink(SLUG, seed, score) });
 }
-function parseHash() {
-  const m = /#t=([0-9a-z]+)-(\d+)/.exec(location.hash);
-  if (m) { const seed = parseInt(m[1], 36) >>> 0, sc = Math.min(9999999, parseInt(m[2], 10) | 0); if (seed) chal = { seed, score: sc }; }
-}
+function parseHash() { const c = KIT.readChallenge(); if (c) chal = c; }
 
 /* ================= INPUT ================= */
 function pressFx(e) {
@@ -1124,8 +1211,7 @@ function pressFx(e) {
   b.classList.add("pr"); const up = () => { b.classList.remove("pr"); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up); };
   window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
 }
-document.addEventListener("pointerdown", (e) => { audioInit(); pressFx(e); }, true);
-document.addEventListener("keydown", audioInit, true);
+document.addEventListener("pointerdown", pressFx, true);
 function on(id, fn) { $(id).addEventListener("click", (e) => { SFX.tap(); fn(e); }); }
 on("bMain", () => leaveTitle(() => chal ? startGame("chal", chal.seed) : startGame("normal")));
 on("bHarian", openHarian); on("bTantang", openTantang); on("bKoleksi", openKoleksi); on("bSetelan", openSetelan);
@@ -1135,14 +1221,18 @@ on("bPause", () => { if (mode === "play") { mode = "pause"; show($("sPause")); }
 on("pGo", () => { $("sPause").hidden = true; mode = "play"; });
 on("pRe", () => startGame(kind === "daily" ? "practice" : kind, kind === "normal" ? 0 : gameSeed));
 on("pMenu", toTitle);
-on("rAgain", () => startGame(kind === "daily" || kind === "practice" ? "practice" : "normal", kind === "daily" || kind === "practice" ? gameSeed : 0));
+on("rAgain", () => {
+  if (kind === "chal" && chalLast) { chal = chalLast; startGame("chal", gameSeed); return; } // tantangan diulang dengan benih yang sama
+  startGame(kind === "daily" || kind === "practice" ? "practice" : "normal", kind === "daily" || kind === "practice" ? gameSeed : 0);
+});
 on("rShare", () => share(gameSeed, core.score));
 on("rMenu", toTitle);
 for (const b of document.querySelectorAll("[data-close]")) b.addEventListener("click", () => { SFX.tap(); b.closest(".scr").hidden = true; });
 for (const b of document.querySelectorAll(".sw")) b.addEventListener("click", () => {
-  const k = b.dataset.k; SV.set[k] = SV.set[k] ? 0 : 1; save(); b.classList.toggle("on", !!SV.set[k]);
-  if (k === "mus") musicOn(); if (k === "vib" && SV.set.vib) vib(30); SFX.tap();
+  const k = SETK[b.dataset.k], p = {}; p[k] = !KIT.settings.get()[k]; KIT.settings.set(p); paintSetelan();
+  if (k === "getar" && p.getar) vib(30); SFX.tap();
 });
+KIT.settings.onChange(() => { if (!$("sSetelan").hidden) paintSetelan(); });
 function toWorld(cx) { return (cx - IX) / S; }
 function canDrop() { return mode === "play" && heldT <= 0 && entry >= 1; }
 function doDrop() {
@@ -1153,10 +1243,11 @@ function doDrop() {
   heldT = .42; heldSc = .2; heldScV = 0;
   mark(core.next[0]); updNext();
 }
-cv.addEventListener("pointerdown", (e) => { if (mode !== "play") return; aiming = true; aimX = toWorld(e.clientX); try { cv.setPointerCapture(e.pointerId); } catch (_) { } });
-cv.addEventListener("pointermove", (e) => { if (mode !== "play") return; if (aiming || e.pointerType === "mouse") aimX = toWorld(e.clientX); });
-cv.addEventListener("pointerup", (e) => { if (mode !== "play" || !aiming) return; aiming = false; aimX = toWorld(e.clientX); doDrop(); });
-cv.addEventListener("pointercancel", () => { aiming = false; });
+// hanya jari/penunjuk pertama yang membidik; sentuhan jari lain diabaikan sampai jari itu terangkat
+cv.addEventListener("pointerdown", (e) => { if (mode !== "play" || aiming) return; aiming = true; aimPid = e.pointerId; aimX = toWorld(e.clientX); try { cv.setPointerCapture(e.pointerId); } catch (_) { } });
+cv.addEventListener("pointermove", (e) => { if (mode !== "play") return; if (aiming ? e.pointerId === aimPid : e.pointerType === "mouse") aimX = toWorld(e.clientX); });
+cv.addEventListener("pointerup", (e) => { if (!aiming || e.pointerId !== aimPid) return; aiming = false; aimPid = -1; if (mode !== "play") return; aimX = toWorld(e.clientX); doDrop(); });
+cv.addEventListener("pointercancel", (e) => { if (e.pointerId === aimPid) { aiming = false; aimPid = -1; } });
 document.addEventListener("keydown", (e) => {
   if (mode === "play") {
     if (e.key === "ArrowLeft") aimX -= 14; else if (e.key === "ArrowRight") aimX += 14;
@@ -1164,10 +1255,8 @@ document.addEventListener("keydown", (e) => {
     else if (e.key === "Escape" || e.key === "p") { mode = "pause"; show($("sPause")); }
   } else if (mode === "pause" && (e.key === "Escape" || e.key === "p")) { $("sPause").hidden = true; mode = "play"; }
 });
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) { if (mode === "play") { mode = "pause"; show($("sPause")); } if (AC) AC.suspend(); }
-  else if (AC) AC.resume();
-});
+// kit sendiri menidurkan dan membangunkan suara; di sini cukup menjeda permainan
+document.addEventListener("visibilitychange", () => { if (document.hidden && mode === "play") { mode = "pause"; show($("sPause")); } });
 window.addEventListener("contextmenu", (e) => e.preventDefault());
 let rsT = 0; window.addEventListener("resize", () => { clearTimeout(rsT); rsT = setTimeout(layout, 120); });
 
@@ -1200,6 +1289,8 @@ function handleEvents() {
     if (cmb > 1) { comboT = 1.1; comboS = "Kombo x" + cmb + "!"; SFX.combo(cmb); }
   }
   core.evN = 0;
+  // melewati rekor lama di tengah permainan (hanya bila rekor lama di atas 0)
+  if (!recHit && recPrev > 0 && core.score > recPrev) { recHit = true; recT = 1.6; setTimeout(() => SFX.rec(), 180); $("hBestP").classList.add("live"); }
 }
 let lastTs = 0, acc = 0;
 function frame(ts) { requestAnimationFrame(frame); frameCore(ts); }
@@ -1222,7 +1313,7 @@ function frameCore(ts) {
   // HUD skor menghitung naik
   if (mode === "play" || mode === "ending") {
     if (dispScore < core.score) dispScore += Math.max(1, Math.ceil((core.score - dispScore) * .2));
-    if (dispScore !== lastHud) { lastHud = dispScore; const h = $("hScore"); h.textContent = dispScore; }
+    if (dispScore !== lastHud) { lastHud = dispScore; const h = $("hScore"); h.textContent = dispScore; if (recHit) $("hBest").textContent = Math.max(recPrev, dispScore); }
   }
   render(dt);
   renderFx(dt);
@@ -1324,11 +1415,22 @@ function render(dt) {
     if (!comboGr || comboGr.d !== dpr) { comboGr = c.createLinearGradient(0, -20 * dpr, 0, 16 * dpr); comboGr.addColorStop(0, "#fff7b0"); comboGr.addColorStop(.5, "#ffd23a"); comboGr.addColorStop(1, "#ff8a2a"); comboGr.d = dpr; } const gr = comboGr;
     c.fillStyle = gr; c.fillText(comboS, 0, 0); c.restore();
   }
+  if (recT > 0) {
+    recT -= dt; const age = 1.6 - recT;
+    const s = age < .18 ? .3 + age / .18 * 1.0 : age < .3 ? 1.3 - (age - .18) / .12 * .3 : 1;
+    c.globalAlpha = recT < .3 ? Math.max(0, recT / .3) : 1;
+    const x = (colX + colW / 2) * dpr, y = (IY + (DANGER + 128) * S) * dpr;
+    c.save(); c.translate(x, y); c.rotate(.05 + Math.sin(time * 7) * .03); c.scale(s, s);
+    c.font = FONTS[Math.min(89, Math.round(36 * dpr))];
+    c.lineWidth = 10 * dpr; c.strokeStyle = "#3d1a0c"; c.strokeText("Rekor baru!", 0, 4 * dpr); c.strokeText("Rekor baru!", 0, 0);
+    if (!recGr || recGr.d !== dpr) { recGr = c.createLinearGradient(0, -18 * dpr, 0, 14 * dpr); recGr.addColorStop(0, "#ffe0f0"); recGr.addColorStop(.5, "#ff8fc0"); recGr.addColorStop(1, "#ff3d7f"); recGr.d = dpr; }
+    c.fillStyle = recGr; c.fillText("Rekor baru!", 0, 0); c.restore();
+  }
   c.globalAlpha = 1;
   if (flash > 0) { flash -= dt; c.globalAlpha = Math.max(0, flash) * .8; c.fillStyle = "#fff8d0"; c.fillRect(0, 0, cv.width, cv.height); c.globalAlpha = 1; }
   if (mode === "ending") { c.globalAlpha = Math.min(.35, overT * .5); c.fillStyle = "#3d0a1a"; c.fillRect(0, 0, cv.width, cv.height); c.globalAlpha = 1; }
 }
-const happy = new Float32Array(MAXB); let comboGr = null;
+const happy = new Float32Array(MAXB); let comboGr = null, recGr = null;
 function drawParticles(c, dt) {
   c.setTransform(1, 0, 0, 1, 0, 0);
   for (let i = 0; i < PN; i++) {
@@ -1385,6 +1487,7 @@ function boot() {
   parseHash();
   window.addEventListener("hashchange", () => { parseHash(); if (mode === "title") toTitle(); });
   toTitle();
+  KIT.music.start(MUSIC);
   if (Q.get("uji") === "1") { runUji(); }
   if (Q.get("sheet") === "1") { // lembar sprite untuk pemeriksaan visual
     const c = mk(cv.width, cv.height), g = c.getContext("2d"); g.fillStyle = "#fff3d6"; g.fillRect(0, 0, c.width, c.height);
