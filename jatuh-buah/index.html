@@ -185,6 +185,7 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
         <button class="ic" id="bHarian"><span class="b y ol"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><rect x="4" y="5.5" width="16" height="15" rx="3" fill="#fff" stroke="#3d1a0c" stroke-width="2"/><path d="M4.5 10h15" stroke="#e8384f" stroke-width="4"/><path d="M8.5 3.5v4M15.5 3.5v4" stroke="#3d1a0c"/><circle cx="12" cy="15.5" r="2.2" fill="#ff5c93" stroke="none"/></svg><i class="dot" id="dDaily" hidden></i></span><span class="ol">Harian</span></button>
         <button class="ic" id="bTantang" aria-label="Tantang"><span class="b p ol" style="font-size:20px" aria-hidden="true">VS</span><span class="ol">Tantang</span></button>
         <button class="ic" id="bKoleksi"><span class="b bl ol"><svg viewBox="0 0 24 24" stroke="#3d1a0c" stroke-width="1.8"><circle cx="7.5" cy="8" r="4" fill="#ff5a5f"/><circle cx="16.5" cy="8" r="4" fill="#ffc53d"/><circle cx="7.5" cy="16.5" r="4" fill="#8ef06a"/><circle cx="16.5" cy="16.5" r="4" fill="#c9a3ff"/></svg></span><span class="ol">Koleksi</span></button>
+        <button class="ic" id="bPeringkat"><span class="b o ol"><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="#ffd23f" stroke="#3d1a0c" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 6H4.5a2.5 2.5 0 0 0 3 3.6M17 6h2.5a2.5 2.5 0 0 1-3 3.6" fill="none" stroke="#3d1a0c" stroke-width="1.8" stroke-linecap="round"/><path d="M12 14v3M8.5 20h7l-1-3h-5z" fill="#ffd23f" stroke="#3d1a0c" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="ol">Peringkat</span></button>
         <button class="ic" id="bSetelan"><span class="b pu ol"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.2" stroke="#3d1a0c" stroke-width="6.5" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="7.2" stroke="#fff" stroke-width="4" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="6" fill="#fff" stroke="#3d1a0c" stroke-width="2"/><circle cx="12" cy="12" r="2.4" fill="#8f5cf0" stroke="#3d1a0c" stroke-width="1.6"/></svg></span><span class="ol">Setelan</span></button>
       </div>
     </div>
@@ -1103,7 +1104,7 @@ function endGame() {
   SV.last = { seed: gameSeed, score: sc, top: core.top };
   if (kind === "daily") SV.daily = { d: ymd(new Date()), score: sc, top: core.top };
   save();
-  const pr = KIT.progress.record({ game: SLUG, score: sc });
+  const pr = KIT.progress.record({ game: SLUG, score: sc, papan: kind === "daily" ? "harian" : kind === "practice" || kind === "chal" ? "" : "bebas" });
   $("hud").hidden = true;
   $("rMode").textContent = kind === "daily" ? "Harian · Hari ke-" + dayN() : kind === "practice" ? "Latihan" : kind === "chal" ? "Tantangan" : "Skor";
   $("rImg").src = UI[core.top]; $("rName").textContent = FR[core.top].n;
@@ -1214,7 +1215,7 @@ function pressFx(e) {
 document.addEventListener("pointerdown", pressFx, true);
 function on(id, fn) { $(id).addEventListener("click", (e) => { SFX.tap(); fn(e); }); }
 on("bMain", () => leaveTitle(() => chal ? startGame("chal", chal.seed) : startGame("normal")));
-on("bHarian", openHarian); on("bTantang", openTantang); on("bKoleksi", openKoleksi); on("bSetelan", openSetelan);
+on("bHarian", openHarian); on("bTantang", openTantang); on("bKoleksi", openKoleksi); on("bPeringkat", () => KIT.papan && KIT.papan.buka(SLUG)); on("bSetelan", openSetelan);
 on("dPlay", () => { const seed = hashStr("harian-" + ymd(new Date())); const k = dailyDone() ? "practice" : "daily"; $("sHarian").hidden = true; leaveTitle(() => startGame(k, seed)); });
 on("cSend", () => { if (SV.last) share(SV.last.seed, SV.last.score); else { $("sTantang").hidden = true; leaveTitle(() => startGame("normal")); } });
 on("bPause", () => { if (mode === "play") { mode = "pause"; show($("sPause")); } });

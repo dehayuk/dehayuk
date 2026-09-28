@@ -189,6 +189,7 @@ body:has(#sOver:not([hidden])) .dk-toast{top:calc(var(--dk-st) + 12px);bottom:au
         <button class="dk-round dk-yellow" id="bHarian"><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><rect x="4" y="5.5" width="16" height="15" rx="3" fill="#fff" stroke="#2b1a10" stroke-width="2"/><path d="M4.5 10h15" stroke="#e8384f" stroke-width="4"/><path d="M8.5 3.5v4M15.5 3.5v4" stroke="#2b1a10" stroke-width="2.6"/><rect x="9.5" y="13" width="5" height="5" rx="1.2" fill="#ff8a1a"/></svg><b class="dk-dot" id="dDaily" hidden></b></i><span>Harian</span></button>
         <button class="dk-round dk-pink" id="bTantang" aria-label="Tantang"><i class="dk-ol" aria-hidden="true">VS</i><span>Tantang</span></button>
         <button class="dk-round dk-blue" id="bKoleksi"><i><svg viewBox="0 0 24 24"><path d="M4 20V9l3-5 2.6 4h4.8L17 4l3 5v11z" fill="#ff9a3a" stroke="#2b1a10" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 20c0-3 1.8-4.5 4-4.5s4 1.5 4 4.5" fill="#fff" stroke="#2b1a10" stroke-width="1.6"/><circle cx="9" cy="12" r="1.3" fill="#2b1a10"/><circle cx="15" cy="12" r="1.3" fill="#2b1a10"/></svg></i><span>Koleksi</span></button>
+        <button class="dk-round dk-orange" id="bPeringkat"><i><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="#ffd23f" stroke="#2b1a10" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 6H4.5a2.5 2.5 0 0 0 3 3.6M17 6h2.5a2.5 2.5 0 0 1-3 3.6" fill="none" stroke="#2b1a10" stroke-width="1.8" stroke-linecap="round"/><path d="M12 14v3M8.5 20h7l-1-3h-5z" fill="#ffd23f" stroke="#2b1a10" stroke-width="1.8" stroke-linejoin="round"/></svg></i><span>Peringkat</span></button>
         <button class="dk-round dk-purple" id="bSetelan"><i><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.2" stroke="#2b1a10" stroke-width="6.5" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="7.2" stroke="#fff" stroke-width="4" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="6" fill="#fff" stroke="#2b1a10" stroke-width="2"/><circle cx="12" cy="12" r="2.4" fill="#8f5cf0" stroke="#2b1a10" stroke-width="1.6"/></svg></i><span>Setelan</span></button>
       </div>
     </div>
@@ -1232,7 +1233,7 @@ function endGame() {
   const run = runStats(), got = ST.arr("badges"), fresh = [];
   for (const b of BADGES) if (got.indexOf(b[0]) < 0 && b[3](run)) { got.push(b[0]); fresh.push(b[1]); }
   if (fresh.length) ST.set("badges", got);
-  const pr = KIT.progress.record({ game: SLUG, score: sc, mutu: min(1, sc / 150) });
+  const pr = KIT.progress.record({ game: SLUG, score: sc, papan: kind === "daily" ? "harian" : kind === "practice" || kind === "chal" ? "" : "bebas", mutu: min(1, sc / 150) });
   $("hud").hidden = true;
   $("rMode").textContent = kind === "daily" ? "Harian · Hari ke-" + KIT.dayNumber() : kind === "practice" ? "Latihan" : kind === "chal" ? "Tantangan" : "Langkah";
   $("rFish").textContent = "+" + sim.fish; $("rNear").textContent = sim.near;
@@ -1342,7 +1343,7 @@ function pause() { if (mode !== "play") return; mode = "pause"; pid = -1; press 
 /* ================= MASUKAN ================= */
 function on(id, fn) { $(id).addEventListener("click", (e) => { SFX.tap(); fn(e); }); }
 on("bMain", () => leaveTitle(() => chal ? startGame("chal", chal.seed) : startGame("normal")));
-on("bHarian", openHarian); on("bTantang", openTantang); on("bKoleksi", openKoleksi); on("bSetelan", () => KIT.ui.openSettings());
+on("bHarian", openHarian); on("bTantang", openTantang); on("bKoleksi", openKoleksi); on("bPeringkat", () => KIT.papan && KIT.papan.buka(SLUG)); on("bSetelan", () => KIT.ui.openSettings());
 on("dPlay", () => { const k = daily() ? "practice" : "daily"; $("sHarian").hidden = true; leaveTitle(() => startGame(k, KIT.dailySeed(SLUG))); });
 on("cSend", () => { const L = ST.obj("last", ["seed", "score"]); if (L) shareScore(L.seed, L.score); else { $("sTantang").hidden = true; leaveTitle(() => startGame("normal")); } });
 on("bPause", pause);

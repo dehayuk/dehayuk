@@ -225,6 +225,8 @@
       p.v = 1; // versi rumus, agar perubahan rumus kelak bisa memindahkan data lama
       wr(PKEY, p);
       markPlayed(o.game || SLUG);
+      // Papan peringkat: papan "harian" (Harian resmi) atau "bebas" (permainan biasa). Latihan dan tantangan tidak dikirim.
+      if (o.papan && K.papan) { try { K.papan.kirim({ game: o.game || SLUG, skor: o.score, jenis: o.papan }); } catch (e) {} }
       var r = K.progress.get(); r.gain = gain; r.leveledUp = r.level > before; return r;
     }
   };
@@ -349,6 +351,158 @@
     paint(); ui.show(setEl); return setEl;
   };
   K.ui = ui;
+
+  /* ---------- papan peringkat global (Firebase: login tamu + Firestore lewat REST, tanpa pustaka) ---------- */
+  // Tiap game punya tiga papan: harian~YYYYMMDD, minggu~YYYY-Www, semua. Skor hanya naik (dijaga aturan Firestore).
+  // Kiriman yang gagal (offline) disimpan dan dikirim ulang saat online. Mode ?uji=1 tidak pernah menghubungi server.
+  (function () {
+    var FB = { key: "AIzaSyCyount9nL0FC1ClSr1t0reg3gvOm5ARTE", proyek: "dehayuk78" };
+    var DB = "https://firestore.googleapis.com/v1/projects/" + FB.proyek + "/databases/(default)/documents";
+    var AKUN = "dehayuk.papan.akun", NAMA = "dehayuk.papan.nama", TERBAIK = "dehayuk.papan.terbaik", ANTRE = "dehayuk.papan.antre";
+    var uji = /[?&]uji=1/.test(location.search);
+    var KASAR = /(anjing|anjg|bangsat|babi|kontol|memek|ngentot|jancok|jancuk|goblok|tolol|asu|pepek|lonte|bajingan|kampret|tai|fuck|shit|bitch)/i;
+    function pad2(n) { return (n < 10 ? "0" : "") + n; }
+    function hariKey(d) { d = d || new Date(); return d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()); }
+    function mingguKey(d) {
+      d = d ? new Date(d) : new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+      var w1 = new Date(d.getFullYear(), 0, 4);
+      var w = 1 + Math.round(((d - w1) / 86400000 - 3 + (w1.getDay() + 6) % 7) / 7);
+      return d.getFullYear() + "-W" + pad2(w);
+    }
+    function papanId(game, jenis) { return game + "~" + (jenis === "harian" ? "harian~" + hariKey() : jenis === "minggu" ? "minggu~" + mingguKey() : "semua"); }
+    function nama() { var n = rd(NAMA, ""); return typeof n === "string" && n ? n : ""; }
+    // Nama acak dibuat sekali lalu disimpan, agar semua kiriman dan panel memakai nama yang sama.
+    function namaTetap() { var n = nama(); if (!n) { n = namaAcak(); wr(NAMA, n); } return n; }
+    function namaAcak() { return "Pemain" + (1000 + Math.floor(Math.random() * 9000)); }
+    function bersihNama(s) { s = String(s || "").replace(/[<>"'`\\]/g, "").replace(/\s+/g, " ").trim().slice(0, 16); return KASAR.test(s) ? "" : s; }
+
+    // Login tamu: token disimpan, diperbarui otomatis sebelum habis (1 jam).
+    function akun() {
+      var a = rd(AKUN, null);
+      if (a && a.id && a.exp > Date.now() + 60000) return Promise.resolve(a);
+      var url = a && a.refresh ? "https://securetoken.googleapis.com/v1/token?key=" + FB.key : "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + FB.key;
+      var body = a && a.refresh ? "grant_type=refresh_token&refresh_token=" + encodeURIComponent(a.refresh) : JSON.stringify({ returnSecureToken: true });
+      return fetch(url, { method: "POST", headers: { "Content-Type": a && a.refresh ? "application/x-www-form-urlencoded" : "application/json" }, body: body })
+        .then(function (r) { return r.json(); }).then(function (j) {
+          var id = j.idToken || j.id_token, refresh = j.refreshToken || j.refresh_token, uid = j.localId || j.user_id;
+          if (!id) { if (a && a.refresh) { wr(AKUN, null); return akun(); } throw new Error("login"); }
+          var n = { id: id, refresh: refresh, uid: uid, exp: Date.now() + (Number(j.expiresIn || j.expires_in) || 3600) * 1000 };
+          wr(AKUN, n); return n;
+        });
+    }
+    function tulis(a, papan, skor) {
+      var body = { writes: [{ update: { name: "projects/" + FB.proyek + "/databases/(default)/documents/papan/" + papan + "/skor/" + a.uid,
+        fields: { nama: { stringValue: namaTetap() }, skor: { integerValue: String(skor) } } },
+        updateTransforms: [{ fieldPath: "t", setToServerValue: "REQUEST_TIME" }] }] };
+      return fetch(DB + ":commit", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + a.id }, body: JSON.stringify(body) })
+        .then(function (r) { return r.ok; });
+    }
+    // Kirim antrean satu per satu; papan yang gagal tetap di antrean untuk dicoba lagi nanti.
+    var sibuk = false;
+    function kirimAntre() {
+      if (sibuk || uji || !navigator.onLine) return;
+      var q = rd(ANTRE, []); if (!Array.isArray(q) || !q.length) return;
+      sibuk = true;
+      akun().then(function (a) {
+        var sisa = [], chain = Promise.resolve();
+        q.forEach(function (it) { chain = chain.then(function () { return tulis(a, it.p, it.s).then(function (ok) { if (!ok) sisa.push(it); }, function () { sisa.push(it); }); }); });
+        return chain.then(function () { wr(ANTRE, sisa.slice(-30)); });
+      }).catch(function () {}).then(function () { sibuk = false; });
+    }
+    if (!uji) { window.addEventListener("online", kirimAntre); setTimeout(kirimAntre, 3000); }
+
+    function ambil(papan, n) {
+      var body = { structuredQuery: { from: [{ collectionId: "skor" }], orderBy: [{ field: { fieldPath: "skor" }, direction: "DESCENDING" }], limit: n || 30 } };
+      return fetch(DB + "/papan/" + papan + ":runQuery", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+        .then(function (r) { if (!r.ok) throw new Error("baca"); return r.json(); })
+        .then(function (rows) { return rows.filter(function (x) { return x.document; }).map(function (x) { var f = x.document.fields; return { uid: x.document.name.split("/").pop(), nama: f.nama.stringValue, skor: Number(f.skor.integerValue) }; }); });
+    }
+    function posisi(papan, skor) {
+      var body = { structuredAggregationQuery: { structuredQuery: { from: [{ collectionId: "skor" }], where: { fieldFilter: { field: { fieldPath: "skor" }, op: "GREATER_THAN", value: { integerValue: String(skor) } } } }, aggregations: [{ alias: "n", count: {} }] } };
+      return fetch(DB + "/papan/" + papan + ":runAggregationQuery", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json(); }).then(function (j) { var v = j && j[0] && j[0].result && j[0].result.aggregateFields.n; return v ? Number(v.integerValue) + 1 : null; });
+    }
+
+    K.papan = {
+      nama: nama,
+      // Mengirim skor ke papan yang relevan, hanya bila lebih tinggi dari kiriman terbaik sebelumnya di papan itu.
+      kirim: function (o) {
+        var skor = Math.floor(Number(o.skor)); if (!o.game || !isFinite(skor) || skor <= 0 || uji) return;
+        var jenis = o.jenis === "harian" ? ["harian", "minggu", "semua"] : ["minggu", "semua"];
+        var best = rd(TERBAIK, {}) || {}, q = rd(ANTRE, []); if (!Array.isArray(q)) q = [];
+        jenis.forEach(function (j) {
+          var p = papanId(o.game, j);
+          if ((best[p] | 0) >= skor) return;
+          best[p] = skor; q = q.filter(function (it) { return it.p !== p; }); q.push({ p: p, s: skor });
+        });
+        // Simpan hanya catatan papan yang masih berlaku agar data di HP tidak terus membesar.
+        var now = hariKey(), wk = mingguKey();
+        Object.keys(best).forEach(function (k) { var s = k.split("~"); if ((s[1] === "harian" && s[2] !== now) || (s[1] === "minggu" && s[2] !== wk)) delete best[k]; });
+        wr(TERBAIK, best); wr(ANTRE, q.slice(-30)); kirimAntre();
+      },
+      buka: function (game, judul) { return bukaPanel(game, judul); }
+    };
+
+    // Panel peringkat bersama: tiga tab, 30 besar, posisi sendiri, dan ganti nama.
+    var el = null, gameNow = "", tabNow = "harian";
+    function css() {
+      if (document.getElementById("dk-papan-css")) return;
+      var s = document.createElement("style"); s.id = "dk-papan-css";
+      s.textContent = ".dk-pp{max-width:380px}.dk-pp ol,.dk-pp li,.dk-pp .me-row,.dk-pp .tabs{width:100%;box-sizing:border-box}.dk-pp .tabs{display:flex;gap:6px;margin:4px 0 10px}.dk-pp .tabs button{flex:1;font:800 13px var(--dk-body,system-ui);padding:9px 4px;border-radius:12px;border:3px solid var(--dk-ink);background:#fff8;color:var(--dk-ink);cursor:pointer}" +
+        ".dk-pp .tabs button[aria-selected=true]{background:#ffd23f}.dk-pp ol{list-style:none;margin:0;padding:0;max-height:min(46vh,360px);overflow:auto;display:flex;flex-direction:column;gap:4px}" +
+        ".dk-pp li{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:12px;background:#ffffffa8;font:800 14px var(--dk-body,system-ui);color:var(--dk-ink)}.dk-pp li b{width:26px;text-align:center;font-family:var(--dk-display,inherit)}" +
+        ".dk-pp li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dk-pp li em{font-style:normal;font-variant-numeric:tabular-nums}.dk-pp li.me{background:#ffd23f}" +
+        ".dk-pp li:nth-child(1) b{color:#c98a00}.dk-pp li:nth-child(2) b{color:#8a94a6}.dk-pp li:nth-child(3) b{color:#b0673a}" +
+        ".dk-pp .note{font:700 13px var(--dk-body,system-ui);color:var(--dk-ink);text-align:center;padding:14px 6px;opacity:.85}.dk-pp .me-row{margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;font:800 13px var(--dk-body,system-ui);color:var(--dk-ink)}" +
+        ".dk-pp .me-row button{font:800 12.5px var(--dk-body,system-ui);border:2px solid var(--dk-ink);background:#fff;border-radius:999px;padding:6px 12px;cursor:pointer;color:var(--dk-ink)}";
+      document.head.appendChild(s);
+    }
+    function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+    function isi() {
+      var box = el.querySelector("ol"), me = el.querySelector(".me-row span");
+      el.querySelectorAll(".tabs button").forEach(function (b) { b.setAttribute("aria-selected", b.dataset.t === tabNow ? "true" : "false"); });
+      if (!navigator.onLine) { box.innerHTML = '<div class="note">Peringkat butuh internet. Skormu disimpan dan dikirim otomatis saat online.</div>'; me.textContent = ""; return; }
+      box.innerHTML = '<div class="note">Memuat…</div>';
+      var p = papanId(gameNow, tabNow), a = rd(AKUN, null), uid = a && a.uid, mine = (rd(TERBAIK, {}) || {})[p] | 0;
+      ambil(p, 30).then(function (rows) {
+        if (!rows.length) { box.innerHTML = '<div class="note">Belum ada skor di sini. Jadilah yang pertama!</div>'; }
+        else box.innerHTML = rows.map(function (r, i) { return '<li class="' + (r.uid === uid ? "me" : "") + '"><b>' + (i + 1) + "</b><span>" + esc(r.nama) + "</span><em>" + r.skor + "</em></li>"; }).join("");
+        var inTop = rows.some(function (r) { return r.uid === uid; });
+        if (!mine) me.textContent = tabNow === "harian" ? "Main Harian hari ini untuk masuk papan ini." : "Selesaikan satu permainan untuk masuk papan.";
+        else if (inTop) me.textContent = "Kamu: " + nama() + " · " + mine;
+        else { me.textContent = "Skormu " + mine + " · menghitung posisi…"; posisi(p, mine).then(function (n) { if (n) me.textContent = "Posisimu #" + n + " · skor " + mine; }).catch(function () {}); }
+      }).catch(function () { box.innerHTML = '<div class="note">Peringkat belum bisa dimuat. Coba lagi sebentar.</div>'; });
+    }
+    function gantiNama(n) {
+      var b = bersihNama(n); if (!b) { ui.toast("Nama itu tidak bisa dipakai"); return; }
+      wr(NAMA, b); ui.toast("Nama disimpan: " + b);
+      // Nama baru ikut dikirim bersama skor terbaik yang masih berlaku.
+      var best = rd(TERBAIK, {}) || {}, q = rd(ANTRE, []); if (!Array.isArray(q)) q = [];
+      Object.keys(best).forEach(function (p) { q = q.filter(function (it) { return it.p !== p; }); q.push({ p: p, s: best[p] }); });
+      wr(ANTRE, q.slice(-30)); kirimAntre(); setTimeout(isi, 1500);
+    }
+    function bukaPanel(game, judul) {
+      css(); gameNow = game;
+      if (!el) {
+        el = document.createElement("section"); el.className = "dk-overlay"; el.hidden = true;
+        el.innerHTML = '<div class="dk-panel dk-pp"><div class="dk-ribbon dk-yellow dk-ol">Peringkat</div>' +
+          '<button class="dk-btn dk-red dk-circle dk-close" data-x aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="6" style="color:var(--dk-ink)"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>' +
+          '<div class="tabs" role="tablist"><button data-t="harian" role="tab">Hari ini</button><button data-t="minggu" role="tab">Minggu ini</button><button data-t="semua" role="tab">Sepanjang masa</button></div>' +
+          '<ol></ol><div class="me-row"><span></span><button type="button" data-nama>Ganti nama</button></div>' +
+          '<form class="me-row" data-form hidden><input maxlength="16" aria-label="Nama panggilan" placeholder="Nama panggilan" style="flex:1;min-width:0;font:800 14px var(--dk-body,system-ui);padding:8px 12px;border-radius:12px;border:3px solid var(--dk-ink);color:var(--dk-ink)"><button type="submit">Simpan</button></form></div>';
+        (document.getElementById("col") || document.body).appendChild(el);
+        el.querySelector("[data-form]").addEventListener("submit", function (e) { e.preventDefault(); this.hidden = true; gantiNama(this.querySelector("input").value); });
+        el.addEventListener("click", function (e) {
+          var t = e.target.closest("[data-t]"); if (t) { tabNow = t.dataset.t; isi(); return; }
+          if (e.target.closest("[data-nama]")) { var f = el.querySelector("[data-form]"); f.hidden = false; f.querySelector("input").value = nama(); f.querySelector("input").focus(); return; }
+          if (e.target.closest("[data-x]") || e.target === el) el.hidden = true;
+        });
+      }
+      namaTetap();
+      kirimAntre(); isi(); ui.show(el); return el;
+    }
+  })();
+
   window.DehayukKit = K;
 
   // Situs bisa dimainkan tanpa internet (PWA): setiap game yang dibuka ikut disimpan oleh /sw.js.
