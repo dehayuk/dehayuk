@@ -17,7 +17,7 @@ const crypto = require("crypto");
 const { spawnSync } = require("child_process");
 
 const root = path.join(__dirname, "..");
-const SITE = "https://dehayuk.netlify.app";
+const SITE = "https://dehayuk.online";
 const DETAIL = ["deskripsi", "caraMain", "kontrol", "orientasi", "diperbarui"];
 const INDEX_ORDER = ["slug", "nama", "genre", "ajakan", "kategori", "warna", "sampul", "ikon", "ditambahkan", "unggulan", "skor", "tag"];
 // Folder di akar yang bukan game.

@@ -232,7 +232,7 @@
   /* ---------- berbagi & tantangan ---------- */
   K.inApp = function () { return document.documentElement.classList.contains("in-app"); };
   K.challengeLink = function (slug, seed, score) {
-    var base = K.inApp() ? "https://dehayuk.netlify.app" : location.origin;
+    var base = K.inApp() ? "https://dehayuk.online" : location.origin;
     return base + "/" + slug + "/#t=" + (seed >>> 0).toString(36) + "-" + Math.max(0, score | 0);
   };
   // membaca "#t=<benih>-<skor>" dari alamat; null bila tidak ada

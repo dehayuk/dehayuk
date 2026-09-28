@@ -35,7 +35,7 @@ Acuan hidup: `jatuh-buah/` dan `blok-ledak/`.
 - Penyimpanan hanya lewat `DehayukKit.store(slug)`, dengan kunci berawalan `dehayuk.<slug>.`.
 - **Slug tidak boleh diganti setelah tayang.** Rekor, simpanan, dan link tantangan pemain bergantung padanya.
 - `?uji=1` menulis hasil ke `<pre id="uji">` yang diawali "UJI LULUS" atau "UJI GAGAL". `npm run uji` menjalankannya untuk semua game.
-- Satu berkas `index.html` di bawah **160 KB**. Alamat luar hanya huruf Google, `wa.me`, dan `dehayuk.netlify.app`.
+- Satu berkas `index.html` di bawah **160 KB**. Alamat luar hanya huruf Google, `wa.me`, dan `dehayuk.online`.
 - Viewport tidak melarang perbesaran layar; cukup `touch-action: none` di area bermain.
 - Tampil rapi di 360x640, 390x844, dan bingkai mendatar sekitar 1200x640 di dalam portal. App Android dikunci posisi tegak.
 - Tahan penyimpanan gagal: semua `localStorage` dibungkus `try/catch`.

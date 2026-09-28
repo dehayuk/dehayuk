@@ -10,6 +10,14 @@
   # agar kredit Netlify tidak terpakai. Keluar 0 berarti lewati penayangan.
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':(exclude)android' ':(exclude).github' ':(exclude)scripts' ':(exclude)STANDAR-GAME.md' ':(exclude)package.json' ':(exclude)package-lock.json'"
 
+# Alamat lama diarahkan permanen ke domain utama, agar Google menganggapnya satu situs.
+# Link lama (tantangan WhatsApp, isian toko app) tetap jalan; bagian #... ikut terbawa oleh browser.
+[[redirects]]
+  from = "https://dehayuk.netlify.app/*"
+  to = "https://dehayuk.online/:splat"
+  status = 301
+  force = true
+
 # Folder dan berkas app Android tidak perlu dibuka lewat web.
 [[redirects]]
   from = "/android/*"

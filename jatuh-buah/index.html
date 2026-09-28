@@ -1199,7 +1199,7 @@ function openTantang() {
   else { $("cImg").src = UI[10]; $("cScore").textContent = "?"; $("cInfo").textContent = "Main dulu, lalu kirim skormu"; $("cSend").querySelector("span").textContent = "Main"; }
   show($("sTantang"));
 }
-// tautan tantangan "#t=<benih>-<skor>"; di dalam aplikasi Android menunjuk ke https://dehayuk.netlify.app
+// tautan tantangan "#t=<benih>-<skor>"; di dalam aplikasi Android menunjuk ke https://dehayuk.online
 function share(seed, score) {
   return KIT.share({ title: "Jatuh Buah", text: "Skorku " + score + " di Jatuh Buah! Bisa kalahkan?", url: KIT.challengeLink(SLUG, seed, score) });
 }

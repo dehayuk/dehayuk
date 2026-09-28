@@ -5,14 +5,14 @@
 <meta name="theme-color" content="#0D0F1C">
 <title>Dehayuk</title>
 <meta name="description" content="Dehayuk: game ringan buatan Indonesia. Langsung main di browser atau pasang di HP Android.">
-<link rel="canonical" href="https://dehayuk.netlify.app/">
+<link rel="canonical" href="https://dehayuk.online/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Dehayuk">
 <meta property="og:locale" content="id_ID">
 <meta property="og:title" content="Dehayuk: game ringan buatan Indonesia">
 <meta property="og:description" content="Langsung main di browser HP atau komputer, gratis dan tanpa unduh. Ada juga app Android.">
-<meta property="og:url" content="https://dehayuk.netlify.app/">
-<meta property="og:image" content="https://dehayuk.netlify.app/og.png">
+<meta property="og:url" content="https://dehayuk.online/">
+<meta property="og:image" content="https://dehayuk.online/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -924,7 +924,7 @@
     if (share && current) {
       // Yang dibagikan halaman info statis /main/<slug>/: punya judul dan sampul, jadi pratinjau WhatsApp tampil lengkap.
       var g = bySlug[current];
-      var base = /^https?:$/.test(location.protocol) && !inApp ? location.origin : "https://dehayuk.netlify.app";
+      var base = /^https?:$/.test(location.protocol) && !inApp ? location.origin : "https://dehayuk.online";
       var url = base + "/main/" + g.slug + "/", text = g.nama + " di Dehayuk: " + g.ajakan;
       if (navigator.share) { navigator.share({ title: g.nama, text: text, url: url }).catch(function () {}); return; }
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(function () { toast("Link disalin, tinggal tempel"); }, function () { window.open("https://wa.me/?text=" + encodeURIComponent(text + " " + url)); });

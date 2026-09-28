@@ -3,4 +3,4 @@ Disallow: /android/
 Disallow: /scripts/
 Disallow: /www/
 
-Sitemap: https://dehayuk.netlify.app/sitemap.xml
+Sitemap: https://dehayuk.online/sitemap.xml
