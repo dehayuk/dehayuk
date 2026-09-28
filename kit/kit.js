@@ -350,4 +350,13 @@
   };
   K.ui = ui;
   window.DehayukKit = K;
+
+  // Situs bisa dimainkan tanpa internet (PWA): setiap game yang dibuka ikut disimpan oleh /sw.js.
+  // Tidak dipakai di dalam app Android, karena semua game sudah ada di dalam app.
+  try {
+    var nativeApp = document.documentElement.classList.contains("in-app") || (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+    if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && !nativeApp) {
+      window.addEventListener("load", function () { navigator.serviceWorker.register("/sw.js").catch(function () {}); });
+    }
+  } catch (e) {}
 })();

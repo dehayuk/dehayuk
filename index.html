@@ -16,9 +16,12 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&display=swap">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="/ikon/favicon-32.png">
+<link rel="apple-touch-icon" href="/ikon/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dehayuk">
+<link rel="stylesheet" href="/font/font.css">
 <style>
   :root {
     color-scheme: dark;
@@ -269,6 +272,37 @@
     background: var(--ink); color: var(--bg); font-weight: 800; font-size: 13.5px; padding: 10px 16px; border-radius: 999px; box-shadow: 0 8px 20px rgba(0,0,0,.4);
   }
 
+  /* Main tanpa internet */
+  .off-hint { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: linear-gradient(100deg, rgba(46,154,92,.28), rgba(46,154,92,.08)); border: 1px solid rgba(46,154,92,.45); }
+  .off-hint svg { width: 28px; height: 28px; flex: none; color: #7FE0A3; }
+  .off-hint b { display: block; font-size: 14.5px; }
+  .off-hint span { color: #D6D9EE; font-size: 12.5px; font-weight: 700; }
+  .off-hint .go { margin-left: auto; flex: none; font-weight: 800; font-size: 13px; color: #7FE0A3; white-space: nowrap; }
+  .net-chip { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--nav-h) + 12px + env(safe-area-inset-bottom, 0px)); white-space: nowrap; z-index: 36; display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: #3A2A06; color: #FFD978; border: 1px solid #C9952A; font-weight: 800; font-size: 12.5px; box-shadow: 0 8px 20px rgba(0,0,0,.4); max-width: calc(100% - 32px); }
+  @media (min-width: 960px) { .net-chip { bottom: 20px; } }
+  .net-chip i { width: 8px; height: 8px; border-radius: 50%; background: #FFB02E; flex: none; }
+  .is-offline a.card.no-net .thumb, .is-offline a.hero.no-net .thumb { filter: grayscale(1) brightness(.55); }
+  .is-offline a.no-net::after { content: "Butuh internet"; position: absolute; left: 8px; top: 8px; z-index: 4; font-size: 10.5px; font-weight: 800; background: rgba(0,0,0,.72); color: #fff; padding: 3px 8px; border-radius: 7px; }
+  .is-offline a.no-net { position: relative; }
+  .off-page { display: flex; flex-direction: column; gap: 16px; max-width: 760px; }
+  .off-lead { margin: -8px 0 0; color: #D6D9EE; font-weight: 700; line-height: 1.55; }
+  .off-card { background: var(--panel); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .off-card h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 19px; display: flex; align-items: center; gap: 10px; }
+  .off-card h2 .num { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font-size: 15px; flex: none; }
+  .off-card ol { margin: 0; padding-left: 22px; color: #D6D9EE; line-height: 1.6; display: flex; flex-direction: column; gap: 4px; }
+  .off-card ol li::marker { color: var(--accent); font-weight: 800; }
+  .off-card p { margin: 0; color: #D6D9EE; line-height: 1.55; }
+  .off-card .key { display: inline-block; padding: 0 7px; border-radius: 6px; background: var(--panel-2); border: 1px solid var(--line); font-weight: 800; font-size: 13px; }
+  .off-list { display: grid; gap: 8px; margin: 4px 0 0; padding: 0; list-style: none; }
+  .off-list li { display: flex; align-items: center; gap: 10px; font-weight: 800; }
+  .off-list li img { width: 48px; height: 30px; object-fit: cover; border-radius: 6px; flex: none; }
+  .off-list li em { margin-left: auto; font-style: normal; font-size: 12px; font-weight: 800; padding: 3px 9px; border-radius: 999px; background: var(--panel-2); color: var(--muted); white-space: nowrap; }
+  .off-list li em.ok { background: rgba(46,154,92,.25); color: #7FE0A3; }
+  .off-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .off-note { color: var(--muted); font-size: 13px; font-weight: 700; line-height: 1.5; }
+  .in-app .off-hint, .in-app .web-only { display: none !important; }
+  html:not(.in-app) .app-only { display: none !important; }
+
   footer { color: var(--muted); font-size: 12px; text-align: center; }
   footer a { display: inline-block; padding: 10px 6px; text-decoration: underline; }
 
@@ -432,8 +466,49 @@
     <button class="more-btn" type="button" id="allMore" hidden>Muat lagi</button>
   </div>
 
+  <div class="view" id="vOffline" hidden>
+    <div class="off-page">
+      <h1 class="page-title">Main tanpa internet</h1>
+      <p class="off-lead">Semua game Dehayuk bisa dimainkan <b>tanpa internet</b>, baik lewat app Android maupun langsung di browser. Skor dan rekormu tetap tersimpan di HP-mu.</p>
+
+      <section class="off-card app-only">
+        <h2>Kamu sudah memakai app Dehayuk</h2>
+        <p>Semua game sudah ada di dalam app, jadi bisa langsung dimainkan kapan saja tanpa internet. Iklan hanya muncul saat ada internet.</p>
+      </section>
+
+      <section class="off-card web-only">
+        <h2><span class="num">1</span>Simpan game ke HP-mu</h2>
+        <p>Selagi ada internet, tekan tombol ini sekali. Semua game disimpan di HP-mu dan bisa dibuka nanti tanpa sinyal. Game yang pernah kamu mainkan juga otomatis tersimpan.</p>
+        <div class="off-actions"><button class="btn-cta" type="button" id="offSave">Simpan semua game</button></div>
+        <ul class="off-list" id="offList"></ul>
+      </section>
+
+      <section class="off-card web-only">
+        <h2><span class="num">2</span>Pasang Dehayuk di layar utama</h2>
+        <div class="off-actions" id="offInstallBox" hidden><button class="btn-cta" type="button" id="offInstall">Pasang di layar utama</button></div>
+        <p><b>HP Android (Chrome):</b></p>
+        <ol><li>Ketuk menu <span class="key">⋮</span> di pojok kanan atas.</li><li>Pilih <b>Tambahkan ke layar utama</b> atau <b>Instal aplikasi</b>.</li><li>Ketuk <b>Tambahkan</b> / <b>Instal</b>.</li></ol>
+        <p><b>iPhone (Safari):</b></p>
+        <ol><li>Ketuk tombol <span class="key">Bagikan ⬆</span> di bawah layar.</li><li>Pilih <b>Tambahkan ke Layar Utama</b>, lalu <b>Tambah</b>.</li></ol>
+      </section>
+
+      <section class="off-card web-only">
+        <h2><span class="num">3</span>Main kapan saja</h2>
+        <p>Buka Dehayuk dari ikon di layar utama HP-mu. Tanpa sinyal pun, game yang sudah tersimpan tetap bisa dimainkan.</p>
+      </section>
+
+      <section class="off-card web-only">
+        <h2>Lebih suka app?</h2>
+        <p>App Dehayuk untuk HP Android sudah berisi semua game dan langsung bisa dimainkan tanpa internet.</p>
+        <div class="off-actions"><a class="btn-cta" href="https://github.com/dehayuk/dehayuk/releases/latest/download/dehayuk.apk">Pasang app Android</a></div>
+      </section>
+
+      <p class="off-note">Yang tetap butuh internet: mengirim tantangan lewat WhatsApp, iklan, dan game baru yang belum pernah disimpan.</p>
+    </div>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
-  <footer>© 2026 Dehayuk · Game ringan buatan Indonesia · <a href="/privasi/">Kebijakan Privasi</a></footer>
+  <footer>© 2026 Dehayuk · Game ringan buatan Indonesia · <a href="#offline">Main tanpa internet</a> · <a href="/privasi/">Kebijakan Privasi</a></footer>
 </main>
 
 <nav class="nav" id="nav" aria-label="Menu utama"></nav>
@@ -584,6 +659,11 @@
     } else if (GAMES.length > HOME_GRID_MAX) {
       html += '<a class="more-btn" href="#semua">Lihat semua ' + GAMES.length + " game ›</a>";
     }
+    // Pengingat "bisa main tanpa internet", tepat setelah Pilihan hari ini (disembunyikan di app).
+    var hint = '<a class="off-hint" href="#offline"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 8.5a15 15 0 0 1 20 0M5.5 12a10 10 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0M12 19h.01" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M3 3l18 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>' +
+      '<span><b>Bisa main tanpa internet</b><span>Simpan game ke HP-mu, lalu main kapan saja.</span></span><span class="go">Caranya ›</span></a>';
+    var cut = html.indexOf("</section>");
+    html = cut >= 0 ? html.slice(0, cut + 10) + hint + html.slice(cut + 10) : html + hint;
     home.innerHTML = html;
     home.setAttribute("data-sig", sig);
     if (document.getElementById("homeGrid")) pager("home", document.getElementById("homeGrid"), document.getElementById("homeMore"), SORTS.populer[1](GAMES));
@@ -889,11 +969,11 @@
   // ---------- Pindah halaman lewat tanda # agar tombol Kembali di HP bekerja wajar ----------
   function show() {
     var h = decodeURIComponent(location.hash.replace("#", "")), key = h || "beranda";
-    var view = h.indexOf("main/") === 0 ? (bySlug[h.slice(5)] ? "main" : "hilang") : h === "cari" ? "cari" : h === "permainanku" ? "permainanku" : h === "semua" ? "semua" : h === "kategori" || h.indexOf("k-") === 0 ? "kategori" : "home";
+    var view = h.indexOf("main/") === 0 ? (bySlug[h.slice(5)] ? "main" : "hilang") : h === "cari" ? "cari" : h === "permainanku" ? "permainanku" : h === "semua" ? "semua" : h === "offline" ? "offline" : h === "kategori" || h.indexOf("k-") === 0 ? "kategori" : "home";
     var back = isReturn(key);
     swrite("dehayuk.jejak", STACK);
     shownKey = null;
-    ["Home", "Main", "Hilang", "Cari", "Permainanku", "Kategori", "Semua"].forEach(function (v) { document.getElementById("v" + v).hidden = v.toLowerCase() !== view; });
+    ["Home", "Main", "Hilang", "Cari", "Permainanku", "Kategori", "Semua", "Offline"].forEach(function (v) { document.getElementById("v" + v).hidden = v.toLowerCase() !== view; });
     document.querySelectorAll("[data-nav]").forEach(function (a) {
       var on = a.dataset.nav === (h.indexOf("k-") === 0 ? h : view) || (a.closest(".nav") && a.dataset.nav === "kategori" && h.indexOf("k-") === 0);
       if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
@@ -902,6 +982,7 @@
     backBtn.hidden = true;
     if (!back) POS[key + "#n"] = 0;
     if (view === "home") renderHome();
+    if (view === "offline") { document.title = "Main tanpa internet · Dehayuk"; document.dispatchEvent(new Event("dehayuk:offline-page")); }
     if (view === "hilang") document.title = "Game tidak ditemukan · Dehayuk";
     if (view === "kategori") {
       var c = h.indexOf("k-") === 0 ? catById(h.slice(2)) : null;
@@ -944,5 +1025,99 @@
   // Kembali dari game lewat tombol Kembali browser: halaman dari cache bfcache diperbarui (misalnya "Terakhir dimainkan").
   window.addEventListener("pageshow", function (e) { if (e.persisted && !location.hash.replace("#", "")) { if (renderHome()) syncArrows(); } });
   show();
+})();
+</script>
+<script>
+// Main tanpa internet (PWA): mendaftarkan /sw.js, menandai game yang belum tersimpan saat offline,
+// dan menjalankan tombol "Simpan semua game" serta "Pasang di layar utama". Tidak aktif di app Android.
+(function () {
+  var root = document.documentElement;
+  var inApp = root.classList.contains("in-app") || (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  if (inApp || !/^https?:$/.test(location.protocol)) return;
+  var GAMES = (window.DEHAYUK && window.DEHAYUK.game) || [];
+  var VERSI = "dehayuk-v1";
+  var hasSW = "serviceWorker" in navigator && "caches" in window;
+  if (hasSW) window.addEventListener("load", function () { navigator.serviceWorker.register("/sw.js").catch(function () {}); });
+
+  function toast(msg) {
+    var t = document.getElementById("toast"); if (!t) return;
+    t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function () { t.hidden = true; }, 3200);
+  }
+  // Semua berkas satu game yang perlu disimpan agar bisa dimainkan tanpa internet.
+  function filesOf(g) { return ["/" + g.slug + "/", g.sampul, "/kartu/" + g.slug + ".webp", "/info/" + g.slug + ".json"]; }
+  var saved = {};
+  function refreshSaved() {
+    if (!hasSW) return Promise.resolve();
+    return caches.open(VERSI).then(function (c) {
+      return Promise.all(GAMES.map(function (g) { return c.match("/" + g.slug + "/", { ignoreSearch: true }).then(function (r) { saved[g.slug] = !!r; }); }));
+    }).catch(function () {});
+  }
+
+  // Penanda offline: kartu game yang belum tersimpan diredupkan.
+  var chip = null;
+  function markCards() {
+    var off = !navigator.onLine;
+    root.classList.toggle("is-offline", off);
+    document.querySelectorAll("a[data-slug]").forEach(function (a) { a.classList.toggle("no-net", off && !saved[a.dataset.slug]); });
+  }
+  function net() {
+    var off = !navigator.onLine;
+    if (off && !chip) {
+      chip = document.createElement("div"); chip.className = "net-chip"; chip.setAttribute("role", "status");
+      chip.innerHTML = "<i></i>Offline · game tersimpan tetap bisa dimainkan";
+      document.body.appendChild(chip);
+    }
+    if (chip) chip.hidden = !off;
+    refreshSaved().then(markCards);
+  }
+  window.addEventListener("online", net);
+  window.addEventListener("offline", net);
+  new MutationObserver(function () { if (!navigator.onLine) markCards(); }).observe(document.querySelector("main"), { childList: true, subtree: true });
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest("a.no-net");
+    if (a) { e.preventDefault(); toast("Game ini belum tersimpan. Buka sekali saat ada internet agar bisa dimainkan offline."); }
+  }, true);
+  net();
+  // Datang dari halaman game yang belum tersimpan saat offline (dialihkan oleh /sw.js).
+  if (/[?&]offline=/.test(location.search)) setTimeout(function () { toast("Game itu belum tersimpan untuk dimainkan tanpa internet."); }, 400);
+
+  // Halaman "Main tanpa internet": daftar game dan tombol simpan.
+  var list = document.getElementById("offList"), btn = document.getElementById("offSave");
+  function paintList() {
+    if (!list) return;
+    list.innerHTML = GAMES.map(function (g) {
+      var ok = saved[g.slug];
+      return '<li><img src="/kartu/' + g.slug + '.webp" alt="" loading="lazy">' + g.nama.replace(/</g, "&lt;") + '<em class="' + (ok ? "ok" : "") + '">' + (ok ? "✓ Tersimpan" : "Belum tersimpan") + "</em></li>";
+    }).join("");
+    var all = GAMES.every(function (g) { return saved[g.slug]; });
+    if (btn) { btn.textContent = all ? "Semua game sudah tersimpan ✓" : "Simpan semua game"; btn.disabled = all; }
+  }
+  document.addEventListener("dehayuk:offline-page", function () { refreshSaved().then(paintList); });
+  if (location.hash === "#offline") refreshSaved().then(paintList);
+  if (btn) btn.addEventListener("click", function () {
+    if (!hasSW) { toast("Browser ini belum mendukung main tanpa internet. Coba Chrome terbaru."); return; }
+    if (!navigator.onLine) { toast("Sambungkan internet dulu untuk menyimpan game."); return; }
+    btn.disabled = true; btn.textContent = "Menyimpan…";
+    var urls = ["/", "/katalog.js", "/kit/v1/kit.js", "/kit/v1/kit.css", "/kit/kit.js", "/kit/kit.css", "/font/font.css", "/font/baloo-2.woff2", "/font/nunito.woff2"]
+      .concat(GAMES.reduce(function (acc, g) { return acc.concat(filesOf(g)); }, []));
+    // Disimpan langsung dari halaman, agar tidak bergantung pada service worker yang baru saja dipasang.
+    caches.open(VERSI).then(function (c) {
+      return Promise.all(urls.map(function (u) { return c.add(u).catch(function () {}); }));
+    }).then(refreshSaved).then(function () {
+      paintList(); markCards();
+      toast("Semua game tersimpan. Sekarang bisa dimainkan tanpa internet!");
+    });
+  });
+
+  // Tombol "Pasang di layar utama" muncul bila browser menawarkan pemasangan (Chrome/Edge di Android dan komputer).
+  var promptEvt = null, box = document.getElementById("offInstallBox");
+  window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); promptEvt = e; if (box) box.hidden = false; });
+  var inst = document.getElementById("offInstall");
+  if (inst) inst.addEventListener("click", function () {
+    if (!promptEvt) return;
+    promptEvt.prompt();
+    promptEvt.userChoice.then(function (r) { if (r.outcome === "accepted") { toast("Dehayuk dipasang di layar utama."); if (box) box.hidden = true; } promptEvt = null; });
+  });
+  window.addEventListener("appinstalled", function () { if (box) box.hidden = true; });
 })();
 </script>

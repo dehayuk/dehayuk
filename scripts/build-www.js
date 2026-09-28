@@ -16,7 +16,8 @@ catch (e) { console.error("GAGAL  " + e.message); process.exit(1); }
 // Folder yang ikut masuk app dibaca dari katalog.js, jadi game baru cukup didaftarkan di katalog.
 // kit/ berisi perangkat bersama semua game; kartu/ sampul kecil; info/ teks halaman info game.
 // Halaman info statis main/ khusus web (untuk Google dan WhatsApp), tidak ikut ke app.
-const SITE_DIRS = K.game.map((g) => g.slug).concat(["kit", "privasi", "kartu", "info"]);
+// font/ berisi huruf Dehayuk, agar app tampil sama tanpa internet.
+const SITE_DIRS = K.game.map((g) => g.slug).concat(["kit", "privasi", "kartu", "info", "font"]);
 
 fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out);
@@ -31,6 +32,10 @@ fs.copyFileSync(path.join(root, "katalog.js"), path.join(out, "katalog.js"));
 // "/nalargame/index.html", termasuk yang membawa #... atau ?... di belakangnya.
 function fixLinks(html) {
   return html
+    // Huruf dari Google diganti huruf yang disimpan di app, agar tampil sama tanpa internet.
+    .replace(/<link[^>]*href="https:\/\/fonts\.googleapis\.com\/css2[^"]*"[^>]*>/g, '<link rel="stylesheet" href="/font/font.css">')
+    .replace(/<link rel="preconnect" href="https:\/\/fonts\.(googleapis|gstatic)\.com"[^>]*>\r?\n?/g, "")
+    .replace(/@import url\(["']?https:\/\/fonts\.googleapis\.com[^)]*\);?/g, "")
     .replace(/href="\/"/g, 'href="/index.html"')
     .replace(/href="\/([a-z0-9-]+)\/([#?][^"]*)?"/g, (m, dir, rest) => 'href="/' + dir + "/index.html" + (rest || "") + '"');
 }
