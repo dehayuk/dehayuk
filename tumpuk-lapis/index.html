@@ -121,6 +121,7 @@ canvas{display:block}
 .verd{font:800 30px/1 var(--dk-fd);padding:6px 22px 9px;border-radius:14px;border:4px solid var(--dk-ink);box-shadow:0 4px 0 var(--dk-ink);background:linear-gradient(#ff8a8a,#e8384f);transform:rotate(-3deg);text-align:center}
 .verd.win{background:linear-gradient(#8ef06a,#3dbb2c)}
 .verd small{display:block;font-size:13px;margin-top:3px}
+.verd.nm{font-size:22px;padding:6px 16px 8px}
 .xp{font:800 14px/1 var(--dk-fd);background:var(--dk-ink);color:#ffe36a;border-radius:999px;padding:5px 12px 6px}
 #rAgain{font-size:26px;padding:14px 10px 17px}
 .cal{width:104px;height:106px;border:4px solid var(--dk-ink);border-radius:20px;background:#fff;box-shadow:0 5px 0 var(--dk-ink);overflow:hidden;display:flex;flex-direction:column;transform:rotate(-4deg)}
@@ -353,6 +354,41 @@ Core.prototype.dropAt = function (o) {
   return res;
 };
 
+/* ================= DUEL HANTU: rekaman ================= */
+// Rekaman = [versi, n, (jeda ms, geser tepi bawah, geser tepi atas) x n, jeda sampai meleset].
+// Yang disimpan hasil tiap lapis (tepi pada sumbu geraknya), bukan ketukan: diputar ulang tanpa fisika.
+const HV = 1, HMAX = 480, HDT = 60000; // versi, batas lapis terekam (<= 1443 bilangan), batas jeda per lapis
+const zz = (v) => v < 0 ? -2 * v - 1 : 2 * v, unzz = (u) => u & 1 ? -(u + 1) / 2 : u / 2;
+// tepi lapis pada satu sumbu dalam satuan 1/200: tepat karena pusat dan lebar berpresisi 0,01
+function edges(L, ax) { const c = ax ? L.cz : L.cx, w = ax ? L.d : L.w; return [Math.round(c * 200 - w * 100), Math.round(c * 200 + w * 100)]; }
+const msOk = (v) => Math.min(HDT, Math.max(0, Math.round(v) || 0));
+function encodeRun(L, n, times, endMs) {
+  const m = Math.min(n, HMAX), out = [HV, m];
+  for (let i = 1; i <= m; i++) {
+    const ax = i % 2 ? 0 : 1, p = edges(L[i - 1], ax), q = edges(L[i], ax);
+    out.push(msOk(times[i - 1] == null ? 800 : times[i - 1]), zz(q[0] - p[0]), zz(q[1] - p[1]));
+  }
+  out.push(msOk(n > m ? times[m] : endMs));
+  return out;
+}
+// rekaman -> {L, T (detik kumulatif tiap lapis), end, n}; null bila rusak atau tak cocok dengan skor
+function decodeRun(nums, score) {
+  if (!Array.isArray(nums) || nums[0] !== HV) return null;
+  const m = nums[1];
+  if (m !== Math.min(score, HMAX) || nums.length !== 3 + 3 * m) return null;
+  const L = [{ cx: 0, cz: 0, w: BASE, d: BASE, i: 0 }], T = []; let t = 0;
+  for (let i = 1; i <= m; i++) {
+    const k = 2 + 3 * i - 3, dt = nums[k], ax = i % 2 ? 0 : 1, pv = L[i - 1], p = edges(pv, ax);
+    const lo = p[0] + unzz(nums[k + 1]), hi = p[1] + unzz(nums[k + 2]);
+    if (!(dt <= HDT) || hi - lo < 200 || hi - lo > BASE * 200 || lo < p[0] - GROW * 100 || hi > p[1] + GROW * 100) return null; // lapis mustahil
+    const c = r2((lo + hi) / 400), w = r2((hi - lo) / 200);
+    L.push(ax ? { cx: pv.cx, cz: c, w: pv.w, d: w, i } : { cx: c, cz: pv.cz, w, d: pv.d, i });
+    t += dt / 1000; T.push(t);
+  }
+  const e = nums[2 + 3 * m]; if (!(e <= HDT)) return null;
+  return { L, T, end: t + e / 1000, n: m };
+}
+
 /* ================= UJI ================= */
 function runUji() {
   const out = []; let ok = true;
@@ -425,6 +461,22 @@ function runUji() {
   chk(!early && armMid && armPast && missPast, "n) ketukan 0-0,3 dtk setelah jatuh ditelan; setelah lewat menara tetap meleset sungguhan");
   // o) tautan tantangan dengan skor mustahil diabaikan
   chk(!parseChal("#t=zz-99999999999") && !parseChal("#t=zz-10000") && parseChal("#t=zz-9999").score === 9999, "o) skor tantangan di atas " + CHAL_MAX + " diabaikan");
+  // q) duel hantu: rekaman
+  const qn = [0, 1, 127, 128, 16383, 16384, 60000, 99999999, 5], qr = KIT.hantu.unpack(KIT.hantu.pack(qn));
+  chk(qr && qr.join() === qn.join(), "q1) pack/unpack bolak-balik sama persis (" + qn.join(",") + ")");
+  const gr = new Core(), rq = KIT.rng(99), tms = []; gr.reset(424242);
+  for (let k = 0; k < 400 && !gr.over; k++) { const o = k < 70 ? (rq() < 0.6 ? 0 : (rq() - 0.5) * 9) : gr.cur.W + 5; if (!gr.dropAt(o).over) tms.push(250 + rq() * 1500); }
+  const rec = encodeRun(gr.L, gr.n, tms, 900), recS = KIT.hantu.pack(rec), dec = decodeRun(KIT.hantu.unpack(recS), gr.n);
+  let gn = 0, sameL = !!dec;
+  if (dec) {
+    for (let f = 0; f <= Math.ceil(dec.end * 60) + 1; f++) while (gn < dec.n && dec.T[gn] <= f / 60) gn++; // jam 60 fps seperti permainan
+    for (let i = 0; i <= gr.n; i++) { const a = gr.L[i], b2 = dec.L[i]; if (a.cx !== b2.cx || a.cz !== b2.cz || a.w !== b2.w || a.d !== b2.d) sameL = false; }
+  }
+  chk(dec && gr.n > 20 && gn === gr.n && sameL && Math.abs(dec.end - (tms.reduce((s, v) => s + Math.round(v), 0) + 900) / 1000) < 1e-6, "q2) rekaman " + gr.n + " lapis diputar ulang: tinggi akhir " + gn + ", semua lapis sama persis (" + rec.length + " bilangan, " + recS.length + " huruf)");
+  g.reset(31); for (let i = 0; i < 600; i++) g.dropAt(0);
+  const recL = encodeRun(g.L, 600, [], 0), decL = decodeRun(KIT.hantu.unpack(KIT.hantu.pack(recL)), 600);
+  chk(recL.length === 3 + 3 * HMAX && recL.length <= 1500 && decL && decL.n === HMAX && decodeRun(recL, 479) === null, "q3) permainan 600 lapis direkam " + HMAX + " lapis pertama (" + recL.length + " bilangan)");
+  const h0 = location.hash, setH = (h) => { try { history.replaceState(null, "", location.pathname + location.search + h); } catch (e) { } };
   // p) alur layar: data pemain disalin dulu lalu dipulihkan; kemajuan bersama tidak disentuh
   const PFX = "dehayuk." + SLUG + ".", snap = {}; let lsOk = true;
   try { for (let q = 0; q < localStorage.length; q++) { const k = localStorage.key(q); if (k && k.indexOf(PFX) === 0) snap[k] = localStorage.getItem(k); } } catch (e) { lsOk = false; }
@@ -463,8 +515,29 @@ function runUji() {
     // Tantang: Main lagi mengulang benih dan target yang sama
     chal = { seed: 98765, score: 10 }; startGame("chal", 98765); stack(3); finish(); $("rAgain").click();
     chk(kind === "chal" && seedNow === 98765 && chal && chal.score === 10, "p10) Main lagi setelah tantangan mengulang benih " + seedNow + " dan target " + (chal && chal.score));
+    // q4) link lama tanpa h: target saja, persis seperti dulu
+    setH("#t=zz-12"); const c1 = readChal(); chal = c1; toTitle(); const t1c = $("tChal").textContent;
+    startGame("chal", c1.seed); const gOld = G; stack(3); finish();
+    chk(c1 && c1.score === 12 && !c1.ghost && t1c === "Temanmu menumpuk 12 lapis. Kalahkan!" && !gOld && $("rVerd").textContent === "KALAHKurang 10 lapis lagi", "q4) link lama tanpa h: target 12 saja, tanpa hantu");
+    // q5) h rusak diabaikan dengan aman, tantangan tetap jalan
+    const bad = ["AAAA", "____", recS.slice(0, -3), "!!", recS.slice(0, 9)];
+    let badOk = true; for (const b3 of bad) { setH("#t=zz-" + gr.n + "&n=Budi&h=" + b3); const c = readChal(); if (!c || c.ghost || c.score !== gr.n) badOk = false; }
+    setH("#t=zz-" + (gr.n + 1) + "&n=Budi&h=" + recS); const cMis = readChal();
+    const geoOk = decodeRun([1, 1, 500, zz(-30000), 0, 0], 1) === null && decodeRun([1, 1, 500, 0, zz(500), 0], 1) === null && decodeRun([1, 1, 500, 0, 0, 0], 1) !== null;
+    chk(badOk && cMis && !cMis.ghost && cMis.score === gr.n + 1 && geoOk, "q5) h rusak, terpotong, mustahil, atau tak cocok skor diabaikan; target tetap");
+    // q6) duel: hantu memimpin, disalip sekali, hasil menyebut nama, Main lagi memutar hantu yang sama
+    setH("#t=zz-" + gr.n + "&n=Budi&h=" + recS); const cg = readChal(); chal = cg; toTitle(); const tg = $("tChal").textContent;
+    startGame("chal", cg.seed); const G1 = G; gT = cg.ghost.T[4] + 0.001; ghostTick(); const ahead = gN === 5 && !gPass;
+    stack(6); ghostTick(); const passTxt = BN[1].s; BN[1].s = ""; stack(2); ghostTick(); const once = BN[1].s === "";
+    chk(tg === "Budi menumpuk " + gr.n + " lapis. Kalahkan hantunya!" && G1 && G1.nama === "Budi" && ahead && passTxt === "Kamu menyalip Budi!" && once, "q6) hantu Budi di depan (5), disalip di 6: \"" + passTxt + "\" sekali saja");
+    finish(); const vLose = $("rVerd").textContent;
+    $("rAgain").click(); const again = G && G.g === cg.ghost && kind === "chal" && seedNow === cg.seed && gN === 0 && !gPass;
+    stack(gr.n + 1); finish(); const vWin = $("rVerd").textContent, lastH = ST.get("last", {}).h;
+    chk(vLose === "Kalah dari BudiKamu 8 · Budi " + gr.n + " lapis" && again && vWin === "Menang lawan Budi!Kamu " + (gr.n + 1) + " · Budi " + gr.n + " lapis", "q7) hasil: \"" + vLose + "\" lalu Main lagi dengan hantu sama: \"" + vWin + "\"");
+    chk(lastH && decodeRun(KIT.hantu.unpack(lastH), gr.n + 1) && KIT.hantu.link(SLUG, cg.seed, gr.n + 1, lastRek).indexOf("&h=" + lastH) > 0, "q8) setiap permainan direkam dan masuk ke link tantangan");
   } catch (err) { chk(false, "p) galat: " + err.message); }
   finally {
+    setH(h0);
     KIT.progress.record = recOrig; KIT.ui.toast = toastOrig;
     if (lsOk) try { const del = []; for (let q = 0; q < localStorage.length; q++) { const k = localStorage.key(q); if (k && k.indexOf(PFX) === 0 && !(k in snap)) del.push(k); } del.forEach((k) => localStorage.removeItem(k)); for (const k in snap) localStorage.setItem(k, snap[k]); } catch (e) { }
     chal = null; chalLast = null; toTitle();
@@ -502,7 +575,8 @@ function colsOf(ci, gold) {
 function lcol(L) { return L.C || (L.C = colsOf(L.ci == null ? L.i : L.ci, L.gold)); }
 
 const $ = (id) => document.getElementById(id);
-const cv = $("cv"), ctx = cv.getContext("2d"), colEl = $("col");
+const cv = $("cv"), colEl = $("col");
+let ctx = cv.getContext("2d"); // ditukar sebentar ke kanvas hantu saat menggambar hantu
 let vw = 0, vh = 0, dpr = 1, S0 = 1, colX = 0, colW = 0, sT = 0, sB = 0, LAND = false;
 // proyeksi: layarX = OX + (Z - X)*KZ ; layarY = OY + ((X+Z)/2 - Y*HK - CAM)*KZ
 let OX = 0, OY = 0, KZ = 1, CAM = 0;
@@ -790,6 +864,9 @@ function starSVG(on) { return '<svg viewBox="0 0 24 24" aria-hidden="true"><path
 const core = new Core(), demo = new Core(), coverCore = new Core();
 let mode = "title", kind = "normal", seedNow = 1, dailyKey = "", OVR = null, camX = 0.5, chal = null, chalLast = null, time = 0, endT = 0, recPrev = 0, recHit = false, cdT = 0, cdShown = 0, demoDead = 0, skyL = 0;
 let camZ = 1, camA = 0.38, lastRes = null;
+// rekaman permainan ini (jam main berhenti saat jeda) dan hantu lawan yang sedang diputar
+let runT = 0, lastDropT = 0, dropMs = [], endMs = 0, lastRek = null;
+let G = null, gT = 0, gN = 0, gPass = false, gAhead = false;
 function best() { return ST.get("best", 0) | 0; }
 function daily() { const d = ST.get("harian", null); return d && d.d === KIT.dateKey() ? d : null; }
 function isDailyRun() { return (kind === "daily" || kind === "practice") && seedNow === KIT.dailySeed(SLUG); }
@@ -798,7 +875,11 @@ function krimTotal() { return Math.max(0, ST.get("krimTotal", 0) | 0); }
 function plateOk(i, kt) { const P = PLATES[i]; return !P.butuh || badgesGot().indexOf(P.butuh) >= 0 || (kt == null ? krimTotal() : kt) >= P.krim; }
 // piring terkunci termurah: sasaran krim berikutnya
 function nextPlate(kt) { let b = -1; PLATES.forEach((P, i) => { if (!plateOk(i, kt) && (b < 0 || P.krim < PLATES[b].krim)) b = i; }); return b; }
-function readChal() { const c = KIT.readChallenge(); return c && c.score <= CHAL_MAX ? c : null; }
+// tantangan dari link; rekaman rusak atau tak cocok diabaikan, sisanya tetap jalan seperti link lama
+function readChal() {
+  const c = KIT.hantu.baca(); if (!c || c.score > CHAL_MAX) return null;
+  c.ghost = c.rekaman ? decodeRun(c.rekaman, c.score) : null; return c;
+}
 function loadPlate() { plateSel = ST.get("plate", 0) | 0; if (!PLATES[plateSel] || !plateOk(plateSel)) plateSel = 0; }
 function activeCore() { return COVER ? coverCore : mode === "title" || mode === "leaving" ? demo : core; }
 
@@ -827,9 +908,10 @@ function camTarget(c) {
     else if (vh > 760) { z = 0.74; a = 0.8; base = 0.9; }
     else { z = 0.66; a = 0.8; base = 0.93; }
   }
-  const topU = topV - 70, botU = 95;
-  if (mode === "over" && OVR) { // hasil: seluruh menara di ruang yang tak tertutup panel
-    const fit = Math.min(0.9, (OVR.bot - OVR.top) * vh / ((botU - topU) * S0), OVR.w * vw / (300 * S0));
+  if (G && !LAND) x = 0.44; // beri ruang hantu di kanan
+  const topU = Math.min(topV, G && (mode === "over" || mode === "ending") ? -(G.g.n + 1) * LH * HK : Infinity) - 70, botU = 95;
+  if (mode === "over" && OVR) { // hasil: seluruh menara (dan hantu) di ruang yang tak tertutup panel
+    const fit = Math.min(0.9, (OVR.bot - OVR.top) * vh / ((botU - topU) * S0), OVR.w * vw / ((G ? 390 : 300) * S0));
     return { z: fit, a: (OVR.top + OVR.bot) / 2, c: (topU + botU) / 2, x: OVR.x };
   }
   if ((mode === "ending" && endT > 0.55) || mode === "over") { // tarik mundur: seluruh menara terlihat
@@ -855,6 +937,7 @@ function doDrop(c, loud, oForce) {
   const cur = c.cur; if (!cur || c.over) return null;
   const top = c.top(), res = c.dropAt(oForce == null ? c.offset() : oForce); if (!res) return null;
   lastRes = res;
+  if (c === core && loud) { const ms = (runT - lastDropT) * 1000; lastDropT = runT; if (res.over) endMs = ms; else dropMs.push(ms); } // rekam jeda tiap lapis
   const ax = cur.axis, y0 = cur.i * LH, y1 = y0 + LH, C = cur.C || colsOf(cur.i, cur.gold), ym = (y0 + y1) / 2;
   const zc = top.cz, xc = top.cx;
   if (res.over || res.cut > 0) {
@@ -908,6 +991,16 @@ function onMiss() {
   SFX.miss(); KIT.vibrate([50, 40, 90]);
   $("hCombo").hidden = true;
 }
+// hantu tumbuh mengikuti jam rekaman; salip diumumkan sekali
+function ghostTick() {
+  const g = G.g; while (gN < g.n && g.T[gN] <= gT) gN++;
+  if (gN > core.n) gAhead = true;
+  if (!gPass && mode === "play" && core.n > gN && (gAhead || gT >= g.end)) {
+    gPass = true; const s = "Kamu menyalip " + G.nama + "!";
+    banner(1, s, 2, Math.min(40, vw * 0.92 / (s.length * 0.56))); SFX.gold(); KIT.vibrate([20, 30, 20]); $("sr").textContent = s;
+    if (DEMO && Q.get("freeze") === "salip") setTimeout(() => { timeScale = 0; }, 450);
+  }
+}
 // ketukan sebelum lapis baru masuk di atas menara ditelan: ketuk ganda tak pernah membunuh
 function tapDrop() {
   if (mode !== "play" || !core.cur) return;
@@ -923,6 +1016,8 @@ function startGame(k, seed) {
   if (k === "daily") ST.set("harian", { d: dailyKey, score: 0, combo: 0, done: false });
   core.reset(seedNow); core.cur.t = -0.25; OVR = null; clearFx(); timeScale = 1;
   endT = 0; recPrev = best(); recHit = false; lastRes = null;
+  runT = 0; lastDropT = 0; dropMs = []; endMs = 0;
+  G = k === "chal" && chal && chal.ghost ? { g: chal.ghost, nama: chal.nama || "Penantang", score: chal.score } : null; gT = 0; gN = 0; gPass = false; gAhead = false;
   hideAll(); $("hud").hidden = false; $("hBest").textContent = recPrev; $("hBestP").classList.remove("live"); $("hBestP").hidden = recPrev <= 0; $("hScore").textContent = "0"; $("sr").textContent = "";
   $("hCombo").hidden = true;
   const tag = $("hTag"); tag.hidden = k === "normal"; tag.textContent = k === "daily" ? "Harian" : k === "practice" ? "Latihan" : "Tantangan";
@@ -935,7 +1030,9 @@ function endGame() {
   mode = "over";
   const sc = core.n, rec = sc > recPrev && sc > 0, today = dailyKey || KIT.dateKey();
   if (rec) ST.set("best", sc);
-  ST.set("last", { seed: seedNow, score: sc });
+  lastRek = encodeRun(core.L, sc, dropMs, endMs); // setiap permainan direkam agar bisa dibagikan sebagai hantu
+  ST.set("last", { seed: seedNow, score: sc, h: KIT.hantu.pack(lastRek) });
+  if (DEMO) document.documentElement.dataset.link = KIT.hantu.link(SLUG, seedNow, sc, lastRek);
   if (kind === "daily") {
     ST.set("harian", { d: today, score: sc, combo: core.bestCombo, done: true });
     if (ST.get("hariD", "") !== today) { ST.set("hariD", today); ST.set("hariN", (ST.get("hariN", 0) | 0) + 1); }
@@ -978,7 +1075,13 @@ function endGame() {
   $("rNormal").hidden = kind !== "chal";
   if (kind === "chal" && chal) {
     vd.hidden = false;
-    if (sc > chal.score) { vd.innerHTML = "MENANG!<small>Target " + chal.score + " lapis terlewati</small>"; vd.classList.add("win"); }
+    if (chal.ghost) { // duel hantu: bandingkan dua menara dengan nama lawan
+      const nm = chal.nama || "Penantang", win = sc > chal.score, sm = document.createElement("small");
+      vd.textContent = win ? "Menang lawan " + nm + "!" : (chal.score - sc <= 5 ? "Kalah tipis dari " : "Kalah dari ") + nm;
+      sm.textContent = "Kamu " + sc + " · " + nm + " " + chal.score + " lapis"; vd.appendChild(sm); vd.classList.add("nm");
+      if (win) vd.classList.add("win");
+    }
+    else if (sc > chal.score) { vd.innerHTML = "MENANG!<small>Target " + chal.score + " lapis terlewati</small>"; vd.classList.add("win"); }
     else vd.innerHTML = "KALAH<small>Kurang " + (chal.score - sc + 1) + " lapis lagi</small>";
     chalLast = chal; chal = null; try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { }
   }
@@ -1001,7 +1104,7 @@ const SCR = ["sTitle", "sPause", "sOver", "sHarian", "sTantang", "sKoleksi"];
 function hideAll() { for (const id of SCR) $(id).hidden = true; $("cd").hidden = true; }
 function resetDemo() { demo.reset((Math.random() * 4294967295) >>> 0 || 7); for (let i = 0; i < 7; i++) demo.dropAt(i % 3 ? 0 : 3); demo.cur.t = -0.3; demoDead = 0; ai.i = -1; }
 function toTitle() {
-  hideAll(); $("hud").hidden = true; $("hint").hidden = true; mode = "title"; clearFx(); timeScale = 1;
+  hideAll(); $("hud").hidden = true; $("hint").hidden = true; mode = "title"; clearFx(); timeScale = 1; G = null;
   loadPlate(); resetDemo(); skyL = 0;
   $("tBest").querySelector("span").textContent = best();
   const p = KIT.progress.get();
@@ -1010,7 +1113,7 @@ function toTitle() {
   const dd = daily(); $("dDaily").hidden = !!dd;
   const ds = $("dStarN"); ds.hidden = !(dd && dd.done);
   if (dd && dd.done) ds.innerHTML = starSVG(true) + starsFor(dd.score, dd.combo | 0);
-  const c = $("tChal"); c.hidden = !chal; if (chal) c.textContent = "Temanmu menumpuk " + chal.score + " lapis. Kalahkan!";
+  const c = $("tChal"); c.hidden = !chal; if (chal) c.textContent = chal.ghost ? chal.nama + " menumpuk " + chal.score + " lapis. Kalahkan hantunya!" : "Temanmu menumpuk " + chal.score + " lapis. Kalahkan!";
   $("sTitle").hidden = false;
   const m = $("tMid"); m.classList.remove("ent", "leave"); void m.offsetWidth; m.classList.add("ent");
   camUpdate(0, true); measureLogo();
@@ -1056,8 +1159,10 @@ $("kPlates").addEventListener("click", (e) => {
   if (!plateOk(i)) { KIT.ui.toast(PLATES[i].krim + " krim atau hiasan " + BADGES.find((x) => x.id === PLATES[i].butuh).nama); SFX.tap(); return; }
   plateSel = i; ST.set("plate", i); SFX.tap(); paintPlates();
 });
-function shareScore(seed, score) {
-  KIT.share({ title: "Tumpuk Lapis", text: "Aku numpuk " + score + " lapis di Tumpuk Lapis! Kuat nyaingin?", url: KIT.challengeLink(SLUG, seed, score) });
+// link tantangan membawa rekaman: penerima melawan hantu kita; tanpa rekaman tetap link skor biasa
+function shareScore(seed, score, nums) {
+  const nm = KIT.papan && KIT.papan.nama ? KIT.papan.nama() : "", ada = nums && nums.length;
+  KIT.share({ title: "Tumpuk Lapis", text: ada ? (nm || "Aku") + " menantangmu di Tumpuk Lapis: " + score + " lapis. Berani kalahkan hantuku?" : "Aku numpuk " + score + " lapis di Tumpuk Lapis! Kuat nyaingin?", url: KIT.hantu.link(SLUG, seed, score, nums) });
 }
 function pause() {
   if (mode !== "play" && mode !== "count") return;
@@ -1070,7 +1175,7 @@ function on(id, fn) { $(id).addEventListener("click", (e) => { SFX.tap(); fn(e);
 on("bMain", () => leaveTitle(() => chal ? startGame("chal", chal.seed) : startGame("normal")));
 on("bHarian", openHarian); on("bTantang", openTantang); on("bKoleksi", openKoleksi); on("bPeringkat", () => KIT.papan && KIT.papan.buka(SLUG)); on("bSetelan", () => KIT.ui.openSettings());
 on("dPlay", () => { const k = daily() ? "practice" : "daily"; $("sHarian").hidden = true; leaveTitle(() => startGame(k, KIT.dailySeed(SLUG))); });
-on("cSend", () => { const L = ST.get("last", null); if (L) shareScore(L.seed, L.score); else { $("sTantang").hidden = true; leaveTitle(() => startGame("normal")); } });
+on("cSend", () => { const L = ST.get("last", null); if (L) shareScore(L.seed, L.score, L.h ? KIT.hantu.unpack(L.h) : null); else { $("sTantang").hidden = true; leaveTitle(() => startGame("normal")); } });
 on("bPause", pause);
 on("pGo", resume);
 on("pRe", () => mode === "pause" && startGame(kind === "daily" ? "practice" : kind, kind === "normal" ? 0 : seedNow));
@@ -1081,7 +1186,7 @@ on("rAgain", () => {
   const same = kind === "daily" || kind === "practice"; startGame(same ? "practice" : "normal", same ? seedNow : 0);
 });
 on("rNormal", () => { if (mode === "over") startGame("normal"); });
-on("rShare", () => { if (mode === "over") shareScore(seedNow, core.n); });
+on("rShare", () => { if (mode === "over") shareScore(seedNow, core.n, lastRek); });
 on("rMenu", () => { if (mode === "over") toTitle(); });
 for (const b of document.querySelectorAll("[data-close]")) b.addEventListener("click", () => { SFX.tap(); b.closest(".dk-overlay").hidden = true; });
 cv.addEventListener("pointerdown", (e) => { if (mode === "play") { e.preventDefault(); tapDrop(); } else skipEnding(); });
@@ -1126,7 +1231,7 @@ function frameCore(ts) {
   dt *= timeScale;
   if (mode === "pause" || mode === "count") dt = 0; // jeda membekukan semua gerak
   time += dt;
-  if (mode === "play") { if (core.cur) { core.cur.t += dt; core.armed(); } if (DEMO) demoPlay(dt); }
+  if (mode === "play") { runT += dt; if (core.cur) { core.cur.t += dt; core.armed(); } if (DEMO) demoPlay(dt); }
   else if (mode === "count") {
     cdT -= raw; const n = Math.ceil(cdT), el = $("cd");
     if (cdT <= 0) { el.hidden = true; mode = "play"; SFX.go(); }
@@ -1137,6 +1242,7 @@ function frameCore(ts) {
     if (aiTick(demo, 0.9)) doDrop(demo, false, ai.tgt);
     if (demo.over) { demoDead += dt; if (demoDead > 1.8) { resetDemo(); FALL = []; camUpdate(0, true); } }
   }
+  if (G && (mode === "play" || mode === "ending" || mode === "over")) { gT += mode === "over" ? dt * 8 : dt; ghostTick(); } // di layar hasil hantu dipercepat sampai selesai
   camUpdate(dt, false);
   render(dt);
 }
@@ -1152,6 +1258,7 @@ function render(dt) {
   drawBackdrop(COVER ? 0 : skyL, OY + (-CAM + 3) * KZ);
   drawPlate(plateSel);
   drawFall(dt, true);
+  if (G) drawGhost();
   const n = c.n, mg = 95 * KZ;
   for (let i = 0; i <= n; i++) {
     const L = c.L[i], sy = OY + ((L.cx + L.cz) * 0.5 - (i + 1) * LH * HK - CAM) * KZ;
@@ -1187,6 +1294,7 @@ function render(dt) {
     g.globalAlpha = T.t > 1.6 ? (2 - T.t) / 0.4 : 1; drawTopping(p[0], p[1] - 30 * e * KZ - 10, s); g.globalAlpha = 1;
   }
   if (COVER && c.n) { const L = c.L[c.n], p = sxy(L.cx, (c.n + 1) * LH, L.cz); drawTopping(p[0], p[1] - 6, KZ * 2.6); }
+  if (G) drawGhostTag();
   drawTexts(dt);
   if (desT > 0) { g.globalCompositeOperation = "saturation"; g.globalAlpha = Math.min(1, desT / 0.3); g.fillStyle = "#888"; g.fillRect(0, 0, vw, vh); g.globalCompositeOperation = "source-over"; g.globalAlpha = 1; }
   if (vign > 0) { const gr = g.createRadialGradient(vw / 2, vh / 2, Math.min(vw, vh) * 0.3, vw / 2, vh / 2, Math.max(vw, vh) * 0.75); gr.addColorStop(0, "rgba(255,30,60,0)"); gr.addColorStop(1, "rgba(255,30,60," + (0.3 * vign / 0.25).toFixed(3) + ")"); g.fillStyle = gr; g.fillRect(0, 0, vw, vh); }
@@ -1241,6 +1349,48 @@ function drawTexts(dt) {
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   g.globalAlpha = 1;
+}
+
+/* ---------- hantu: menara lawan, tembus pandang, di kanan ---------- */
+const GX = 62, GS = 0.55, GTINT = hx("#aebfff"); // geser dunia (layar +124), skala tapak, warna hantu
+const GC = { t: rgb(GTINT), l: rgb(dk(GTINT, 0.86)), r: rgb(dk(GTINT, 0.7)), o: "#352a80", s1: rgb(dk(GTINT, 0.72)), hi: "rgba(255,255,255,.5)", str: 0, gold: false };
+let gcv = null, gctx = null;
+function ghostN() { return mode === "over" ? G.g.n : gN; }
+// digambar penuh ke kanvas sendiri lalu ditempel setengah tembus, agar lapis yang bertumpuk tak saling menggelapkan
+function drawGhost() {
+  if (!gcv || gcv.width !== cv.width || gcv.height !== cv.height) { gcv = mk(cv.width, cv.height); gctx = gcv.getContext("2d"); }
+  const main = ctx, q = gctx, n = ghostN(), L = G.g.L, k = KZ;
+  q.setTransform(1, 0, 0, 1, 0, 0); q.clearRect(0, 0, gcv.width, gcv.height); q.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const pc = sxy(-GX, -2, GX); // piring hantu
+  q.fillStyle = "rgba(235,240,255,.9)"; q.strokeStyle = GC.o; q.lineWidth = 2; q.beginPath(); q.ellipse(pc[0], pc[1], 80 * k, 40 * k, 0, 0, TAU); q.fill(); q.stroke();
+  ctx = q;
+  for (let i = 0; i <= n; i++) {
+    let y0 = i * LH; const l = L[i];
+    if (i === n && i > 0 && mode !== "over") { const a = (gT - G.g.T[i - 1]) / 0.14; if (a < 1) y0 += LH * 2 * (1 - a); } // lapis baru jatuh sebentar
+    drawBox(-GX + (l.cx - l.w / 2) * GS, -GX + (l.cx + l.w / 2) * GS, GX + (l.cz - l.d / 2) * GS, GX + (l.cz + l.d / 2) * GS, y0, y0 + LH, GC);
+  }
+  ctx = main;
+  main.setTransform(1, 0, 0, 1, 0, 0); main.globalAlpha = 0.55; main.drawImage(gcv, 0, 0); main.globalAlpha = 1; main.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+function pill(x, y, s, bg) {
+  const g = ctx; g.font = FONTS[14]; const w = g.measureText(s).width + 16, h = 22;
+  x = Math.max(6 + w / 2, Math.min(vw - 6 - w / 2, x));
+  g.fillStyle = bg; g.strokeStyle = INK; g.lineWidth = 2; g.beginPath();
+  g.moveTo(x - w / 2 + 11, y - h / 2); g.arcTo(x + w / 2, y - h / 2, x + w / 2, y + h / 2, 11); g.arcTo(x + w / 2, y + h / 2, x - w / 2, y + h / 2, 11);
+  g.arcTo(x - w / 2, y + h / 2, x - w / 2, y - h / 2, 11); g.arcTo(x - w / 2, y - h / 2, x + w / 2, y - h / 2, 11); g.closePath(); g.fill(); g.stroke();
+  g.fillStyle = "#fff"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(s, x, y + 1);
+}
+// bendera nama di puncak hantu; bila puncak di luar layar, penanda di tepi
+function drawGhostTag() {
+  const g = ctx, n = ghostN(), done = mode === "over" || gT >= G.g.end, l = G.g.L[n];
+  const p = sxy(-GX + l.cx * GS, (n + 1) * LH, GX + l.cz * GS), BG = "rgba(53,42,128,.92)";
+  const top = mode === "over" ? sT + 16 : sT + (vh < 500 ? 60 : 78), bot = vh - sB - 22; // di bawah HUD saat bermain
+  if (p[1] < top) { pill(p[0], top, "▲ " + G.nama + " · " + n, BG); return; }
+  if (p[1] > bot) { pill(p[0], bot, "▼ " + G.nama + " · " + n, BG); return; }
+  const x = p[0], y = p[1] - 6, py = Math.max(top, y - 42), ft = Math.max(py + 11, y - 30); // tiang memendek bila puncak dekat tepi atas
+  g.strokeStyle = INK; g.lineWidth = 2; g.beginPath(); g.moveTo(x, y); g.lineTo(x, ft); g.stroke();
+  if (done && y - ft > 12) { g.fillStyle = "#cdd5ff"; g.beginPath(); g.moveTo(x, ft); g.lineTo(x + 16, ft + 5); g.lineTo(x, ft + 10); g.closePath(); g.fill(); g.stroke(); }
+  pill(x, py, done ? G.nama + " · " + G.score : G.nama, BG);
 }
 
 /* ================= MULAI ================= */

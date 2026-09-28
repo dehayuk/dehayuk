@@ -107,7 +107,7 @@ canvas{display:block}
 .st div{display:flex;flex-direction:column}
 .st b{font:800 24px/1 var(--dk-fd)}
 .st span{font:800 12px/1.1 var(--dk-fd);color:var(--dk-lbl)}
-.note{font:800 19px/1.1 var(--dk-fd);padding:5px 16px 7px;border-radius:12px;border:3px solid var(--dk-ink);background:#ff8a8a;box-shadow:0 3px 0 var(--dk-ink)}
+.note{font:800 19px/1.1 var(--dk-fd);white-space:pre-line;text-align:center;padding:5px 16px 7px;border-radius:12px;border:3px solid var(--dk-ink);background:#ff8a8a;box-shadow:0 3px 0 var(--dk-ink)}
 .note.win{background:#8ef06a}
 .xp{font:800 14px/1 var(--dk-fd);background:var(--dk-ink);color:#ffe36a;border-radius:999px;padding:5px 12px 6px}
 #rAgain{font-size:26px;padding:14px 10px 17px}
@@ -576,7 +576,7 @@ function Sim(w, opt) {
   this.w = w; this.calm = !!(opt && opt.calm); this.lf = (r) => w.lane(r);
   this.t = 0; this.r = 0; this.x = 4.5; this.max = 0; this.hop = null; this.q = -1; this.dead = ""; this.idle = 0; this.cam = 0;
   this.face = UP; this.fish = 0; this.got = new Set(); this.near = 0; this.nmEnd = -1; this.nmDone = true; this.rails = 0; this.rivers = 0; this.bio = 1;
-  this.ev = []; this.hops = 0; this.pre = null; this.due = -1; this.killer = null; this.nmOk = false; this.tn = null;
+  this.ev = []; this.hops = 0; this.pre = null; this.due = -1; this.killer = null; this.nmOk = false; this.tn = null; this.rec = [];
 }
 Sim.prototype.prog = function () { const h = this.hop; return h ? min(1, (this.t - h.t0) / HOP) : 1; };
 Sim.prototype.oy = function () { const h = this.hop; return h ? h.fr + (h.tr - h.fr) * this.prog() : this.r; };
@@ -594,6 +594,7 @@ Sim.prototype.start = function (dir) {
   // nyaris hanya dihitung saat maju ke baris baru, jadi tidak bisa dipanen bolak-balik
   this.nmOk = dir === UP && tg.r > this.max; this.nmEnd = this.t + HOP + .2; this.nmDone = false; this.hops++;
   this.tn = this.nmOk && this.lf(this.r).t === L_T ? { row: this.r, x: this.x, until: this.t + .35 } : null;
+  this.rec.push(this.t, dir, tg.x); // rekaman untuk duel hantu
   this.ev.push(["hop", dir]); return true;
 };
 Sim.prototype.die = function (c, k) { if (this.dead) return; this.dead = c; this.killer = k || null; this.q = -1; this.ev.push(["die", c]); };
@@ -682,6 +683,40 @@ Bot.prototype.tick = function () {
   if (!this.plan) { this.fail++; this.plan = [0, 0]; }
   s.due = this.t0;
 };
+
+/* ---------- duel hantu ---------- */
+// rekaman: [versi (1 utuh, 2 terpotong), cs dari lompatan terakhir sampai mati, lalu per lompatan: arah + 4 x cs sejak lompatan sebelumnya, x mendarat x 8]
+// x mendarat ikut disimpan karena rakit menghanyutkan Oyen; cs = seperseratus detik waktu simulasi
+const H_MAX = 749;
+function recNums(s) {
+  const R = s.rec, n = min(R.length / 3, H_MAX), out = [n < R.length / 3 ? 2 : 1, 0]; let p = 0;
+  for (let i = 0; i < n * 3; i += 3) { const t = round(R[i] * 100); out.push(R[i + 1] + 4 * (t - p), round(R[i + 2] * 8)); p = t; }
+  out[1] = max(0, round(s.t * 100) - p); return out;
+}
+// null bila rekaman rusak; hantu tidak pernah memengaruhi permainan
+function ghostOf(a) {
+  if (!Array.isArray(a) || a.length < 2 || a.length & 1 || (a[0] !== 1 && a[0] !== 2) || a[1] > 3e3) return null;
+  const n = (a.length - 2) / 2, T = [], D = [], X = [], R = []; let t = 0, r = 0;
+  for (let i = 2; i < a.length; i += 2) {
+    const d = a[i] % 4, dt = (a[i] - d) / 4, x = a[i + 1] / 8;
+    r += d === UP ? 1 : d === DOWN ? -1 : 0; t += dt / 100;
+    if (r < 0 || dt > 3e3 || x > COLS) return null;
+    T.push(t); D.push(d); X.push(x); R.push(r);
+  }
+  return { T, D, X, R, n, end: t + (a[0] === 1 ? a[1] / 100 : HOP), mark: a[0] === 1, i: 0 };
+}
+// posisi hantu pada waktu t: {y baris (pecahan), r baris untuk urutan gambar, x, p kemajuan lompat, face}
+function ghostAt(G, t, lf) {
+  t = min(t, G.end);
+  let k = G.i; if (k && G.T[k - 1] > t) k = 0;
+  while (k < G.n && G.T[k] <= t) k++;
+  G.i = k;
+  const pos = (j, tt) => { if (j < 0) return 4.5; const L = lf(G.R[j]); return L.t === L_W ? G.X[j] + L.dir * L.v * (tt - G.T[j] - HOP) : G.X[j]; };
+  if (!k) return { y: 0, r: 0, x: 4.5, p: 1, face: UP };
+  const j = k - 1, p = min(1, (t - G.T[j]) / HOP), r0 = j ? G.R[j - 1] : 0, x0 = pos(j - 1, G.T[j]);
+  if (p < 1) return { y: r0 + (G.R[j] - r0) * p, r: p < .5 ? r0 : G.R[j], x: x0 + (G.X[j] - x0) * p, p, face: G.D[j] };
+  return { y: G.R[j], r: G.R[j], x: pos(j, t), p, face: G.D[j] };
+}
 
 /* ================= SENI (semua digambar dengan kode) ================= */
 const INK = "#2b1a10", OL = "rgba(43,26,16,.8)";
@@ -1103,7 +1138,7 @@ function ftext(x, y, s, size, col) { const i = tHead; tHead = (tHead + 1) % TN; 
 const BAN = { s: "", t: 0, d: 1, col: 0, mid: false, a: 1 };
 const BAN_COL = [["#fffbd0", "#ffd32e", "#ff7a1a"], ["#fff0f7", "#ff7ab8", "#ff3d7f"], ["#e8fbff", "#7fd8ff", "#2f9df0"]];
 // mid: di tengah layar (hanya setelah permainan selesai); selain itu di bawah HUD atau di pita kiri
-function banner(s, dur, col, mid, a) { BAN.s = s; BAN.t = dur; BAN.d = dur; BAN.col = col || 0; BAN.mid = !!mid; BAN.a = a || 1; }
+function banner(s, dur, col, mid, a) { BAN.s = s; BAN.t = dur; BAN.d = dur; BAN.col = col || 0; BAN.mid = !!mid; BAN.a = a || 1; BAN.g = 0; }
 let shake = 0, flash = 0, flashCol = "#fff", speedT = 0, speedY = 0, speedX = 0, slowT = 0, anchorT = 0, press = false;
 function fontPx(n) { return "800 " + max(1, n | 0) + "px 'Baloo 2','Arial Rounded MT Bold',sans-serif"; }
 
@@ -1194,7 +1229,7 @@ function medal(i, locked, emb, cols) {
 const rankSVG = (i, locked) => medal(i, locked, -1, [RANKS[i][2], RANKS[i][3]]);
 
 /* ================= STATUS ================= */
-let mode = "title", kind = "normal", seedNow = 1, chal = null, chalLast = null, time = 0;
+let mode = "title", kind = "normal", seedNow = 1, chal = null, chalLast = null, time = 0, ghost = null;
 let world = null, sim = null, bot = null, tWorld = null, tSim = null, tBot = null, vcam = 0, tcam = 0;
 let recPrev = 0, recHit = false, deadT = 0, landT = 1, bumpT = 0, bumpDir = 0, fwd = [], praiseT = -9, praiseN = 0, hintN = 0, lastScore = 0;
 let honkCd = 0, bowlCd = 0, bellCd = 0, rumbleCd = 0, screeched = false, dieX = 0, dieY = 0, eagleT = 0;
@@ -1206,6 +1241,8 @@ function startGame(k, seed) {
   kind = k; seedNow = (seed >>> 0) || ((rnd() * 4294967295) >>> 0) || 1;
   if (k === "daily") ST.set("harian", { d: KIT.dateKey(), score: 0, done: false });
   world = new World(seedNow); sim = new Sim(world); bot = DEMO ? new Bot(sim, false, 9) : null;
+  ghost = k === "chal" && chal ? ghostOf(chal.rekaman) : null;
+  if (ghost) { ghost.nama = chal.nama; ghost.score = chal.score; }
   if (bot) sim.pre = () => bot.tick();
   const fromTitle = mode === "leaving" || mode === "title";
   vcam = 0; anchorY = playAnchor; skinNow = curSkin(); recPrev = best(); recHit = false; deadT = 0; landT = 1; bumpT = 0; fwd = []; praiseT = -9; praiseN = 0; lastScore = 0;
@@ -1224,7 +1261,7 @@ function endGame() {
   mode = "over";
   const sc = sim.max, rec = sc > recPrev && sc > 0;
   if (rec) ST.set("best", sc);
-  ST.set("last", { seed: seedNow, score: sc });
+  ST.set("last", { seed: seedNow, score: sc, h: KIT.hantu.pack(recNums(sim)) });
   if (kind === "daily") {
     ST.set("harian", { d: KIT.dateKey(), score: sc, done: true });
     const h = ST.obj("hari", ["n"]) || { n: 0, last: "" }; if (h.last !== KIT.dateKey()) ST.set("hari", { n: (h.n | 0) + 1, last: KIT.dateKey() });
@@ -1256,8 +1293,9 @@ function endGame() {
   $("rNormal").hidden = kind !== "chal";
   if (kind === "chal" && chal) {
     note.hidden = false;
-    if (sc > chal.score) { note.textContent = "MENANG! " + chal.score + " terlewati"; note.classList.add("win"); }
-    else note.textContent = "KALAH · kurang " + (chal.score - sc + 1);
+    const win = sc > chal.score, vs = "\nKamu " + sc + " · " + chal.nama + " " + chal.score;
+    note.textContent = chal.rekaman ? (win ? "Menang lawan " + chal.nama + "!" : (chal.score - sc <= Math.max(3, chal.score * 0.1) ? "Kalah tipis dari " : "Kalah dari ") + chal.nama) + vs : win ? "MENANG! " + chal.score + " terlewati" : "KALAH · kurang " + (chal.score - sc + 1);
+    if (win) note.classList.add("win");
     chalLast = chal; chal = null; try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { }
   }
   const xp = $("rXp"); xp.hidden = false; xp.textContent = (pr.leveledUp ? "Naik level! " : "+" + pr.gain + " XP · ") + "Lv " + pr.level;
@@ -1285,7 +1323,7 @@ function toTitle() {
   $("tLv").textContent = "Lv " + p.level;
   $("tStrk").hidden = p.streak <= 0; $("tStrkN").textContent = p.streak + " hari";
   $("dDaily").hidden = !!daily();
-  const c = $("tChal"); c.hidden = !chal; if (chal) c.textContent = "Oyen temanmu sampai langkah " + chal.score + ". Kalahkan!";
+  const c = $("tChal"); c.hidden = !chal; if (chal) c.textContent = chal.rekaman ? chal.nama + " sampai langkah " + chal.score + ". Kalahkan hantunya!" : "Oyen temanmu sampai langkah " + chal.score + ". Kalahkan!";
   $("sTitle").hidden = false;
   const m = $("tMid"); m.classList.remove("ent", "leave"); void m.offsetWidth; m.classList.add("ent");
   measureTitle();
@@ -1337,7 +1375,12 @@ function paintKoleksi() {
 }
 function openKoleksi() { kSel = curSkin(); paintKoleksi(); KIT.ui.show($("sKoleksi")); }
 function closeKoleksi() { if (mode === "over") paintCan(); }
-function shareScore(seed, score) { KIT.share({ title: "Oyen Nyebrang", text: "Oyen nyebrang " + score + " langkah! Bisa lebih jauh?", url: KIT.challengeLink(SLUG, seed, score) }); }
+function shareScore(seed, score, h) {
+  const n = KIT.papan && KIT.papan.nama ? KIT.papan.nama() : "";
+  KIT.share({ title: "Oyen Nyebrang", text: (n || "Aku") + " menantangmu di Oyen Nyebrang: " + score + " langkah. Berani kalahkan hantuku?", url: KIT.hantu.link(SLUG, seed, score, h) });
+}
+// tantangan dari alamat; rekaman rusak dibuang, jadi berlaku seperti link lama
+function readChal() { const c = KIT.hantu.baca(); if (c && !ghostOf(c.rekaman)) c.rekaman = null; return c; }
 function pause() { if (mode !== "play") return; mode = "pause"; pid = -1; press = false; KIT.ui.show($("sPause")); }
 
 /* ================= MASUKAN ================= */
@@ -1345,7 +1388,7 @@ function on(id, fn) { $(id).addEventListener("click", (e) => { SFX.tap(); fn(e);
 on("bMain", () => leaveTitle(() => chal ? startGame("chal", chal.seed) : startGame("normal")));
 on("bHarian", openHarian); on("bTantang", openTantang); on("bKoleksi", openKoleksi); on("bPeringkat", () => KIT.papan && KIT.papan.buka(SLUG)); on("bSetelan", () => KIT.ui.openSettings());
 on("dPlay", () => { const k = daily() ? "practice" : "daily"; $("sHarian").hidden = true; leaveTitle(() => startGame(k, KIT.dailySeed(SLUG))); });
-on("cSend", () => { const L = ST.obj("last", ["seed", "score"]); if (L) shareScore(L.seed, L.score); else { $("sTantang").hidden = true; leaveTitle(() => startGame("normal")); } });
+on("cSend", () => { const L = ST.obj("last", ["seed", "score"]); if (L) shareScore(L.seed, L.score, typeof L.h === "string" ? KIT.hantu.unpack(L.h) : null); else { $("sTantang").hidden = true; leaveTitle(() => startGame("normal")); } });
 on("bPause", pause);
 on("pGo", () => { $("sPause").hidden = true; mode = "play"; });
 // Harian resmi tidak pernah hangus diam-diam: Akhiri/Menu menutup permainan dan menyimpan skornya
@@ -1359,7 +1402,7 @@ on("rAgain", () => {
   const same = kind === "daily" || kind === "practice"; startGame(same ? "practice" : "normal", same ? seedNow : 0);
 });
 on("rNormal", () => { if (mode === "over") startGame("normal"); });
-on("rShare", () => { if (mode === "over") shareScore(seedNow, sim ? sim.max : 0); });
+on("rShare", () => { if (mode === "over") shareScore(seedNow, sim ? sim.max : 0, sim ? recNums(sim) : null); });
 on("rMenu", () => { if (mode === "over") toTitle(); });
 on("rCan", () => { if (mode === "over") openKoleksi(); });
 on("kPrev", () => { kSel = (kSel + SKINS.length - 1) % SKINS.length; paintKoleksi(); });
@@ -1413,7 +1456,7 @@ function handleEvents() {
       SFX.hop(); puff(o.x, o.y, 3, 0);
       if (e[1] === UP) {
         fwd.push(sim.t); while (fwd.length && sim.t - fwd[0] > 2) fwd.shift();
-        if (fwd.length >= 5) { praiseN = sim.t - praiseT < 3.5 ? min(2, praiseN + 1) : 0; praiseT = sim.t; fwd = []; banner(PRAISE[praiseN], .6, 2, false, .9); SFX.praise(praiseN); KIT.vibrate(8); }
+        if (fwd.length >= 5) { praiseN = sim.t - praiseT < 3.5 ? min(2, praiseN + 1) : 0; praiseT = sim.t; fwd = []; if (!(BAN.g && BAN.t > 0)) banner(PRAISE[praiseN], .6, 2, false, .9); SFX.praise(praiseN); KIT.vibrate(8); }
       }
     } else if (k === "bump") { SFX.bump(); bumpT = .18; bumpDir = e[1]; KIT.vibrate(12); }
     else if (k === "land") { landT = 0; if (e[1] === L_W) { burst(o.x, o.y - C * .1, 5, C * 1.5, [1, 4], 500); A.noise({ dur: .08, vol: .08, filter: 1400 }); } else { puff(o.x, o.y, 4, 0); SFX.land(); } }
@@ -1434,6 +1477,13 @@ function handleEvents() {
     else if (k === "die") onDeath(e[1], o);
   }
   sim.ev.length = 0;
+}
+// sekali saja: hantu pernah di depan lalu tersalip, atau hantu sudah tamat dan skornya terlewati; BAN.g: pujian tidak menimpa seruan ini
+function ghostTick() {
+  const G = ghost; if (!G || G.pass) return;
+  const r = ghostAt(G, sim.t, sim.lf).r;
+  if (r > sim.max) G.led = true;
+  if (sim.t >= G.end ? sim.max > G.score : G.led && sim.max > r) { G.pass = true; banner("Kamu menyalip " + G.nama + "!", 1.8, 1); BAN.g = 1; SFX.praise(2); say("Kamu menyalip " + G.nama); }
 }
 function fishHud() { const f = $("hFishP"); $("hFish").textContent = sim.fish; f.classList.remove("pop"); void f.offsetWidth; f.classList.add("pop"); }
 function onDeath(c, o) {
@@ -1469,7 +1519,7 @@ function frameCore(ts) {
   if ((window.innerWidth !== vw || window.innerHeight !== vh) && window.innerWidth > 0 && ++sizeChk > 10) { sizeChk = 0; layout(); }
   time += dt;
   if (mode === "play") {
-    sim.step(slowT > 0 ? dt * .35 : dt); slowT -= dt; handleEvents(); if (mode === "play") ambience(sim, dt);
+    sim.step(slowT > 0 ? dt * .35 : dt); slowT -= dt; handleEvents(); if (mode === "play") { ambience(sim, dt); ghostTick(); }
     if (sim.idle > IDLE_WARN && !screeched) { screeched = true; SFX.screech(); }
     if (sim.idle < 1) screeched = false;
     if (DEMO && END && sim.t > END && !sim.dead) { sim.die(Q.get("cause") || "angkot"); handleEvents(); }
@@ -1510,15 +1560,45 @@ function drawWorld(S, t, dt) {
   const top = ceil(vcam + anchorY / u) + 2, bot = floor(vcam - (vh - anchorY) / u) - 1;
   gcRows(w, bot, top);
   const dead = S.dead;
-  const dr = floor(S.oy() + 1e-6);
+  const dr = floor(S.oy() + 1e-6), G = S === sim ? ghost : null, lb = [];
+  let gp = null, gr = -9, mr = -9;
+  if (G) {
+    gp = ghostAt(G, S.t, S.lf); gp.x = max(.3, min(COLS - .3, gp.x));
+    if (S.t < G.end) gr = floor(gp.y + 1e-6); else if (G.mark) { if (G.mx == null) { G.mx = gp.x; G.mr = gp.r; } mr = G.mr; }
+  }
   for (let r = top; r >= bot; r--) {
     const L = w.lane(r), y = anchorY - (r - vcam) * u;
     const rc = rowCanvas(w, L, r);
     if (rc.pad) g.drawImage(rc, 0, y - 1.5 * u, vw, 2 * u); else g.drawImage(rc, 0, rc.height / 2, rc.width, rc.height / 2, 0, y - .5 * u, vw, u);
     drawDyn(S, L, r, y, t, dt);
+    if (r === mr) lb.push(drawMark(gx0 + G.mx * u, y + u * .28, G.nama + " · " + G.score));
+    if (r === gr) lb.push(drawGhost(gx0 + gp.x * u, anchorY - (gp.y - vcam) * u + u * .28, gp, G.nama));
     if (r === dr && !(dead === "elang" || dead === "kereta")) drawOyen(S, dt);
   }
   if (dead === "elang" || dead === "kereta") drawOyen(S, dt);
+  for (const a of lb) tag(a[0], a[1], a[2], a[3]); // label di atas semua baris agar terbaca
+}
+const GSK = ["hantu", "", "#e4efff", "#a9c4ec", "#c4d8f5", "#ffffff", "#5a9cff", 2];
+// hantu penantang: tembus pandang kebiruan, tidak pernah menutupi Oyen
+function drawGhost(x, y, gp, s) {
+  const g = ctx, u = C;
+  g.save(); g.globalAlpha = .58; g.translate(x, y + sin(time * 3) * u * .03);
+  drawCat(g, GSK, gp.face, { u, air: gp.p < 1 ? sin(gp.p * PI) * u * .42 : 0, tail: time * 5 });
+  g.restore(); return [x, y - u * 1.02, s, "rgba(58,92,170,.8)"];
+}
+// nisan kecil bercap kaki di tempat hantu berhenti
+function drawMark(x, y, s) {
+  const g = ctx, u = C;
+  g.save(); g.globalAlpha = .9; shadow(g, x - u * .3, y - u * .1, u * .6, u * .2);
+  rr(g, x - u * .22, y - u * .66, u * .44, u * .6, [u * .22, u * .22, u * .05, u * .05]); fl(g, "#cfd9ec", u * .045);
+  g.fillStyle = "#7d8fb4"; ell(g, x, y - u * .3, u * .09, u * .075); g.fill();
+  for (const e of [-1.2, -.4, .4, 1.2]) { ell(g, x + e * u * .07, y - u * (.44 - abs(e) * .03), u * .035, u * .045); g.fill(); }
+  g.restore(); return [x, y - u * .95, s, "rgba(43,26,16,.8)"];
+}
+function tag(x, y, s, bg) {
+  const g = ctx, f = max(10, C * .3); g.font = fontPx(f); g.textAlign = "center"; g.textBaseline = "middle";
+  const w = g.measureText(s).width + f * .9; x = max(gx0 + w / 2 + 2, min(gx0 + PW - w / 2 - 2, x));
+  rr(g, x - w / 2, y - f * .68, w, f * 1.36, f * .68); g.fillStyle = bg; g.fill(); g.fillStyle = "#fff"; g.fillText(s, x, y + f * .06);
 }
 function drawDyn(S, L, r, y, t, dt) {
   const g = ctx, u = C, yb = y + u / 2, vl = -gx0 / u - 4, vr = (vw - gx0) / u + 1;
@@ -1834,6 +1914,26 @@ function runUji() {
   while ((id = openCan(w2))) got.push(id);
   chk(got.length === 5 && new Set(got).size === 5 && got.indexOf("astro") < 0 && w2.fish === 9999 - 25 - 400, "k) Buka Kaleng tidak pernah kembar: " + got.join(", "));
   chk(!buySkin({ fish: 999, owned: ["oyen"], badges: [], best: 0, cans: 0 }, "astro") && skinOpen({ owned: [], badges: [], best: 300 }, "astro") && skinOpen({ owned: [], badges: ["b100"], best: 0 }, "garong"), "k) Astronot hanya lewat 300 langkah; Garong terbuka lewat lencana");
+  // l) duel hantu: pak/buka bolak-balik, rekaman diputar ulang sampai baris akhir yang sama
+  const pn = [1, 0, 3, 127, 128, 16383, 16384, 268435455], pu = KIT.hantu.unpack(KIT.hantu.pack(pn));
+  chk(pu && pu.join() === pn.join(), "l) pack/unpack bolak-balik: " + KIT.hantu.pack(pn));
+  let rp = "", hl = 0;
+  for (const seed of [5, 66]) {
+    const q = new Sim(new World(seed, 1)), b = new Bot(q, false, seed); q.pre = () => b.tick();
+    while (!q.dead && q.t < 25) q.step(1 / 60);
+    if (!q.dead) q.die("angkot");
+    const nums = recNums(q), G = ghostOf(KIT.hantu.unpack(KIT.hantu.pack(nums))), e = G && ghostAt(G, G.end + 5, q.lf);
+    hl = max(hl, KIT.hantu.pack(nums).length);
+    // tengah perjalanan juga dicek: baris hantu sama dengan baris Oyen di waktu yang sama
+    rp += (G && G.n === q.hops && G.R[G.n - 1] === (q.hop ? q.hop.tr : q.r) && abs(e.x - q.ox()) < .12 && abs(G.end - q.t) < .006 ? "ok" : "X") + ":" + q.max + " ";
+  }
+  { const q = new Sim(new World(66, 1)), b = new Bot(q, false, 66), mid = []; q.pre = () => b.tick();
+    while (!q.dead && q.t < 12) { q.step(1 / 60); mid.push([q.t, q.hop ? q.hop.tr : q.r]); }
+    const G = ghostOf(recNums(q)); let bad = 0;
+    for (const [tt, r] of mid) { if (![-.006, .006].some((d) => { const a = ghostAt(G, tt + d, q.lf); return (a.p < 1 ? G.R[G.i - 1] : a.r) === r; })) bad++; }
+    rp += bad ? "tengah X" + bad : "tengah ok"; }
+  chk(!/X/.test(rp), "l) rekaman diputar ulang ke baris dan x akhir yang sama: " + rp + " (rekaman " + hl + " huruf)");
+  chk([null, [], [0, 0], [1, 0, 5], [3, 0, 1, 36], [1, 0, 4 * 5000, 36], [1, 0, 0, 99], [1, 0, 1, 36, 5, 36]].every((a) => ghostOf(a) === null) && ghostOf([1, 0]) && ghostOf(recNums(new Sim(new World(1)))), "l) rekaman rusak ditolak, rekaman kosong sah");
   // akhir permainan: kemajuan bersama, baris nyaris rekor (data pemain dipulihkan)
   const keys = ["best", "last", "fish", "badges", "ranks", "harian", "hari", "skins", "skin", "cans"], snap = {}, P0 = lsGet();
   for (const k of keys) { snap[k] = KST.get(k, undefined); }
@@ -1852,6 +1952,19 @@ function runUji() {
     chk(g1 && sim !== sm && mode === "play", "k) Main lagi diabaikan saat permainan berjalan (klik susulan iklan), bekerja di layar hasil");
     sim.max = 45; sim.dead = "angkot"; mode = "over";
     chk($("rRec").textContent === "Rekor 60 · kurang 16" && $("rCause").textContent.indexOf("angkot") > 0, "k) layar hasil: " + $("rRec").textContent + " · " + $("rCause").textContent);
+    // l) link lama tanpa h, h rusak, dan link hantu lengkap sampai layar hasil dan Main lagi
+    const q = new Sim(new World(4242)), qb = new Bot(q, false, 3); q.pre = () => qb.tick(); while (!q.dead && q.t < 6) q.step(1 / 60);
+    const hl2 = KIT.hantu.link(SLUG, 4242, 30, recNums(q)), hs = hl2.slice(hl2.indexOf("#")), h0 = location.hash;
+    const viaHash = (h) => { try { history.replaceState(null, "", location.pathname + location.search + h); } catch (e) { } const c = readChal(); try { history.replaceState(null, "", location.pathname + location.search + h0); } catch (e) { } return c; };
+    const old = viaHash("#t=" + (4242).toString(36) + "-30"), rusak = ["A", "AAAA", "_____", KIT.hantu.pack([1, 0, 4 * 9999, 4])].map((h) => viaHash("#t=" + (4242).toString(36) + "-30&n=Budi&h=" + h));
+    chal = old; startGame("chal", old.seed); const g0 = ghost;
+    chk(old && old.seed === 4242 && old.score === 30 && !old.rekaman && g0 === null && $("hTag").textContent === "Tantangan", "l) link lama tanpa h: tantangan biasa tanpa hantu");
+    chk(rusak.every((c) => c && c.seed === 4242 && c.nama === "Budi" && c.rekaman === null), "l) h rusak (4 macam) diabaikan dengan aman, tantangannya tetap");
+    chal = viaHash(hs + (/&n=/.test(hs) ? "" : "&n=Budi")); startGame("chal", chal.seed);
+    const gh1 = ghost; sim.step(3); ghostTick(); render(0);
+    sim.max = 45; sim.dead = "angkot"; endGame(); const nt = $("rNote").textContent;
+    mode = "over"; $("rAgain").click();
+    chk(gh1 && gh1.n === q.hops && /^Menang lawan /.test(nt) && /Kamu 45 · .+ 30$/.test(nt) && kind === "chal" && ghost && ghost !== gh1 && ghost.n === gh1.n, "l) link hantu (" + hs.length + " huruf): hantu main, hasil \"" + nt.replace("\n", " / ") + "\", Main lagi memakai hantu yang sama");
   } finally {
     KIT.progress.record = recOrig;
     for (const k of keys) { if (snap[k] === undefined) KST.remove(k); else KST.set(k, snap[k]); delete MEM[k]; }
@@ -1899,8 +2012,8 @@ function boot() {
   else { tWorld = new World(20260928, .15); tSim = new Sim(tWorld, { calm: true }); tBot = new Bot(tSim, true, 5); tSim.pre = () => tBot.tick(); }
   skinNow = COVER ? 0 : curSkin();
   layout();
-  chal = KIT.readChallenge();
-  window.addEventListener("hashchange", () => { chal = KIT.readChallenge(); if (mode === "title") toTitle(); });
+  chal = readChal();
+  window.addEventListener("hashchange", () => { chal = readChal(); if (mode === "title") toTitle(); });
   toTitle(); tcam = tSim.cam;
   if (!COVER) KIT.music.start(MUSIC);
   if (UJI) setTimeout(runUji, 30);

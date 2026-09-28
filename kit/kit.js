@@ -244,6 +244,48 @@
     var seed = parseInt(m[1], 36) >>> 0, score = Math.min(99999999, parseInt(m[2], 10) | 0);
     return seed ? { seed: seed, score: score } : null;
   };
+  /* ---------- duel hantu: rekaman permainan yang ikut di dalam link tantangan ---------- */
+  // Rekaman adalah deretan bilangan bulat >= 0 (misalnya selisih waktu ketukan dalam milidetik dan arah),
+  // dipadatkan dengan varint lalu base64url agar muat di link WhatsApp. Tanpa server.
+  // Format link: #t=<benih>-<skor>&n=<nama>&h=<rekaman>. Link lama "#t=benih-skor" tetap terbaca.
+  var HANTU_MAKS = 6000; // batas bilangan dalam satu rekaman, agar link tetap pendek (kurang lebih 8 KB)
+  function b64url(bytes) { var s = ""; for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+  function unb64url(str) { var s = atob(str.replace(/-/g, "+").replace(/_/g, "/")); var out = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) out[i] = s.charCodeAt(i); return out; }
+  K.hantu = {
+    pack: function (nums) {
+      var bytes = [];
+      for (var i = 0; i < Math.min(nums.length, HANTU_MAKS); i++) {
+        var v = Math.max(0, Math.floor(nums[i]) || 0);
+        while (v >= 128) { bytes.push((v & 127) | 128); v = Math.floor(v / 128); }
+        bytes.push(v);
+      }
+      return b64url(bytes);
+    },
+    unpack: function (str) {
+      try {
+        var b = unb64url(str), out = [], v = 0, mul = 1;
+        for (var i = 0; i < b.length && out.length < HANTU_MAKS; i++) {
+          v += (b[i] & 127) * mul;
+          if (b[i] & 128) { mul *= 128; if (mul > 268435456) return null; } else { out.push(v); v = 0; mul = 1; }
+        }
+        return out;
+      } catch (e) { return null; }
+    },
+    // Link tantangan dengan nama penantang dan rekamannya.
+    link: function (slug, seed, score, nums) {
+      var n = K.papan && K.papan.nama ? K.papan.nama() : "";
+      return K.challengeLink(slug, seed, score) + (n ? "&n=" + encodeURIComponent(n) : "") + (nums && nums.length ? "&h=" + K.hantu.pack(nums) : "");
+    },
+    // Membaca tantangan beserta nama dan rekaman: {seed, score, nama, rekaman} atau null.
+    baca: function () {
+      var c = K.readChallenge(); if (!c) return null;
+      var h = location.hash || "", n = /[#&]n=([^&]*)/.exec(h), r = /[#&]h=([A-Za-z0-9_-]+)/.exec(h);
+      var nama = ""; try { nama = n ? decodeURIComponent(n[1]).replace(/[<>"'`\\]/g, "").slice(0, 16) : ""; } catch (e) {}
+      c.nama = nama || "Penantang";
+      c.rekaman = r ? K.hantu.unpack(r[1]) : null;
+      return c;
+    }
+  };
   function execCopy(s) {
     try { var t = document.createElement("textarea"); t.value = s; t.style.cssText = "position:fixed;left:-9999px;top:0"; document.body.appendChild(t); t.select(); var ok = document.execCommand("copy"); t.remove(); return ok; } catch (e) { return false; }
   }
