@@ -15,7 +15,7 @@ const MAX_CARD_KB = 40;
 const MAX_INDEX_BYTES_PER_GAME = 300;   // katalog.js tetap ringan walau berisi ribuan game
 const WARN_BUNDLE_MB = 80, MAX_BUNDLE_MB = 150; // isi app Android; batas Google Play 200 MB
 // Alamat luar yang boleh dipakai game: huruf Google, WhatsApp, dan alamat situs sendiri.
-const ALLOWED_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com", "wa.me", "dehayuk.netlify.app", "www.w3.org"];
+const ALLOWED_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com", "wa.me", "dehayuk.online", "dehayuk.netlify.app", "www.w3.org"];
 // Nama yang sudah punya arti di situs, penyimpanan, atau rencana halaman: tidak boleh jadi slug game.
 const RESERVED = new Set(["kit", "privasi", "android", "scripts", "www", "node_modules", "assets", "main", "info", "kartu", "cari",
   "kategori", "semua", "permainanku", "setelan", "kemajuan", "recent", "simpan", "urutan", "pos", "jejak", "sessionstart", "lastadat"]);
