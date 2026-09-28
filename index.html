@@ -1035,7 +1035,7 @@
   var inApp = root.classList.contains("in-app") || (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
   if (inApp || !/^https?:$/.test(location.protocol)) return;
   var GAMES = (window.DEHAYUK && window.DEHAYUK.game) || [];
-  var VERSI = "dehayuk-v1";
+  var VERSI = "dehayuk-v2";
   var hasSW = "serviceWorker" in navigator && "caches" in window;
   if (hasSW) window.addEventListener("load", function () { navigator.serviceWorker.register("/sw.js").catch(function () {}); });
 

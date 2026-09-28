@@ -4,7 +4,7 @@
 // - Tombol "Simpan semua game" di halaman Main Offline menyimpan semua game sekaligus.
 // - Saat online, halaman selalu diambil yang terbaru; simpanan hanya dipakai bila jaringan gagal.
 // Naikkan VERSI bila daftar KERANGKA berubah. Simpanan lama dihapus otomatis.
-const VERSI = "dehayuk-v1";
+const VERSI = "dehayuk-v2";
 const KERANGKA = [
   "/", "/katalog.js", "/manifest.webmanifest",
   "/kit/v1/kit.js", "/kit/v1/kit.css", "/kit/kit.js", "/kit/kit.css",
@@ -25,7 +25,7 @@ self.addEventListener("activate", (e) => {
 async function halaman(req) {
   const c = await caches.open(VERSI);
   try {
-    const res = await fetch(req);
+    const res = await fetch(req, { cache: "no-cache" });
     if (res.ok) c.put(req, res.clone());
     return res;
   } catch (e) {
@@ -36,6 +36,19 @@ async function halaman(req) {
     // Halaman game yang belum pernah dibuka: tampilkan portal, yang akan memberi tahu game mana yang siap offline.
     if (url.pathname !== "/") return Response.redirect("/?offline=" + encodeURIComponent(url.pathname), 302);
     return new Response("<!doctype html><meta charset=utf-8><meta name=viewport content='width=device-width'><body style='font-family:sans-serif;background:#0D0F1C;color:#fff;text-align:center;padding:40px'><h2>Sedang offline</h2><p>Buka Dehayuk sekali saat ada internet agar bisa dimainkan tanpa internet.</p></body>", { headers: { "Content-Type": "text/html; charset=utf-8" } });
+  }
+}
+
+// Skrip, gaya, dan data milik sendiri: jaringan dulu (dicek ulang ke server), simpanan hanya bila offline.
+// Mencegah halaman game baru berpasangan dengan kit lama.
+async function segar(req) {
+  const c = await caches.open(VERSI);
+  try {
+    const res = await fetch(req, { cache: "no-cache" });
+    if (res.ok) c.put(req, res.clone());
+    return res;
+  } catch (e) {
+    return (await c.match(req, { ignoreSearch: true })) || new Response("", { status: 504 });
   }
 }
 
@@ -63,6 +76,7 @@ self.addEventListener("fetch", (e) => {
     return;
   }
   if (req.mode === "navigate") e.respondWith(halaman(req));
+  else if (sendiri && /\.(js|css|json)$/.test(url.pathname)) e.respondWith(segar(req));
   else e.respondWith(berkas(req));
 });
 

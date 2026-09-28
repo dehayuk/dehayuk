@@ -289,6 +289,9 @@ body:has(#sOver:not([hidden])) .dk-toast{top:calc(var(--dk-st) + 12px);bottom:au
 "use strict";
 const { min, max, sin, cos, floor, round, abs, ceil, PI, random: rnd, pow } = Math;
 const KIT = window.DehayukKit, SLUG = "oyen-nyebrang", TAU = PI * 2;
+// Pengaman: bila browser masih memakai kit lama (tanpa duel hantu), game tetap jalan tanpa hantu.
+if (!KIT.hantu) KIT.hantu = { pack: () => "", unpack: () => null, link: (s, sd, sc) => KIT.challengeLink(s, sd, sc),
+  baca: () => { const c = KIT.readChallenge(); if (c) { c.nama = "Penantang"; c.rekaman = null; } return c; } };
 const Q = new URLSearchParams(location.search);
 const DEMO = Q.get("demo") === "1", COVER = Q.get("cover") === "1", UJI = Q.get("uji") === "1";
 // penyimpanan: bila localStorage gagal, ikan dan kostum tetap hidup selama sesi di MEM

@@ -96,28 +96,29 @@
   [headers.values]
     Cache-Control = "public, max-age=604800, stale-while-revalidate=2592000"
 
-# Kit bernomor versi (/kit/v1/) tidak pernah berubah perilaku, jadi disimpan lama. Versi baru (v2) perlu aturan sendiri.
+# Kit dan katalog selalu dicek ulang ke server (jawaban 304 bila sama), agar halaman game baru tidak pernah
+# berpasangan dengan kit lama dari simpanan browser.
 # Perbaikan bug di v1 tetap sampai ke pemain paling lambat seminggu.
 [[headers]]
   for = "/kit/v1/*"
   [headers.values]
-    Cache-Control = "public, max-age=604800, stale-while-revalidate=2592000"
+    Cache-Control = "no-cache"
 
 # Alamat lama /kit/kit.js dan /kit/kit.css (salinan v1) tetap pendek, seperti sebelumnya.
 [[headers]]
   for = "/kit/kit.js"
   [headers.values]
-    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+    Cache-Control = "no-cache"
 
 [[headers]]
   for = "/kit/kit.css"
   [headers.values]
-    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+    Cache-Control = "no-cache"
 
 [[headers]]
   for = "/katalog.js"
   [headers.values]
-    Cache-Control = "public, max-age=300, stale-while-revalidate=3600"
+    Cache-Control = "no-cache"
 
 [[headers]]
   for = "/info/*"
