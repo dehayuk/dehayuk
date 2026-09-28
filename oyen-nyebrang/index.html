@@ -1561,7 +1561,7 @@ function drawWorld(S, t, dt) {
   gcRows(w, bot, top);
   const dead = S.dead;
   const dr = floor(S.oy() + 1e-6), G = S === sim ? ghost : null, lb = [];
-  let gp = null, gr = -9, mr = -9;
+  let gp = null, gr = NaN, mr = NaN; // NaN: tidak pernah sama dengan nomor baris mana pun (baris bisa negatif)
   if (G) {
     gp = ghostAt(G, S.t, S.lf); gp.x = max(.3, min(COLS - .3, gp.x));
     if (S.t < G.end) gr = floor(gp.y + 1e-6); else if (G.mark) { if (G.mx == null) { G.mx = gp.x; G.mr = gp.r; } mr = G.mr; }
