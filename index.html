@@ -1102,7 +1102,16 @@
       .concat(GAMES.reduce(function (acc, g) { return acc.concat(filesOf(g)); }, []));
     // Disimpan langsung dari halaman, agar tidak bergantung pada service worker yang baru saja dipasang.
     caches.open(VERSI).then(function (c) {
-      return Promise.all(urls.map(function (u) { return c.add(u).catch(function () {}); }));
+      return Promise.all(urls.map(function (u) { return c.add(u).catch(function () {}); })).then(function () {
+        // Berkas pendukung milik game (misalnya daftar kata) ikut disimpan: dibaca dari halaman game yang sudah tersimpan.
+        return Promise.all(GAMES.map(function (g) {
+          return c.match("/" + g.slug + "/").then(function (r) { return r ? r.text() : ""; }).then(function (html) {
+            var extra = [], re = /\b(?:src|href)="(?!\/|https?:|#|data:|mailto:)([^"?#]+\.(?:js|css|json|png|jpg|webp|woff2))"/g, m;
+            while ((m = re.exec(html))) extra.push("/" + g.slug + "/" + m[1]);
+            return Promise.all(extra.map(function (u) { return c.add(u).catch(function () {}); }));
+          });
+        }));
+      });
     }).then(refreshSaved).then(function () {
       paintList(); markCards();
       toast("Semua game tersimpan. Sekarang bisa dimainkan tanpa internet!");

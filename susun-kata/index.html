@@ -1,0 +1,1675 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#7e5ce0">
+<title>Susun Kata</title>
+<meta name="description" content="Geser jari di roda huruf, susun kata bahasa Indonesia, dan penuhi teka-teki silang. Kata bonus mengisi toples petunjuk.">
+<link rel="canonical" href="https://dehayuk.online/susun-kata/">
+<meta property="og:title" content="Susun Kata">
+<meta property="og:description" content="Geser, sambung, susun! Berapa kata yang bisa kamu temukan?">
+<meta property="og:image" content="https://dehayuk.online/susun-kata/sampul.jpg">
+<meta property="og:url" content="https://dehayuk.online/susun-kata/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/kit/kit.css">
+<style>
+:root{--dk-ink:#2e1b47;--dk-lbl:#6b4a8a;--dk-p1:#fffaf2;--dk-p2:#f1e6ff;--dk-pe:#d9c6f2}
+html,body{background:#7e5ce0}
+body{position:fixed;inset:0}
+canvas{display:block}
+#cv{position:fixed;inset:0;width:100%;height:100%;touch-action:none}
+#col{position:fixed;top:0;bottom:0;pointer-events:none;z-index:10}
+#probe{position:fixed;left:0;top:0;width:0;height:0;padding:var(--dk-st) var(--dk-sr) var(--dk-sb) var(--dk-sl);visibility:hidden}
+.scr{position:absolute;inset:0}
+#sTitle{display:flex;flex-direction:column;align-items:center;padding:calc(var(--dk-st) + 66px) 14px var(--padb,180px)}
+#sTitle>*{pointer-events:auto}
+.home{position:absolute!important;left:calc(var(--dk-sl) + 12px);top:calc(var(--dk-st) + 12px);width:44px!important;height:44px!important}
+.home svg{width:22px!important;height:22px!important;filter:none!important}
+.pill{display:flex;align-items:center;gap:5px;background:rgba(46,27,71,.72);border:3px solid var(--dk-ink);border-radius:999px;padding:3px 12px 3px 6px;font:800 17px/1.2 var(--dk-fd);white-space:nowrap}
+.pill svg{width:22px;height:22px;flex:none}
+.best{position:absolute;right:calc(var(--dk-sr) + 12px);top:calc(var(--dk-st) + 16px);color:#ffe36a}
+.chip{position:absolute;left:50%;top:calc(var(--dk-st) + 16px);transform:translateX(-50%);font-size:15px;color:#fff}
+.chip .strk{display:flex;align-items:center;gap:3px;margin-left:3px;padding-left:7px;border-left:2px solid rgba(255,255,255,.25)}
+#logo{flex:none;width:min(92%,380px,calc(30vh * 1.6));aspect-ratio:1.6/1}
+.tmid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;width:100%;min-height:0}
+.chal{font:800 17px/1.15 var(--dk-fd);text-align:center;background:#ff5c93;border:3px solid var(--dk-ink);border-radius:14px;padding:6px 14px 8px;box-shadow:0 4px 0 var(--dk-ink);transform:rotate(-3deg);animation:dk-wig 1.4s ease-in-out infinite;max-width:300px}
+#bMain{font-size:40px;padding:14px 46px 18px;border-radius:28px;animation:dk-pulse 1.1s ease-in-out infinite}
+#bMain svg{width:34px;height:34px}
+#bMain.dk-pr{animation:none}
+#bMain{position:relative}
+.tahap{position:absolute;left:50%;top:-15px;transform:translateX(-50%) rotate(-3deg);font:800 14px/1 var(--dk-fd);background:#ff5c93;color:#fff;border:3px solid var(--dk-ink);border-radius:999px;padding:3px 10px 4px;white-space:nowrap;box-shadow:0 3px 0 var(--dk-ink)}
+.icons{display:flex;gap:12px;justify-content:center}
+.dstar{position:absolute;right:-8px;bottom:-6px;display:flex;align-items:center;gap:1px;background:#fff;border:2.5px solid var(--dk-ink);border-radius:999px;padding:0 5px 0 2px;font:800 12px/16px var(--dk-fd);color:var(--dk-ink)}
+.dstar svg{width:13px!important;height:13px!important;filter:none!important}
+.ent>*{animation:dk-pop .5s cubic-bezier(.2,1.5,.4,1) backwards}
+.ent>:nth-child(2){animation-delay:.08s}.ent>:nth-child(3){animation-delay:.16s}
+.leave{animation:leave .28s ease-in forwards}
+@keyframes leave{to{transform:translateY(40px) scale(.9);opacity:0}}
+.cover .tmid,.cover .home,.cover .best,.cover .chip{display:none!important}
+.cover #logo{position:absolute;left:3vw;top:50%;transform:translateY(-54%);width:48vw;max-width:none}
+#hud{position:absolute;left:0;right:0;top:0;padding:calc(var(--dk-st) + 8px) 10px 0;display:flex;align-items:flex-start;justify-content:space-between;pointer-events:none}
+#hud>*{pointer-events:auto}
+#hud .dk-circle{width:46px;height:46px}
+.sc{position:absolute;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;pointer-events:none!important}
+#hScore{font:800 40px/1 var(--dk-fd);font-variant-numeric:tabular-nums;transition:transform .1s}
+#hScore.bump{transform:scale(1.18)}
+.sc small{margin-top:3px;font:800 12px/1 var(--dk-fd);background:#ff5c93;border:2px solid var(--dk-ink);border-radius:999px;padding:2px 8px 3px}
+.hbest{margin-top:6px;color:#ffe36a;font-size:16px;pointer-events:none!important}
+.hbest svg{width:19px;height:19px}
+.hbest.live{background:#ff3d7f;color:#fff;animation:dk-pulse .7s ease-in-out infinite}
+#hInfo{position:fixed;z-index:11;display:flex;align-items:center;gap:8px;background:rgba(46,27,71,.6);border:3px solid var(--dk-ink);border-radius:999px;padding:3px 10px 3px 4px;font:800 14px/1 var(--dk-fd);color:#fff;pointer-events:none;transform:translateX(-50%)}
+#hInfo .lvb{background:linear-gradient(#ffe36a,#ffb21a);color:var(--dk-ink);border:2px solid var(--dk-ink);border-radius:999px;padding:2px 8px 3px;white-space:nowrap}
+#hInfo .wc{white-space:nowrap}
+#hTime{flex:1;min-width:40px;height:10px;border:2px solid var(--dk-ink);border-radius:99px;background:rgba(255,255,255,.25);overflow:hidden}
+#hTime i{display:block;height:100%;width:100%;background:linear-gradient(#b8f59a,#4cc93a);border-radius:99px}
+#hTime.lo i{background:linear-gradient(#ffd7a0,#ff8a3a)}
+#hSpd{display:flex;align-items:center;gap:1px;white-space:nowrap;color:#ffe36a;font-variant-numeric:tabular-nums}
+#hSpd svg{width:15px;height:15px;flex:none}
+#hInfo.slow #hTime{opacity:.45}#hInfo.slow #hSpd{color:#d8cfe6}#hInfo.slow #hSpd svg{filter:grayscale(1)}
+#tools{position:fixed;inset:0;z-index:12;pointer-events:none}
+.tb{position:absolute;width:52px;height:52px;margin:-26px 0 0 -26px;pointer-events:auto}
+.tb.dk-circle{width:52px;height:52px}
+.tb svg{width:28px!important;height:28px!important}
+.tb .n{position:absolute;right:-7px;top:-7px;min-width:22px;height:22px;border-radius:99px;background:#fff;border:2.5px solid var(--dk-ink);font:800 13px/17px var(--dk-fd);color:var(--dk-ink);text-align:center;padding:0 4px;filter:none}
+.tb .n.pay{background:#ffe36a}
+.tb.on{animation:dk-pulse .6s ease-in-out infinite;box-shadow:0 5px 0 var(--dk-ink),0 0 0 5px #fff,inset 0 -5px 0 var(--cs)}
+.tb.off{filter:grayscale(.7);opacity:.75}
+.tb .ring{position:absolute;inset:-7px;border-radius:50%;pointer-events:none}
+.tb.pop{animation:bpop .45s cubic-bezier(.2,1.6,.4,1)}
+.tb .n.cost{display:flex;align-items:center;gap:1px;padding:0 4px 0 1px;background:#ffe36a}.tb .n.cost svg{width:14px!important;height:14px!important;filter:none!important}
+@keyframes bpop{40%{transform:scale(1.3) rotate(-8deg)}}
+.vhid{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.big{font:800 60px/1 var(--dk-fd);font-variant-numeric:tabular-nums}
+.rtop{display:flex;align-items:center;gap:4px;width:100%}
+.bcol{flex:none;width:108px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.stage{position:relative;width:96px;height:92px;display:grid;place-items:center}
+.stage.lk .rays{display:none}
+.stage .rays{position:absolute;inset:-16px;border-radius:50%;background:repeating-conic-gradient(rgba(255,200,60,.6) 0 12deg,transparent 12deg 24deg);-webkit-mask:radial-gradient(circle,#000 30%,transparent 70%);mask:radial-gradient(circle,#000 30%,transparent 70%);animation:spin 8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.stage div{position:relative;width:86px;height:86px;animation:dk-bob 2.2s ease-in-out infinite}
+.stage svg{width:100%;height:100%;display:block}
+.rrank{font:800 14px/1.05 var(--dk-fd);text-align:center;max-width:108px}
+.gbar{width:88px;height:9px;border:2.5px solid var(--dk-ink);border-radius:99px;background:#eadff5;overflow:hidden;margin-top:2px}
+.gbar i{display:block;height:100%;width:0;background:linear-gradient(#b8f59a,#4cc93a);border-radius:99px;transition:width .8s ease-out}
+.gnx{font:800 11px/1 var(--dk-fd);color:var(--dk-lbl);white-space:nowrap}
+.nbadge{display:flex;align-items:center;gap:4px;font:800 13px/1 var(--dk-fd);background:#ff5c93;color:#fff;border:2.5px solid var(--dk-ink);border-radius:999px;padding:2px 10px 2px 2px;animation:dk-pop .5s cubic-bezier(.2,1.5,.4,1) backwards;animation-delay:.9s}
+.nbadge svg{width:26px;height:26px}
+#sOver .dk-row #rTop{flex:none;width:60px;padding-left:0;padding-right:0}
+#rTop svg{width:30px;height:30px;margin:0}
+.rrank.new::after{content:"baru!";display:block;width:max-content;margin:3px auto 0;padding:1px 8px 2px;font-size:12px;background:#ff3d7f;color:#fff;border:2px solid var(--dk-ink);border-radius:99px}
+.rsc{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px}
+.rrec{font:800 13px/1.2 var(--dk-fd);color:var(--dk-lbl);text-align:center;white-space:pre-line}
+.rbar{width:100%;height:14px;border:3px solid var(--dk-ink);border-radius:999px;background:#eadff5;overflow:hidden;box-shadow:inset 0 2px 0 rgba(0,0,0,.1)}
+.rbar i{display:block;height:100%;width:0;background:linear-gradient(#ffe36a,#ffb21a);border-radius:999px}
+.rbar.rec i{background:linear-gradient(#ffb3d9,#ff5c93)}
+.rmisc{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+.stars{display:flex;gap:1px}.stars svg{width:28px;height:28px}
+.goals{display:flex;gap:8px}
+.goal{display:flex;flex-direction:column;align-items:center;gap:3px;background:#fff;border:3px solid var(--dk-ink);border-radius:14px;box-shadow:0 3px 0 var(--dk-ink);padding:5px 8px 6px;min-width:74px}
+.goal span{display:flex}.goal svg{width:18px;height:18px}
+.goal b{font:800 14px/1 var(--dk-fd);text-align:center}
+.strk2{display:flex;align-items:center;gap:4px;font:800 15px/1 var(--dk-fd)}.strk2 svg{width:20px;height:20px}
+.kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 6px;width:100%}
+.kb{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.kb svg{width:58px;height:58px}
+.kb b{font:800 13px/1.05 var(--dk-fd)}.kb span{font:800 11px/1 var(--dk-fd);color:var(--dk-lbl)}
+.kb.lk b{color:#b3a3bf}
+.kstat{display:flex;gap:6px;width:100%;justify-content:center;flex-wrap:wrap}
+.kstat div{background:#fff;border:3px solid var(--dk-ink);border-radius:12px;padding:3px 8px 4px;font:800 12px/1.1 var(--dk-fd);color:var(--dk-lbl);text-align:center;box-shadow:0 3px 0 var(--dk-ink)}
+.kstat b{display:block;font-size:18px;color:var(--dk-ink)}
+.rek{position:absolute;right:-18px;top:-30px;width:96px;height:96px;display:grid;place-items:center;transform:rotate(12deg);z-index:2}
+.rek::before,.rek::after{content:"";position:absolute;clip-path:polygon(50% 0,61% 16%,79% 7%,80% 27%,100% 30%,88% 47%,100% 64%,80% 69%,79% 90%,61% 82%,50% 100%,39% 82%,21% 90%,20% 69%,0 64%,12% 47%,0 30%,20% 27%,21% 7%,39% 16%)}
+.rek::before{inset:0;background:var(--dk-ink)}
+.rek::after{inset:5px;background:linear-gradient(#ffe36a,#ffb21a)}
+.rek span{position:relative;z-index:1;font:800 17px/.95 var(--dk-fd);text-align:center}
+.rek.go{animation:stamp .5s cubic-bezier(.2,1.6,.4,1) backwards}
+@keyframes stamp{from{transform:rotate(-30deg) scale(3);opacity:0}}
+.stats{display:flex;gap:10px;width:100%}
+.st{flex:1;display:flex;align-items:center;gap:8px;background:#fff;border:3px solid var(--dk-ink);border-radius:16px;box-shadow:0 4px 0 var(--dk-ink);padding:6px 10px}
+.st svg{width:30px;height:30px;flex:none}
+.st div{display:flex;flex-direction:column}
+.st b{font:800 24px/1 var(--dk-fd)}
+.st span{font:800 12px/1.1 var(--dk-fd);color:var(--dk-lbl)}
+.note{font:800 17px/1.1 var(--dk-fd);padding:5px 14px 7px;border-radius:12px;border:3px solid var(--dk-ink);background:#ffe36a;color:var(--dk-ink)}
+.verd{font:800 30px/1 var(--dk-fd);padding:6px 22px 9px;border-radius:14px;border:4px solid var(--dk-ink);box-shadow:0 4px 0 var(--dk-ink);background:linear-gradient(#ff8a8a,#e8384f);transform:rotate(-3deg);text-align:center}
+.verd.win{background:linear-gradient(#8ef06a,#3dbb2c)}
+.verd small{display:block;font-size:13px;margin-top:3px}
+.xp{font:800 14px/1 var(--dk-fd);background:var(--dk-ink);color:#ffe36a;border-radius:999px;padding:5px 12px 6px}
+#rAgain{font-size:26px;padding:14px 10px 17px}
+.cal{width:104px;height:106px;border:4px solid var(--dk-ink);border-radius:20px;background:#fff;box-shadow:0 5px 0 var(--dk-ink);overflow:hidden;display:flex;flex-direction:column;transform:rotate(-4deg)}
+.cal i{display:block;height:30px;background:linear-gradient(#b98cff,#7e5ce0);border-bottom:4px solid var(--dk-ink);font:800 16px/27px var(--dk-fd);font-style:normal;color:#fff;text-align:center}
+.cal b{flex:1;display:grid;place-items:center;font:800 50px/1 var(--dk-fd)}
+.mini{display:flex;gap:4px;transform:rotate(-5deg)}
+.mini i{width:34px;height:34px;border:3px solid var(--dk-ink);border-radius:9px;background:linear-gradient(#ffe36a,#ffb21a);display:grid;place-items:center;font:800 22px/1 var(--dk-fd);font-style:normal;box-shadow:0 3px 0 var(--dk-ink)}
+@media (max-height:500px){
+  #sTitle{padding-top:calc(var(--dk-st) + 56px)}
+  #logo{width:min(60%,280px,calc(33vh * 1.6))}
+  .tmid{gap:10px}
+  #bMain{font-size:28px;padding:9px 34px 12px}
+  #bMain svg{width:26px;height:26px}
+  .dk-round>i{width:46px;height:46px}.dk-round>i svg{width:23px;height:23px}
+  #sOver .dk-panel{max-width:640px;display:grid;grid-template-columns:1fr 1fr;column-gap:16px;row-gap:8px;align-items:center}
+  #sOver .rtop{grid-column:1;grid-row:1}#sOver .rbar{grid-column:1;grid-row:2}#sOver .stats{grid-column:1;grid-row:3}
+  #sOver .dk-stack{grid-column:2;grid-row:1/3}#sOver .rmisc{grid-column:2;grid-row:3}
+  .big{font-size:44px}.stage{width:76px;height:74px}.stage div{width:70px;height:70px}.bcol{width:88px}
+  #rAgain{font-size:20px;padding:9px 8px 11px}
+  .rek{width:64px;height:64px;top:-24px;right:-10px}.rek span{font-size:13px}
+  .st{padding:3px 8px}.st b{font-size:20px}.st svg{width:24px;height:24px}
+  .cal{display:none}
+  #sKoleksi .dk-panel{max-width:620px}
+  .kgrid{grid-template-columns:repeat(9,1fr);gap:4px 2px}.kb svg{width:38px;height:38px}.kb span{display:none}.kb b{font-size:10px}
+  #hScore{font-size:32px}
+  .sc{flex-direction:row;align-items:center;gap:8px}.sc small{margin-top:0}
+  .tb,.tb.dk-circle{width:44px;height:44px;margin:-22px 0 0 -22px}.tb svg{width:24px!important;height:24px!important}
+  #hInfo{font-size:12px}
+}
+.ovbot #sOver{padding-bottom:calc(var(--dk-sb) + 10px)}
+.ovbot #sOver>.dk-panel{margin:auto auto 0}
+.ovbot #sOver::before{background:linear-gradient(rgba(30,10,45,0) 0,rgba(30,10,45,.2) 30%,rgba(30,10,45,.62) 55%)}
+@media (max-height:760px) and (max-aspect-ratio:13/10){
+  #sOver .dk-panel{padding-top:34px;gap:8px}
+  #sOver .big{font-size:48px}#sOver .stage{width:74px;height:72px}#sOver .stage div{width:68px;height:68px}#sOver .bcol{width:92px}
+  #sOver .st{padding:4px 8px}#sOver .st b{font-size:20px}#sOver .st svg{width:24px;height:24px}
+  #sOver .dk-stack{gap:9px}#rAgain{font-size:22px;padding:10px 8px 13px}#sOver .dk-row .dk-btn{padding:8px 6px 10px}
+  #sOver .rek{width:78px;height:78px;right:-8px;top:-22px}#sOver .rek span{font-size:14px}
+}
+#uji{position:fixed;left:4px;top:4px;right:4px;bottom:4px;overflow:auto;z-index:99;background:rgba(0,0,0,.86);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px}
+</style>
+</head>
+<body>
+<canvas id="cv" role="img" aria-label="Papan silang kata dan roda huruf"></canvas>
+<div id="sr" class="vhid" aria-live="polite"></div>
+<div id="probe"></div>
+<div id="col">
+  <section id="sTitle" class="scr">
+    <a href="/" class="dk-btn dk-yellow dk-circle home" aria-label="Beranda"><svg viewBox="0 0 24 24"><path fill="#2e1b47" d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z"/></svg></a>
+    <div class="pill chip dk-ol" id="tProg"><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#2e1b47" stroke-width="2" stroke-linejoin="round" d="M12 2.8l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 16.7l-5.4 2.9 1.1-6.1-4.5-4.3 6.1-.8z"/></svg><span id="tLv">Lv 1</span><span class="strk" id="tStrk" hidden><svg viewBox="0 0 24 24"><path fill="#ff8a1a" stroke="#2e1b47" stroke-width="2" stroke-linejoin="round" d="M12 2.5c1.2 3.6 5.5 5.6 5.5 11a5.5 5.5 0 0 1-11 0c0-2.8 1.4-4.4 2.8-5.4-.1 2.1.8 3.2 2 3.4-.7-3.2.2-6.4.7-9z"/><path fill="#ffe36a" d="M12 12.5c.9 1.5 2.3 2.3 2.3 4a2.3 2.3 0 0 1-4.6 0c0-1.2.9-2.1 2.3-4z"/></svg><span id="tStrkN">1 hari</span></span></div>
+    <div class="pill best dk-ol" id="tBest"><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#2e1b47" stroke-width="2" stroke-linejoin="round" d="M3 18h18l1-11-6 4-4-7-4 7-6-4z"/></svg><span>0</span></div>
+    <div id="logo"></div>
+    <div class="tmid ent" id="tMid">
+      <div class="chal dk-ol" id="tChal" hidden>Temanmu dapat 0 poin. Kalahkan!</div>
+      <button class="dk-btn dk-green dk-ol" id="bMain"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#2e1b47" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></svg>MAIN<b class="tahap" id="tTahap" hidden>Tahap 1</b></button>
+      <div class="icons">
+        <button class="dk-round dk-yellow" id="bHarian"><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><rect x="4" y="5.5" width="16" height="15" rx="3" fill="#fff" stroke="#2e1b47" stroke-width="2"/><path d="M4.5 10h15" stroke="#7e5ce0" stroke-width="4"/><path d="M8.5 3.5v4M15.5 3.5v4" stroke="#2e1b47" stroke-width="2.6"/><rect x="9.5" y="13" width="5" height="5" rx="1.2" fill="#ff5c93"/></svg><b class="dk-dot" id="dDaily" hidden></b><b class="dstar" id="dStarN" hidden></b></i><span>Harian</span></button>
+        <button class="dk-round dk-pink" id="bTantang" aria-label="Tantang"><i class="dk-ol" aria-hidden="true">VS</i><span>Tantang</span></button>
+        <button class="dk-round dk-blue" id="bKoleksi"><i><svg viewBox="0 0 24 24"><path d="M12 13v9" stroke="#2e1b47" stroke-width="3" stroke-linecap="round"/><circle cx="12" cy="9" r="7" fill="#ffd23a" stroke="#2e1b47" stroke-width="2"/><path d="M9.2 12.2 12 5.6l2.8 6.6M10.2 10h3.6" fill="none" stroke="#2e1b47" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i><span>Koleksi</span></button>
+        <button class="dk-round dk-orange" id="bPeringkat"><i><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="#ffd23f" stroke="#2e1b47" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 6H4.5a2.5 2.5 0 0 0 3 3.6M17 6h2.5a2.5 2.5 0 0 1-3 3.6" fill="none" stroke="#2e1b47" stroke-width="1.8" stroke-linecap="round"/><path d="M12 14v3M8.5 20h7l-1-3h-5z" fill="#ffd23f" stroke="#2e1b47" stroke-width="1.8" stroke-linejoin="round"/></svg></i><span>Peringkat</span></button>
+        <button class="dk-round dk-purple" id="bSetelan"><i><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.2" stroke="#2e1b47" stroke-width="6.5" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="7.2" stroke="#fff" stroke-width="4" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="6" fill="#fff" stroke="#2e1b47" stroke-width="2"/><circle cx="12" cy="12" r="2.4" fill="#8f5cf0" stroke="#2e1b47" stroke-width="1.6"/></svg></i><span>Setelan</span></button>
+      </div>
+    </div>
+  </section>
+
+  <div id="hud" hidden>
+    <button class="dk-btn dk-orange dk-circle" id="bPause" aria-label="Jeda"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4.5" height="14" rx="1.5" fill="#fff" stroke="#2e1b47" stroke-width="1.8"/><rect x="13.5" y="5" width="4.5" height="14" rx="1.5" fill="#fff" stroke="#2e1b47" stroke-width="1.8"/></svg></button>
+    <div class="sc"><b class="dk-ol" id="hScore">0</b><small class="dk-ol" id="hTag" hidden>Harian</small></div>
+    <div class="pill hbest dk-ol" id="hBestP" hidden><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#2e1b47" stroke-width="2" stroke-linejoin="round" d="M3 18h18l1-11-6 4-4-7-4 7-6-4z"/></svg><span id="hBest">0</span></div>
+  </div>
+
+  <section id="sPause" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-blue dk-ol">Jeda</div>
+      <div class="dk-stack">
+        <button class="dk-btn dk-green dk-ol" id="pGo"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#2e1b47" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></svg>Lanjut</button>
+        <button class="dk-btn dk-yellow dk-ol" id="pRe"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#2e1b47" stroke-width="5"/><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#fff" stroke-width="2.6"/><path d="M13.5 3.5h5v5z" fill="#fff" stroke="#2e1b47" stroke-width="1.8" stroke-linejoin="round"/></svg>Ulang</button>
+        <button class="dk-btn dk-orange dk-ol" id="pMenu"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#2e1b47" stroke-width="1.8" stroke-linejoin="round" d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z"/></svg>Menu</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="sOver" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-ol">Selesai!</div>
+      <div class="rek dk-ol" id="rRek" hidden><span>Rekor<br>baru!</span></div>
+      <div class="rtop">
+        <div class="bcol"><div class="stage"><div class="rays"></div><div id="rBadge"></div></div><div class="rrank dk-ol" id="rRank">Pemula</div><div class="gbar" id="rGbarW"><i id="rGbar"></i></div><div class="gnx" id="rGnx"></div></div>
+        <div class="rsc"><div class="dk-lbl" id="rMode">Poin</div><div class="big dk-ol" id="rScore">0</div><div class="rrec" id="rRec"></div></div>
+      </div>
+      <div class="rbar" id="rBarW"><i id="rBar"></i></div>
+      <div class="stats">
+        <div class="st"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4" fill="#ffd23a" stroke="#2e1b47" stroke-width="1.8"/><path d="M8.3 17 12 7l3.7 10M9.6 13.6h4.8" fill="none" stroke="#2e1b47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b id="rWords">0</b><span>Kata</span></div></div>
+        <div class="st"><svg viewBox="0 0 24 24" stroke="#2e1b47" stroke-width="1.8" stroke-linejoin="round"><path d="M6 7h12l-1 13H7z" fill="#bfe9ff"/><path d="M5 4.5h14V7H5z" fill="#ff9fc3"/><path d="M12 10.3l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z" fill="#ffd23a" stroke-width="1.2"/></svg><div><b id="rBonus">0</b><span>Bonus</span></div></div>
+      </div>
+      <div class="rmisc"><div class="verd dk-ol" id="rVerd" hidden></div><div class="stars" id="rStars"></div><div class="note" id="rDone" hidden>Sudah main hari ini</div><div class="xp" id="rXp" hidden></div><div class="nbadge" id="rNew" hidden></div></div>
+      <div class="dk-stack">
+        <button class="dk-btn dk-green dk-ol" id="rAgain"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#2e1b47" stroke-width="5"/><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#fff" stroke-width="2.6"/><path d="M13.5 3.5h5v5z" fill="#fff" stroke="#2e1b47" stroke-width="1.8" stroke-linejoin="round"/></svg><span id="rAgainT">Main lagi</span></button>
+        <div class="dk-row">
+          <button class="dk-btn dk-blue dk-ol" id="rShare"><svg viewBox="0 0 24 24" stroke="#2e1b47" stroke-width="1.8"><path d="M7 12l10-6M7 12l10 6" stroke-width="4.5"/><path d="M7 12l10-6M7 12l10 6" stroke="#fff" stroke-width="2"/><circle cx="6.5" cy="12" r="3.3" fill="#fff"/><circle cx="17.5" cy="5.5" r="3.3" fill="#fff"/><circle cx="17.5" cy="18.5" r="3.3" fill="#fff"/></svg>Bagikan</button>
+          <button class="dk-btn dk-purple dk-ol" id="rTop" aria-label="Peringkat hari ini" title="Peringkat hari ini" hidden><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="#ffd23f" stroke="#2e1b47" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 6H4.5a2.5 2.5 0 0 0 3 3.6M17 6h2.5a2.5 2.5 0 0 1-3 3.6" fill="none" stroke="#2e1b47" stroke-width="1.8" stroke-linecap="round"/><path d="M12 14v3M8.5 20h7l-1-3h-5z" fill="#ffd23f" stroke="#2e1b47" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+          <button class="dk-btn dk-orange dk-ol" id="rMenu"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#2e1b47" stroke-width="1.8" stroke-linejoin="round" d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z"/></svg>Menu</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sHarian" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-purple dk-ol">Harian</div>
+      <button class="dk-btn dk-red dk-circle dk-close" data-close aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#2e1b47" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
+      <div class="cal"><i id="dMonth">SEP</i><b id="dDay">28</b></div>
+      <div class="big dk-ol" style="font-size:32px" id="dN">Hari ke-1</div>
+      <div class="goals" id="dGoals"></div>
+      <div class="strk2 dk-ol"><svg viewBox="0 0 24 24"><path fill="#ff8a1a" stroke="#2e1b47" stroke-width="2" stroke-linejoin="round" d="M12 2.5c1.2 3.6 5.5 5.6 5.5 11a5.5 5.5 0 0 1-11 0c0-2.8 1.4-4.4 2.8-5.4-.1 2.1.8 3.2 2 3.4-.7-3.2.2-6.4.7-9z"/><path fill="#ffe36a" d="M12 12.5c.9 1.5 2.3 2.3 2.3 4a2.3 2.3 0 0 1-4.6 0c0-1.2.9-2.1 2.3-4z"/></svg><span id="dStrkN">1 hari beruntun</span></div>
+      <div class="dk-lbl" id="dInfo">Teka-teki 7 huruf, sama untuk semua. 1 kesempatan.</div>
+      <div class="dk-stack"><button class="dk-btn dk-green dk-ol" id="dPlay"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#2e1b47" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></svg><span>Main</span></button></div>
+    </div>
+  </section>
+
+  <section id="sKoleksi" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-blue dk-ol">Koleksi</div>
+      <button class="dk-btn dk-red dk-circle dk-close" data-close aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#2e1b47" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
+      <div class="dk-lbl" id="kInfo">0/9 lencana</div>
+      <div class="kgrid" id="kGrid"></div>
+      <div class="kstat" id="kStat"></div>
+    </div>
+  </section>
+
+  <section id="sTantang" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-pink dk-ol">Tantang</div>
+      <button class="dk-btn dk-red dk-circle dk-close" data-close aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#2e1b47" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
+      <div class="mini" aria-hidden="true"><i>V</i><i>S</i></div>
+      <div class="dk-lbl" id="cInfo">Poin terakhirmu</div>
+      <div class="big dk-ol" id="cScore">0</div>
+      <div class="dk-lbl">Teman main teka-teki yang sama persis</div>
+      <div class="dk-stack"><button class="dk-btn dk-pink dk-ol" id="cSend"><svg viewBox="0 0 24 24" stroke="#2e1b47" stroke-width="1.8"><path d="M7 12l10-6M7 12l10 6" stroke-width="4.5"/><path d="M7 12l10-6M7 12l10 6" stroke="#fff" stroke-width="2"/><circle cx="6.5" cy="12" r="3.3" fill="#fff"/><circle cx="17.5" cy="5.5" r="3.3" fill="#fff"/><circle cx="17.5" cy="18.5" r="3.3" fill="#fff"/></svg><span>Kirim</span></button></div>
+    </div>
+  </section>
+</div>
+<div id="hInfo" hidden><span class="lvb" id="hLv">Level 1/3</span><span class="wc" id="hWc">0/5</span><span id="hTime"><i id="hTimeI"></i></span><span id="hSpd"><svg viewBox="0 0 24 24"><path d="M13.5 2 5 13.5h6L9.5 22 19 9.5h-6.2z" fill="#ffd23a" stroke="#2e1b47" stroke-width="2" stroke-linejoin="round"/></svg><b id="hSpdN">+0</b></span></div>
+<div id="tools" hidden>
+  <button class="dk-btn dk-purple dk-circle tb" id="bBonus" aria-label="Kata bonus"><svg viewBox="0 0 24 24" stroke="#2e1b47" stroke-width="1.8" stroke-linejoin="round"><path d="M6 7h12l-1 13H7z" fill="#bfe9ff"/><path d="M5 4.5h14V7H5z" fill="#ff9fc3"/><path d="M12 10.3l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z" fill="#ffd23a" stroke-width="1.2"/></svg><b class="n" id="nBonus">0</b></button>
+  <button class="dk-btn dk-blue dk-circle tb" id="bAcak" aria-label="Acak huruf"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.5h4c4 0 5 9 9 9h4M3.5 16.5h4c1.6 0 2.7-1.4 3.5-3M13 10.5c.8-1.6 1.9-3 3.5-3h4" stroke="#2e1b47" stroke-width="4.5"/><path d="M3.5 7.5h4c4 0 5 9 9 9h4M3.5 16.5h4c1.6 0 2.7-1.4 3.5-3M13 10.5c.8-1.6 1.9-3 3.5-3h4" stroke="#fff" stroke-width="2"/><path d="M18.5 4.8l2.8 2.7-2.8 2.7M18.5 13.8l2.8 2.7-2.8 2.7" stroke="#2e1b47" stroke-width="1.6" fill="#fff"/></svg></button>
+  <button class="dk-btn dk-yellow dk-circle tb" id="bLampu" aria-label="Petunjuk satu huruf"><svg viewBox="0 0 24 24" stroke="#2e1b47" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.8a6.4 6.4 0 0 0-3.8 11.6c.7.6 1 1.3 1 2.2h5.6c0-.9.3-1.6 1-2.2A6.4 6.4 0 0 0 12 2.8z" fill="#fff6b0"/><path d="M9.3 17.6h5.4v2a1.6 1.6 0 0 1-1.6 1.6h-2.2a1.6 1.6 0 0 1-1.6-1.6z" fill="#c9c3d6"/><path d="M10 9.5l2 2.3 2-2.3" fill="none" stroke-linecap="round"/></svg><b class="n" id="nLampu">1</b></button>
+  <button class="dk-btn dk-orange dk-circle tb" id="bPalu" aria-label="Palu: buka satu kotak pilihan"><svg viewBox="0 0 24 24" stroke="#2e1b47" stroke-width="1.8" stroke-linejoin="round"><path d="M11.3 10.3l2.4 2.4-7.4 7.4a1.7 1.7 0 0 1-2.4-2.4z" fill="#e0a860"/><path d="M9.8 5.6l4.4-2.2 6.4 6.4-2.2 4.4-2.1-2.1-1.4 1.4-4.5-4.5 1.4-1.4z" fill="#dde3ef"/></svg><b class="n cost" id="nPalu"><svg viewBox="0 0 24 24" stroke="#2e1b47" stroke-width="2.2" stroke-linejoin="round"><path d="M12 2.8a6.4 6.4 0 0 0-3.8 11.6c.7.6 1 1.3 1 2.2h5.6c0-.9.3-1.6 1-2.2A6.4 6.4 0 0 0 12 2.8z" fill="#fff6b0"/><path d="M9.3 17.6h5.4v2a1.6 1.6 0 0 1-1.6 1.6h-2.2a1.6 1.6 0 0 1-1.6-1.6z" fill="#c9c3d6"/></svg>2</b></button>
+</div>
+<script src="/kit/kit.js"></script>
+<script src="kata.js"></script>
+<script>
+"use strict";
+const KIT = window.DehayukKit, SLUG = "susun-kata", ST = KIT.store(SLUG), TAU = Math.PI * 2;
+const Q = new URLSearchParams(location.search);
+const DEMO = Q.get("demo") === "1", COVER = Q.get("cover") === "1", UJI = Q.get("uji") === "1";
+
+/* ================= KAMUS & PEMBUAT LEVEL (tanpa DOM) ================= */
+const KD = window.SUSUN_KATA || { G: "", X: "", D: "" };
+const sp = (s) => (s ? s.split(" ").filter(Boolean) : []);
+const GW = sp(KD.G), XW = sp(KD.X), DW = sp(KD.D), ALLW = GW.concat(XW);
+const GSET = new Set(GW), RANK = new Map(); GW.forEach((w, i) => RANK.set(w, i));
+function sig(w) { const c = new Uint8Array(26); for (let i = 0; i < w.length; i++) c[w.charCodeAt(i) - 97]++; return c; }
+const ASIG = ALLW.map(sig);
+function fits(a, b) { for (let i = 0; i < 26; i++) if (a[i] > b[i]) return false; return true; }
+const BASES = {}; DW.forEach((w) => { (BASES[w.length] = BASES[w.length] || []).push(w); });
+const MAXR = 8, MAXC = 8, H = 0, V = 1;
+// papan silang: sel "r,c" -> huruf; tiap kata {w, r, c, d}
+function tryPlace(P, w, r, c, d) {
+  const dr = d ? 1 : 0, dc = d ? 0 : 1, n = w.length;
+  const k0 = (r - dr) + "," + (c - dc), k1 = (r + dr * n) + "," + (c + dc * n);
+  if (P.cell.has(k0) || P.cell.has(k1)) return -1;
+  let cross = 0, r0 = P.r0, r1 = P.r1, c0 = P.c0, c1 = P.c1;
+  for (let i = 0; i < n; i++) {
+    const rr = r + dr * i, cc = c + dc * i, k = rr + "," + cc, ch = P.cell.get(k);
+    if (ch !== undefined) {
+      if (ch !== w[i] || P.dir.get(k) & (1 << d)) return -1; // huruf beda atau sejajar kata lain
+      cross++;
+    } else {
+      // tetangga samping harus kosong agar tak membentuk kata liar
+      const a = d ? rr + "," + (cc - 1) : (rr - 1) + "," + cc, b = d ? rr + "," + (cc + 1) : (rr + 1) + "," + cc;
+      if (P.cell.has(a) || P.cell.has(b)) return -1;
+    }
+    if (rr < r0) r0 = rr; if (rr > r1) r1 = rr; if (cc < c0) c0 = cc; if (cc > c1) c1 = cc;
+  }
+  if (!cross || cross === n) return -1;
+  if (r1 - r0 + 1 > MAXR || c1 - c0 + 1 > MAXC) return -1;
+  return cross * 1000 + 1; // dipakai sebagai tanda sah; skor dihitung di luar
+}
+function putWord(P, w, r, c, d) {
+  const dr = d ? 1 : 0, dc = d ? 0 : 1;
+  for (let i = 0; i < w.length; i++) {
+    const rr = r + dr * i, cc = c + dc * i, k = rr + "," + cc;
+    P.cell.set(k, w[i]); P.dir.set(k, (P.dir.get(k) | 0) | (1 << d));
+    if (rr < P.r0) P.r0 = rr; if (rr > P.r1) P.r1 = rr; if (cc < P.c0) P.c0 = cc; if (cc > P.c1) P.c1 = cc;
+  }
+  P.words.push({ w, r, c, d });
+}
+function buildCross(list, target, rng) {
+  const P = { cell: new Map(), dir: new Map(), words: [], r0: 0, r1: 0, c0: 0, c1: 0 };
+  putWord(P, list[0], 0, 0, H); P.c1 = list[0].length - 1;
+  let n3 = 0;
+  for (let q = 1; q < list.length && P.words.length < target; q++) {
+    const w = list[q]; if (w.length === 3 && n3 >= 3) continue;
+    let best = null, bs = -1e9;
+    for (const p of P.words) {
+      for (let i = 0; i < p.w.length; i++) for (let j = 0; j < w.length; j++) {
+        if (p.w[i] !== w[j]) continue;
+        const d = 1 - p.d, r = p.d ? p.r + i : p.r - j, c = p.d ? p.c - j : p.c + i;
+        const ok = tryPlace(P, w, r, c, d); if (ok < 0) continue;
+        const cross = Math.floor(ok / 1000);
+        let r0 = P.r0, r1 = P.r1, c0 = P.c0, c1 = P.c1;
+        r0 = Math.min(r0, r, r + (d ? w.length - 1 : 0)); r1 = Math.max(r1, r + (d ? w.length - 1 : 0)); c0 = Math.min(c0, c); c1 = Math.max(c1, c + (d ? 0 : w.length - 1));
+        const hh = r1 - r0 + 1, ww = c1 - c0 + 1;
+        const s = cross * 6 - hh * ww * 0.35 - Math.abs(hh - ww) * 0.8 + (d !== P.words[P.words.length - 1].d ? 1 : 0) + rng() * 2.5;
+        if (s > bs) { bs = s; best = { r, c, d }; }
+      }
+    }
+    if (best) { putWord(P, w, best.r, best.c, best.d); if (w.length === 3) n3++; }
+  }
+  return P;
+}
+// kata yang bisa dibentuk dari huruf roda (papan + bonus)
+function validOf(ps) { const s = new Set(); for (let i = 0; i < ALLW.length; i++) if (ALLW[i].length <= 7 && fits(ASIG[i], ps)) s.add(ALLW[i]); return s; }
+function finish(P, base, rng, seed) {
+  const words = P.words.map((o) => ({ w: o.w, r: o.r - P.r0, c: o.c - P.c0, d: o.d }));
+  const rows = P.r1 - P.r0 + 1, cols = P.c1 - P.c0 + 1;
+  // urutan tampil: atas-kiri dulu
+  words.sort((a, b) => a.r - b.r || a.c - b.c || a.d - b.d);
+  let letters = base.split("");
+  for (let t = 0; t < 20; t++) { // kocok sampai tidak terbaca sebagai kata dasar
+    for (let i = letters.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); const x = letters[i]; letters[i] = letters[j]; letters[j] = x; }
+    const s = letters.join(""); if (s !== base && !GSET.has(s)) break;
+  }
+  return { seed, base, letters, words, rows, cols, valid: validOf(sig(base)) };
+}
+// cap = batas peringkat kata papan (makin kecil makin umum); kata langka tetap sah sebagai bonus
+function tryBase(base, rng, nMin, nMax, seed, cap) {
+  const ps = sig(base), subs = []; cap = cap || 1e9;
+  for (let i = 0; i < GW.length; i++) { const w = GW[i]; if (w !== base && i <= cap && w.length <= base.length && fits(ASIG[i], ps)) subs.push(w); }
+  if (subs.length + 1 < nMin) return null;
+  const target = Math.min(subs.length + 1, nMin + Math.floor(rng() * (nMax - nMin + 1)));
+  let bestP = null;
+  for (let at = 0; at < 4; at++) {
+    const ord = subs.map((w) => [w, w.length * 3 - RANK.get(w) / 500 + rng() * 2.2]).sort((a, b) => b[1] - a[1]).map((x) => x[0]);
+    const P = buildCross([base].concat(ord), target, rng);
+    if (!bestP || P.words.length > bestP.words.length) bestP = P;
+    if (P.words.length >= target) break;
+  }
+  return bestP.words.length >= nMin ? finish(bestP, base, rng, seed) : null;
+}
+// batas peringkat kata per tingkat: tingkat awal hanya kata sehari-hari
+const RANKCAP = [900, 1200, 1600, 2100, 1e9, 1e9];
+function nDistinct(w) { return new Set(w).size; }
+// level dari benih: kata dasar dipilih benih, kata papan disusun rapat 4-9 kata
+function genLevel(seed, L, nMin, nMax, tier) {
+  const cap = tier == null ? 1e9 : RANKCAP[tier], all = BASES[L] || BASES[6], md = tier != null && tier <= 1 ? 4 : 0;
+  let B = all.filter((w) => RANK.get(w) <= cap && nDistinct(w) >= md); if (B.length < 12) B = all;
+  const rng = KIT.rng(seed), s0 = Math.floor(rng() * B.length);
+  for (let a = 0; a < B.length; a++) { const lv = tryBase(B[(s0 + a) % B.length], rng, nMin, nMax, seed, cap); if (lv) return lv; }
+  for (let a = 0; a < B.length; a++) { const lv = tryBase(B[(s0 + a) % B.length], rng, nMin, nMax, seed); if (lv) return lv; } // cadangan tanpa batas
+  return nMin > 3 ? genLevel(seed, L, nMin - 1, nMax, tier) : null;
+}
+// Harian: kata dasar dipilih urut hari dari daftar yang pasti jadi, agar tidak berulang
+let OK7 = null;
+function okBases() { if (!OK7) OK7 = BASES[7].filter((w) => tryBase(w, KIT.rng(KIT.hash(w)), 6, 8, 1)); return OK7; }
+function gcd(a, b) { while (b) { const t = a % b; a = b; b = t; } return a; }
+function harianBase(day) { const B = okBases(), n = B.length; let st = 97; while (gcd(st, n) !== 1) st++; return B[(((day * st) % n) + n) % n]; }
+function harianLevel(seed, day) { const w = harianBase(day); return tryBase(w, KIT.rng(seed), 6, 8, seed) || tryBase(w, KIT.rng(KIT.hash(w)), 6, 8, seed); }
+// pemeriksa: setiap deret huruf >= 2 di papan harus tepat satu kata terpasang, semua bersambung, dan bisa dibentuk dari roda
+function checkLevel(lv) {
+  if (!lv) return "tidak ada level";
+  const g = {}, key = (r, c) => r * 16 + c, ps = sig(lv.letters.join(""));
+  if (lv.letters.join("").length !== lv.base.length || lv.letters.join("") === lv.base) return "roda salah";
+  if (lv.rows > MAXR || lv.cols > MAXC) return "papan terlalu besar " + lv.rows + "x" + lv.cols;
+  const seen = new Set();
+  for (const o of lv.words) {
+    if (seen.has(o.w)) return "kata ganda " + o.w; seen.add(o.w);
+    if (!fits(sig(o.w), ps)) return "tak bisa dibentuk " + o.w;
+    if (!GSET.has(o.w)) return "bukan kata papan " + o.w;
+    for (let i = 0; i < o.w.length; i++) {
+      const r = o.r + (o.d ? i : 0), c = o.c + (o.d ? 0 : i);
+      if (r < 0 || c < 0 || r >= lv.rows || c >= lv.cols) return "keluar papan " + o.w;
+      const k = key(r, c); if (g[k] && g[k] !== o.w[i]) return "tabrakan " + o.w; g[k] = o.w[i];
+    }
+  }
+  const runs = [];
+  for (let d = 0; d < 2; d++) for (let a = 0; a < (d ? lv.cols : lv.rows); a++) {
+    let s = "", st = 0;
+    for (let b = 0; b <= (d ? lv.rows : lv.cols); b++) {
+      const r = d ? b : a, c = d ? a : b, ch = b < (d ? lv.rows : lv.cols) ? g[key(r, c)] : undefined;
+      if (ch) { if (!s) st = b; s += ch; } else { if (s.length >= 2) runs.push(d + ":" + (d ? st + "," + a : a + "," + st) + ":" + s); s = ""; }
+    }
+  }
+  const want = lv.words.map((o) => o.d + ":" + o.r + "," + o.c + ":" + o.w).sort().join("|");
+  if (runs.sort().join("|") !== want) return "deret liar";
+  const ks = Object.keys(g), vis = new Set([ks[0]]), st2 = [ks[0]];
+  while (st2.length) { const k = +st2.pop(); for (const n of [k - 1, k + 1, k - 16, k + 16]) if (g[n] && !vis.has(String(n))) { vis.add(String(n)); st2.push(String(n)); } }
+  if (vis.size !== ks.length) return "tidak bersambung";
+  if (!lv.words.some((o) => o.w === lv.base)) return "kata dasar tak ada";
+  for (const o of lv.words) if (!lv.valid.has(o.w)) return "valid kurang " + o.w;
+  return "";
+}
+
+/* ================= ATURAN (tanpa DOM) ================= */
+const CHAL_MAX = 500000, SCORE_MAX = 500000;
+// tingkat babak: [huruf, kata paling sedikit, kata paling banyak] untuk tiap level
+const TIERS = [
+  [[5, 3, 4], [5, 4, 4], [5, 4, 5]],
+  [[5, 4, 5], [5, 4, 5], [6, 5, 5]],
+  [[5, 4, 5], [6, 5, 6], [6, 5, 7]],
+  [[6, 5, 6], [6, 5, 7], [7, 6, 7]],
+  [[6, 5, 7], [7, 6, 8], [7, 6, 9]]
+];
+const T_HARIAN = 5, HARIAN_SPEC = [[7, 6, 8]];
+const FIRST_SEED = 1615472; // babak pertama pemain baru: MULAI, LAMPU, JATUH (kata sehari-hari)
+// 3 bit terbawah benih = tingkat, agar link tantangan membawa tingkat yang sama
+function withTier(seed, t) { return (((seed >>> 0) & ~7) | t) >>> 0 || (8 | t); }
+function tierOf(seed) { return (seed >>> 0) & 7; }
+function specOf(seed) { const t = tierOf(seed); return t === T_HARIAN ? HARIAN_SPEC : TIERS[Math.min(4, t)]; }
+function levelSeed(seed, k) { return KIT.hash(seed + ":" + k) || 1; }
+function makeRun(seed, day) {
+  const t = tierOf(seed); if (t === T_HARIAN) return [harianLevel(seed, day == null ? KIT.dayNumber() : day)];
+  return specOf(seed).map((s, k) => genLevel(levelSeed(seed, k), s[0], s[1], s[2], t));
+}
+// tingkat naik pelan mengikuti jumlah babak: 0, 1, 4, 9, 16 babak
+function tierFor(runs) { return Math.min(4, Math.floor(Math.sqrt(Math.max(0, runs)))); }
+const WP = [0, 0, 0, 30, 50, 80, 120, 170];
+function wordPts(len, combo) { return Math.round(WP[Math.min(7, len)] * (1 + 0.2 * Math.min(5, Math.max(0, combo - 1)))); }
+function bonusPts(len) { return 10 * len; }
+function parOf(lv) { return Math.round((12 * lv.words.length + 8 * lv.letters.length) / 10) * 10; }
+function clearPts(t, par, hinted) { return 100 + Math.max(0, Math.round(6 * (par - t))) + (hinted ? 0 : 150); }
+function starsOf(t, par, hinted) { return 1 + (hinted ? 0 : 1) + (t <= par ? 1 : 0); }
+function fmtChal(seed, score) { return "#t=" + (seed >>> 0).toString(36) + "-" + Math.max(0, score | 0); }
+function parseChal(h) {
+  const m = /#t=([0-9a-z]+)-(\d+)/i.exec(h || ""); if (!m) return null;
+  const seed = parseInt(m[1], 36) >>> 0, score = parseInt(m[2], 10), t = seed & 7;
+  return seed && score <= CHAL_MAX && t <= 4 ? { seed, score } : null; // skor/tingkat mustahil dan benih Harian = diabaikan
+}
+function fmtN(n) { return String(n | 0).replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+function fmtT(s) { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ":" + (s % 60 < 10 ? "0" : "") + (s % 60); }
+
+// satu level yang sedang dimainkan
+function Board(lv) {
+  this.lv = lv; this.rows = lv.rows; this.cols = lv.cols;
+  this.cells = new Map(); // r*16+c -> {ch, st:0 kosong/1 ditemukan/2 petunjuk, words:[i]}
+  lv.words.forEach((o, i) => { for (let k = 0; k < o.w.length; k++) { const key = (o.r + (o.d ? k : 0)) * 16 + o.c + (o.d ? 0 : k); let c = this.cells.get(key); if (!c) { c = { ch: o.w[k], st: 0, words: [], key, r: o.r + (o.d ? k : 0), c: o.c + (o.d ? 0 : k), showT: 0, flashT: 0 }; this.cells.set(key, c); } c.words.push(i); } });
+  this.found = new Array(lv.words.length).fill(0); // 0 belum, 1 ditemukan sendiri, 2 terbuka oleh petunjuk
+  this.bonus = new Set(); this.t = 0; this.hinted = false; this.combo = 0; this.lastFind = -99;
+}
+Board.prototype.keysOf = function (i) { const o = this.lv.words[i], a = []; for (let k = 0; k < o.w.length; k++) a.push((o.r + (o.d ? k : 0)) * 16 + o.c + (o.d ? 0 : k)); return a; };
+Board.prototype.done = function () { return this.found.every((f) => f); };
+Board.prototype.left = function () { return this.found.filter((f) => !f).length; };
+// kirim satu kata: {type: "grid"|"bonus"|"repeat"|"repeatBonus"|"bad"|"short", i, pts}
+Board.prototype.submit = function (w, now) {
+  if (w.length < 3) return { type: "short", pts: 0 };
+  const i = this.lv.words.findIndex((o) => o.w === w);
+  if (i >= 0) {
+    if (this.found[i]) return { type: "repeat", i, pts: 0 };
+    this.combo = now - this.lastFind <= 6 ? this.combo + 1 : 1; this.lastFind = now;
+    this.found[i] = 1; for (const k of this.keysOf(i)) { const c = this.cells.get(k); if (!c.st) c.st = 1; }
+    const extra = this.autoFill(); // kata lain yang ikut penuh (huruf silang) ikut terhitung
+    return { type: "grid", i, pts: wordPts(w.length, this.combo), extra };
+  }
+  if (this.lv.valid.has(w)) {
+    if (this.bonus.has(w)) return { type: "repeatBonus", pts: 0 };
+    this.bonus.add(w); return { type: "bonus", pts: bonusPts(w.length) };
+  }
+  return { type: "bad", pts: 0 };
+};
+// kata yang semua kotaknya sudah terisi dianggap terbuka (tanpa poin)
+Board.prototype.autoFill = function () {
+  const got = [];
+  this.lv.words.forEach((o, i) => { if (!this.found[i] && this.keysOf(i).every((k) => this.cells.get(k).st)) { this.found[i] = 2; got.push(i); } });
+  return got;
+};
+// petunjuk: buka huruf pertama yang masih kosong dari kata belum ketemu (urut papan)
+Board.prototype.hintCell = function () {
+  for (let i = 0; i < this.found.length; i++) if (!this.found[i]) for (const k of this.keysOf(i)) { const c = this.cells.get(k); if (!c.st) return c; }
+  return null;
+};
+Board.prototype.reveal = function (c) { if (!c || c.st) return null; c.st = 2; this.hinted = true; return this.autoFill(); };
+
+/* ================= UJI ================= */
+function runUji() {
+  const out = []; let ok = true;
+  const chk = (c, m) => { if (!c) ok = false; out.push((c ? "ok    " : "GAGAL ") + m); };
+  // a) kamus
+  const bad = ["anjing", "babi", "bangsat", "kontol", "seksi", "tolol", "tahi", "bejat", "lonte", "goblok"];
+  const leak = bad.filter((w) => GSET.has(w) || XW.indexOf(w) >= 0);
+  chk(GW.length > 2000 && XW.length > 3000 && DW.length > 800 && !leak.length, "a) kamus: " + GW.length + " kata papan, " + XW.length + " kata bonus, " + DW.length + " kata dasar; kata kasar tidak ada" + (leak.length ? " (bocor: " + leak.join(",") + ")" : ""));
+  chk(GW.every((w) => /^[a-z]{3,7}$/.test(w)) && DW.every((w) => GSET.has(w) && w.length >= 5), "a2) semua kata papan 3-7 huruf kecil; kata dasar ada di papan");
+  // b) bentuk kata dari roda
+  chk(fits(sig("tas"), sig("satu")) && !fits(sig("susu"), sig("satu")) && fits(sig("susu"), sig("susun")), "b) huruf dihitung: 'susu' tak bisa dari 'satu', bisa dari 'susun'");
+  // c) 500 level acak dari semua tingkat: sah, bisa diselesaikan, dalam batas
+  let nBad = 0, first = "", nLv = 0, minW = 99, maxW = 0, maxMs = 0, sumB = 0;
+  const rk = [0, 0, 0, 0, 0], rkN = [0, 0, 0, 0, 0];
+  for (let s = 1; s <= 35; s++) for (let t = 0; t <= 5; t++) {
+    const seed = withTier(s * 2654435761, t), sp2 = specOf(seed), t00 = performance.now(), run = makeRun(seed, s), ms0 = performance.now() - t00;
+    for (let k = 0; k < sp2.length; k++) {
+      const lv = run[k], ms = ms0 / sp2.length;
+      if (lv && t <= 3) lv.words.forEach((o) => { rkN[t]++; if (RANK.get(o.w) > RANKCAP[t]) rk[t]++; });
+      maxMs = Math.max(maxMs, ms); nLv++;
+      const e = checkLevel(lv) || (lv.letters.length !== sp2[k][0] ? "huruf " + lv.letters.length : "") || (lv.words.length < sp2[k][1] - 1 || lv.words.length > sp2[k][2] ? "jumlah kata " + lv.words.length : "");
+      if (e) { nBad++; if (!first) first = e; } else { minW = Math.min(minW, lv.words.length); maxW = Math.max(maxW, lv.words.length); sumB += lv.valid.size - lv.words.length; }
+    }
+  }
+  chk(nBad === 0, "c) " + nLv + " level: papan sah, tanpa deret liar, bersambung, semua kata dari huruf roda (" + minW + "-" + maxW + " kata, rata-rata " + Math.round(sumB / Math.max(1, nLv)) + " kata bonus, paling lama " + maxMs.toFixed(1) + " md)" + (first ? " GALAT: " + first : ""));
+  chk(rk[0] + rk[1] === 0 && rk[2] / Math.max(1, rkN[2]) < 0.05, "c2) tingkat awal hanya kata umum: kata di luar batas peringkat " + rk.slice(0, 4).map((x, i) => Math.round(x / Math.max(1, rkN[i]) * 100) + "%").join(" / ") + " (tingkat 0-3)");
+  // d) benih sama = level sama
+  const r1 = makeRun(withTier(123456, 3)), r2 = makeRun(withTier(123456, 3)), r3 = makeRun(withTier(654321, 3));
+  const key = (r) => r.map((l) => l.letters.join("") + "/" + l.words.map((o) => o.w + o.r + o.c + o.d).join(",")).join("|");
+  chk(key(r1) === key(r2) && key(r1) !== key(r3) && r1.length === 3 && r1[2].letters.length === 7, "d) benih sama = 3 level sama persis (" + r1.map((l) => l.base).join(", ") + "); benih lain berbeda");
+  const ds = withTier(KIT.dailySeed(SLUG), T_HARIAN), dl = makeRun(ds);
+  chk(dl.length === 1 && dl[0].letters.length === 7 && dl[0].words.length >= 6 && tierOf(ds) === T_HARIAN && !checkLevel(dl[0]), "d2) Harian: 1 teka-teki 7 huruf, " + dl[0].words.length + " kata (" + dl[0].base + ")");
+  const dn = KIT.dayNumber(), hb = new Set(); for (let i = 0; i < 150; i++) hb.add(harianBase(dn + i));
+  chk(hb.size === 150 && okBases().length >= 150, "d3) Harian: 150 hari berturut-turut = 150 kata dasar berbeda (" + okBases().length + " kata dasar siap)");
+  const fr = makeRun(FIRST_SEED);
+  chk(tierOf(FIRST_SEED) === 0 && fr.map((l) => l.base).join() === "mulai,lampu,jatuh" && fr.every((l) => new Set(l.base).size === 5 && l.words.every((o) => RANK.get(o.w) < 900)), "d4) babak pertama pemain baru tetap: " + fr.map((l) => l.base.toUpperCase()).join(", ") + ", semua kata umum");
+  chk(tierFor(0) === 0 && tierFor(1) === 1 && tierFor(3) === 1 && tierFor(4) === 2 && tierFor(9) === 3 && tierFor(500) === 4, "d5) tingkat naik pelan: babak ke-1, 2, 5, 10, 17 membuka tingkat 0-4");
+  // e) kirim kata
+  const lvA = genLevel(4242, 6, 5, 6), b = new Board(lvA), w0 = lvA.words[0].w;
+  const extraW = [...lvA.valid].find((w) => !lvA.words.some((o) => o.w === w));
+  const s1 = b.submit(w0, 1), s2 = b.submit(w0, 2), s3 = extraW ? b.submit(extraW, 3) : { type: "bonus" }, s4 = extraW ? b.submit(extraW, 4) : { type: "repeatBonus" }, s5 = b.submit("zzq", 5), s6 = b.submit("ab", 5);
+  chk(s1.type === "grid" && s1.pts === WP[w0.length] && s2.type === "repeat" && s3.type === "bonus" && s4.type === "repeatBonus" && s5.type === "bad" && s6.type === "short", "e) '" + w0 + "' masuk papan +" + s1.pts + ", ulang = sudah, '" + extraW + "' = bonus sekali, asal = salah, 2 huruf = diabaikan");
+  // f) beruntun dalam 6 detik menambah poin
+  const b2 = new Board(lvA), p1 = b2.submit(lvA.words[1].w, 10).pts, p2 = b2.submit(lvA.words[2].w, 14).pts, b3 = new Board(lvA); b3.submit(lvA.words[1].w, 10);
+  const p3 = b3.submit(lvA.words[2].w, 30).pts;
+  chk(p1 === WP[lvA.words[1].w.length] && p2 === Math.round(WP[lvA.words[2].w.length] * 1.2) && p3 === WP[lvA.words[2].w.length], "f) beruntun <= 6 dtk x1,2 (" + p2 + "), lewat 6 dtk kembali biasa (" + p3 + ")");
+  // g) petunjuk: huruf terbuka, kata penuh ikut terbuka tanpa poin, level selesai
+  const b4 = new Board(lvA); let steps = 0;
+  while (!b4.done() && steps < 100) { b4.reveal(b4.hintCell()); steps++; }
+  chk(b4.done() && b4.hinted && b4.found.every((f) => f === 2) && steps === b4.cells.size, "g) petunjuk membuka " + steps + " kotak satu per satu sampai level selesai, tanpa poin");
+  const b5 = new Board(lvA); lvA.words.forEach((o, i) => { if (i) b5.submit(o.w, i * 10); });
+  const lastK = b5.keysOf(0).find((k) => !b5.cells.get(k).st);
+  chk(!b5.done() && (lastK === undefined ? true : b5.found[0] === 0), "g2) kata terakhir belum lengkap sampai ditemukan");
+  // h) poin & bintang
+  chk(clearPts(30, 90, false) === 100 + 360 + 150 && clearPts(200, 90, true) === 100 && starsOf(30, 90, false) === 3 && starsOf(100, 90, false) === 2 && starsOf(30, 90, true) === 2 && starsOf(100, 90, true) === 1, "h) bonus selesai: dasar 100 + cepat 6/dtk + tanpa bantuan 150; bintang 1-3");
+  // i) tantangan
+  const cs = withTier(3735928559, 2), hh = fmtChal(cs, 4700), pc = parseChal(hh), link = KIT.challengeLink(SLUG, cs, 4700);
+  chk(pc && pc.seed === cs && pc.score === 4700 && link.endsWith("/" + SLUG + "/" + hh) && !parseChal("#t=0-5") && !parseChal("#t=zz-500001") && parseChal("#t=" + withTier(99, 1).toString(36) + "-500000"), "i) " + hh + " dibaca ulang sama persis; skor di atas 500.000 atau benih 0 diabaikan");
+  chk(!parseChal("#t=" + withTier(99, 6).toString(36) + "-10") && !parseChal("#t=" + withTier(99, T_HARIAN).toString(36) + "-10") && tierOf(withTier(0xffffffff, 4)) === 4, "i2) tingkat mustahil (6/7) dan benih Harian diabaikan");
+  // j) persegi bulat tanpa roundRect (WebView lama)
+  const calls = []; const fake = { beginPath() { calls.push("b"); }, moveTo() { calls.push("m"); }, arcTo() { calls.push("a"); }, closePath() { calls.push("c"); } };
+  let rrOk = true; try { rr(fake, 0, 0, 40, 30, 8); } catch (e) { rrOk = false; }
+  chk(rrOk && calls.filter((x) => x === "a").length === 4, "j) rr() tetap jalan tanpa ctx.roundRect");
+  // p) alur layar dengan data pemain disalin lalu dipulihkan
+  const PFX = "dehayuk." + SLUG + ".", snap = {}; let lsOk = true;
+  try { for (let q = 0; q < localStorage.length; q++) { const k = localStorage.key(q); if (k && k.indexOf(PFX) === 0) snap[k] = localStorage.getItem(k); } } catch (e) { lsOk = false; }
+  const recOrig = KIT.progress.record, toastOrig = KIT.ui.toast, h0 = location.hash; KIT.progress.record = () => ({ gain: 0, level: 1, leveledUp: false, xp: 0 }); KIT.ui.toast = () => { };
+  const setH = (h) => { try { history.replaceState(null, "", location.pathname + location.search + h); } catch (e) { } };
+  const solveLevel = () => { const bd = G.board; bd.lv.words.forEach((o, i) => { if (!bd.found[i]) typeWord(o.w); }); };
+  const finishRun = () => { for (let q = 0; q < 5 && mode !== "over"; q++) { solveLevel(); FLY = []; G.pendingClear = 0; if (mode === "play") levelClear(); nextAfterClear(); } };
+  try {
+    ST.set("best", 0); ST.set("harian", null); ST.set("badges", []); ST.set("petunjuk", 3); ST.set("meter", 0);
+    ST.set("runs", 0); startGame("normal"); const fs0 = seedNow;
+    chk(fs0 === FIRST_SEED && G.board.lv.base === "mulai" && /^Tahap 1 · 1\/3$/.test($("hLv").textContent) && $("hTag").hidden, "p0) pemain baru mulai dari babak ramah (MULAI); bilah info: " + $("hLv").textContent);
+    const th0 = stat("tahap");
+    startGame("normal", withTier(777, 0));
+    const lv0 = G.board.lv; typeWord(lv0.words[0].w); const sc1 = G.score;
+    chk(mode === "play" && G.board.found[0] === 1 && sc1 > 0 && $("hScore").textContent === String(sc1), "p1) mengetik kata papan: masuk, poin " + sc1 + " tampil di HUD");
+    $("rAgain").click(); $("rMenu").click();
+    chk(mode === "play" && G.k === 0 && G.score === sc1, "p2) rAgain/rMenu saat bermain diabaikan (klik ulang dari iklan app)");
+    // seret jari: urutan huruf, mundur satu, lepas
+    const bdd = G.board, w1 = bdd.lv.words.find((o, i) => !bdd.found[i]).w, idx = pathFor(w1);
+    selStart(idx[0]); for (let q = 1; q < idx.length; q++) selAdd(idx[q]);
+    const back = sel.length; selAdd(idx[idx.length - 2]); const back2 = sel.length; selAdd(idx[idx.length - 1]); selEnd();
+    chk(back === w1.length && back2 === w1.length - 1 && bdd.found[bdd.lv.words.findIndex((o) => o.w === w1)] === 1 && sel.length === 0, "p3) seret '" + w1 + "': kembali ke huruf sebelumnya membatalkan satu huruf, lepas = kirim");
+    // petunjuk & palu memakai toples
+    const hp0 = hintPts(); useLampu(); const hp1 = hintPts(); ST.set("petunjuk", 0); refreshTools(); const cellsBefore = [...G.board.cells.values()].filter((c) => c.st).length; useLampu();
+    const cellsAfter = [...G.board.cells.values()].filter((c) => c.st).length;
+    chk(hp1 === hp0 - 1 && cellsAfter === cellsBefore && G.board.hinted && $("nPalu").textContent === "2", "p4) lampu membuka satu huruf dan memakai 1 petunjuk; tanpa petunjuk tidak terjadi apa-apa");
+    ST.set("petunjuk", 5); refreshTools(); useLampuPalu(); const ec = [...G.board.cells.values()].find((c) => !c.st); tapCell(ec);
+    chk(ec.st === 2 && hintPts() === 3 && !hammer, "p5) palu: ketuk kotak pilihan, terbuka, memakai 2 petunjuk");
+    // toples bonus: 4 kata bonus = +1 petunjuk
+    ST.set("meter", 3); const ph = hintPts(), bw = [...G.board.lv.valid].filter((w) => !G.board.lv.words.some((o) => o.w === w) && !G.board.bonus.has(w));
+    if (bw.length) typeWord(bw[0]);
+    chk(!bw.length || (hintPts() === ph + 1 && ST.get("meter", 0) === 0), "p6) kata bonus ke-4 mengisi toples: +1 petunjuk");
+    // selesaikan babak
+    finishRun();
+    chk(mode === "over" && !$("sOver").hidden && G.k === 2 && stat("tahap") === th0 + 3, "p7) 3 level selesai = layar hasil; tahap naik 3");
+    const t1 = $("rRec").textContent;
+    chk(t1 === "Rekor pertamamu!" && / kata lagi$/.test($("rGnx").textContent) && !$("rGbarW").hidden && $("rRek").hidden && $("rAgainT").textContent === "Main lagi" && $("rTop").hidden, "p8) rekor pertama; bilah gelar berikutnya: " + $("rGnx").textContent);
+    ST.set("best", 999999); $("rAgain").click(); finishRun();
+    chk(/^Rekor [\d.]+ · kurang [\d.]+$/.test($("rRec").textContent) && !$("rBarW").classList.contains("rec"), "p9) rekor meleset: " + $("rRec").textContent);
+    ST.set("best", 1); $("rAgain").click(); finishRun();
+    chk(/^\+[\d.]+ dari rekor lama$/.test($("rRec").textContent) && $("rBarW").classList.contains("rec"), "p10) rekor terlewati: " + $("rRec").textContent);
+    // Harian: satu percobaan resmi
+    startGame("daily", withTier(KIT.dailySeed(SLUG), T_HARIAN)); toTitle(); openHarian();
+    const dd = daily(), dLbl = $("dPlay").textContent.trim(); $("sHarian").hidden = true;
+    chk(dd && !dd.done && dLbl === "Latihan", "p11) keluar dari Harian menghabiskan percobaan resmi, tombol jadi Latihan");
+    ST.set("harian", { d: KIT.dateKey(), score: 21, stars: 2, done: true });
+    startGame("practice", withTier(KIT.dailySeed(SLUG), T_HARIAN)); finishRun();
+    chk(daily().score === 21 && mode === "over" && !$("rDone").hidden, "p12) latihan Harian tidak menimpa catatan (tetap 21)");
+    const hn = ST.get("hariN", 0), hd = ST.get("hariD", "");
+    startGame("daily", withTier(KIT.dailySeed(SLUG), T_HARIAN)); dailyKey = "2000-01-01"; finishRun();
+    const old = ST.get("harian", null); ST.set("hariN", hn); ST.set("hariD", hd);
+    chk(old && old.d === "2000-01-01" && old.done && old.stars >= 1, "p13) Harian yang lewat tengah malam dicatat pada tanggal mulai");
+    chk($("rAgainT").textContent === "Latihan" && !$("rTop").hidden && /^Baru lagi dalam \d+:\d\d$/.test($("rDone").textContent) && lastRun.daily && ST.get("last", {}).seed !== seedNow, "p13b) akhir Harian: " + $("rDone").textContent + ", tombol Latihan dan Peringkat hari ini, tidak jadi tantangan");
+    // Tantang
+    setH(fmtChal(withTier(98765, 1), 10)); chal = readChal(); toTitle(); const tc = $("tChal").textContent;
+    startGame("chal", chal.seed); finishRun(); const v1 = $("rVerd").textContent;
+    $("rAgain").click();
+    chk(tc.indexOf("10 poin") > 0 && /^MENANG/.test(v1) && kind === "chal" && seedNow === withTier(98765, 1) && chal && chal.score === 10, "p14) tantangan: target tampil, menang, Main lagi mengulang benih yang sama");
+    // jeda: tab tersembunyi, tombol hanya di layarnya
+    pause(); const pm = mode, hid = $("tools").hidden && $("hInfo").hidden; $("pGo").click(); const rm = mode, vis = !$("tools").hidden && !$("hInfo").hidden; $("pMenu").click();
+    chk(pm === "pause" && rm === "play" && mode === "play" && hid && vis, "p15) jeda menyembunyikan alat & bilah info, lanjut memunculkannya; Menu jeda diabaikan saat bermain");
+  } catch (err) { chk(false, "p) galat: " + err.message + " " + (err.stack || "").split("\n")[1]); }
+  finally {
+    setH(h0); KIT.progress.record = recOrig; KIT.ui.toast = toastOrig;
+    if (lsOk) try { const del = []; for (let q = 0; q < localStorage.length; q++) { const k = localStorage.key(q); if (k && k.indexOf(PFX) === 0 && !(k in snap)) del.push(k); } del.forEach((k) => localStorage.removeItem(k)); for (const k in snap) localStorage.setItem(k, snap[k]); } catch (e) { }
+    chal = null; chalLast = null; toTitle();
+  }
+  const el = document.createElement("pre"); el.id = "uji"; el.textContent = (ok ? "UJI LULUS" : "UJI GAGAL") + "\n" + out.join("\n");
+  document.body.appendChild(el); document.title = ok ? "UJI LULUS" : "UJI GAGAL";
+  return ok;
+}
+
+/* ================= SENI ================= */
+const INK = "#2e1b47";
+const $ = (id) => document.getElementById(id);
+const cv = $("cv"), colEl = $("col");
+const ctx = cv.getContext("2d");
+let vw = 0, vh = 0, dpr = 1, colX = 0, colW = 0, sT = 0, sB = 0, LAND = false, SIDE = false, time = 0;
+// persegi bersudut bulat; cadangan manual untuk WebView lama tanpa roundRect
+function rr(g, x, y, w, h, r) {
+  g.beginPath();
+  if (g.roundRect) { g.roundRect(x, y, w, h, r); return; }
+  r = Math.max(0, Math.min(r, w / 2, h / 2));
+  g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+}
+function fontPx(n) { return "800 " + Math.max(1, n | 0) + "px 'Baloo 2','Arial Rounded MT Bold',sans-serif"; }
+function mk(w, h) { const c = document.createElement("canvas"); c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h || w)); return c; }
+function hx(h) { const n = parseInt(h.slice(1), 16); return [n >> 16, n >> 8 & 255, n & 255]; }
+function mx(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
+function rgb(c, a) { return a == null ? "rgb(" + (c[0] | 0) + "," + (c[1] | 0) + "," + (c[2] | 0) + ")" : "rgba(" + (c[0] | 0) + "," + (c[1] | 0) + "," + (c[2] | 0) + "," + a + ")"; }
+const easeOut = (t) => 1 - Math.pow(1 - t, 3), backOut = (t) => { const s = 1.9; t -= 1; return t * t * ((s + 1) * t + s) + 1; };
+// tema langit per level babak
+const THEMES = [
+  { nama: "Pagi", sky: ["#4fc3ff", "#9fe2ff", "#fff1c4"], hill: ["#9be07a", "#6cc458", "#45a044"], sun: "#fff4b0", night: 0 },
+  { nama: "Sore", sky: ["#ff9466", "#ffc587", "#ffeeb8"], hill: ["#e6a866", "#c9854a", "#9d6334"], sun: "#fff0b0", night: 0 },
+  { nama: "Senja", sky: ["#7a58dc", "#cf86d6", "#ffbfa3"], hill: ["#7b5cc4", "#61479f", "#4a347e"], sun: "#ffd9a0", night: 0.3 },
+  { nama: "Malam", sky: ["#1a2466", "#3a3f9e", "#7a64c6"], hill: ["#34408f", "#283374", "#1e275c"], sun: "#fff6d0", night: 1 }
+];
+const TH = THEMES.map((t) => ({ sky: t.sky.map(hx), hill: t.hill.map(hx), sun: t.sun, night: t.night }));
+let thA = 2, thB = 2, thT = 1; // tema berbaur
+function themeMix() { const a = TH[thA], b = TH[thB], k = Math.min(1, thT); return { sky: [0, 1, 2].map((j) => mx(a.sky[j], b.sky[j], k)), hill: [0, 1, 2].map((j) => mx(a.hill[j], b.hill[j], k)), night: a.night + (b.night - a.night) * k, sun: k < 0.5 ? a.sun : b.sun }; }
+let STARS = []; { const rn = KIT.rng(21); for (let i = 0; i < 80; i++) STARS.push([rn(), rn() * 0.7, 0.6 + rn() * 1.5, rn() * TAU]); }
+const CLOUDS = [[0.1, 0.12, 0.8, 7], [0.75, 0.22, 1.1, 5], [0.4, 0.34, 0.7, 9], [0.92, 0.08, 0.9, 6], [0.25, 0.46, 1.0, 4]];
+let CLOUD = null, HILLC = [], SKYC = [], FSPR = {};
+// ubin melayang di latar: huruf acak naik perlahan
+const FLOAT = []; { const rn = KIT.rng(5), AB = "abdegiklmnprstuy"; for (let i = 0; i < 22; i++) FLOAT.push({ x: rn(), y: rn(), s: 0.6 + rn() * 0.9, v: 6 + rn() * 10, a: rn() * TAU, va: (rn() - 0.5) * 0.6, ch: AB[Math.floor(rn() * AB.length)], c: Math.floor(rn() * 5) }); }
+const TILE_COLS = [["#ff9fb8", "#ff5c8a"], ["#ffe36a", "#ffb21a"], ["#8fe0ff", "#3fb0f0"], ["#b6f08a", "#5fc84a"], ["#d2b0ff", "#9a6cf0"]];
+function buildBg() {
+  CLOUD = mk(180 * dpr, 96 * dpr); { const g = CLOUD.getContext("2d"); g.scale(dpr, dpr);
+    const puff = [[40, 52, 26], [74, 38, 32], [112, 46, 28], [140, 56, 20], [90, 60, 26]];
+    g.fillStyle = "rgba(200,190,240,.8)"; for (const [x, y, r] of puff) { g.beginPath(); g.arc(x, y + 5, r, 0, TAU); g.fill(); }
+    g.fillStyle = "#fff"; for (const [x, y, r] of puff) { g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); } }
+  HILLC = []; FSPR = {};
+}
+// langit per tema: gradasi 1 piksel lebar, direntang ke layar
+function skyOf(i) {
+  if (SKYC[i]) return SKYC[i];
+  const c = mk(1, 256), g = c.getContext("2d"), t = TH[i], gr = g.createLinearGradient(0, 0, 0, 256);
+  gr.addColorStop(0, rgb(t.sky[0])); gr.addColorStop(0.55, rgb(t.sky[1])); gr.addColorStop(1, rgb(t.sky[2]));
+  g.fillStyle = gr; g.fillRect(0, 0, 1, 256); return (SKYC[i] = c);
+}
+// ubin melayang: gambar sekali per huruf+warna
+const FS = 40;
+function floatSpr(ch, ci) {
+  const k = ch + ci; if (FSPR[k]) return FSPR[k];
+  const c = mk((FS + 4) * dpr, (FS * 1.1 + 4) * dpr), g = c.getContext("2d"); g.scale(dpr, dpr);
+  tile(g, 2, 2, FS, ch, TILE_COLS[ci], 0); return (FSPR[k] = c);
+}
+// bukit berlapis dan sawah bertingkat di bawah (sekali per tema dan ukuran layar)
+function hills(i) {
+  if (HILLC[i]) return HILLC[i];
+  const m = TH[i], h = Math.round(Math.min(260, vh * 0.42)), w = Math.ceil(vw);
+  const HILLS = mk(w * dpr, h * dpr), g = HILLS.getContext("2d"); g.scale(dpr, dpr); HILLC[i] = HILLS;
+  const layer = (c, base, amp, f1, f2, ph) => { g.fillStyle = rgb(c); g.beginPath(); g.moveTo(0, h); for (let x = 0; x <= w + 20; x += 16) g.lineTo(x, h * base + Math.sin(x * f1 + ph) * amp + Math.sin(x * f2 + ph * 2) * amp * 0.4); g.lineTo(w, h); g.closePath(); g.fill(); };
+  layer(mx(m.hill[0], m.sky[2], 0.45), 0.28, h * 0.1, 0.008, 0.021, 1);
+  layer(m.hill[0], 0.46, h * 0.09, 0.011, 0.027, 3);
+  layer(m.hill[1], 0.64, h * 0.07, 0.014, 0.033, 5);
+  // pematang sawah
+  g.strokeStyle = rgb(mx(m.hill[1], [255, 255, 255], 0.25), 0.55); g.lineWidth = 2;
+  for (let k = 0; k < 4; k++) { g.beginPath(); for (let x = 0; x <= w + 20; x += 16) { const y = h * (0.72 + k * 0.07) + Math.sin(x * 0.012 + k) * h * 0.02; x ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); }
+  layer(m.hill[2], 0.86, h * 0.04, 0.02, 0.05, 7);
+  // pohon kelapa kecil di bukit tengah
+  const rn = KIT.rng(3);
+  for (let k = 0; k < Math.max(3, w / 160); k++) {
+    const x = rn() * w, y = h * 0.5 + Math.sin(x * 0.011 + 3) * h * 0.09 + h * 0.04, th = 26 + rn() * 18;
+    g.strokeStyle = rgb(m.hill[2]); g.lineWidth = 3; g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + 6, y - th * 0.5, x + 3, y - th); g.stroke();
+    g.fillStyle = rgb(m.hill[2]);
+    for (let a = 0; a < 5; a++) { const an = -Math.PI / 2 + (a - 2) * 0.62; g.beginPath(); g.ellipse(x + 3 + Math.cos(an) * 9, y - th + Math.sin(an) * 5 + 3, 11, 3.2, an, 0, TAU); g.fill(); }
+  }
+  HILLS.h = h; HILLS.w = w; return HILLS;
+}
+function drawBackdrop(dt) {
+  const g = ctx, m = themeMix(), k = Math.min(1, thT), base = k >= 1 ? thB : thA, blend = k < 1 && thA !== thB;
+  g.drawImage(skyOf(base), 0, 0, vw, vh); if (blend) { g.globalAlpha = k; g.drawImage(skyOf(thB), 0, 0, vw, vh); g.globalAlpha = 1; }
+  if (m.night > 0.05) for (const s of STARS) { g.globalAlpha = m.night * (0.5 + 0.5 * Math.sin(time * 2 + s[3])); g.fillStyle = "#fff"; g.beginPath(); g.arc(s[0] * vw, s[1] * vh, s[2], 0, TAU); g.fill(); }
+  g.globalAlpha = 1;
+  // matahari / bulan
+  const sx = vw * 0.8, sy = vh * 0.13, sr = Math.min(40, vw * 0.08);
+  g.fillStyle = "rgba(255,250,220,.22)"; g.beginPath(); g.arc(sx, sy, sr * (1.7 + Math.sin(time) * 0.06), 0, TAU); g.fill();
+  g.fillStyle = m.sun; g.beginPath(); g.arc(sx, sy, sr, 0, TAU); g.fill();
+  if (m.night > 0.6) { g.fillStyle = rgb(m.sky[0]); g.beginPath(); g.arc(sx + sr * 0.45, sy - sr * 0.25, sr * 0.85, 0, TAU); g.fill(); }
+  const ca = 1 - m.night * 0.8;
+  for (const q of CLOUDS) { const x = ((q[0] * (vw + 240) + time * q[3]) % (vw + 240)) - 200; g.globalAlpha = ca * 0.85; g.drawImage(CLOUD, x, q[1] * vh, 180 * q[2], 96 * q[2]); }
+  g.globalAlpha = 1;
+  const H2 = hills(base); g.drawImage(H2, 0, vh - H2.h, H2.w, H2.h);
+  if (blend) { const H3 = hills(thB); g.globalAlpha = k; g.drawImage(H3, 0, vh - H3.h, H3.w, H3.h); g.globalAlpha = 1; }
+  // ubin melayang
+  const wide = colW < vw - 40, fa = mode === "title" || mode === "leaving" || COVER ? 0.5 : wide ? 0.4 : 0.14;
+  for (const f of FLOAT) {
+    f.y -= f.v * dt / vh; f.a += f.va * dt; if (f.y < -0.08) { f.y = 1.08; f.x = Math.random(); }
+    let x = f.x * vw; const y = f.y * vh;
+    if (!(mode === "title" || mode === "leaving" || COVER) && (wide ? x > colX - 20 && x < colX + colW + 20 : LY && x > LY.ox - 30 && x < LY.ox + LY.cell * 8 + 30 && y > LY.oy - 30 && y < LY.pvY + 30)) continue; // saat main tidak di belakang papan
+    const s = 26 * f.s, q = s / FS; g.globalAlpha = fa;
+    g.setTransform(dpr, 0, 0, dpr, x * dpr, y * dpr); g.rotate(Math.sin(f.a) * 0.4);
+    g.drawImage(floatSpr(f.ch, f.c), -s / 2 - 2 * q, -s / 2 - 2 * q, (FS + 4) * q, (FS * 1.1 + 4) * q);
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  g.globalAlpha = 1;
+  if (wide && mode !== "title" && mode !== "leaving" && !COVER) bunting(); // umbul-umbul di sisi layar lebar
+  if (wide && (mode === "title" || mode === "leaving") && !COVER && LAND && !SIDE) miniCross(); // hiasan kiri penyeimbang roda
+}
+// teka-teki silang mini di sisi kiri judul (layar lebar)
+const MINI = [["kata", 0, 0, 0], ["tahu", 0, 2, 1], ["susun", 3, 1, 0]], MINI_ON = { kata: 1, susun: 1 };
+function miniCross() {
+  const sw = (vw - colW) / 2; if (sw < 170) return;
+  const s = Math.min(46, sw * 0.8 / 6), cx = colX - sw / 2, cy = vh * 0.6, ox = cx - s * 3, oy = cy - s * 2, g = ctx, cells = {};
+  g.fillStyle = "rgba(46,27,71,.16)"; rr(g, ox - 8, oy - 8, s * 6 + 16, s * 4 + 16, 14); g.fill();
+  MINI.forEach(([w, r, c, d], wi) => { for (let i = 0; i < w.length; i++) { const r2 = r + (d ? i : 0), cc = c + (d ? 0 : i), k = r2 + "," + cc, o = cells[k] || (cells[k] = { r: r2, c: cc, ch: w[i], on: 0, ci: (wi * 2 + i) % 5 }); if (MINI_ON[w]) o.on = 1; } });
+  for (const k in cells) {
+    const o = cells[k], hop = Math.pow(Math.max(0, Math.sin(time * 1.6 - (o.r + o.c) * 0.5)), 12) * 3, x = ox + o.c * s + 2, y = oy + o.r * s + 2 - (o.on ? hop : 0), q = s - 4;
+    if (o.on) tile(g, x, y, q, o.ch, TILE_COLS[o.ci], 1);
+    else { g.fillStyle = "rgba(46,27,71,.35)"; rr(g, x, y + 2, q, q, q * 0.2); g.fill(); g.fillStyle = "rgba(255,255,255,.9)"; rr(g, x, y, q, q, q * 0.2); g.fill(); g.lineWidth = 2; g.strokeStyle = INK; g.stroke(); }
+  }
+}
+// bendera segitiga warna-warni di atas sisi kiri dan kanan
+function bunting() {
+  const g = ctx, sides = [[0, colX - 8], [colX + colW + 8, vw]];
+  for (const [a, b] of sides) {
+    if (b - a < 60) continue;
+    const y0 = sT + 18, sag = 26; g.strokeStyle = INK; g.lineWidth = 2; g.beginPath();
+    for (let x = a; x <= b; x += 8) { const t = (x - a) / (b - a), y = y0 + Math.sin(t * Math.PI) * sag; x === a ? g.moveTo(x, y) : g.lineTo(x, y); } g.stroke();
+    const n = Math.floor((b - a) / 34);
+    for (let k = 0; k < n; k++) {
+      const x = a + (k + 0.5) * (b - a) / n, t = (x - a) / (b - a), y = y0 + Math.sin(t * Math.PI) * sag, sw = Math.sin(time * 2 + k) * 2;
+      g.fillStyle = TILE_COLS[k % 5][1]; g.beginPath(); g.moveTo(x - 10, y); g.lineTo(x + 10, y); g.lineTo(x + sw, y + 22); g.closePath(); g.fill(); g.stroke();
+    }
+  }
+}
+// ubin huruf: kotak bulat bergaris tepi dengan kilap
+function tile(g, x, y, s, ch, cols, st) {
+  const r = s * 0.22, lw = Math.max(1.5, s * 0.07);
+  g.fillStyle = INK; rr(g, x, y + s * 0.07, s, s, r); g.fill();
+  const gr = g.createLinearGradient(0, y, 0, y + s); gr.addColorStop(0, cols[0]); gr.addColorStop(1, cols[1]);
+  g.fillStyle = gr; rr(g, x, y, s, s, r); g.fill(); g.lineWidth = lw; g.strokeStyle = INK; g.stroke();
+  g.fillStyle = "rgba(255,255,255,.45)"; rr(g, x + s * 0.12, y + s * 0.09, s * 0.76, s * 0.2, s * 0.1); g.fill();
+  if (ch) {
+    g.font = fontPx(s * 0.66); g.textAlign = "center"; g.textBaseline = "middle"; g.lineJoin = "round";
+    const L = ch.toUpperCase(), cx = x + s / 2, cy = y + s * 0.54;
+    if (st === 1) { g.fillStyle = INK; g.fillText(L, cx, cy); }
+    else { g.lineWidth = s * 0.14; g.strokeStyle = INK; g.strokeText(L, cx, cy); g.fillStyle = "#fff"; g.fillText(L, cx, cy); }
+  }
+}
+
+// lampu petunjuk kecil
+function lampIcon(g, x, y, s) {
+  g.save(); g.translate(x, y); g.scale(s / 24, s / 24); g.translate(-12, -12); g.lineJoin = "round"; g.lineWidth = 2;
+  g.fillStyle = "#fff6b0"; g.strokeStyle = INK; g.beginPath(); g.arc(12, 9.2, 6.4, 0, TAU); g.fill(); g.stroke();
+  g.fillStyle = "#c9c3d6"; rr(g, 9.3, 16.2, 5.4, 4.8, 1.6); g.fill(); g.stroke(); g.restore();
+}
+/* ---------- logo ---------- */
+let LOGO = null;
+function measureLogo() { const el = $("logo"); if (!el) return; const r = el.getBoundingClientRect(); if (r.width < 10) return; LOGO = { x: r.left, y: r.top, w: r.width, h: r.height }; }
+function drawLogo() {
+  const L = LOGO; if (!L) return;
+  const g = ctx, rows = [["SUSUN", 0, [0, 2, 3, 4, 2]], ["KATA", 1, [1, 1, 1, 1]]];
+  const s1 = Math.min(L.w / 5.9, L.h * 0.4), s2 = Math.min(L.w / 4.4, L.h * 0.5);
+  let y = L.y + L.h * 0.04;
+  rows.forEach(([word, ri, cc]) => {
+    const s = ri ? s2 : s1, gap = s * 0.1, tot = word.length * s + (word.length - 1) * gap;
+    let x = L.x + L.w / 2 - tot / 2;
+    for (let i = 0; i < word.length; i++) {
+      const hop = Math.pow(Math.max(0, Math.sin(time * 2.2 - i * 0.55 - ri * 1.9)), 10), rot = (i & 1 ? 0.07 : -0.06) * (ri ? -1 : 1) + hop * 0.08;
+      const cx = x + s / 2, cy = y + s / 2 - hop * s * 0.18;
+      g.setTransform(Math.cos(rot) * dpr, Math.sin(rot) * dpr, -Math.sin(rot) * dpr, Math.cos(rot) * dpr, cx * dpr, cy * dpr);
+      tile(g, -s / 2, -s / 2, s, word[i], TILE_COLS[cc[i]], ri ? 1 : 0);
+      x += s + gap;
+    }
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    y += s * 1.14;
+  });
+  // garis seret melengkung di bawah logo, seperti jari menyambung huruf
+  const yy = y + s2 * 0.02, w2 = s2 * 3.6; g.lineCap = "round"; g.lineJoin = "round";
+  g.beginPath(); g.moveTo(L.x + L.w / 2 - w2 / 2, yy); g.quadraticCurveTo(L.x + L.w / 2, yy + s2 * 0.26, L.x + L.w / 2 + w2 / 2, yy);
+  g.strokeStyle = INK; g.lineWidth = Math.max(5, s2 * 0.14); g.stroke(); g.strokeStyle = "#ff7a2b"; g.lineWidth = Math.max(2.5, s2 * 0.08); g.stroke(); g.lineCap = "butt";
+}
+
+/* ---------- roda (tampah anyaman) ---------- */
+let WHEEL = null;
+function wheelSprite(R) {
+  if (WHEEL && WHEEL.R === R && WHEEL.d === dpr) return WHEEL;
+  const S = Math.ceil((R * 2 + 16) * dpr), c = mk(S, S), g = c.getContext("2d"); g.scale(dpr, dpr);
+  const o = R + 8;
+  g.fillStyle = "rgba(46,27,71,.28)"; g.beginPath(); g.ellipse(o + 4, o + 9, R, R * 0.98, 0, 0, TAU); g.fill();
+  g.fillStyle = "#b8742f"; g.beginPath(); g.arc(o, o, R, 0, TAU); g.fill(); g.lineWidth = 3; g.strokeStyle = INK; g.stroke();
+  // lilitan bibir tampah
+  g.strokeStyle = "#8f5424"; g.lineWidth = 1.6; for (let a = 0; a < TAU; a += TAU / 60) { g.beginPath(); g.moveTo(o + Math.cos(a) * R * 0.9, o + Math.sin(a) * R * 0.9); g.lineTo(o + Math.cos(a + 0.05) * R * 0.99, o + Math.sin(a + 0.05) * R * 0.99); g.stroke(); }
+  g.save(); g.beginPath(); g.arc(o, o, R * 0.88, 0, TAU); g.clip();
+  g.fillStyle = "#edc27a"; g.fillRect(0, 0, o * 2, o * 2);
+  // anyaman bambu: kotak miring berselang
+  const st = Math.max(8, R * 0.11); g.translate(o, o); g.rotate(Math.PI / 4);
+  for (let x = -R * 1.5; x < R * 1.5; x += st) for (let y = -R * 1.5; y < R * 1.5; y += st) {
+    const k = (Math.round(x / st) + Math.round(y / st)) & 1;
+    g.fillStyle = k ? "rgba(185,120,50,.28)" : "rgba(255,240,200,.25)"; g.fillRect(x, y, st - 1, st - 1);
+  }
+  g.restore();
+  g.lineWidth = 2.5; g.strokeStyle = INK; g.beginPath(); g.arc(o, o, R * 0.88, 0, TAU); g.stroke();
+  const gl = g.createRadialGradient(o - R * 0.3, o - R * 0.35, 0, o, o, R); gl.addColorStop(0, "rgba(255,255,255,.28)"); gl.addColorStop(0.6, "rgba(255,255,255,0)"); gl.addColorStop(1, "rgba(80,40,10,.18)");
+  g.fillStyle = gl; g.beginPath(); g.arc(o, o, R * 0.88, 0, TAU); g.fill();
+  c.R = R; c.d = dpr; c.o = o; WHEEL = c; return c;
+}
+
+/* ================= SUARA ================= */
+const A = KIT.audio, PENTA = [0, 2, 4, 7, 9];
+const SFX = {
+  tap() { A.tone({ freq: 880, dur: 0.06, vol: 0.22, slideTo: 1320 }); },
+  // nada naik satu anak tangga tiap huruf
+  sel(k) { const s = 12 * Math.floor(k / 5) + PENTA[k % 5], f = 392 * Math.pow(2, s / 12); A.tone({ freq: f, dur: 0.16, type: "triangle", vol: 0.24 }); A.tone({ freq: f * 2, dur: 0.1, vol: 0.06, delay: 0.01 }); },
+  word(n) { [523.3, 659.3, 784, 1046.5, 1318.5, 1568, 2093].slice(0, Math.max(3, n)).forEach((f, i) => A.tone({ freq: f, dur: 0.22, type: "triangle", vol: 0.16, delay: i * 0.055 })); A.noise({ dur: 0.08, vol: 0.05, filter: 7000, type: "highpass", delay: 0.1 }); },
+  land(k) { A.tone({ freq: 620 + k * 70, dur: 0.05, vol: 0.09, type: "sine" }); },
+  bonus() { A.tone({ freq: 988, dur: 0.08, type: "square", vol: 0.07 }); A.tone({ freq: 1319, dur: 0.3, type: "square", vol: 0.07, delay: 0.08 }); A.tone({ freq: 2637, dur: 0.25, vol: 0.06, delay: 0.1 }); },
+  bad() { A.tone({ freq: 220, dur: 0.1, type: "square", vol: 0.07, slideTo: 170 }); A.tone({ freq: 200, dur: 0.12, type: "square", vol: 0.07, slideTo: 150, delay: 0.11 }); },
+  repeat() { A.tone({ freq: 523, dur: 0.07, vol: 0.12 }); A.tone({ freq: 523, dur: 0.07, vol: 0.12, delay: 0.1 }); },
+  shuffle() { A.noise({ dur: 0.18, vol: 0.12, filter: 2400, type: "bandpass" }); A.tone({ freq: 300, dur: 0.2, vol: 0.1, slideTo: 700, type: "triangle" }); },
+  hint() { [1319, 1568, 2093, 2637].forEach((f, i) => A.tone({ freq: f, dur: 0.18, vol: 0.08, delay: i * 0.045 })); },
+  hammer() { A.noise({ dur: 0.1, vol: 0.3, filter: 500, type: "lowpass" }); A.tone({ freq: 200, dur: 0.15, vol: 0.3, slideTo: 90, type: "triangle" }); },
+  clear() { [523, 659, 784, 1047].forEach((f, i) => A.tone({ freq: f, dur: 0.2, type: "square", vol: 0.07, delay: i * 0.1 })); A.tone({ freq: 1047, dur: 0.55, type: "triangle", vol: 0.2, delay: 0.42 }); A.tone({ freq: 1319, dur: 0.55, type: "triangle", vol: 0.14, delay: 0.42 }); },
+  star(k) { A.tone({ freq: 880 * Math.pow(2, k * 4 / 12), dur: 0.3, type: "triangle", vol: 0.2 }); A.noise({ dur: 0.06, vol: 0.06, filter: 8000, type: "highpass" }); },
+  rec() { [659, 784, 988, 1319].forEach((f, k) => A.tone({ freq: f, dur: 0.25, type: "square", vol: 0.08, delay: k * 0.08 })); [1319, 1568, 2093].forEach((f, k) => A.tone({ freq: f, dur: 0.4, vol: 0.14, delay: 0.35 + k * 0.1 })); },
+  tick() { A.tone({ freq: 1500, dur: 0.03, vol: 0.05 }); }
+};
+const MUSIC = { step: 0.23, root: 53, scale: [0, 2, 4, 7, 9, 12, 14, 16, 19, 21], chords: [0, 5, 7, 5], lead: "sine", melody: [4, -1, 5, 7, -1, 5, 4, -1, 2, -1, 4, -1, 2, 0, -1, -1, 4, -1, 5, 7, -1, 9, 7, -1, 5, 4, -1, 2, 4, -1, -1, -1] };
+
+/* ================= LENCANA ================= */
+const BADGES = [
+  { id: "k100", nama: "Perangkai", syarat: "100 kata", c: ["#ffe9b0", "#f0a830"], em: "100" },
+  { id: "k500", nama: "Penyusun", syarat: "500 kata", c: ["#d8f0ff", "#4fa6e8"], em: "500" },
+  { id: "k2000", nama: "Pujangga", syarat: "2000 kata", c: ["#fff3a0", "#e0a000"], em: "2rb" },
+  { id: "b50", nama: "Pemburu Bonus", syarat: "50 bonus", c: ["#ffd0e0", "#ff6f9f"], em: "B" },
+  { id: "b250", nama: "Toples Penuh", syarat: "250 bonus", c: ["#e2ccff", "#8f5cf0"], em: "B+" },
+  { id: "p7", nama: "Kata Panjang", syarat: "20 kata 7 huruf", c: ["#c9f3ff", "#35a9e0"], em: "7" },
+  { id: "s3", nama: "Bintang Tiga", syarat: "10 level ★3", c: ["#fff6c0", "#ffb21a"], em: "★" },
+  { id: "run", nama: "Tanpa Bantuan", syarat: "Babak tanpa petunjuk", c: ["#c8f8b0", "#3dbb2c"], em: "✓" },
+  { id: "rajin", nama: "Rajin", syarat: "Harian 7 hari", c: ["#ffd2b8", "#ff7a2b"], em: "H7" }
+];
+const GELAR = [[0, "Pemula"], [25, "Pengeja"], [50, "Pembaca"], [100, "Perangkai"], [250, "Penata Kata"], [500, "Penyusun"], [1000, "Penulis"], [2000, "Pujangga"], [5000, "Sastrawan"]];
+const GELAR_C = ["#f0a830", "#5fc84a", "#35a9e0", "#4fa6e8", "#ff6f9f", "#8f5cf0", "#ff7a2b", "#e0a000", "#e8384f"];
+function gelarOf(n) { let r = 0; GELAR.forEach((g, i) => { if (n >= g[0]) r = i; }); return r; }
+// medali ubin: kotak bulat berpita dengan tanda di tengah
+function badgeSVG(i, locked, c2, em2) {
+  const b = BADGES[i] || {}, id = "bg" + i + (locked ? "l" : "") + (em2 || ""), em = em2 || b.em, cc = c2 || b.c, fs = em.length >= 3 ? 14 : 18;
+  const a = locked ? "#d6cbe0" : cc[0], z = locked ? "#a898b8" : cc[1];
+  return '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="' + a + '"/><stop offset="1" stop-color="' + z + '"/></linearGradient></defs>' +
+    '<path d="M20 38l-7 22 9-4 6 7 6-20zM44 38l7 22-9-4-6 7-6-20z" fill="' + (locked ? "#b8a7c6" : "#ff5c93") + '" stroke="#2e1b47" stroke-width="2.4" stroke-linejoin="round"/>' +
+    '<rect x="10" y="5" width="44" height="44" rx="11" fill="#2e1b47" transform="translate(0 3)"/><rect x="10" y="5" width="44" height="44" rx="11" fill="url(#' + id + ')" stroke="#2e1b47" stroke-width="2.8"/>' +
+    '<rect x="15" y="9" width="34" height="8" rx="4" fill="#fff" opacity=".5"/>' +
+    (locked ? '<text x="32" y="35" text-anchor="middle" font-family="Baloo 2,Arial Rounded MT Bold,sans-serif" font-weight="800" font-size="20" fill="#fff" opacity=".85">?</text>' :
+      '<text x="32" y="' + (27 + fs * 0.36) + '" text-anchor="middle" font-family="Baloo 2,Arial Rounded MT Bold,sans-serif" font-weight="800" font-size="' + fs + '" fill="#fff" stroke="#2e1b47" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">' + em + '</text>') + '</svg>';
+}
+function starPath(cx, cy, R, r) { let d = ""; for (let k = 0; k < 10; k++) { const a = -Math.PI / 2 + k * Math.PI / 5, q = k & 1 ? r : R; d += (k ? "L" : "M") + (cx + Math.cos(a) * q).toFixed(1) + " " + (cy + Math.sin(a) * q).toFixed(1); } return d + "Z"; }
+const STAR_S = starPath(12, 12.8, 10.5, 4.8);
+function starSVG(on) { return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + STAR_S + '" fill="' + (on ? "#ffd23a" : "#e3d8ea") + '" stroke="#2e1b47" stroke-width="2" stroke-linejoin="round"/></svg>'; }
+
+/* ================= STATUS ================= */
+let mode = "title", kind = "normal", seedNow = 1, dailyKey = "", chal = null, chalLast = null, recPrev = 0, recHit = false, clearT = 0;
+let G = null; // babak: {seed, levels, k, board, score, words, bonus, hinted, stars:[], t}
+let sel = [], finger = null, pid = -1, hammer = false, lastRun = null;
+let prev = { s: "", st: "", t: 0 }; // gelembung pratinjau: kata, keadaan (ok/bonus/rep/bad), sisa waktu
+// posisi huruf roda: slot tiap huruf (bisa diacak), sudut animasi
+let slots = [], ang = [], angFrom = [], shufT = 1;
+function best() { return ST.get("best", 0) | 0; }
+function daily() { const d = ST.get("harian", null); return d && d.d === KIT.dateKey() ? d : null; }
+function isDailyRun() { return kind === "daily" || kind === "practice"; }
+function badgesGot() { const g = ST.get("badges", []); return Array.isArray(g) ? g : []; }
+function hintPts() { return Math.max(0, ST.get("petunjuk", 3) | 0); }
+function stat(k) { return Math.max(0, ST.get(k, 0) | 0); }
+function readChal() { const c = KIT.hantu && KIT.hantu.baca ? KIT.hantu.baca() : KIT.readChallenge(); if (!c) return null; const p = parseChal(fmtChal(c.seed, c.score)); if (!p) return null; p.nama = c.nama && c.nama !== "Penantang" ? c.nama : ""; return p; }
+
+/* ================= TATA LETAK ================= */
+let LY = null; // {cx, cy, R, tr, pvY, gx0, gy0, gx1, gy1, cell, ox, oy}
+function layout() {
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+  vw = window.innerWidth; vh = window.innerHeight;
+  const ps = getComputedStyle($("probe")); sT = parseFloat(ps.paddingTop) || 0; sB = parseFloat(ps.paddingBottom) || 0;
+  cv.width = Math.round(vw * dpr); cv.height = Math.round(vh * dpr);
+  LAND = vw / vh > 1.25; SIDE = LAND && vh < 480;
+  document.documentElement.classList.toggle("ovbot", !LAND);
+  colW = COVER ? vw : Math.min(vw, SIDE ? 780 : LAND ? Math.max(440, Math.min(600, vh * 0.92)) : 520); colX = Math.round((vw - colW) / 2);
+  colEl.style.left = colX + "px"; colEl.style.width = colW + "px";
+  document.documentElement.style.setProperty("--padb", Math.round(vh * (LAND ? 0.08 : vh > 760 ? 0.3 : 0.25) + sB) + "px");
+  buildBg(); measureLogo(); layBoard();
+}
+// ukuran roda, pratinjau, dan papan untuk level yang sedang tampil
+function layBoard() {
+  const b = activeBoard(); const L = { rows: b ? b.rows : 6, cols: b ? b.cols : 6 };
+  let cx, cy, R, pvY, gx0, gy0, gx1, gy1, infoX, infoY, infoW;
+  if (!COVER && (mode === "title" || mode === "leaving")) {
+    const padb = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--padb")) || 160;
+    if (LAND && !SIDE) { const sw = (vw - colW) / 2; R = Math.min(130, sw * 0.34); cx = colX + colW + sw / 2; cy = vh * 0.6; }
+    else { R = Math.min(colW * 0.26, (padb - sB - 26) / 2, 120); cx = colX + colW / 2; cy = vh - sB - R - 12; }
+    pvY = cy - R - 24; gx0 = gy0 = 0; gx1 = gy1 = 100; infoX = infoY = -999; infoW = 0;
+  } else if (COVER) {
+    const x0 = vw * 0.54, w = vw * 0.43; R = Math.min(w * 0.3, vh * 0.2); cx = x0 + w / 2; cy = vh - R - vh * 0.05;
+    pvY = cy - R - 30; gx0 = x0; gx1 = x0 + w; gy0 = vh * 0.05; gy1 = pvY - 28; infoX = -999; infoY = -999; infoW = 0;
+  } else if (SIDE) {
+    R = Math.min(colW * 0.165, (vh - sT - sB - 132) / 2); cx = colX + colW - R - 62; cy = sT + 122 + R;
+    pvY = cy - R - 24; gx0 = colX + 10; gx1 = cx - R - 60; gy0 = sT + 94; gy1 = vh - sB - 10;
+    infoX = (gx0 + gx1) / 2; infoY = sT + 54; infoW = Math.min(gx1 - gx0, 300);
+  } else {
+    R = Math.min(colW * 0.31, vh * (LAND ? 0.16 : 0.185), 150); cy = vh - sB - R - Math.max(16, vh * 0.028); cx = colX + colW / 2;
+    const tg = !$("hTag").hidden ? 16 : 0; // label Tantangan di bawah skor: geser bilah info
+    pvY = cy - R - 30; gx0 = colX + 12; gx1 = colX + colW - 12; gy0 = sT + 110 + tg; gy1 = pvY - 30;
+    infoX = colX + colW / 2; infoY = sT + 66 + tg; infoW = Math.min(colW - 24, 360);
+  }
+  const cell = Math.max(12, Math.min(LAND && !SIDE ? 64 : 58, (gx1 - gx0) / L.cols, (gy1 - gy0) / L.rows));
+  const n = b ? b.lv.letters.length : 6, tr = Math.min(R * 0.26, R * 0.64 * Math.sin(Math.PI / n) * 0.95);
+  LY = { cx, cy, R, tr, rr: R * 0.62, pvY, gx0, gy0, gx1, gy1, cell, ox: (gx0 + gx1) / 2 - cell * L.cols / 2, oy: (gy0 + gy1) / 2 - cell * L.rows / 2 };
+  const hi = $("hInfo"); hi.style.left = infoX + "px"; hi.style.top = infoY + "px"; hi.style.width = infoW + "px";
+  // tombol alat mengapit roda
+  const side = Math.min(R + 34, (SIDE ? 1 : 0) * 0 + R + 34), dy = R * 0.62;
+  const pos = { bBonus: [cx - side, cy - dy], bAcak: [cx - side, cy + dy], bLampu: [cx + side, cy - dy], bPalu: [cx + side, cy + dy] };
+  if (!SIDE && (colW - 2 * R) / 2 < 62) { pos.bBonus[1] = cy - R * 0.95; pos.bLampu[1] = cy - R * 0.95; pos.bAcak[1] = cy + R * 0.9; pos.bPalu[1] = cy + R * 0.9; pos.bBonus[0] = pos.bAcak[0] = Math.max(colX + 30, cx - R - 12); pos.bLampu[0] = pos.bPalu[0] = Math.min(colX + colW - 30, cx + R + 12); }
+  for (const id in pos) { const e = $(id); e.style.left = pos[id][0] + "px"; e.style.top = pos[id][1] + "px"; }
+}
+function cellXY(c) { return [LY.ox + c.c * LY.cell + LY.cell / 2, LY.oy + c.r * LY.cell + LY.cell / 2]; }
+function slotXY(i) { const a = ang[i] == null ? -Math.PI / 2 : ang[i]; return [LY.cx + Math.cos(a) * LY.rr, LY.cy + Math.sin(a) * LY.rr]; }
+function setSlots(n) { slots = []; ang = []; angFrom = []; for (let i = 0; i < n; i++) { slots.push(i); ang.push(-Math.PI / 2 + i * TAU / n); angFrom.push(ang[i]); } shufT = 1; }
+function activeBoard() { return mode === "title" || mode === "leaving" ? (COVER ? coverB : demoB) : G ? G.board : null; }
+
+/* ================= EFEK ================= */
+const PN = 360, pX = new Float32Array(PN), pY = new Float32Array(PN), pVX = new Float32Array(PN), pVY = new Float32Array(PN), pL = new Float32Array(PN), pM = new Float32Array(PN), pS = new Float32Array(PN), pK = new Uint8Array(PN), pC = new Array(PN).fill("#fff");
+let pHead = 0;
+function part(x, y, vx, vy, life, size, col, k) { const i = pHead; pHead = (pHead + 1) % PN; pX[i] = x; pY[i] = y; pVX[i] = vx; pVY[i] = vy; pL[i] = life; pM[i] = life; pS[i] = size; pC[i] = col; pK[i] = k || 0; }
+function sparkles(x, y, n, col, sp) { for (let k = 0; k < n; k++) { const a = Math.random() * TAU, s = (sp || 90) * (0.4 + Math.random()); part(x, y, Math.cos(a) * s, Math.sin(a) * s - 40, 0.5 + Math.random() * 0.5, 4 + Math.random() * 5, col || "#fff6b0", 1); } }
+function bits(x, y, n) { for (let k = 0; k < n; k++) { const a = Math.random() * TAU, s = 60 + Math.random() * 120; part(x, y, Math.cos(a) * s, Math.sin(a) * s - 80, 0.8 + Math.random() * 0.5, 4 + Math.random() * 4, TILE_COLS[k % 5][1], 0); } }
+let FLY = [], TXT = [], RINGS = [], BN = { s: "", t: 0, d: 1, sz: 44 }, shake = 0, STARPOP = [];
+function ftext(x, y, s, size, col, life) { TXT.push({ x, y, s, size, col, l: life || 1, m: life || 1 }); if (TXT.length > 10) TXT.shift(); }
+// pesan singkat di atas gelembung kata
+function say(s) { if (!LY) return; if (SIDE) ftext((LY.gx0 + LY.gx1) / 2, LY.gy1 - 20, s, 18, "#fff", 2.2); else ftext(LY.cx, LY.pvY - 44, s, 19, "#fff", 2.2); }
+function banner(s, dur, sz) { BN.s = s; BN.t = dur; BN.d = dur; BN.sz = Math.min(sz, vw * 0.1, colW * 0.12); }
+function clearFx() { FLY = []; TXT = []; RINGS = []; STARPOP = []; pL.fill(0); BN.t = 0; shake = 0; prev = { s: "", st: "", t: 0 }; }
+const PRAISE = { 3: "Bagus!", 4: "Hebat!", 5: "Mantap!", 6: "Luar biasa!", 7: "Sempurna!!" };
+const PRAISE_COL = { 3: "#ffffff", 4: "#c8f7ff", 5: "#ffe36a", 6: "#ffb3e0", 7: "#ffd23a" };
+
+/* ================= MEMILIH HURUF ================= */
+function word() { const b = activeBoard(); return b ? sel.map((i) => b.lv.letters[i]).join("") : ""; }
+function loud() { return mode === "play"; }
+function selStart(i) { sel = [i]; prev = { s: word(), st: "", t: 0 }; if (loud()) { SFX.sel(0); KIT.vibrate(5); } }
+function selAdd(i) {
+  if (!sel.length) return;
+  if (sel.length >= 2 && sel[sel.length - 2] === i) { sel.pop(); prev.s = word(); if (loud()) SFX.tick(); return; } // mundur satu huruf
+  if (sel.indexOf(i) >= 0) return;
+  sel.push(i); prev.s = word(); if (loud()) { SFX.sel(sel.length - 1); KIT.vibrate(4); }
+}
+function selEnd() {
+  const w = word(), idx = sel.slice(); sel = []; finger = null;
+  if (!w) return;
+  if (w.length < 3) { prev = { s: "", st: "", t: 0 }; return; }
+  doSubmit(w, idx);
+}
+// jalur huruf roda untuk sebuah kata (untuk ketikan, demo, dan uji)
+function pathFor(w) {
+  const b = activeBoard(), used = [], out = [];
+  for (const ch of w) { const i = b.lv.letters.findIndex((x, j) => x === ch && used.indexOf(j) < 0); if (i < 0) return null; used.push(i); out.push(i); }
+  return out;
+}
+function typeWord(w) { const p = pathFor(w); if (!p) return; selStart(p[0]); for (let q = 1; q < p.length; q++) selAdd(p[q]); selEnd(); }
+// k = jari-jari sentuh relatif ubin; saat menyeret lebih kecil agar lintasan tidak menyerempet huruf lain
+function tileAt(x, y, k) { const b = activeBoard(); if (!b || !LY) return -1; let bi = -1, bd = 1e9; for (let i = 0; i < b.lv.letters.length; i++) { const p = slotXY(i), d = (p[0] - x) ** 2 + (p[1] - y) ** 2; if (d < bd) { bd = d; bi = i; } } return bd <= (LY.tr * (k || 1.25)) ** 2 ? bi : -1; }
+function cellAt(x, y) { const b = G && G.board; if (!b) return null; const c = Math.floor((x - LY.ox) / LY.cell), r = Math.floor((y - LY.oy) / LY.cell); return b.cells.get(r * 16 + c) || null; }
+function pvTileXY(k, n) { const s = pvSize(n); return [LY.cx - (n * s + (n - 1) * 3) / 2 + k * (s + 3) + s / 2, LY.pvY]; }
+function pvSize(n) { return Math.min(32, (colW - 40) / Math.max(1, n) - 3, SIDE ? 28 : 32); }
+
+/* ================= KIRIM KATA ================= */
+function doSubmit(w, idx) {
+  const b = G.board, was = new Set(), n = w.length; b.cells.forEach((c) => { if (c.st) was.add(c.key); }); const res = b.submit(w, b.t);
+  prev = { s: w, st: "", t: 0.6 };
+  if (res.type === "grid") {
+    prev.st = "ok"; prev.t = 0.45;
+    const o = b.lv.words[res.i], keys = b.keysOf(res.i);
+    keys.forEach((k, j) => { const c = b.cells.get(k); const from = pvTileXY(j, n); if (!was.has(k)) c.showT = time + j * 0.06 + 0.32; FLY.push({ x0: from[0], y0: from[1], c, t: -(j * 0.06), d: 0.32, ch: o.w[j], s0: pvSize(n), j }); });
+    for (const i of res.extra) for (const k of b.keysOf(i)) { const c = b.cells.get(k); c.flashT = time + 0.6; }
+    addScore(res.pts); G.words++; stats(n);
+    const mc = b.cells.get(keys[keys.length >> 1]), p = cellXY(mc);
+    const hot = b.combo >= 3; ftext(p[0], p[1] - LY.cell * 0.7, "+" + res.pts, hot ? 30 : 26, hot ? "#ffe36a" : "#fff");
+    const pr = PRAISE[Math.min(7, n)]; if (n >= 4 || b.combo >= 2) banner(hot ? "Beruntun x" + b.combo + "!" : pr, 1.1, 40);
+    SFX.word(n); if (hot) A.tone({ freq: 1568 * (1 + 0.06 * Math.min(8, b.combo)), dur: 0.3, type: "triangle", vol: 0.14, delay: 0.3 }); KIT.vibrate([12, 20, 12]);
+    $("sr").textContent = w.toUpperCase() + " ditemukan";
+    if (b.done()) { G.pendingClear = time + 0.12 + n * 0.06 + 0.45; }
+    afterWord();
+  } else if (res.type === "bonus") {
+    prev.st = "bonus"; prev.t = 0.5;
+    const t = $("bBonus").getBoundingClientRect(), tx = t.left + t.width / 2, ty = t.top + t.height / 2;
+    for (let j = 0; j < n; j++) { const from = pvTileXY(j, n); FLY.push({ x0: from[0], y0: from[1], tx, ty, t: -(j * 0.04), d: 0.42, ch: w[j], s0: pvSize(n), j, bonus: true }); }
+    addScore(res.pts); G.bonus++; ST.set("bonusTotal", stat("bonusTotal") + 1);
+    const m = (ST.get("meter", 0) | 0) + 1;
+    if (m >= 4) { ST.set("meter", 0); ST.set("petunjuk", Math.min(99, hintPts() + 1)); setTimeout(() => { if (mode === "play" || mode === "clear") { say("Toples penuh: +1 petunjuk!"); SFX.hint(); } }, 450); }
+    else ST.set("meter", m);
+    if (!ST.get("tipBonus", 0)) { ST.set("tipBonus", 1); setTimeout(() => say("4 kata bonus = 1 petunjuk"), 700); }
+    ftext(LY.cx, LY.pvY - 34, "Bonus +" + res.pts, 22, "#ffe36a");
+    SFX.bonus(); KIT.vibrate(10); $("sr").textContent = "Kata bonus " + w.toUpperCase();
+    setTimeout(() => { const e = $("bBonus"); e.classList.remove("pop"); void e.offsetWidth; e.classList.add("pop"); refreshTools(); }, 420);
+  } else if (res.type === "repeat") {
+    prev.st = "rep"; for (const k of b.keysOf(res.i)) b.cells.get(k).flashT = time + 0.5; SFX.repeat(); ftext(LY.cx, LY.pvY - 34, "Sudah ada", 20, "#fff");
+  } else if (res.type === "repeatBonus") { prev.st = "rep"; SFX.repeat(); ftext(LY.cx, LY.pvY - 34, "Bonus sudah", 20, "#fff"); }
+  else { prev.st = "bad"; prev.t = 0.5; SFX.bad(); KIT.vibrate(20); }
+  refreshInfo();
+}
+function stats(n) { ST.set("kataTotal", stat("kataTotal") + 1); if (n >= 7) ST.set("p7", stat("p7") + 1); }
+function boardCenter() { const b = G.board; return [LY.ox + LY.cell * b.cols / 2, LY.oy + LY.cell * b.rows / 2]; }
+function addScore(p) {
+  if (!p) return; G.score = Math.min(SCORE_MAX, G.score + p);
+  const hs = $("hScore"); hs.textContent = fmtN(G.score); hs.classList.remove("bump"); void hs.offsetWidth; hs.classList.add("bump"); setTimeout(() => hs.classList.remove("bump"), 110);
+  if (!recHit && recPrev > 0 && G.score > recPrev && kind !== "practice") { recHit = true; setTimeout(() => { banner("Rekor baru!", 1.4, 40); SFX.rec(); }, 300); $("hBestP").classList.add("live"); }
+  if (recHit) $("hBest").textContent = fmtN(G.score);
+}
+function afterWord() { if (!ST.get("tip", 0)) ST.set("tip", 1); }
+
+/* ================= PETUNJUK ================= */
+function refreshTools() {
+  const hp = hintPts(); $("nLampu").textContent = hp;
+  $("bLampu").classList.toggle("off", hp < 1); $("bPalu").classList.toggle("off", hp < 2); $("bPalu").classList.toggle("on", hammer);
+  const m = ST.get("meter", 0) | 0; $("nBonus").textContent = m + "/4";
+  $("bBonus").querySelector(".n").style.background = "linear-gradient(90deg,#ffe36a " + (m / 4 * 100) + "%,#fff " + (m / 4 * 100) + "%)";
+}
+// "-1"/"-2" melayang dari lencana lampu
+function spendFx(n) { const r = $("bLampu").getBoundingClientRect(); if (r.width) ftext(r.left + r.width / 2, r.top - 8, "−" + n, 20, "#ffe36a", 0.9); }
+function revealFx(c, big) {
+  const p = cellXY(c); c.showT = time; c.flashT = time + 0.5;
+  sparkles(p[0], p[1], big ? 16 : 10, big ? "#ffd23a" : "#bff0ff", 110);
+  RINGS.push({ x: p[0], y: p[1], t: 0, c: big ? "#ffd23a" : "#bff0ff" });
+}
+function afterReveal(got) {
+  G.hinted = true; refreshTools(); refreshInfo();
+  if (got && got.length) for (const i of got) for (const k of G.board.keysOf(i)) G.board.cells.get(k).flashT = time + 0.6;
+  if (G.board.done()) G.pendingClear = time + 0.5;
+}
+function useLampu() {
+  if (mode !== "play" || !G) return;
+  if (hintPts() < 1) { say("Petunjuk habis · cari kata bonus"); SFX.bad(); return; }
+  const c = G.board.hintCell(); if (!c) return;
+  ST.set("petunjuk", hintPts() - 1); hammer = false;
+  const got = G.board.reveal(c); revealFx(c, false); SFX.hint(); spendFx(1); afterReveal(got);
+}
+function useLampuPalu() {
+  if (mode !== "play" || !G) return;
+  if (hammer) { hammer = false; refreshTools(); return; }
+  if (hintPts() < 2) { say("Palu butuh 2 petunjuk"); SFX.bad(); return; }
+  hammer = true; refreshTools(); say("Ketuk kotak yang mau dibuka");
+}
+function tapCell(c) {
+  if (!hammer || !c || c.st || mode !== "play") return false;
+  ST.set("petunjuk", hintPts() - 2); hammer = false;
+  const got = G.board.reveal(c); revealFx(c, true); SFX.hammer(); shake = 5; spendFx(2); afterReveal(got); return true;
+}
+function doShuffle() {
+  const b = activeBoard(); if (!b) return;
+  const n = b.lv.letters.length, perm = slots.slice();
+  for (let t = 0; t < 8; t++) { for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const x = perm[i]; perm[i] = perm[j]; perm[j] = x; } if (perm.some((v, i) => v !== slots[i])) break; }
+  angFrom = ang.slice(); slots = perm; shufT = 0; sel = []; SFX.shuffle();
+}
+
+/* ================= ALUR ================= */
+function refreshInfo() {
+  if (!G) return; const b = G.board, tot = b.lv.words.length;
+  $("hLv").textContent = kind === "daily" ? "Harian" : kind === "practice" ? "Latihan" : (kind === "normal" ? "Tahap " + (stat("tahap") + 1) + " · " : "Level ") + (G.k + 1) + "/" + G.levels.length;
+  $("hWc").textContent = (tot - b.left()) + "/" + tot + " kata";
+}
+function startLevel(k) {
+  G.k = k; G.board = new Board(G.levels[k]); G.pendingClear = 0; hammer = false; sel = []; finger = null; pid = -1; mode = "play";
+  setSlots(G.board.lv.letters.length); layBoard(); WHEEL = null;
+  thA = thB; thB = isDailyRun() ? 2 : Math.min(3, G.k + (tierOf(G.seed) >= 3 ? 1 : 0)); thT = 0; // hari berjalan: pagi, sore, senja
+  G.board.spdOut = false; spdTxt = "";
+  G.board.cells.forEach((c) => { const d = Math.hypot(c.r - G.board.rows / 2, c.c - G.board.cols / 2); c.showT = 0; c.inT = time + 0.05 + d * 0.05; });
+  G.enterT = time; refreshInfo(); refreshTools(); mode = "play";
+}
+function startGame(k, seed) {
+  kind = k;
+  if (!seed) seed = k === "normal" && stat("runs") === 0 ? FIRST_SEED : withTier((Math.random() * 4294967295) >>> 0, tierFor(stat("runs")));
+  seedNow = seed >>> 0; dailyKey = KIT.dateKey();
+  if (k === "daily") ST.set("harian", { d: dailyKey, score: 0, stars: 0, done: false });
+  G = { seed: seedNow, levels: makeRun(seedNow), k: 0, board: null, score: 0, words: 0, bonus: 0, hinted: false, stars: [], pendingClear: 0 };
+  clearFx(); recPrev = isDailyRun() ? 0 : best(); recHit = false;
+  hideAll(); $("hud").hidden = false; $("hInfo").hidden = false; $("tools").hidden = false;
+  $("hBest").textContent = fmtN(recPrev); $("hBestP").classList.remove("live"); $("hBestP").hidden = recPrev <= 0; $("hScore").textContent = "0"; $("sr").textContent = "";
+  const tag = $("hTag"); tag.hidden = k !== "chal"; tag.textContent = "Tantangan"; // Harian/Latihan sudah tertulis di bilah info
+  startLevel(0);
+  try { document.activeElement && document.activeElement.blur(); } catch (e) { }
+  if (document.hidden) pause();
+}
+// level selesai: bintang, bonus kecepatan, lalu level berikut atau layar hasil
+function levelClear() {
+  const b = G.board, par = parOf(b.lv), hinted = b.hinted, st = starsOf(b.t, par, hinted), pts = clearPts(b.t, par, hinted);
+  G.stars.push(st); if (hinted) G.hinted = true;
+  mode = "clear"; clearT = 0; sel = []; finger = null; pid = -1; hammer = false; refreshTools();
+  G.clearInfo = { st, pts, spd: Math.max(0, Math.round(6 * (par - b.t))), nh: hinted ? 0 : 150, gotPts: false };
+  if (st === 3) { ST.set("s3", stat("s3") + 1); ST.set("petunjuk", Math.min(99, hintPts() + 1)); G.clearInfo.lamp = true; }
+  if (kind === "normal") { const th = stat("tahap") + 1; ST.set("tahap", th); if (th % 10 === 0) setTimeout(() => { if (mode === "clear" || mode === "play") { KIT.ui.toast("Tahap " + th + "!"); KIT.ui.confetti(120); SFX.rec(); } }, 700); }
+  SFX.clear(); KIT.vibrate([20, 30, 20]);
+  b.cells.forEach((c) => { const p = cellXY(c), d = Math.hypot(c.r - b.rows / 2, c.c - b.cols / 2); setTimeout(() => { if (mode === "clear") sparkles(p[0], p[1], 3, TILE_COLS[(c.r + c.c) % 5][0], 80); }, d * 60); c.waveT = time + d * 0.06; });
+  const p = boardCenter(); bits(p[0], p[1], 30);
+  STARPOP = []; for (let i = 0; i < 3; i++) STARPOP.push({ on: i < st, t: -0.5 - i * 0.25, i });
+}
+function nextAfterClear() {
+  if (mode !== "clear") return;
+  if (!G.clearInfo.gotPts) { G.clearInfo.gotPts = true; addScore(G.clearInfo.pts); }
+  if (G.k + 1 < G.levels.length) startLevel(G.k + 1); else endGame();
+}
+function endGame() {
+  mode = "over";
+  const sc = Math.min(SCORE_MAX, G.score), rec = !isDailyRun() && sc > recPrev && sc > 0, today = dailyKey || KIT.dateKey();
+  const sAvg = Math.round(G.stars.reduce((s, v) => s + v, 0) / Math.max(1, G.stars.length));
+  if (rec) ST.set("best", sc);
+  if (isDailyRun()) lastRun = { seed: seedNow, score: sc, daily: true }; // Harian tidak dijadikan tantangan (adil untuk papan Harian)
+  else { ST.set("last", { seed: seedNow, score: sc }); lastRun = { seed: seedNow, score: sc }; }
+  if (kind === "normal") ST.set("runs", stat("runs") + 1);
+  if (kind === "daily") {
+    ST.set("harian", { d: today, score: sc, stars: sAvg, done: true });
+    if (ST.get("hariD", "") !== today) { ST.set("hariD", today); ST.set("hariN", (ST.get("hariN", 0) | 0) + 1); }
+  }
+  // lencana baru
+  const got = badgesGot(), earn = [], kt = stat("kataTotal"), bt = stat("bonusTotal");
+  if (kt >= 100) earn.push("k100"); if (kt >= 500) earn.push("k500"); if (kt >= 2000) earn.push("k2000");
+  if (bt >= 50) earn.push("b50"); if (bt >= 250) earn.push("b250"); if (stat("p7") >= 20) earn.push("p7"); if (stat("s3") >= 10) earn.push("s3");
+  if (!G.hinted && G.levels.length >= 3) earn.push("run"); if ((ST.get("hariN", 0) | 0) >= 7) earn.push("rajin");
+  const fresh = earn.filter((id) => got.indexOf(id) < 0); if (fresh.length) ST.set("badges", got.concat(fresh));
+  const pr = KIT.progress.record({ game: SLUG, score: sc, mutu: Math.min(1, sAvg / 3 * 0.6 + Math.min(1, sc / 4000) * 0.4), papan: kind === "daily" ? "harian" : kind === "practice" || kind === "chal" ? "" : "bebas" });
+  $("hud").hidden = true; $("hInfo").hidden = true; $("tools").hidden = true;
+  $("rMode").textContent = kind === "daily" ? "Harian · Hari ke-" + KIT.dayNumber() : kind === "practice" ? "Latihan Harian" : kind === "chal" ? "Tantangan" : "Poin";
+  $("rWords").textContent = G.words; $("rBonus").textContent = G.bonus; $("rRek").hidden = true;
+  const gi = gelarOf(kt), g0 = gelarOf(kt - G.words), nx = GELAR[gi + 1];
+  $("rBadge").innerHTML = badgeSVG(99, false, ["#fff3a0", GELAR_C[gi % GELAR_C.length]], String(gi + 1));
+  const rk = $("rRank"); rk.textContent = GELAR[gi][1]; rk.classList.toggle("new", gi > g0);
+  // bilah gelar berikutnya
+  $("rGbarW").hidden = !nx; $("rGbar").style.width = "0%";
+  $("rGnx").textContent = nx ? fmtN(nx[0] - kt) + " kata lagi" : "Gelar tertinggi";
+  if (nx) setTimeout(() => { $("rGbar").style.width = Math.round((kt - GELAR[gi][0]) / (nx[0] - GELAR[gi][0]) * 100) + "%"; }, 350);
+  let rt, full, pink = false;
+  if (isDailyRun()) { rt = kind === "practice" ? "Latihan tidak dihitung" : "Sama untuk semua pemain hari ini"; full = sc; }
+  else if (!rec && recPrev > 0) { rt = "Rekor " + fmtN(recPrev) + " · kurang " + fmtN(recPrev - sc + 1); full = recPrev; }
+  else if (rec && recPrev > 0) { rt = "+" + fmtN(sc - recPrev) + " dari rekor lama"; full = sc; pink = true; }
+  else { rt = "Rekor pertamamu!"; full = sc; pink = true; }
+  $("rRec").textContent = rt; full = Math.max(1, full);
+  const barW = $("rBarW"), bar = $("rBar"); barW.classList.toggle("rec", pink); bar.style.width = "0%";
+  let h = ""; for (let i = 0; i < 3; i++) h += starSVG(i < sAvg); $("rStars").innerHTML = h;
+  const done = $("rDone"); done.hidden = !isDailyRun(); done.textContent = kind === "practice" ? "Latihan · tidak dihitung" : "Baru lagi dalam " + untilMidnight();
+  $("rAgainT").textContent = isDailyRun() ? "Latihan" : "Main lagi"; $("rTop").hidden = !isDailyRun();
+  clearInterval(cdT); if (kind === "daily") cdT = setInterval(() => { if (mode !== "over") { clearInterval(cdT); return; } done.textContent = "Baru lagi dalam " + untilMidnight(); }, 1000);
+  const nb = $("rNew"); nb.hidden = !fresh.length;
+  if (fresh.length) { const bi = BADGES.findIndex((b) => b.id === fresh[fresh.length - 1]); nb.innerHTML = badgeSVG(bi, false) + "Lencana: " + BADGES[bi].nama; }
+  const vd = $("rVerd"); vd.hidden = true; vd.className = "verd dk-ol";
+  if (kind === "chal" && chal) {
+    vd.hidden = false; const nm = chal.nama || "Temanmu", win = sc > chal.score;
+    vd.textContent = win ? "MENANG!" : "KALAH"; const sm = document.createElement("small");
+    sm.textContent = win ? nm + " " + fmtN(chal.score) + " · terlewati" : "Kurang " + fmtN(chal.score - sc + 1) + " poin dari " + nm; vd.appendChild(sm);
+    if (win) vd.classList.add("win");
+    chalLast = chal; chal = null; try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { }
+  }
+  const xp = $("rXp"); xp.hidden = false; xp.textContent = (pr.leveledUp ? "Naik level! " : "+" + pr.gain + " XP · ") + "Lv " + pr.level;
+  KIT.ui.show($("sOver"));
+  let lastTick = 0;
+  KIT.ui.countUp($("rScore"), sc, Math.min(1500, 500 + sc / 8), (v) => {
+    bar.style.width = Math.min(100, v / full * 100) + "%";
+    if (v - lastTick >= Math.max(1, sc / 30)) { lastTick = v; SFX.tick(); }
+  }).then(() => {
+    $("rScore").textContent = fmtN(sc);
+    if (mode !== "over") return;
+    if (rec && recPrev > 0) { const e = $("rRek"); e.hidden = false; e.classList.remove("go"); void e.offsetWidth; e.classList.add("go"); KIT.ui.confetti(160); SFX.rec(); KIT.vibrate([30, 40, 30]); }
+    else if (sAvg === 3) KIT.ui.confetti(90);
+  });
+}
+
+// sisa waktu ke tengah malam, "j:mm"
+let cdT = 0;
+function untilMidnight() { const d = new Date(), m = new Date(d); m.setHours(24, 0, 0, 0); const s = Math.max(0, Math.floor((m - d) / 1000)), h = Math.floor(s / 3600), mm = Math.floor(s % 3600 / 60); return h + ":" + (mm < 10 ? "0" : "") + mm; }
+/* ================= LAYAR ================= */
+const SCR = ["sTitle", "sPause", "sOver", "sHarian", "sTantang", "sKoleksi"];
+function hideAll() { for (const id of SCR) $(id).hidden = true; }
+function toTitle() {
+  hideAll(); $("hud").hidden = true; $("hInfo").hidden = true; $("tools").hidden = true; mode = "title"; clearFx(); G = null; hammer = false; sel = []; pid = -1;
+  resetDemo(); thA = thB; thB = 2; thT = 0;
+  $("tBest").querySelector("span").textContent = fmtN(best());
+  const p = KIT.progress.get();
+  $("tLv").textContent = "Lv " + p.level;
+  $("tStrk").hidden = p.streak <= 0; $("tStrkN").textContent = p.streak + " hari";
+  const th = stat("tahap"), tt = $("tTahap"); tt.hidden = !!chal || th <= 0; tt.textContent = "Tahap " + (th + 1);
+  const dd = daily(); $("dDaily").hidden = !!dd;
+  const ds = $("dStarN"); ds.hidden = !(dd && dd.done);
+  if (dd && dd.done) ds.innerHTML = starSVG(true) + (dd.stars | 0);
+  const c = $("tChal"); c.hidden = !chal; if (chal) c.textContent = (chal.nama || "Temanmu") + " dapat " + fmtN(chal.score) + " poin. Kalahkan!";
+  $("sTitle").hidden = false;
+  const m = $("tMid"); m.classList.remove("ent", "leave"); void m.offsetWidth; m.classList.add("ent");
+  measureLogo(); layBoard();
+}
+function leaveTitle(fn) { $("tMid").classList.add("leave"); mode = "leaving"; setTimeout(fn, 260); }
+function openHarian() {
+  const d = new Date(), M = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
+  $("dMonth").textContent = M[d.getMonth()]; $("dDay").textContent = d.getDate();
+  $("dN").textContent = "Hari ke-" + KIT.dayNumber();
+  const dd = daily(), s = dd && dd.done ? dd.stars | 0 : 0, lv = makeRun(withTier(KIT.dailySeed(SLUG), T_HARIAN))[0], G2 = ["Selesai", "Tanpa petunjuk", "≤ " + fmtT(parOf(lv))];
+  let h = ""; for (let i = 0; i < 3; i++) { let st = ""; for (let j = 0; j <= i; j++) st += starSVG(s > i); h += '<div class="goal"><span>' + st + "</span><b>" + G2[i] + "</b></div>"; }
+  $("dGoals").innerHTML = h;
+  const p = KIT.progress.get();
+  $("dStrkN").textContent = p.streak > 0 ? p.streak + " hari beruntun" : "Mulai beruntun hari ini";
+  $("dInfo").textContent = dd ? (dd.done ? "Sudah main: " + fmtN(dd.score) + " poin · kembali besok!" : "Percobaan hari ini tidak selesai") : "7 huruf, " + lv.words.length + " kata, sama untuk semua. 1 kesempatan.";
+  $("dPlay").querySelector("span").textContent = dd ? "Latihan" : "Main";
+  $("dPlay").className = "dk-btn dk-ol " + (dd ? "dk-yellow" : "dk-green");
+  KIT.ui.show($("sHarian"));
+}
+function openTantang() {
+  const L = ST.get("last", null);
+  if (L) { $("cScore").textContent = fmtN(L.score); $("cInfo").textContent = "Poin terakhirmu"; $("cSend").querySelector("span").textContent = "Kirim"; }
+  else { $("cScore").textContent = "?"; $("cInfo").textContent = "Main dulu, lalu kirim poinmu"; $("cSend").querySelector("span").textContent = "Main"; }
+  KIT.ui.show($("sTantang"));
+}
+function openKoleksi() {
+  const got = badgesGot(); let h = "";
+  for (let i = 0; i < BADGES.length; i++) { const on = got.indexOf(BADGES[i].id) >= 0; h += '<div class="kb' + (on ? "" : " lk") + '">' + badgeSVG(i, !on) + "<b>" + BADGES[i].nama + "</b><span>" + BADGES[i].syarat + "</span></div>"; }
+  $("kGrid").innerHTML = h; $("kInfo").textContent = got.length + "/" + BADGES.length + " lencana · " + GELAR[gelarOf(stat("kataTotal"))][1];
+  $("kStat").innerHTML = [["Kata", stat("kataTotal")], ["Bonus", stat("bonusTotal")], ["Level ★3", stat("s3")], ["Petunjuk", hintPts()]].map((x) => "<div><b>" + fmtN(x[1]) + "</b>" + x[0] + "</div>").join("");
+  KIT.ui.show($("sKoleksi"));
+}
+function shareDaily(score) {
+  const url = (KIT.inApp && KIT.inApp() ? "https://dehayuk.online" : location.origin) + "/" + SLUG + "/";
+  KIT.share({ title: "Susun Kata", text: "Harian Susun Kata hari ke-" + KIT.dayNumber() + ": " + fmtN(score) + " poin. Coba teka-teki hari ini!", url });
+}
+function shareScore(seed, score) {
+  const nm = KIT.papan && KIT.papan.nama ? KIT.papan.nama() : "";
+  const url = KIT.hantu && KIT.hantu.link ? KIT.hantu.link(SLUG, seed, score, null) : KIT.challengeLink(SLUG, seed, score);
+  KIT.share({ title: "Susun Kata", text: (nm || "Aku") + " dapat " + fmtN(score) + " poin di Susun Kata. Teka-tekinya sama persis, berani kalahkan?", url });
+}
+// alat dan bilah info disembunyikan saat jeda agar tidak menutupi tombol panel
+function pause() { if (mode !== "play" && mode !== "clear") return; pmode = mode; mode = "pause"; sel = []; pid = -1; finger = null; $("tools").hidden = true; $("hInfo").hidden = true; KIT.ui.show($("sPause")); }
+let pmode = "play";
+function resume() { if (mode !== "pause") return; $("sPause").hidden = true; $("tools").hidden = false; $("hInfo").hidden = false; mode = pmode; }
+
+/* ================= INPUT ================= */
+// guard: klik diabaikan (tanpa bunyi) bila layarnya tidak sedang tampil
+function on(id, fn, guard) { $(id).addEventListener("click", (e) => { if (guard && !guard()) return; SFX.tap(); fn(e); }); }
+const isOver = () => mode === "over", isPause = () => mode === "pause", isPlay = () => mode === "play";
+on("bMain", () => leaveTitle(() => chal ? startGame("chal", chal.seed) : startGame("normal")));
+on("bHarian", openHarian); on("bTantang", openTantang); on("bKoleksi", openKoleksi); on("bPeringkat", () => KIT.papan && KIT.papan.buka(SLUG)); on("bSetelan", () => KIT.ui.openSettings());
+on("dPlay", () => { const k = daily() ? "practice" : "daily"; $("sHarian").hidden = true; leaveTitle(() => startGame(k, withTier(KIT.dailySeed(SLUG), T_HARIAN))); });
+on("cSend", () => { const L = ST.get("last", null); if (L) shareScore(L.seed, L.score); else { $("sTantang").hidden = true; leaveTitle(() => startGame("normal")); } });
+on("bPause", pause, () => mode === "play" || mode === "clear");
+on("pGo", resume, isPause);
+on("pRe", () => { if (mode === "pause") startGame(kind === "daily" ? "practice" : kind, seedNow); }, isPause);
+on("pMenu", () => { if (mode === "pause") toTitle(); }, isPause);
+on("rAgain", () => {
+  if (mode !== "over") return; // klik ulang dari iklan app saat sudah bermain diabaikan
+  clearInterval(cdT);
+  if (kind === "chal") { chal = chalLast; startGame("chal", seedNow); return; }
+  if (isDailyRun()) { startGame("practice", seedNow); return; }
+  startGame("normal");
+}, isOver);
+on("rShare", () => { if (mode === "over" && lastRun) lastRun.daily ? shareDaily(lastRun.score) : shareScore(lastRun.seed, lastRun.score); }, isOver);
+on("rMenu", () => { if (mode === "over") { clearInterval(cdT); toTitle(); } }, isOver);
+on("rTop", () => { if (KIT.papan) KIT.papan.buka(SLUG); }, isOver);
+on("bAcak", () => { if (mode === "play") doShuffle(); }, isPlay);
+on("bLampu", useLampu);
+on("bPalu", useLampuPalu);
+on("bBonus", () => { if (mode === "play" && G) say(G.board.bonus.size + " bonus · " + (4 - (ST.get("meter", 0) | 0)) + " lagi = 1 petunjuk"); }, isPlay);
+for (const b of document.querySelectorAll("[data-close]")) b.addEventListener("click", () => { SFX.tap(); b.closest(".dk-overlay").hidden = true; });
+cv.addEventListener("pointerdown", (e) => {
+  if (mode === "clear") { if (clearT > 1) clearT = Math.max(clearT, 2.6); return; }
+  if (mode !== "play" || pid >= 0) return; // jari kedua diabaikan
+  e.preventDefault();
+  if (hammer) { const c = cellAt(e.clientX, e.clientY); if (c && !c.st) { tapCell(c); return; } }
+  const i = tileAt(e.clientX, e.clientY); if (i < 0) return;
+  pid = e.pointerId; try { cv.setPointerCapture(pid); } catch (x) { }
+  finger = [e.clientX, e.clientY]; selStart(i);
+});
+cv.addEventListener("pointermove", (e) => {
+  if (e.pointerId !== pid || mode !== "play") return;
+  finger = [e.clientX, e.clientY]; const i = tileAt(e.clientX, e.clientY, 0.72); if (i >= 0) selAdd(i);
+});
+function endPtr(e) { if (e.pointerId !== pid) return; pid = -1; if (mode === "play") selEnd(); else { sel = []; finger = null; } }
+cv.addEventListener("pointerup", endPtr);
+cv.addEventListener("pointercancel", (e) => { if (e.pointerId === pid) { pid = -1; sel = []; finger = null; prev.s = ""; } });
+// papan ketik: huruf, Hapus, Enter; Spasi = acak
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" || (e.key === "p" && mode !== "play")) {
+    if (mode === "play" && sel.length && e.key === "Escape") { sel = []; prev.s = ""; return; }
+    if (mode === "play" || mode === "clear") pause(); else if (mode === "pause") resume();
+    else if (e.key === "Escape") { const ov = [...document.querySelectorAll(".dk-overlay")].filter((o) => !o.hidden && o.id !== "sOver" && o.id !== "sPause").pop(); if (ov) { const x = ov.querySelector("[data-close]"); if (x) x.click(); else ov.hidden = true; } }
+    return;
+  }
+  if (mode === "clear" && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); if (clearT > 1) clearT = Math.max(clearT, 2.6); return; }
+  if (mode !== "play" || pid >= 0 || e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key.toLowerCase(), b = G.board;
+  if (/^[a-z]$/.test(k)) { const i = b.lv.letters.findIndex((x, j) => x === k && sel.indexOf(j) < 0); if (i >= 0) { if (!sel.length) selStart(i); else selAdd(i); } else SFX.tick(); e.preventDefault(); }
+  else if (e.key === "Backspace") { if (sel.length) { sel.pop(); prev.s = word(); SFX.tick(); } e.preventDefault(); }
+  else if (e.key === "Enter") { e.preventDefault(); selEnd(); }
+  else if (e.key === " ") { e.preventDefault(); if (!e.repeat) doShuffle(); }
+});
+document.addEventListener("visibilitychange", () => { if (document.hidden) pause(); });
+window.addEventListener("contextmenu", (e) => e.preventDefault());
+let rsT = 0; window.addEventListener("resize", () => { clearTimeout(rsT); rsT = setTimeout(layout, 120); });
+
+/* ================= PEMAIN OTOMATIS (judul & demo) ================= */
+let demoB = null, coverB = null;
+const ai = { path: null, k: 0, x: 0, y: 0, wait: 0.8, rn: KIT.rng(4242), fails: 0 };
+function resetDemo() {
+  demoB = new Board(genLevel((Math.random() * 4294967295) >>> 0 || 7, 5, 4, 5, 1)); setSlots(5); ai.path = null; ai.wait = 0.9;
+}
+// demo judul: jari maya menyeret huruf satu kata, lalu kata terbang ke atas
+function demoTitle(dt) {
+  const b = demoB; if (!b || !LY || LY.R < 30) return;
+  if (!ai.path) {
+    ai.wait -= dt; if (ai.wait > 0) return;
+    const todo = b.lv.words.map((o, i) => i).filter((i) => !b.found[i]);
+    if (!todo.length) { resetDemo(); return; }
+    const w = b.lv.words[todo[Math.floor(ai.rn() * todo.length)]].w; ai.path = pathFor(w); ai.k = 0;
+    const p = slotXY(ai.path[0]); ai.x = p[0]; ai.y = p[1]; selStart(ai.path[0]); finger = [ai.x, ai.y];
+    return;
+  }
+  const tgt = ai.path[ai.k + 1];
+  if (tgt == null) { const w = word(), i = b.lv.words.findIndex((o) => o.w === w); if (i >= 0) { b.found[i] = 1; sparkles(LY.cx, LY.cy, 14, "#ffe36a", 110); } sel = []; finger = null; prev = { s: w, st: "ok", t: 0.5 }; ai.path = null; ai.wait = 1.1; return; }
+  const p = slotXY(tgt), dx = p[0] - ai.x, dy = p[1] - ai.y, d = Math.hypot(dx, dy), sp = LY.R * 4.2 * dt;
+  if (d <= sp) { ai.x = p[0]; ai.y = p[1]; selAdd(tgt); ai.k++; } else { ai.x += dx / d * sp; ai.y += dy / d * sp; }
+  finger = [ai.x, ai.y];
+}
+// ?demo=1: bermain sungguhan lewat fungsi yang sama dengan jari (kadang salah, kadang bonus, sekali pakai lampu)
+function demoPlay(dt) {
+  const b = G.board;
+  if (!ai.path) {
+    ai.wait -= dt; if (ai.wait > 0) return;
+    const todo = b.lv.words.map((o, i) => i).filter((i) => !b.found[i]);
+    if (!todo.length) return;
+    let w;
+    const r = ai.rn(), bon = [...b.lv.valid].filter((x) => !b.lv.words.some((o) => o.w === x) && !b.bonus.has(x));
+    if (r < 0.22 && bon.length) w = bon[Math.floor(ai.rn() * bon.length)];
+    else if (r < 0.3) w = b.lv.letters.slice(0, 3).join("");
+    else w = b.lv.words[todo[Math.floor(ai.rn() * todo.length)]].w;
+    if (G.k === 1 && !b.hinted && b.left() === 1 && hintPts() > 0) { useLampu(); ai.wait = 0.6; return; }
+    ai.path = pathFor(w); if (!ai.path) return; ai.k = 0; const p = slotXY(ai.path[0]); ai.x = p[0]; ai.y = p[1]; selStart(ai.path[0]); finger = [ai.x, ai.y]; return;
+  }
+  const tgt = ai.path[ai.k + 1];
+  if (tgt == null) { if (FREEZE && G.words >= FREEZE && !frozen) { frozen = true; timeScale = 0; return; } selEnd(); ai.path = null; ai.wait = 0.5 + ai.rn() * 0.5; return; }
+  const p = slotXY(tgt), dx = p[0] - ai.x, dy = p[1] - ai.y, d = Math.hypot(dx, dy), sp = LY.R * 5 * dt;
+  if (d <= sp) { ai.x = p[0]; ai.y = p[1]; selAdd(tgt); ai.k++; } else { ai.x += dx / d * sp; ai.y += dy / d * sp; }
+  finger = [ai.x, ai.y];
+}
+const FREEZE = parseInt(Q.get("freeze") || "0", 10); let frozen = false, timeScale = 1;
+
+/* ================= GAMBAR ================= */
+let lastTs = 0, sizeChk = 0;
+function frame(ts) { requestAnimationFrame(frame); frameCore(ts); }
+function frameCore(ts) {
+  let dt = (ts - lastTs) / 1000; lastTs = ts;
+  if (!(dt > 0)) dt = 0; if (dt > 0.05) dt = 0.05;
+  if ((window.innerWidth !== vw || window.innerHeight !== vh) && window.innerWidth > 0 && ++sizeChk > 10) { sizeChk = 0; layout(); }
+  dt *= timeScale;
+  if (mode === "pause") dt = 0;
+  time += dt; thT += dt / 1.2;
+  if (shufT < 1) { shufT = Math.min(1, shufT + dt / 0.38); const b = activeBoard(), n = b ? b.lv.letters.length : 0, e = backOut(shufT); for (let i = 0; i < n; i++) { const to = -Math.PI / 2 + slots[i] * TAU / n; let d = to - angFrom[i]; d = ((d + Math.PI) % TAU + TAU) % TAU - Math.PI; ang[i] = angFrom[i] + d * e; } }
+  if (mode === "play") {
+    G.board.t += dt; if (DEMO) demoPlay(dt);
+    if (G.pendingClear && time >= G.pendingClear && !FLY.length) { G.pendingClear = 0; levelClear(); }
+    updTime();
+  } else if (mode === "clear") {
+    clearT += dt; const I = G.clearInfo;
+    if (I.lamp && !I.lampGo && clearT > 1.3 && I.lampXY) { // lampu hadiah terbang ke tombol petunjuk
+      I.lampGo = true; const t = $("bLampu").getBoundingClientRect();
+      FLY.push({ lamp: true, x0: I.lampXY[0], y0: I.lampXY[1], tx: t.left + t.width / 2, ty: t.top + t.height / 2, t: 0, d: 0.6, s0: I.lampXY[2], j: 0 });
+    }
+    if (clearT > 3.2) nextAfterClear();
+  }
+  else if ((mode === "title" || mode === "leaving") && !COVER) demoTitle(dt);
+  if (prev.t > 0) { prev.t -= dt; if (prev.t <= 0 && !sel.length) prev = { s: "", st: "", t: 0 }; }
+  render(dt);
+}
+// bilah bonus cepat: angka bonus yang masih bisa didapat; habis = "Santai" tanpa hukuman
+let spdTxt = "";
+function updTime() {
+  const b = G.board, par = parOf(b.lv), k = Math.max(0, 1 - b.t / par), el = $("hTimeI"), v = Math.max(0, Math.round(6 * (par - b.t)));
+  el.style.width = (k * 100).toFixed(1) + "%"; $("hTime").classList.toggle("lo", k < 0.3);
+  const tx = v > 0 ? "+" + v : "Santai"; if (tx !== spdTxt) { spdTxt = tx; $("hSpdN").textContent = tx; $("hInfo").classList.toggle("slow", v <= 0); }
+  if (v <= 0 && !b.spdOut) { b.spdOut = true; if (!b.done()) say("Bonus cepat habis · santai saja"); }
+}
+function render(dt) {
+  const g = ctx; g.setTransform(dpr, 0, 0, dpr, 0, 0); g.globalAlpha = 1;
+  shake *= Math.pow(0.02, dt); if (shake < 0.3) shake = 0;
+  drawBackdrop(dt);
+  const title = mode === "title" || mode === "leaving";
+  if (shake) g.setTransform(dpr, 0, 0, dpr, (Math.random() - 0.5) * shake * dpr, (Math.random() - 0.5) * shake * dpr);
+  if (COVER) { drawGrid(coverB); drawWheel(coverB); drawPreview(); }
+  else if (title) { if (demoVisible()) drawWheel(demoB); }
+  else if (G && mode !== "over") { drawGrid(G.board); drawWheel(G.board); drawPreview(); if (!ST.get("tip", 0) && mode === "play" && !DEMO) drawTip(); }
+  else if (G && mode === "over") drawOverGrid();
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  drawFly(dt); drawRings(dt); drawParticles(dt); drawTexts(dt);
+  if (mode === "clear" || (mode === "pause" && pmode === "clear")) drawClear();
+  if (title || COVER) drawLogo();
+}
+// papan selesai kecil di ruang atas panel hasil (dilewati bila sempit)
+function drawOverGrid() {
+  const b = G.board, pn = $("sOver").querySelector(".dk-panel"), r = pn && pn.getBoundingClientRect(); if (!r || !r.height) return;
+  const top = sT + 16, bot = r.top - 40, avail = bot - top; if (avail < 90) return;
+  const cell = Math.min(44, (colW - 48) / b.cols, avail / b.rows), sv = [LY.ox, LY.oy, LY.cell];
+  LY.cell = cell; LY.ox = colX + colW / 2 - cell * b.cols / 2; LY.oy = top + (avail - cell * b.rows) / 2;
+  drawGrid(b); LY.ox = sv[0]; LY.oy = sv[1]; LY.cell = sv[2];
+}
+function demoVisible() { return !COVER && !SIDE && LY && LY.R >= 38; }
+// papan silang
+function drawGrid(b) {
+  if (!b) return; const g = ctx, s = LY.cell, gap = Math.max(2, s * 0.08), rd = s * 0.2;
+  // bayangan panel lembut di belakang papan
+  g.fillStyle = "rgba(46,27,71,.16)"; rr(g, LY.ox - 8, LY.oy - 8, s * b.cols + 16, s * b.rows + 16, 16); g.fill();
+  b.cells.forEach((c) => {
+    const x = LY.ox + c.c * s + gap / 2, y = LY.oy + c.r * s + gap / 2, w = s - gap;
+    const ein = c.inT ? Math.max(0, Math.min(1, (time - c.inT) / 0.35)) : 1; if (ein <= 0) return;
+    let sc = ein < 1 ? backOut(ein) : 1;
+    const shown = c.st && time >= c.showT;
+    if (shown && time - c.showT < 0.25) sc *= 1 + 0.22 * Math.sin((time - c.showT) / 0.25 * Math.PI);
+    if (c.waveT && time > c.waveT && time - c.waveT < 0.4) sc *= 1 + 0.2 * Math.sin((time - c.waveT) / 0.4 * Math.PI);
+    if (c.flashT > time) sc *= 1 + 0.08 * Math.sin((c.flashT - time) * 30);
+    g.save(); g.translate(x + w / 2, y + w / 2); g.scale(sc, sc);
+    if (shown) tile(g, -w / 2, -w / 2, w, c.ch, c.st === 2 ? ["#c9f1ff", "#5cc2f5"] : ["#ffe98a", "#ffb21a"], 1);
+    else {
+      g.fillStyle = "rgba(46,27,71,.35)"; rr(g, -w / 2, -w / 2 + s * 0.05, w, w, rd); g.fill();
+      g.fillStyle = hammer ? "rgba(255,250,230,.98)" : "rgba(255,255,255,.9)"; rr(g, -w / 2, -w / 2, w, w, rd); g.fill();
+      g.lineWidth = Math.max(1.5, s * 0.05); g.strokeStyle = hammer ? "#ff7a2b" : INK; g.stroke();
+      g.fillStyle = "rgba(46,27,71,.06)"; rr(g, -w / 2 + 3, -w / 2 + w * 0.55, w - 6, w * 0.38, rd * 0.7); g.fill();
+    }
+    if (c.flashT > time) { g.globalAlpha = Math.min(1, (c.flashT - time) * 2); g.fillStyle = "rgba(255,255,255,.55)"; rr(g, -w / 2, -w / 2, w, w, rd); g.fill(); g.globalAlpha = 1; }
+    g.restore();
+  });
+}
+// roda huruf dan garis seret
+function drawWheel(b) {
+  if (!b || !LY) return; const g = ctx, W = wheelSprite(LY.R), n = b.lv.letters.length;
+  const ent = G && b === G.board ? Math.min(1, (time - G.enterT) / 0.4) : 1, es = backOut(Math.max(0.01, ent));
+  g.save(); g.translate(LY.cx, LY.cy); g.scale(es, es); g.drawImage(W, -W.o, -W.o, W.width / dpr, W.height / dpr); g.restore();
+  if (sel.length) {
+    const pts = sel.map((i) => slotXY(i)); if (finger && pid >= 0 || finger && (mode === "title" || DEMO || COVER)) pts.push(finger);
+    g.lineCap = "round"; g.lineJoin = "round"; g.beginPath(); pts.forEach((p, k) => k ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]));
+    g.strokeStyle = INK; g.lineWidth = LY.tr * 0.46; g.stroke(); g.strokeStyle = "#ff7a2b"; g.lineWidth = LY.tr * 0.3; g.stroke();
+    g.strokeStyle = "rgba(255,230,160,.9)"; g.lineWidth = LY.tr * 0.09; g.stroke(); g.lineCap = "butt";
+  }
+  for (let i = 0; i < n; i++) {
+    const p = slotXY(i), on = sel.indexOf(i) >= 0, r = LY.tr * (on ? 1.1 : 1) * es;
+    g.fillStyle = INK; g.beginPath(); g.arc(p[0], p[1] + r * 0.12, r, 0, TAU); g.fill();
+    const gr = g.createLinearGradient(0, p[1] - r, 0, p[1] + r);
+    if (on) { gr.addColorStop(0, "#ffc36b"); gr.addColorStop(1, "#ff7a2b"); } else { gr.addColorStop(0, "#fffdf5"); gr.addColorStop(1, "#f4e2c0"); }
+    g.fillStyle = gr; g.beginPath(); g.arc(p[0], p[1], r, 0, TAU); g.fill(); g.lineWidth = Math.max(2, r * 0.1); g.strokeStyle = INK; g.stroke();
+    g.fillStyle = "rgba(255,255,255,.55)"; g.beginPath(); g.ellipse(p[0] - r * 0.3, p[1] - r * 0.45, r * 0.34, r * 0.16, -0.4, 0, TAU); g.fill();
+    g.font = fontPx(r * 1.15); g.textAlign = "center"; g.textBaseline = "middle"; g.lineJoin = "round";
+    const L = b.lv.letters[i].toUpperCase();
+    if (on) { g.lineWidth = r * 0.22; g.strokeStyle = INK; g.strokeText(L, p[0], p[1] + r * 0.08); g.fillStyle = "#fff"; g.fillText(L, p[0], p[1] + r * 0.08); }
+    else { g.fillStyle = INK; g.fillText(L, p[0], p[1] + r * 0.08); }
+  }
+}
+// gelembung pratinjau kata di atas roda
+function drawPreview() {
+  const s = prev.s; if (!s || !LY) return;
+  const g = ctx, n = s.length, ts = pvSize(n), w = n * ts + (n - 1) * 3 + 14, h = ts + 12;
+  let dx = 0; if (prev.st === "bad") dx = Math.sin(prev.t * 60) * 8 * Math.min(1, prev.t / 0.3);
+  const a = prev.t > 0 && prev.st ? Math.min(1, prev.t / 0.2) : 1, cx = LY.cx + dx, y = LY.pvY;
+  const col = prev.st === "ok" ? ["#b8f59a", "#4cc93a"] : prev.st === "bonus" ? ["#ffe98a", "#ffb21a"] : prev.st === "bad" ? ["#ffb0b0", "#ff5c6c"] : prev.st === "rep" ? ["#e8e0f0", "#b9a8cc"] : ["#ffffff", "#f1e6ff"];
+  g.globalAlpha = a; g.fillStyle = INK; rr(g, cx - w / 2, y - h / 2 + 3, w, h, h / 2); g.fill();
+  g.fillStyle = "rgba(255,255,255,.92)"; rr(g, cx - w / 2, y - h / 2, w, h, h / 2); g.fill(); g.lineWidth = 2.5; g.strokeStyle = INK; g.stroke();
+  for (let k = 0; k < n; k++) { const p = pvTileXY(k, n); tile(g, p[0] - ts / 2 + dx, p[1] - ts / 2, ts, s[k], col, 1); }
+  g.globalAlpha = 1;
+}
+// huruf terbang dari pratinjau ke kotak papan atau ke toples bonus
+function drawFly(dt) {
+  const g = ctx;
+  for (let j = FLY.length - 1; j >= 0; j--) {
+    const F = FLY[j]; F.t += dt; if (F.t < 0) { continue; }
+    const k = Math.min(1, F.t / F.d), e = easeOut(k);
+    if (F.lamp) {
+      const x = F.x0 + (F.tx - F.x0) * e, y = F.y0 + (F.ty - F.y0) * e - Math.sin(k * Math.PI) * 70;
+      lampIcon(g, x, y, F.s0 * (1 + Math.sin(k * Math.PI) * 0.4));
+      if (k >= 1) { FLY.splice(j, 1); sparkles(F.tx, F.ty, 12, "#fff6b0", 90); SFX.hint(); refreshTools(); const e2 = $("bLampu"); e2.classList.remove("pop"); void e2.offsetWidth; e2.classList.add("pop"); }
+      continue;
+    }
+    let tx, ty, ts;
+    if (F.bonus) { tx = F.tx; ty = F.ty; ts = F.s0 * (1 - k * 0.7); }
+    else { const p = cellXY(F.c); tx = p[0]; ty = p[1]; ts = F.s0 + (LY.cell * 0.92 - F.s0) * e; }
+    const x = F.x0 + (tx - F.x0) * e, y = F.y0 + (ty - F.y0) * e - Math.sin(k * Math.PI) * (F.bonus ? 60 : 40);
+    g.save(); g.translate(x, y); g.rotate(Math.sin(k * Math.PI) * (F.j & 1 ? 0.3 : -0.3)); tile(g, -ts / 2, -ts / 2, ts, F.ch, F.bonus ? ["#ffe98a", "#ffb21a"] : ["#ffe98a", "#ffb21a"], 1); g.restore();
+    if (k >= 1) {
+      FLY.splice(j, 1);
+      if (F.bonus) { if (F.j === 0) sparkles(tx, ty, 8, "#ffe36a", 70); }
+      else { sparkles(tx, ty, 5, "#fff6b0", 70); SFX.land(F.j); }
+    }
+  }
+}
+function drawRings(dt) {
+  const g = ctx;
+  for (let j = RINGS.length - 1; j >= 0; j--) { const R = RINGS[j]; R.t += dt; if (R.t > 0.5) { RINGS.splice(j, 1); continue; } g.globalAlpha = 1 - R.t / 0.5; g.strokeStyle = R.c; g.lineWidth = 5 * (1 - R.t / 0.5) + 1; g.beginPath(); g.arc(R.x, R.y, 8 + R.t * 90, 0, TAU); g.stroke(); }
+  g.globalAlpha = 1;
+}
+function drawParticles(dt) {
+  const g = ctx;
+  for (let i = 0; i < PN; i++) {
+    if (pL[i] <= 0) continue; pL[i] -= dt; if (pL[i] <= 0) continue;
+    const k = pK[i]; pVY[i] += (k ? 140 : 480) * dt; pX[i] += pVX[i] * dt; pY[i] += pVY[i] * dt;
+    const l = pL[i] / pM[i], x = pX[i], y = pY[i], s = pS[i] * (k ? (l > 0.8 ? (1 - l) * 5 : 1) : 1);
+    g.globalAlpha = l < 0.35 ? l / 0.35 : 1; g.fillStyle = pC[i];
+    if (k) { g.beginPath(); g.moveTo(x, y - s); g.quadraticCurveTo(x, y, x + s, y); g.quadraticCurveTo(x, y, x, y + s); g.quadraticCurveTo(x, y, x - s, y); g.quadraticCurveTo(x, y, x, y - s); g.fill(); }
+    else { g.save(); g.translate(x, y); g.rotate(pL[i] * 8); g.fillRect(-s / 2, -s / 3, s, s * 0.66); g.restore(); }
+  }
+  g.globalAlpha = 1;
+}
+function drawTexts(dt) {
+  const g = ctx; g.textAlign = "center"; g.textBaseline = "middle"; g.lineJoin = "round";
+  for (let j = TXT.length - 1; j >= 0; j--) {
+    const T = TXT[j]; T.l -= dt * 1.1; if (T.l <= 0) { TXT.splice(j, 1); continue; }
+    const age = T.m - T.l; T.y -= 30 * dt / T.m;
+    const s = age < 0.12 ? 0.5 + age / 0.12 * 0.75 : age < 0.26 ? 1.25 - (age - 0.12) / 0.14 * 0.25 : 1;
+    g.globalAlpha = T.l < 0.3 ? T.l / 0.3 : 1; g.font = fontPx(T.size * s);
+    const x = mode === "play" || mode === "clear" ? Math.max(colX + 70, Math.min(colX + colW - 70, T.x)) : T.x;
+    g.lineWidth = T.size * 0.24; g.strokeStyle = INK; g.strokeText(T.s, x, T.y + 2); g.strokeText(T.s, x, T.y); g.fillStyle = T.col; g.fillText(T.s, x, T.y);
+  }
+  if (BN.t > 0) {
+    BN.t -= dt; const age = BN.d - BN.t, s = age < 0.18 ? 0.3 + age / 0.18 : age < 0.32 ? 1.3 - (age - 0.18) / 0.14 * 0.3 : 1;
+    g.globalAlpha = BN.t < 0.3 ? Math.max(0, BN.t / 0.3) : 1;
+    const f = BN.sz, y = LY ? LY.oy + LY.cell * (G ? G.board.rows : 4) * 0.5 - age * 8 : vh * 0.3, x = LY ? (LY.gx0 + LY.gx1) / 2 : vw / 2;
+    const gr = g.createLinearGradient(0, -f * 0.5, 0, f * 0.4); gr.addColorStop(0, "#fffbd0"); gr.addColorStop(0.5, "#ffd32e"); gr.addColorStop(1, "#ff7a1a");
+    g.setTransform(dpr * s, 0, 0, dpr * s, x * dpr, y * dpr); g.rotate(-0.05 + Math.sin(time * 7) * 0.02);
+    g.font = fontPx(f); g.lineWidth = f * 0.26; g.strokeStyle = INK; g.strokeText(BN.s, 0, f * 0.1); g.strokeText(BN.s, 0, 0);
+    g.fillStyle = gr; g.fillText(BN.s, 0, 0); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  g.globalAlpha = 1;
+}
+// bintang level dan rincian bonus di atas papan
+function drawClear() {
+  const g = ctx, I = G.clearInfo, cx = (LY.gx0 + LY.gx1) / 2, cy = Math.max(LY.gy0 + 120, (LY.gy0 + LY.gy1) / 2), S = Math.min(50, (LY.gx1 - LY.gx0) * 0.13);
+  const e0 = Math.min(1, clearT / 0.35), k0 = e0 < 1 ? backOut(e0) : 1, W = Math.min(LY.gx1 - LY.gx0 - 16, S * 6.2), H = S * (I.lamp ? 5.1 : 4.6), y0 = cy - H / 2;
+  // tirai tipis di atas papan, lalu kartu
+  g.globalAlpha = 0.35 * e0; g.fillStyle = "#2e1b47"; rr(g, LY.ox - 8, LY.oy - 8, LY.cell * G.board.cols + 16, LY.cell * G.board.rows + 16, 16); g.fill(); g.globalAlpha = 1;
+  g.save(); g.translate(cx, cy); g.scale(k0, k0); g.translate(-cx, -cy);
+  g.fillStyle = INK; rr(g, cx - W / 2, y0 + 7, W, H, 24); g.fill();
+  const pg = g.createLinearGradient(0, y0, 0, y0 + H); pg.addColorStop(0, "#fffaf2"); pg.addColorStop(1, "#f1e6ff");
+  g.fillStyle = pg; rr(g, cx - W / 2, y0, W, H, 24); g.fill(); g.lineWidth = 4; g.strokeStyle = INK; g.stroke();
+  // judul pujian
+  const tf = S * 0.78, tt = ["Selesai!", "Bagus!", "Hebat!", "Sempurna!"][I.st], tg = g.createLinearGradient(0, y0 + S * 0.35, 0, y0 + S * 1.1);
+  tg.addColorStop(0, "#fffbd0"); tg.addColorStop(0.5, "#ffd32e"); tg.addColorStop(1, "#ff7a1a");
+  g.font = fontPx(tf); g.textAlign = "center"; g.textBaseline = "middle"; g.lineJoin = "round"; g.lineWidth = tf * 0.26; g.strokeStyle = INK;
+  g.strokeText(tt, cx, y0 + S * 0.78); g.strokeText(tt, cx, y0 + S * 0.72); g.fillStyle = tg; g.fillText(tt, cx, y0 + S * 0.72);
+  for (const P of STARPOP) {
+    const t = clearT + P.t; if (t < 0) continue;
+    const e = Math.min(1, t / 0.35), s = (e < 1 ? backOut(e) : 1) * S * (P.i === 1 ? 1.3 : 1.02);
+    const x = cx + (P.i - 1) * S * 1.5, y = y0 + S * 2.05 - (P.i === 1 ? S * 0.2 : 0);
+    if (!P.snd && t > 0) { P.snd = true; if (P.on) { SFX.star(P.i); sparkles(x, y, 12, "#ffd23a", 120); } }
+    g.save(); g.translate(x, y); g.rotate((P.i - 1) * 0.2); g.scale(s / 24, s / 24);
+    const p = new Path2D(STAR_S); g.translate(-12, -12.8); g.lineWidth = 2.2; g.lineJoin = "round";
+    g.fillStyle = INK; g.translate(0, 1.4); g.fill(p); g.translate(0, -1.4);
+    g.fillStyle = P.on ? "#ffd23a" : "#e3d8ea"; g.fill(p); g.strokeStyle = INK; g.stroke(p);
+    if (P.on) { g.fillStyle = "rgba(255,255,255,.6)"; g.beginPath(); g.ellipse(9, 8, 3, 1.6, -0.5, 0, TAU); g.fill(); }
+    g.restore();
+  }
+  if (clearT > 0.9) {
+    g.globalAlpha = Math.min(1, (clearT - 0.9) / 0.3);
+    const lines = [["+" + fmtN(I.pts) + " poin", 1]].concat(I.spd ? [["Cepat +" + fmtN(I.spd), 0]] : []).concat(I.nh ? [["Tanpa petunjuk +" + I.nh, 0]] : []);
+    lines.forEach(([t2, big], k) => { const f = big ? S * 0.5 : S * 0.3, y = y0 + S * 3.25 + (k ? S * 0.28 + k * S * 0.36 : 0); g.font = fontPx(f); if (big) { g.lineWidth = f * 0.24; g.strokeStyle = INK; g.strokeText(t2, cx, y); g.fillStyle = "#ffe36a"; g.fillText(t2, cx, y); } else { g.fillStyle = "#6b4a8a"; g.fillText(t2, cx, y); } });
+    if (I.lamp) { // hadiah bintang tiga: +1 petunjuk
+      const f = S * 0.38, y = y0 + S * 3.25 + S * 0.28 + lines.length * S * 0.36 + S * 0.1, t3 = "+1 petunjuk"; g.font = fontPx(f);
+      const tw = g.measureText(t3).width, lx = cx - tw / 2 - f * 0.5, ls = f * 1.3;
+      g.lineWidth = f * 0.24; g.strokeStyle = INK; g.strokeText(t3, cx + f * 0.35, y); g.fillStyle = "#ffe36a"; g.fillText(t3, cx + f * 0.35, y);
+      if (!I.lampGo) lampIcon(g, lx, y, ls);
+      I.lampXY = [cx + (lx - cx) * k0, cy + (y - cy) * k0, ls]; // posisi layar lampu
+    }
+    g.globalAlpha = 1;
+  }
+  g.restore();
+}
+// petunjuk pertama: tangan menyeret di roda
+function drawTip() {
+  const g = ctx, b = G.board, o = b.lv.words.find((x, i) => !b.found[i]); if (!o || sel.length) return; const p = pathFor(o.w); if (!p) return;
+  const T = (time % 2.4) / 2.4, seg = Math.min(p.length - 1, Math.floor(T * p.length)), f = T * p.length - seg;
+  const a = slotXY(p[seg]), c = slotXY(p[Math.min(p.length - 1, seg + 1)]), x = a[0] + (c[0] - a[0]) * f, y = a[1] + (c[1] - a[1]) * f;
+  const near = Math.min(f, 1 - f), press = 1 - 0.12 * Math.max(0, 1 - near * 6);
+  hand(g, x, y, Math.max(34, LY.tr * 1.5) * press);
+  const ty = LY.pvY; g.font = fontPx(18); g.textAlign = "center"; g.textBaseline = "middle"; g.lineJoin = "round"; g.lineWidth = 5; g.strokeStyle = INK;
+  g.strokeText("Geser jari ke huruf", LY.cx, ty + 2); g.strokeText("Geser jari ke huruf", LY.cx, ty); g.fillStyle = "#fff"; g.fillText("Geser jari ke huruf", LY.cx, ty);
+}
+// tangan kartun menunjuk, ujung telunjuk di (x, y)
+function hand(g, x, y, s) {
+  g.save(); g.translate(x, y); g.rotate(-0.35); g.scale(s / 40, s / 40); g.lineJoin = "round";
+  const shapes = () => { rr(g, -5, 0, 10, 24, 5); g.fill(); rr(g, -11, 16, 25, 22, 9); g.fill(); g.beginPath(); g.ellipse(-11, 24, 5, 8, -0.5, 0, TAU); g.fill(); };
+  g.translate(2, 3); g.fillStyle = "rgba(46,27,71,.3)"; shapes(); g.translate(-2, -3);
+  g.fillStyle = INK; for (const [dx, dy] of [[-2.2, 0], [2.2, 0], [0, -2.2], [0, 2.2], [-1.6, -1.6], [1.6, 1.6], [-1.6, 1.6], [1.6, -1.6]]) { g.translate(dx, dy); shapes(); g.translate(-dx, -dy); }
+  g.fillStyle = "#fff"; shapes();
+  g.strokeStyle = "rgba(46,27,71,.35)"; g.lineWidth = 1.5; g.beginPath(); g.moveTo(-1, 21); g.lineTo(-1, 27); g.moveTo(5, 21); g.lineTo(5, 27); g.stroke();
+  g.restore();
+}
+
+/* ================= MULAI ================= */
+function buildCover() {
+  coverB = new Board(genLevel(20260928, 6, 6, 7)); setSlots(coverB.lv.letters.length);
+  coverB.lv.words.forEach((o, i) => { if (i % 3 !== 2) { coverB.found[i] = 1; coverB.keysOf(i).forEach((k) => { coverB.cells.get(k).st = 1; }); } });
+  const w = coverB.lv.words.find((o, i) => !coverB.found[i]) || coverB.lv.words[0], p = pathFor(w.w);
+  sel = p.slice(0, Math.max(2, p.length - 1)); const a = slotXY(p[p.length - 1]), q = slotXY(sel[sel.length - 1]);
+  finger = [q[0] + (a[0] - q[0]) * 0.6, q[1] + (a[1] - q[1]) * 0.6]; prev = { s: sel.map((i) => coverB.lv.letters[i]).join(""), st: "", t: 0 };
+}
+function boot() {
+  if (!GW.length) { document.body.insertAdjacentHTML("beforeend", '<pre id="uji">Kamus gagal dimuat</pre>'); return; }
+  if (COVER) document.documentElement.classList.add("cover");
+  if (Q.get("noanim") === "1") document.documentElement.classList.add("dk-noanim");
+  layout();
+  chal = readChal();
+  window.addEventListener("hashchange", () => { chal = readChal(); if (mode === "title") toTitle(); });
+  toTitle();
+  if (COVER) { buildCover(); layBoard(); const b = coverB; setSlots(b.lv.letters.length); buildCover(); }
+  KIT.music.start(MUSIC);
+  if (UJI) runUji();
+  if (DEMO && !COVER) setTimeout(() => startGame(Q.get("mode") === "harian" ? "daily" : Q.get("mode") === "chal" && chal ? "chal" : "normal", Q.get("mode") === "harian" ? withTier(KIT.dailySeed(SLUG), T_HARIAN) : chal ? chal.seed : withTier(777, parseInt(Q.get("tier") || "2", 10))), 50);
+  const s = Q.get("s");
+  if (s) setTimeout(() => {
+    if (s === "harian") openHarian(); else if (s === "tantang") openTantang(); else if (s === "koleksi") openKoleksi(); else if (s === "setelan") KIT.ui.openSettings(); else if (s === "pause") pause();
+  }, DEMO ? parseFloat(Q.get("st") || "2500") : 80);
+  if (DEMO || COVER) { let ft = 0; lastTs = 0; setInterval(() => { ft += 1000 / 60; frameCore(ft); }, 16); } else requestAnimationFrame((t) => { lastTs = t; frame(t); });
+  if (document.fonts && document.fonts.load) document.fonts.load("800 40px 'Baloo 2'").then(() => { measureLogo(); }).catch(() => { });
+}
+boot();
+</script>
+</body>
+</html>

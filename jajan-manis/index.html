@@ -1,0 +1,2068 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ff7eb6">
+<title>Jajan Manis</title>
+<meta name="description" content="Tukar jajanan pasar, jejerkan tiga atau lebih, ledakkan! Klepon, onde-onde, kue lapis, dan kawan-kawan dalam ratusan level manis.">
+<link rel="canonical" href="https://dehayuk.online/jajan-manis/">
+<meta property="og:title" content="Jajan Manis">
+<meta property="og:description" content="Tukar, jejerkan tiga, ledakkan! Puzzle jajanan pasar paling manis.">
+<meta property="og:image" content="https://dehayuk.online/jajan-manis/sampul.jpg">
+<meta property="og:url" content="https://dehayuk.online/jajan-manis/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/kit/kit.css">
+<style>
+:root{--dk-ink:#3b1740;--dk-lbl:#8a4a6a;--dk-p1:#fffaf4;--dk-p2:#ffe4f0;--dk-pe:#f6c4dc}
+html,body{background:#ff9cc6}
+body{position:fixed;inset:0}
+canvas{display:block}
+#cv{position:fixed;inset:0;width:100%;height:100%;touch-action:none}
+#col{position:fixed;top:0;bottom:0;pointer-events:none;z-index:10}
+#probe{position:fixed;left:0;top:0;width:0;height:0;padding:var(--dk-st) var(--dk-sr) var(--dk-sb) var(--dk-sl);visibility:hidden}
+.scr{position:absolute;inset:0}
+#sTitle{display:flex;flex-direction:column;align-items:center;padding:calc(var(--dk-st) + 64px) 14px var(--padb,170px)}
+#sTitle>*{pointer-events:auto}
+.home{position:absolute!important;left:calc(var(--dk-sl) + 12px);top:calc(var(--dk-st) + 12px);width:44px!important;height:44px!important}
+.home svg{width:22px!important;height:22px!important;filter:none!important}
+.pill{display:flex;align-items:center;gap:5px;background:rgba(59,23,64,.72);border:3px solid var(--dk-ink);border-radius:999px;padding:3px 12px 3px 6px;font:800 17px/1.2 var(--dk-fd);white-space:nowrap}
+.pill svg{width:22px;height:22px;flex:none}
+.best{position:absolute;right:calc(var(--dk-sr) + 12px);top:calc(var(--dk-st) + 16px);color:#ffe36a}
+.chip{position:absolute;left:50%;top:calc(var(--dk-st) + 16px);transform:translateX(-50%);font-size:15px;color:#fff}
+.chip .strk{display:flex;align-items:center;gap:3px;margin-left:3px;padding-left:7px;border-left:2px solid rgba(255,255,255,.25)}
+#logo{flex:none;width:min(92%,380px,calc(30vh * 1.6));aspect-ratio:1.6/1;margin-top:auto}
+.tmid{flex:0 1 auto;margin-bottom:auto;padding-top:min(3vh,24px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;width:100%;min-height:0}
+.chal{font:800 17px/1.15 var(--dk-fd);text-align:center;background:#ff5c93;border:3px solid var(--dk-ink);border-radius:14px;padding:6px 14px 8px;box-shadow:0 4px 0 var(--dk-ink);transform:rotate(-3deg);animation:dk-wig 1.4s ease-in-out infinite;max-width:300px}
+.mainw{display:flex;flex-direction:column;align-items:center}
+#bMain{font-size:40px;padding:14px 46px 18px;border-radius:28px;animation:dk-pulse 1.1s ease-in-out infinite}
+#bMain svg{width:34px;height:34px}
+#bMain.dk-pr{animation:none}
+.lvtag{cursor:pointer;margin-top:-8px;position:relative;z-index:1;font:800 16px/1 var(--dk-fd);background:#fff;color:var(--dk-ink);border:3px solid var(--dk-ink);border-radius:999px;padding:4px 14px 5px;box-shadow:0 3px 0 var(--dk-ink);display:flex;align-items:center;gap:4px}
+.lvtag svg{width:16px;height:16px}
+.icons{display:flex;gap:12px;justify-content:center}
+.dstar{position:absolute;right:-8px;bottom:-6px;display:flex;align-items:center;gap:1px;background:#fff;border:2.5px solid var(--dk-ink);border-radius:999px;padding:0 5px 0 2px;font:800 12px/16px var(--dk-fd);color:var(--dk-ink)}
+.dstar svg{width:13px!important;height:13px!important;filter:none!important}
+.ent>*{animation:dk-pop .5s cubic-bezier(.2,1.5,.4,1) backwards}
+.ent>:nth-child(2){animation-delay:.08s}.ent>:nth-child(3){animation-delay:.16s}
+.leave{animation:leave .28s ease-in forwards}
+@keyframes leave{to{transform:translateY(40px) scale(.9);opacity:0}}
+.cover .tmid,.cover .home,.cover .best,.cover .chip{display:none!important}
+.cover #logo{position:absolute;left:3vw;top:50%;transform:translateY(-54%);width:50vw;max-width:none}
+#hud{position:absolute;left:calc(var(--dk-sl) + 10px);top:calc(var(--dk-st) + 10px);pointer-events:auto}
+#hud .dk-circle{width:46px;height:46px}
+.vhid{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.big{font:800 58px/1 var(--dk-fd);font-variant-numeric:tabular-nums}
+.rstars{display:flex;align-items:flex-end;gap:2px;margin-top:-6px}
+.rstars svg{width:62px;height:62px;filter:drop-shadow(0 3px 0 var(--dk-ink))}
+.rstars svg:nth-child(2){width:78px;height:78px;margin-bottom:10px}
+.rstars .on{animation:starin .45s cubic-bezier(.2,1.7,.4,1) backwards}
+@keyframes starin{from{transform:scale(2.6) rotate(-40deg);opacity:0}}
+.rsub{display:flex;flex-direction:column;align-items:center;gap:2px}
+.rrec{font:800 13px/1.2 var(--dk-fd);color:var(--dk-lbl);text-align:center;white-space:pre-line}
+.rbar{width:100%;height:14px;border:3px solid var(--dk-ink);border-radius:999px;background:#f3dde8;overflow:hidden;box-shadow:inset 0 2px 0 rgba(0,0,0,.1)}
+.rbar i{display:block;height:100%;width:0;background:linear-gradient(#ffe36a,#ffb21a);border-radius:999px}
+.rbar.rec i{background:linear-gradient(#ffb3d9,#ff5c93)}
+.rmisc{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+.stats{display:flex;gap:10px;width:100%}
+.st{flex:1;display:flex;align-items:center;gap:8px;background:#fff;border:3px solid var(--dk-ink);border-radius:16px;box-shadow:0 4px 0 var(--dk-ink);padding:6px 10px;min-width:0}
+.st img,.st svg{width:30px;height:30px;flex:none}
+.st div{display:flex;flex-direction:column;min-width:0}
+.st b{font:800 22px/1 var(--dk-fd)}
+.st span{font:800 12px/1.1 var(--dk-fd);color:var(--dk-lbl)}
+.note{font:800 17px/1.1 var(--dk-fd);padding:5px 14px 7px;border-radius:12px;border:3px solid var(--dk-ink);background:#ffe36a;color:var(--dk-ink)}
+.verd{font:800 26px/1 var(--dk-fd);padding:6px 20px 9px;border-radius:14px;border:4px solid var(--dk-ink);box-shadow:0 4px 0 var(--dk-ink);background:linear-gradient(#ff8a8a,#e8384f);transform:rotate(-3deg);text-align:center}
+.verd.win{background:linear-gradient(#8ef06a,#3dbb2c)}
+.verd small{display:block;font-size:13px;margin-top:3px}
+.xp{font:800 14px/1 var(--dk-fd);background:var(--dk-ink);color:#ffe36a;border-radius:999px;padding:5px 12px 6px}
+.gift{display:flex;align-items:center;gap:4px;font:800 13px/1 var(--dk-fd);background:#fff;color:var(--dk-ink);border:3px solid var(--dk-ink);border-radius:999px;padding:2px 10px 3px 4px;animation:dk-wig 1.4s ease-in-out infinite}.gift svg{width:22px;height:22px}
+.jarp{display:flex;align-items:center;gap:6px;background:#fff;border:3px solid var(--dk-ink);border-radius:14px;padding:3px 10px 4px 4px}.jarp img{width:28px;height:28px}.jarp div{display:flex;flex-direction:column;gap:3px}
+.jarp span{font:800 12px/1 var(--dk-fd);color:var(--dk-ink)}.jarp i{display:block;width:110px;height:8px;border:2px solid var(--dk-ink);border-radius:9px;background:#f3dde8;overflow:hidden}.jarp i b{display:block;height:100%;width:0;background:linear-gradient(#ffe36a,#ffb21a)}
+#rAgain.pul{animation:dk-pulse 1.1s ease-in-out infinite}
+#rAgain{font-size:26px;padding:14px 10px 17px}
+.rek{position:absolute;right:-18px;top:-30px;width:96px;height:96px;display:grid;place-items:center;transform:rotate(12deg);z-index:2}
+.rek::before,.rek::after{content:"";position:absolute;clip-path:polygon(50% 0,61% 16%,79% 7%,80% 27%,100% 30%,88% 47%,100% 64%,80% 69%,79% 90%,61% 82%,50% 100%,39% 82%,21% 90%,20% 69%,0 64%,12% 47%,0 30%,20% 27%,21% 7%,39% 16%)}
+.rek::before{inset:0;background:var(--dk-ink)}
+.rek::after{inset:5px;background:linear-gradient(#ffe36a,#ffb21a)}
+.rek span{position:relative;z-index:1;font:800 17px/.95 var(--dk-fd);text-align:center}
+.rek.go{animation:stamp .5s cubic-bezier(.2,1.6,.4,1) backwards}
+@keyframes stamp{from{transform:rotate(-30deg) scale(3);opacity:0}}
+.goals{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.goal{display:flex;flex-direction:column;align-items:center;gap:3px;background:#fff;border:3px solid var(--dk-ink);border-radius:14px;box-shadow:0 3px 0 var(--dk-ink);padding:5px 8px 6px;min-width:70px}
+.goal span{display:flex}.goal svg{width:18px;height:18px}.goal img{width:34px;height:34px}
+.goal b{font:800 15px/1 var(--dk-fd);text-align:center}
+.goal i{font:800 11px/1 var(--dk-fd);font-style:normal;color:var(--dk-lbl)}
+.strk2{display:flex;align-items:center;gap:4px;font:800 15px/1 var(--dk-fd)}.strk2 svg{width:20px;height:20px}
+.cal{width:100px;height:102px;border:4px solid var(--dk-ink);border-radius:20px;background:#fff;box-shadow:0 5px 0 var(--dk-ink);overflow:hidden;display:flex;flex-direction:column;transform:rotate(-4deg)}
+.cal i{display:block;height:30px;background:linear-gradient(#b27bff,#7a3fe0);border-bottom:4px solid var(--dk-ink);font:800 16px/27px var(--dk-fd);font-style:normal;color:#fff;text-align:center}
+.cal b{flex:1;display:grid;place-items:center;font:800 48px/1 var(--dk-fd)}
+.jars{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 6px;width:100%}
+.jar{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.jar div{position:relative;width:62px;height:66px;border:3px solid var(--dk-ink);border-radius:14px 14px 18px 18px;background:linear-gradient(90deg,rgba(255,255,255,.9),rgba(220,240,255,.7) 40%,rgba(255,255,255,.95));display:grid;place-items:center;box-shadow:0 3px 0 var(--dk-ink)}
+.jar div::before{content:"";position:absolute;left:6px;right:6px;top:-9px;height:9px;border:3px solid var(--dk-ink);border-bottom:0;border-radius:6px 6px 0 0;background:var(--lid,#ff5c93)}
+.jar img{width:40px;height:40px}
+.jar b{font:800 12px/1.05 var(--dk-fd)}.jar span{font:800 11px/1 var(--dk-fd);color:var(--dk-lbl)}
+.jar .tier{position:absolute;right:-8px;bottom:-7px;font:800 10px/1 var(--dk-fd);background:#ffe36a;border:2px solid var(--dk-ink);border-radius:99px;padding:2px 5px 3px;color:var(--dk-ink)}
+.lvgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;width:100%;max-height:min(40vh,300px);overflow-y:auto;padding:4px 3px 6px;overscroll-behavior:contain}
+.lvb{position:relative;border:3px solid var(--dk-ink);border-radius:14px;background:linear-gradient(#fff,#ffe0ee);box-shadow:0 3px 0 var(--dk-ink);font:800 17px/1 var(--dk-fd);color:var(--dk-ink);padding:7px 0 12px;min-height:46px}
+.lvb.cur{background:linear-gradient(#8ef06a,#3dbb2c);color:#fff}
+.lvb i{position:absolute;left:0;right:0;bottom:2px;display:flex;justify-content:center;gap:0}
+.lvb i svg{width:11px;height:11px}
+#rNormal{font-size:17px;padding:8px 10px 10px}
+@media (max-height:500px){
+  #sTitle{padding-top:calc(var(--dk-st) + 54px)}
+  #logo{width:min(56%,270px,calc(34vh * 1.6))}
+  .tmid{gap:9px}
+  #bMain{font-size:28px;padding:9px 34px 12px}
+  #bMain svg{width:26px;height:26px}
+  .lvtag{font-size:13px;padding:3px 10px 4px}
+  .dk-round>i{width:46px;height:46px}.dk-round>i svg{width:23px;height:23px}
+  #sOver .dk-panel{max-width:640px;display:grid;grid-template-columns:1fr 1fr;column-gap:16px;row-gap:6px;align-items:center}
+  #sOver .rstars{grid-column:1;grid-row:1}#sOver .rsub{grid-column:1;grid-row:2}#sOver .rbar{grid-column:1;grid-row:3}#sOver .rmisc{grid-column:1;grid-row:4}
+  #sOver .stats{grid-column:2;grid-row:1}#sOver .dk-stack{grid-column:2;grid-row:2/5}
+  .big{font-size:40px}.rstars svg{width:42px;height:42px}.rstars svg:nth-child(2){width:52px;height:52px;margin-bottom:6px}
+  #rAgain{font-size:20px;padding:9px 8px 11px}
+  .rek{width:64px;height:64px;top:-20px;right:-10px}.rek span{font-size:13px}
+  .st{padding:3px 8px}.st b{font-size:18px}.st img,.st svg{width:24px;height:24px}
+  .cal{display:none}
+  #sKoleksi .dk-panel{max-width:620px}
+  .jars{grid-template-columns:repeat(6,1fr)}.jar div{width:48px;height:50px}.jar img{width:32px;height:32px}.jar span{display:none}
+  .lvgrid{grid-template-columns:repeat(8,1fr);max-height:34vh}
+}
+@media (max-height:760px) and (max-aspect-ratio:13/10){
+  #sOver .dk-panel{padding-top:34px;gap:8px}
+  #sOver .big{font-size:46px}
+  #sOver .st{padding:4px 8px}#sOver .st b{font-size:19px}#sOver .st img,#sOver .st svg{width:24px;height:24px}
+  #sOver .dk-stack{gap:9px}#rAgain{font-size:22px;padding:10px 8px 13px}#sOver .dk-row .dk-btn{padding:8px 6px 10px}
+  #sOver .rek{width:78px;height:78px;right:-8px;top:-22px}#sOver .rek span{font-size:14px}
+}
+#uji{position:fixed;left:4px;top:4px;right:4px;bottom:4px;overflow:auto;z-index:99;background:rgba(0,0,0,.86);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px}
+</style>
+</head>
+<body>
+<canvas id="cv" role="img" aria-label="Papan jajanan pasar"></canvas>
+<div id="sr" class="vhid" aria-live="polite"></div>
+<div id="probe"></div>
+<div id="col">
+  <section id="sTitle" class="scr">
+    <a href="/" class="dk-btn dk-yellow dk-circle home" aria-label="Beranda"><svg viewBox="0 0 24 24"><path fill="#3b1740" d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z"/></svg></a>
+    <div class="pill chip dk-ol" id="tProg"><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#3b1740" stroke-width="2" stroke-linejoin="round" d="M12 2.8l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 16.7l-5.4 2.9 1.1-6.1-4.5-4.3 6.1-.8z"/></svg><span id="tLv">Lv 1</span><span class="strk" id="tStrk" hidden><svg viewBox="0 0 24 24"><path fill="#ff8a1a" stroke="#3b1740" stroke-width="2" stroke-linejoin="round" d="M12 2.5c1.2 3.6 5.5 5.6 5.5 11a5.5 5.5 0 0 1-11 0c0-2.8 1.4-4.4 2.8-5.4-.1 2.1.8 3.2 2 3.4-.7-3.2.2-6.4.7-9z"/><path fill="#ffe36a" d="M12 12.5c.9 1.5 2.3 2.3 2.3 4a2.3 2.3 0 0 1-4.6 0c0-1.2.9-2.1 2.3-4z"/></svg><span id="tStrkN">1 hari</span></span></div>
+    <div class="pill best dk-ol" id="tBest" aria-label="Total bintang"><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#3b1740" stroke-width="2" stroke-linejoin="round" d="M12 2.8l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 16.7l-5.4 2.9 1.1-6.1-4.5-4.3 6.1-.8z"/></svg><span>0</span></div>
+    <div id="logo"></div>
+    <div class="tmid ent" id="tMid">
+      <div class="chal dk-ol" id="tChal" hidden>Kalahkan skor temanmu!</div>
+      <div class="mainw">
+        <button class="dk-btn dk-green dk-ol" id="bMain"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#3b1740" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></svg>MAIN</button>
+        <button class="lvtag" id="bLv" aria-label="Pilih level">Level 1</button>
+      </div>
+      <div class="icons">
+        <button class="dk-round dk-purple" id="bHarian"><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><rect x="4" y="5.5" width="16" height="15" rx="3" fill="#fff" stroke="#3b1740" stroke-width="2"/><path d="M4.5 10h15" stroke="#8f5cf0" stroke-width="4"/><path d="M8.5 3.5v4M15.5 3.5v4" stroke="#3b1740" stroke-width="2.6"/><circle cx="12" cy="15.5" r="2.8" fill="#35d05a" stroke="#3b1740" stroke-width="1.4"/></svg><b class="dk-dot" id="dDaily" hidden></b><b class="dstar" id="dStarN" hidden></b></i><span>Harian</span></button>
+        <button class="dk-round dk-pink" id="bTantang" aria-label="Tantang"><i class="dk-ol" aria-hidden="true">VS</i><span>Tantang</span></button>
+        <button class="dk-round dk-blue" id="bKoleksi"><i><svg viewBox="0 0 24 24" stroke="#3b1740" stroke-width="1.6"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2.2" fill="#35d05a"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="3.75" fill="#ffb52e"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="3.75" fill="#ff5fa8"/><path d="M16.75 13.2l3.6 6.9h-7.2z" fill="#a35cff" stroke-linejoin="round"/></svg></i><span>Koleksi</span></button>
+        <button class="dk-round dk-orange" id="bPeringkat"><i><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="#ffd23f" stroke="#3b1740" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 6H4.5a2.5 2.5 0 0 0 3 3.6M17 6h2.5a2.5 2.5 0 0 1-3 3.6" fill="none" stroke="#3b1740" stroke-width="1.8" stroke-linecap="round"/><path d="M12 14v3M8.5 20h7l-1-3h-5z" fill="#ffd23f" stroke="#3b1740" stroke-width="1.8" stroke-linejoin="round"/></svg></i><span>Peringkat</span></button>
+        <button class="dk-round dk-yellow" id="bSetelan"><i><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.2" stroke="#3b1740" stroke-width="6.5" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="7.2" stroke="#fff" stroke-width="4" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="6" fill="#fff" stroke="#3b1740" stroke-width="2"/><circle cx="12" cy="12" r="2.4" fill="#ff5c93" stroke="#3b1740" stroke-width="1.6"/></svg></i><span>Setelan</span></button>
+      </div>
+    </div>
+  </section>
+
+  <div id="hud" hidden>
+    <button class="dk-btn dk-orange dk-circle" id="bPause" aria-label="Jeda"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4.5" height="14" rx="1.5" fill="#fff" stroke="#3b1740" stroke-width="1.8"/><rect x="13.5" y="5" width="4.5" height="14" rx="1.5" fill="#fff" stroke="#3b1740" stroke-width="1.8"/></svg></button>
+  </div>
+
+  <section id="sPause" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-blue dk-ol">Jeda</div>
+      <div class="goals" id="pGoals"></div>
+      <div class="dk-stack">
+        <button class="dk-btn dk-green dk-ol" id="pGo"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#3b1740" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></svg>Lanjut</button>
+        <button class="dk-btn dk-yellow dk-ol" id="pRe"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#3b1740" stroke-width="5"/><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#fff" stroke-width="2.6"/><path d="M13.5 3.5h5v5z" fill="#fff" stroke="#3b1740" stroke-width="1.8" stroke-linejoin="round"/></svg>Ulang</button>
+        <button class="dk-btn dk-orange dk-ol" id="pMenu"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#3b1740" stroke-width="1.8" stroke-linejoin="round" d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z"/></svg>Menu</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="sOver" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-ol" id="rRib">Level 1</div>
+      <div class="rek dk-ol" id="rRek" hidden><span>Rekor<br>baru!</span></div>
+      <div class="rstars" id="rStars"></div>
+      <div class="rsub"><div class="dk-lbl" id="rMode">Skor</div><div class="big dk-ol" id="rScore">0</div><div class="rrec" id="rRec"></div></div>
+      <div class="rbar" id="rBarW"><i id="rBar"></i></div>
+      <div class="stats">
+        <div class="st"><svg viewBox="0 0 24 24"><path fill="#ff5c93" stroke="#3b1740" stroke-width="1.8" stroke-linejoin="round" d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><div><b id="rCas">x0</b><span>Rantai</span></div></div>
+        <div class="st"><img id="rSpI" alt=""><div><b id="rSp">0</b><span>Istimewa</span></div></div>
+      </div>
+      <div class="rmisc"><div class="verd dk-ol" id="rVerd" hidden></div><div class="note" id="rDone" hidden>Sudah main hari ini</div><div class="xp" id="rXp" hidden></div><div class="gift" id="rGift" hidden><svg viewBox="0 0 24 24" stroke="#3b1740" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="9" width="17" height="11.5" rx="2" fill="#ff5c93"/><rect x="2.5" y="6.5" width="19" height="4.5" rx="1.5" fill="#ff8ab8"/><path d="M12 6.5v14" stroke="#ffe36a" stroke-width="3"/><path d="M12 6.5c-2-4-6-3.5-5-1 .6 1.3 3 1 5 1zm0 0c2-4 6-3.5 5-1-.6 1.3-3 1-5 1z" fill="#ffe36a"/></svg><span id="rGiftN">+3 langkah bantuan</span></div><div class="jarp" id="rJar" hidden><img id="rJarI" alt=""><div><span id="rJarT"></span><i><b id="rJarB"></b></i></div></div></div>
+      <div class="dk-stack">
+        <button class="dk-btn dk-green dk-ol" id="rAgain"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#3b1740" stroke-width="5"/><path d="M19 12a7 7 0 1 1-2.1-5" stroke="#fff" stroke-width="2.6"/><path d="M13.5 3.5h5v5z" fill="#fff" stroke="#3b1740" stroke-width="1.8" stroke-linejoin="round"/></svg><span id="rAgainT">Main lagi</span></button>
+        <button class="dk-btn dk-purple dk-ol" id="rNormal" hidden>Ke level biasa</button>
+        <div class="dk-row">
+          <button class="dk-btn dk-blue dk-ol" id="rShare"><svg viewBox="0 0 24 24" stroke="#3b1740" stroke-width="1.8"><path d="M7 12l10-6M7 12l10 6" stroke-width="4.5"/><path d="M7 12l10-6M7 12l10 6" stroke="#fff" stroke-width="2"/><circle cx="6.5" cy="12" r="3.3" fill="#fff"/><circle cx="17.5" cy="5.5" r="3.3" fill="#fff"/><circle cx="17.5" cy="18.5" r="3.3" fill="#fff"/></svg>Bagikan</button>
+          <button class="dk-btn dk-orange dk-ol" id="rMenu"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#3b1740" stroke-width="1.8" stroke-linejoin="round" d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z"/></svg>Menu</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sHarian" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-purple dk-ol">Harian</div>
+      <button class="dk-btn dk-red dk-circle dk-close" data-close aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#3b1740" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
+      <div class="cal"><i id="dMonth">SEP</i><b id="dDay">28</b></div>
+      <div class="big dk-ol" style="font-size:30px" id="dN">Hari ke-1</div>
+      <div class="dk-lbl">Pasar Malam</div>
+      <div class="goals" id="dGoals"></div>
+      <div class="strk2 dk-ol"><svg viewBox="0 0 24 24"><path fill="#ff8a1a" stroke="#3b1740" stroke-width="2" stroke-linejoin="round" d="M12 2.5c1.2 3.6 5.5 5.6 5.5 11a5.5 5.5 0 0 1-11 0c0-2.8 1.4-4.4 2.8-5.4-.1 2.1.8 3.2 2 3.4-.7-3.2.2-6.4.7-9z"/><path fill="#ffe36a" d="M12 12.5c.9 1.5 2.3 2.3 2.3 4a2.3 2.3 0 0 1-4.6 0c0-1.2.9-2.1 2.3-4z"/></svg><span id="dStrkN">1 hari beruntun</span></div>
+      <div class="dk-lbl" id="dInfo">Level sama untuk semua. 1 kesempatan.</div>
+      <div class="dk-stack"><button class="dk-btn dk-green dk-ol" id="dPlay"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#3b1740" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></svg><span>Main</span></button></div>
+    </div>
+  </section>
+
+  <section id="sKoleksi" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-blue dk-ol">Koleksi</div>
+      <button class="dk-btn dk-red dk-circle dk-close" data-close aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#3b1740" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
+      <div class="dk-lbl" id="kInfo">Toples jajan</div>
+      <div class="jars" id="kJars"></div>
+      <div class="dk-lbl" id="kLvI">Pilih level</div>
+      <div class="lvgrid" id="kLv"></div>
+    </div>
+  </section>
+
+  <section id="sTantang" class="dk-overlay" hidden>
+    <div class="dk-panel">
+      <div class="dk-ribbon dk-pink dk-ol">Tantang</div>
+      <button class="dk-btn dk-red dk-circle dk-close" data-close aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#3b1740" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
+      <div class="goals" id="cPieces"></div>
+      <div class="dk-lbl" id="cInfo">Skor terakhirmu</div>
+      <div class="big dk-ol" id="cScore">0</div>
+      <div class="dk-stack"><button class="dk-btn dk-pink dk-ol" id="cSend"><svg viewBox="0 0 24 24" stroke="#3b1740" stroke-width="1.8"><path d="M7 12l10-6M7 12l10 6" stroke-width="4.5"/><path d="M7 12l10-6M7 12l10 6" stroke="#fff" stroke-width="2"/><circle cx="6.5" cy="12" r="3.3" fill="#fff"/><circle cx="17.5" cy="5.5" r="3.3" fill="#fff"/><circle cx="17.5" cy="18.5" r="3.3" fill="#fff"/></svg><span>Kirim</span></button></div>
+    </div>
+  </section>
+</div>
+<script src="/kit/kit.js"></script>
+<script>
+"use strict";
+const KIT = window.DehayukKit, SLUG = "jajan-manis", ST = KIT.store(SLUG), TAU = Math.PI * 2;
+const Q = new URLSearchParams(location.search);
+const DEMO = Q.get("demo") === "1", COVER = Q.get("cover") === "1", UJI = Q.get("uji") === "1";
+/* ================= INTI PERMAINAN (tanpa DOM) ================= */
+// papan 8x8, sel i = baris*8 + kolom. T: jenis (-1 kosong, 0-5 jajanan, 6 bintang pelangi), S: istimewa, J: lapis agar-agar, M: sel ada
+const N = 8, NN = 64, SH = 1, SV = 2, BOMB = 3, RB = 4, RBT = 6;
+const SC_CAP = 5000000, LV_BASE = 0x40000000, LV_MAX = 999999;
+const PRAISE = ["", "", "Bagus!", "Mantap!", "Hebat!", "Luar biasa!", "Dahsyat!"];
+const adj = (a, b) => a >= 0 && b >= 0 && a < NN && b < NN && (Math.abs(a - b) === 8 || (Math.abs(a - b) === 1 && (a >> 3) === (b >> 3)));
+function praiseOf(k) { return PRAISE[Math.min(6, k)]; }
+
+function Core() { this.idc = 1; this.T = new Int8Array(NN); this.S = new Uint8Array(NN); this.J = new Uint8Array(NN); this.M = new Uint8Array(NN); this.ID = new Int32Array(NN); }
+Core.prototype.load = function (def, rng) {
+  this.def = def; this.C = def.colors;
+  this.rng = rng || KIT.rng((Math.imul(def.seed >>> 0, 2654435761) ^ 0x5bd1e995) >>> 0 || 1);
+  for (let i = 0; i < NN; i++) { this.M[i] = def.mask[i] ? 1 : 0; this.J[i] = this.M[i] ? def.agar[i] : 0; }
+  this.moves = def.moves; this.used = 0; this.score = 0; this.got = [0, 0, 0, 0, 0, 0]; this.cascade = 0; this.bestCascade = 0;
+  this.combo = null; this.pend = null; this.made = 0; this.shuffles = 0; this.agar0 = this.agarLeft(); this.fired = new Set();
+  this.fill();
+};
+Core.prototype.clone = function (rng) {
+  const c = Object.create(Core.prototype);
+  for (const k of ["T", "S", "J", "M", "ID"]) c[k] = this[k].slice();
+  for (const k of ["idc", "def", "C", "moves", "used", "score", "cascade", "bestCascade", "made", "shuffles", "agar0"]) c[k] = this[k];
+  c.got = this.got.slice(); c.rng = rng; c.combo = null; c.pend = null; c.fired = new Set();
+  return c;
+};
+Core.prototype.rnd = function () { return (this.rng() * this.C) | 0; };
+Core.prototype.agarLeft = function () { let s = 0; for (let i = 0; i < NN; i++) s += this.J[i]; return s; };
+Core.prototype.color = function (i) { const t = this.T[i]; return t >= 0 && t < RBT ? t : -1; };
+// menaruh t di i membuat tiga sejajar dengan dua sel di kiri atau di atasnya
+Core.prototype.makesRun = function (i, t) {
+  const T = this.T, c = i & 7;
+  return (c >= 2 && T[i - 1] === t && T[i - 2] === t) || (i >= 16 && T[i - 8] === t && T[i - 16] === t);
+};
+Core.prototype.fill = function () {
+  const T = this.T;
+  for (let tries = 0; tries < 300; tries++) {
+    for (let i = 0; i < NN; i++) {
+      this.S[i] = 0;
+      if (!this.M[i]) { T[i] = -1; this.ID[i] = 0; continue; }
+      let t, k = 0; do { t = this.rnd(); } while (++k < 40 && this.makesRun(i, t));
+      T[i] = t; this.ID[i] = this.idc++;
+    }
+    if (!this.groups().length && this.findMoves(true).length) return;
+  }
+};
+// deret 3+ sejenis, mendatar (h) dan menurun
+Core.prototype.runs = function () {
+  const T = this.T, out = [];
+  for (let pass = 0; pass < 2; pass++) for (let a = 0; a < N; a++) {
+    let b = 0;
+    while (b < N) {
+      const at = (k) => pass ? k * 8 + a : a * 8 + k, t = T[at(b)];
+      if (t < 0 || t >= RBT) { b++; continue; }
+      let e = b + 1; while (e < N && T[at(e)] === t) e++;
+      if (e - b >= 3) { const cells = []; for (let k = b; k < e; k++) cells.push(at(k)); out.push({ h: !pass, cells, t }); }
+      b = e;
+    }
+  }
+  return out;
+};
+// deret yang berbagi sel digabung jadi satu bentuk (L, T, +)
+Core.prototype.groups = function () {
+  const R = this.runs(), par = R.map((_, k) => k), own = new Int16Array(NN).fill(-1);
+  const find = (x) => { while (par[x] !== x) x = par[x] = par[par[x]]; return x; };
+  R.forEach((r, k) => r.cells.forEach((i) => { if (own[i] >= 0) par[find(k)] = find(own[i]); else own[i] = k; }));
+  const G = new Map();
+  R.forEach((r, k) => { const g = find(k); if (!G.has(g)) G.set(g, { set: new Set(), runs: [], t: r.t }); const q = G.get(g); q.runs.push(r); r.cells.forEach((i) => q.set.add(i)); });
+  return [...G.values()].map((q) => ({ cells: [...q.set], runs: q.runs, t: q.t }));
+};
+// istimewa dari bentuk: 5 sejajar = bintang pelangi, L/T = bungkus daun, 4 sejajar = garis gula
+function groupSpecial(g) {
+  let mx = 0, h = 0, v = 0, four = null;
+  for (const r of g.runs) { const n = r.cells.length; if (n > mx) mx = n; if (r.h) h = 1; else v = 1; if (n === 4 && !four) four = r; }
+  if (mx >= 5) return RB;
+  if (h && v) return BOMB;
+  if (mx === 4) return four.h ? SH : SV;
+  return 0;
+}
+Core.prototype.pickCell = function (g) {
+  const ok = (i) => i >= 0 && g.cells.indexOf(i) >= 0 && !this.S[i];
+  if (this.pend) { if (ok(this.pend.b)) return this.pend.b; if (ok(this.pend.a)) return this.pend.a; }
+  if (g.runs.length > 1) for (const i of g.cells) if (ok(i) && g.runs.filter((r) => r.cells.indexOf(i) >= 0).length > 1) return i;
+  const r = g.runs.reduce((p, q) => q.cells.length > p.cells.length ? q : p), m = r.cells.length >> 1;
+  for (let k = 0; k < r.cells.length; k++) { const i = r.cells[(m + k) % r.cells.length]; if (ok(i)) return i; }
+  return -1;
+};
+// panjang deret yang melewati i
+Core.prototype.lineAt = function (i) {
+  const T = this.T, t = T[i]; if (t < 0 || t >= RBT) return 0;
+  const r = i >> 3, c = i & 7; let h = 1, v = 1;
+  for (let k = c - 1; k >= 0 && T[r * 8 + k] === t; k--) h++;
+  for (let k = c + 1; k < N && T[r * 8 + k] === t; k++) h++;
+  for (let k = r - 1; k >= 0 && T[k * 8 + c] === t; k--) v++;
+  for (let k = r + 1; k < N && T[k * 8 + c] === t; k++) v++;
+  return (h >= 3 ? h : 0) + (v >= 3 ? v : 0);
+};
+Core.prototype.canSwap = function (a, b) { return adj(a, b) && this.M[a] && this.M[b] && this.T[a] >= 0 && this.T[b] >= 0; };
+Core.prototype.xchg = function (a, b) {
+  for (const k of ["T", "S", "ID"]) { const A = this[k], x = A[a]; A[a] = A[b]; A[b] = x; }
+};
+// semua langkah sah; any = berhenti di yang pertama
+Core.prototype.findMoves = function (any) {
+  const out = [], S = this.S;
+  for (let a = 0; a < NN; a++) for (const d of [1, 8]) {
+    const b = a + d; if ((d === 1 && (a & 7) === 7) || !this.canSwap(a, b)) continue;
+    let v;
+    if (S[a] === RB || S[b] === RB || (S[a] && S[b])) v = 20 + S[a] + S[b];
+    else { this.xchg(a, b); v = this.lineAt(a) + this.lineAt(b); this.xchg(a, b); if (!v) continue; }
+    out.push({ a, b, v }); if (any) return out;
+  }
+  return out;
+};
+Core.prototype.swap = function (a, b) {
+  if (this.moves <= 0 || !this.canSwap(a, b)) return null;
+  const sa = this.S[a], sb = this.S[b], combo = sa === RB || sb === RB || (sa > 0 && sb > 0);
+  this.xchg(a, b);
+  if (!combo && !this.lineAt(a) && !this.lineAt(b)) { this.xchg(a, b); return { ok: false, a, b }; }
+  this.moves--; this.used++; this.cascade = 0; this.pend = { a, b }; this.combo = combo ? { a, b } : null;
+  return { ok: true, a, b, combo };
+};
+// warna terbanyak di papan (untuk bintang pelangi yang tersambar)
+Core.prototype.topColor = function (skip) {
+  const n = [0, 0, 0, 0, 0, 0]; let b = 0;
+  for (let i = 0; i < NN; i++) { const t = this.color(i); if (t >= 0 && !(skip && skip.has(i))) n[t]++; }
+  for (let t = 1; t < 6; t++) if (n[t] > n[b]) b = t;
+  return b;
+};
+// ledakan berantai: seeds [{i, d}] (d = jeda detik untuk tampilan)
+Core.prototype.blast = function (seeds, protect, fx) {
+  const hit = new Map(), q = [];
+  const add = (i, d) => { if (i < 0 || i >= NN || !this.M[i] || this.T[i] < 0 || protect.has(i) || hit.has(i)) return; hit.set(i, d); q.push(i); };
+  for (const s of seeds) add(s.i, s.d || 0);
+  for (let h = 0; h < q.length; h++) {
+    const i = q[h], s = this.S[i]; if (!s || this.fired.has(i)) continue;
+    this.fired.add(i); this.fire(i, s, hit.get(i), add, fx, hit);
+  }
+  return hit;
+};
+Core.prototype.fire = function (i, s, d, add, fx, hit) {
+  const r = i >> 3, c = i & 7;
+  if (s === SH || s === SV) {
+    fx.push({ k: s === SH ? "row" : "col", r, c, d });
+    for (let k = 0; k < N; k++) add(s === SH ? r * 8 + k : k * 8 + c, d + 0.035 * Math.abs(k - (s === SH ? c : r)));
+  } else if (s === BOMB) {
+    fx.push({ k: "bomb", r, c, d, rad: 1 });
+    for (let y = r - 1; y <= r + 1; y++) for (let x = c - 1; x <= c + 1; x++) if (y >= 0 && y < N && x >= 0 && x < N) add(y * 8 + x, d + 0.05);
+  } else if (s === RB) {
+    const t = this.topColor(hit), to = [];
+    for (let k = 0; k < NN; k++) if (this.color(k) === t && !hit.has(k)) to.push(k);
+    fx.push({ k: "rb", r, c, d, to, t });
+    to.forEach((k, n) => add(k, d + 0.12 + 0.02 * n));
+  }
+};
+// gabungan dua istimewa atau bintang pelangi; pusat di b (tempat bidak pertama mendarat)
+Core.prototype.comboSeeds = function (a, b, fx, seeds, conv) {
+  const S = this.S, sa = S[a], sb = S[b], r = b >> 3, c = b & 7;
+  if (sa === RB || sb === RB) {
+    const rb = sa === RB ? a : b, o = rb === a ? b : a, os = S[o];
+    this.fired.add(rb); seeds.push({ i: rb, d: 0 });
+    if (os === RB) { // dua bintang: sapu bersih
+      this.fired.add(o); fx.push({ k: "all", r, c, d: 0 });
+      for (let k = 0; k < NN; k++) seeds.push({ i: k, d: 0.1 + 0.03 * (Math.abs((k >> 3) - r) + Math.abs((k & 7) - c)) });
+      return "Sapu bersih!";
+    }
+    const t = this.T[o], to = [];
+    for (let k = 0; k < NN; k++) if (this.color(k) === t) to.push(k);
+    if (os) { // jadi istimewa semua lalu meledak
+      for (const k of to) if (!S[k] || k === o) { S[k] = os === BOMB ? BOMB : (this.rng() < 0.5 ? SH : SV); conv.push({ i: k, s: S[k], id: this.ID[k] }); }
+    }
+    fx.push({ k: "rb", r: rb >> 3, c: rb & 7, d: 0, to, t });
+    to.forEach((k, n) => seeds.push({ i: k, d: 0.15 + 0.025 * n + (os ? 0.25 : 0) }));
+    return os === BOMB ? "Hujan bungkus!" : os ? "Hujan garis!" : "Pelangi!";
+  }
+  this.fired.add(a); this.fired.add(b); seeds.push({ i: a, d: 0 }, { i: b, d: 0 });
+  const addRow = (y, d0) => { if (y < 0 || y >= N) return; fx.push({ k: "row", r: y, c, d: d0 }); for (let x = 0; x < N; x++) seeds.push({ i: y * 8 + x, d: d0 + 0.035 * Math.abs(x - c) }); };
+  const addCol = (x, d0) => { if (x < 0 || x >= N) return; fx.push({ k: "col", r, c: x, d: d0 }); for (let y = 0; y < N; y++) seeds.push({ i: y * 8 + x, d: d0 + 0.035 * Math.abs(y - r) }); };
+  if (sa === BOMB && sb === BOMB) {
+    fx.push({ k: "bomb", r, c, d: 0, rad: 2 });
+    for (let y = r - 2; y <= r + 2; y++) for (let x = c - 2; x <= c + 2; x++) if (y >= 0 && y < N && x >= 0 && x < N) seeds.push({ i: y * 8 + x, d: 0.05 });
+    return "Bom besar!";
+  }
+  if (sa === BOMB || sb === BOMB) { for (let k = -1; k <= 1; k++) { addRow(r + k, 0.05); addCol(c + k, 0.05); } return "Silang raksasa!"; }
+  addRow(r, 0); addCol(c, 0); return "Silang!";
+};
+// satu putaran: cocokkan (atau gabungan), ledakkan, jatuhkan, isi. null bila papan tenang.
+Core.prototype.step = function () {
+  const fx = [], seeds = [], protect = new Set(), made = [], conv = [], matched = new Set();
+  let label = "";
+  this.fired = new Set();
+  if (this.combo) { label = this.comboSeeds(this.combo.a, this.combo.b, fx, seeds, conv); this.combo = null; }
+  else {
+    const G = this.groups(); if (!G.length) { this.pend = null; return null; }
+    for (const g of G) {
+      g.cells.forEach((i) => matched.add(i));
+      const k = groupSpecial(g), p = k ? this.pickCell(g) : -1;
+      if (p >= 0) { protect.add(p); made.push({ i: p, s: k, t: g.t }); }
+      g.cells.forEach((i) => { if (i !== p) seeds.push({ i, d: 0 }); });
+    }
+  }
+  this.cascade++; this.pend = null; if (this.cascade > this.bestCascade) this.bestCascade = this.cascade;
+  return this.apply(this.blast(seeds, protect, fx), { fx, made, conv, matched, label });
+};
+Core.prototype.apply = function (hit, o) {
+  const T = this.T, S = this.S, J = this.J, ID = this.ID, cm = Math.min(8, Math.max(1, this.cascade));
+  const clears = [], agar = []; let gain = 0;
+  for (const [i, d] of hit) {
+    const t = T[i];
+    if (t >= 0 && t < RBT) this.got[t]++;
+    if (J[i]) { J[i]--; agar.push({ i, d, left: J[i] }); gain += 100; }
+    gain += (o.matched && o.matched.has(i) ? 20 : 30) * cm;
+    clears.push({ i, id: ID[i], t, s: S[i], d });
+    T[i] = -1; S[i] = 0; ID[i] = 0;
+  }
+  for (const m of o.made || []) {
+    if (J[m.i]) { J[m.i]--; agar.push({ i: m.i, d: 0, left: J[m.i] }); gain += 100; }
+    S[m.i] = m.s; if (m.s === RB) T[m.i] = RBT;
+    gain += m.s === RB ? 400 : m.s === BOMB ? 200 : 120; this.made++;
+    m.id = ID[m.i];
+  }
+  this.score = Math.min(SC_CAP, this.score + gain);
+  const falls = [], spawns = []; this.gravity(falls, spawns);
+  return { clears, made: o.made || [], conv: o.conv || [], fx: o.fx, agar, falls, spawns, gain, cascade: this.cascade, label: o.label || "" };
+};
+// jatuh per kolom melewati lubang, lalu isi dari atas
+Core.prototype.gravity = function (falls, spawns) {
+  const T = this.T, S = this.S, ID = this.ID;
+  for (let c = 0; c < N; c++) {
+    const rows = []; for (let r = 0; r < N; r++) if (this.M[r * 8 + c]) rows.push(r);
+    let w = rows.length - 1;
+    for (let k = rows.length - 1; k >= 0; k--) {
+      const i = rows[k] * 8 + c; if (T[i] < 0) continue;
+      const to = rows[w] * 8 + c;
+      if (to !== i) { T[to] = T[i]; S[to] = S[i]; ID[to] = ID[i]; T[i] = -1; S[i] = 0; ID[i] = 0; falls.push({ id: ID[to], from: rows[k], to: rows[w], c }); }
+      w--;
+    }
+    const ns = w + 1;
+    for (let k = 0; k < ns; k++) { const to = rows[k] * 8 + c; T[to] = this.rnd(); S[to] = 0; ID[to] = this.idc++; spawns.push({ id: ID[to], t: T[to], from: rows[0] - ns + k - 0.4, to: rows[k], c }); }
+  }
+};
+Core.prototype.goalDone = function () {
+  const g = this.def.goal;
+  if (g.kind === "score") return this.score >= g.n;
+  if (g.kind === "agar") return this.agarLeft() === 0;
+  return g.items.every((it) => this.got[it.t] >= it.n);
+};
+// kemajuan sasaran 0..1
+Core.prototype.goalFrac = function () {
+  const g = this.def.goal;
+  if (g.kind === "score") return Math.min(1, this.score / g.n);
+  if (g.kind === "agar") return this.agar0 ? 1 - this.agarLeft() / this.agar0 : 1;
+  let a = 0, b = 0; g.items.forEach((it) => { a += Math.min(it.n, this.got[it.t]); b += it.n; }); return b ? a / b : 1;
+};
+Core.prototype.stars = function (won) { const s = this.def.stars; return won ? 1 + (this.score >= s[1]) + (this.score >= s[2]) : 0; };
+// acak ulang bidak biasa bila tak ada langkah; istimewa tetap di tempat
+Core.prototype.shuffle = function () {
+  const T = this.T, ID = this.ID, cells = [];
+  for (let i = 0; i < NN; i++) if (T[i] >= 0 && T[i] < RBT && !this.S[i]) cells.push(i);
+  const orig = cells.map((i) => [T[i], ID[i]]), moves = [];
+  for (let tries = 0; tries < 400; tries++) {
+    const p = orig.slice();
+    for (let k = p.length - 1; k > 0; k--) { const j = (this.rng() * (k + 1)) | 0, x = p[k]; p[k] = p[j]; p[j] = x; }
+    if (tries > 200) p.forEach((q) => { q[0] = this.rnd(); }); // papan buntu: ganti jenis juga
+    cells.forEach((i, k) => { T[i] = p[k][0]; ID[i] = p[k][1]; });
+    if (!this.groups().length && this.findMoves(true).length) break;
+  }
+  const at = new Map(); orig.forEach((q, k) => at.set(q[1], cells[k]));
+  cells.forEach((i) => moves.push({ id: ID[i], from: at.get(ID[i]), to: i, t: T[i] }));
+  this.shuffles++;
+  return moves;
+};
+// Pesta Manis: satu langkah sisa jadi garis gula yang langsung meledak
+Core.prototype.bonus = function () {
+  const pool = []; for (let i = 0; i < NN; i++) if (this.color(i) >= 0 && !this.S[i]) pool.push(i);
+  if (this.moves <= 0 || !pool.length) return null;
+  this.moves--; this.cascade = 1; this.fired = new Set();
+  const i = pool[(this.rng() * pool.length) | 0], fx = [];
+  this.S[i] = this.rng() < 0.5 ? SH : SV; const s = this.S[i];
+  this.score = Math.min(SC_CAP, this.score + 300);
+  const ev = this.apply(this.blast([{ i, d: 0.18 }], new Set(), fx), { fx, conv: [{ i, s, id: this.ID[i] }] });
+  ev.gain += 300; ev.bonusAt = i; return ev;
+};
+// sisa istimewa di papan meledak semua di akhir
+Core.prototype.fireAll = function () {
+  const seeds = []; for (let i = 0; i < NN; i++) if (this.S[i]) seeds.push({ i, d: 0.05 * seeds.length });
+  if (!seeds.length) return null;
+  this.cascade = 1; this.fired = new Set(); const fx = [];
+  return this.apply(this.blast(seeds, new Set(), fx), { fx });
+};
+
+/* ---------- level: dibangkitkan dari nomor level (sama untuk semua pemain) ---------- */
+const MASKS = [
+  [255, 255, 255, 255, 255, 255, 255, 255],
+  [126, 255, 255, 255, 255, 255, 255, 126],
+  [60, 126, 255, 255, 255, 255, 126, 60],
+  [255, 255, 255, 231, 231, 255, 255, 255],
+  [231, 231, 255, 255, 255, 255, 231, 231],
+  [255, 255, 219, 255, 255, 219, 255, 255],
+  [255, 255, 255, 126, 126, 255, 255, 255]
+];
+// pola agar-agar: fungsi (r, c) -> ikut atau tidak
+const AGAR = [
+  (r, c) => r >= 2 && r <= 5 && c >= 2 && c <= 5,
+  (r) => r >= 5,
+  (r, c) => r === 0 || r === 7 || c === 0 || c === 7,
+  (r, c) => r === c || r + c === 7,
+  (r, c) => (r + c) % 2 === 0,
+  (r, c) => r >= 3 && r <= 4 || c >= 3 && c <= 4,
+  () => true
+];
+const KSEQ = ["collect", "agar", "collect", "score", "agar", "collect", "agar", "score", "collect", "agar"];
+// tabel simulasi pemain mirip manusia (lihat satu langkah, sadar sasaran; 4/5/6 jenis x 7 bentuk papan):
+// skor per langkah, jajanan sejenis per langkah, dan langkah yang dibutuhkan tiap pola agar-agar (1 lapis, 2 lapis)
+/*@TABEL*/const SPM = [[2468,2194,1414,1414,973,1136,1828],[569,639,473,412,340,324,452],[324,225,306,195,220,175,226]];
+const CPM = [[7.07,6.92,4.65,4.75,4.01,3.64,6.82],[2.51,2.42,1.92,1.99,1.59,1.76,2.45],[1.18,1.29,1.27,0.97,1.02,0.92,1.08]];
+const AGT = "5,5;8,10;13,13;9,12;10,14;7,9;9,15|4,6;9,12;11,16;5,9;8,12;6,9;8,14|4,6;7,11;10,16;6,10;8,11;8,11;10,18|6,9;7,12;11,17;10,16;11,14;9,12;11,15|5,9;10,12;15,23;11,16;10,21;7,10;15,21|6,8;9,16;12,18;10,13;12,20;8,15;14,19|5,6;8,12;10,19;8,12;10,16;5,9;10,19/7,10;15,18;23,31;17,32;17,27;10,20;25,35|7,10;18,21;19,32;11,16;21,37;12,18;23,34|6,12;13,19;17,26;14,19;19,31;14,20;23,31|7,15;18,31;22,34;17,29;19,34;17,25;29,41|8,13;18,39;33,42;19,44;22,37;13,20;22,44|10,16;17,32;24,41;23,31;28,40;17,27;29,45|7,11;17,26;19,32;20,30;23,26;11,17;24,34/8,15;29,42;49,66;30,66;37,47;28,32;41,60|9,14;28,36;43,57;16,24;35,45;21,33;43,61|9,17;25,48;30,50;19,40;29,44;21,35;36,69|17,29;44,61;45,59;24,68;37,60;28,40;49,66|12,18;36,74;49,80;41,77;45,77;21,39;49,80|21,25;53,67;43,66;41,57;47,74;26,37;65,80|10,19;28,57;28,61;26,50;31,60;13,30;42,78".split("/").map((c) => c.split("|").map((m) => m.split(";").map((r) => r.split(",").map(Number))));/*@TABEL*/
+// koreksi per level 1..TUNE_N (hasil simulasi): tambahan langkah, bintang 2 dan 3 (x500)
+/*@TUNE*/const TUNE = "a1i1pa1d1vc0z1740i0nl181e90q0y60u1530x11h0s10e0p0vd0u11a0o0sc0e0ge0q0ug0g0k20f0ic0j0s90g0ka0d0j81116a0q0w70c0fa0r0va0d0i30x11d0u1260g0j90h0n70h0oa131be0q0xd1017c0q0u30d0gb121710q0uc0r0w80j0o90f0jc0w10c0s0y80m0t90h0kd0h0o50k0qb0e0ha0s10d191ia0s0wc0z1450w18c0j0pf0n0va0z16a0l0q90k0of0r12g0i0me0k0pa0h0k60c0he151ga0n0q50i0rj111960e0jb0t1190g0jd0d0hc0g0ic0h0o90d0hb0r0x80e0h90i0pa0a0da0i0qb0e0gd0e0hh191i90m0te0x12b0j0n80l0pa0f0id0i0oa0w1380f0h90h0mb0q0xc0l0rb0f0na0m0p80b0ea1f1qa0k0oc0s0z70e0l30f0i7181ha0v1280n0uj161c60n0tc0h0kf0f0kh0j0qa181ee0f0kf0q0ud0h0n50p0t3141c30a0c40r0v90k0oa0r13c0z14c0j0qc0k0o40f0ha0q0xa0i0lg0f0l80h0lc0s0yg0l0r90e0hc0f0nh131b80j0pk0i0ld0l0pb0m0rh0h0la0r0z90n0wf1118a0z17i1018g0d0gd0h0o80u1050e0jf0j0mb0g0l70e0i40y13f0e0lb0w17e0j0nf0k0qa131960h0kd0s1470c0fe0j0na0u0y30a0d70q0w80m0vc0g0la0f0h2090d90h0k10d0mb0h0l50x13g0t0yd0x15l0j0q70h0mc0z16a0q0zg1c1j90m0vc0l0qe0r0w3080c80v0z50i0lb0m0rb0g0ka0c0hh0y1350o0x4090cd151b90r0y70w148131970b0ja121740i0n50s11d0z1490i0na0e0if0y17c1i1t30s0wf0m0pa161c50f0ic141g80l0q90y1980o0y70o0td0j0od0i0pb0n0uc0y15d0d0ib0y1380c0fa0l0rh0z167080bc0h0la0e0gh1319b0f0i60a0cd0f0hb0e0j50l0pe1a1g70q0ug0y1360p0va0d0ha0y197111d10r0v70q0y10d0h90j0mc0v1080u0y70h0m60n0rb0w15e0o0r80i0li0i0q90g0ld0z14b0g0lg131d80a0gb0f0lf0x1150f0jk0y19f0i0q80k0sb0r1090g0l60d0f90f0lc0y14e1e1mb0x1680c0f70e0jd0e0jg191f2080b90g0ia0n0ug0l0pg0h0k70j0oa131a60c0h90o0tk171fd0j0nb0w1890p0v10n11e0w1280p0t80i0l90b0ea0l0pa0h0ka0d0ia1a1ib0u1160r0wb0z1610c0ea0k0nb0g0m70e0hd0h0mb0t0xg0k0q", TUNE_N = 300;/*@TUNE*/
+/*@KF*/const KF = {"score":0.95,"collect":1.072,"agar":1}, KD = {"score":1.716,"collect":2.085,"agar":1.619}, STF = {"score":[1.72,2.13],"collect":[1.51,1.76],"agar":[1.82,2.06]};/*@KF*/
+// kesulitan 0..1: naik mulus, tiap level ke-10 lebih sulit, sesudahnya napas
+function diffOf(n) {
+  const base = 1 - Math.exp(-(n - 1) / 45);
+  const saw = n > 10 && n % 10 === 0 ? 0.08 : n > 10 && n % 10 === 1 ? -0.1 : 0;
+  return Math.max(0, Math.min(1, base + saw));
+}
+const EASY = (n) => n <= 1 ? 0.5 : n <= 3 ? 0.65 : n <= 6 ? 0.85 : 1; // level awal: pengenalan
+const r5 = (x) => Math.round(x / 5) * 5, r500 = (x) => Math.round(x / 500) * 500;
+function levelDef(n, dailySeed) {
+  const daily = dailySeed != null, seed = daily ? dailySeed >>> 0 : KIT.hash("jajan-manis|lv|" + n);
+  const rn = KIT.rng(seed ^ 0x2545f491), d = daily ? 0.45 + rn() * 0.15 : diffOf(n), slack = 1.6 - 0.6 * d;
+  const ci0 = !daily && n > 20 && rn() < Math.min(0.55, (n - 20) / 60) ? 1 : 0, ci = !daily && n <= 2 ? 0 : ci0 + 1, colors = 4 + ci;
+  const kind = daily ? ["collect", "agar", "score"][(rn() * 3) | 0] : n <= 2 ? "collect" : n === 3 ? "agar" : KSEQ[(n - 4) % KSEQ.length];
+  const pickMask = () => !daily && n < 6 ? 0 : rn() < 0.3 ? 0 : ci0 ? [1, 2, 6][(rn() * 3) | 0] : 1 + ((rn() * (MASKS.length - 1)) | 0);
+  const kf = daily ? KD : KF;
+  let mk = pickMask(), moves, goal, mask = [], agar = [];
+  const setMask = () => { mask = []; for (let i = 0; i < NN; i++) mask.push((MASKS[mk][i >> 3] >> (7 - (i & 7))) & 1); };
+  setMask();
+  if (kind === "agar") {
+    const two = d > 0.25 ? Math.min(0.85, (d - 0.2) * 1.3) : 0;
+    for (let tries = 0; ; tries++) {
+      const pi = n === 3 ? 0 : tries > 25 ? 0 : (rn() * AGAR.length) | 0;
+      agar = []; let c1 = 0, c2 = 0;
+      for (let i = 0; i < NN; i++) { const on = mask[i] && AGAR[pi](i >> 3, i & 7), l = on ? (rn() < two ? 2 : 1) : 0; agar.push(l); if (l === 1) c1++; if (l === 2) c2++; }
+      const f2 = c1 + c2 ? c2 / (c1 + c2) : 0, t = AGT[ci][mk][pi], need = t[0] + (t[1] - t[0]) * f2;
+      moves = Math.round(need * slack / EASY(n) / kf.agar);
+      if (c1 + c2 >= 6 && moves >= 10 && moves <= 32) { goal = { kind, n: c1 + 2 * c2 }; break; }
+      if (tries > 25) { moves = Math.max(10, Math.min(34, moves)); goal = { kind, n: c1 + 2 * c2 }; break; }
+      if (tries % 5 === 4) { mk = pickMask(); setMask(); }
+    }
+  } else if (kind === "collect") {
+    for (let i = 0; i < NN; i++) agar.push(0);
+    moves = 18 + ((rn() * 8) | 0); if (!daily && n <= 2) moves = 16;
+    const k = d > 0.2 && rn() < 0.55 ? 2 : 1, rate = CPM[ci][mk] * (0.68 + 0.24 * d) * EASY(n) * kf.collect * (k === 2 ? 0.72 : 1), items = [], t0 = (rn() * colors) | 0;
+    for (let q = 0; q < k; q++) items.push({ t: (t0 + q * 2) % colors, n: Math.max(10, r5(moves * rate)) });
+    goal = { kind, items };
+  } else {
+    for (let i = 0; i < NN; i++) agar.push(0);
+    moves = 16 + ((rn() * 8) | 0);
+    goal = { kind, n: Math.max(2000, r500(moves * SPM[ci][mk] * (0.68 + 0.24 * d) * EASY(n) * kf.score)) };
+  }
+  // bintang: 1 = sasaran tercapai; 2 dan 3 = skor (Pesta Manis ikut dihitung)
+  const tn = !daily && n >= 1 && n <= TUNE_N ? TUNE.substr((n - 1) * 5, 5) : "";
+  let stars;
+  if (tn) { moves += parseInt(tn[0], 36) - 10; stars = [kind === "score" ? goal.n : 0, parseInt(tn.substr(1, 2), 36) * 500, parseInt(tn.substr(3, 2), 36) * 500]; }
+  else { const per = moves * SPM[ci][mk], sf = STF[kind]; stars = kind === "score" ? [goal.n, r500(goal.n * sf[0]), r500(goal.n * sf[1])] : [0, r500(per * sf[0]), r500(per * sf[1])]; }
+  if (kind === "score") stars[1] = Math.max(stars[1], goal.n + 500);
+  stars[2] = Math.max(stars[2], stars[1] + 500);
+  return { n, seed, daily, d, colors, kind, mask, agar, moves, goal, stars, mk };
+}
+
+/* ---------- pemain otomatis: demo, judul, dan uji ---------- */
+function botValue(a, b) {
+  const g = a.def.goal; let v = (b.score - a.score) * 0.02, sp = 0;
+  for (let i = 0; i < NN; i++) sp += (b.S[i] ? 1 : 0) - (a.S[i] ? 1 : 0);
+  v += sp * 12;
+  if (g.kind === "collect") for (const it of g.items) v += Math.max(0, Math.min(it.n, b.got[it.t]) - Math.min(it.n, a.got[it.t])) * 20;
+  if (g.kind === "agar") v += (a.agarLeft() - b.agarLeft()) * 25;
+  if (g.kind === "score") v += (b.score - a.score) * 0.03;
+  return v;
+}
+function botPick(core, rn, skill) {
+  const mv = core.findMoves(false); if (!mv.length) return null;
+  let best = mv[0], bv = -1e9;
+  for (const m of mv) {
+    const c = core.clone(KIT.rng((rn() * 4294967295) >>> 0)); c.swap(m.a, m.b);
+    for (let k = 0; k < 40 && c.step(); k++);
+    const v = botValue(core, c) + rn() * (1 - skill) * 60;
+    if (v > bv) { bv = v; best = m; }
+  }
+  return best;
+}
+// pemain mirip manusia: hanya melihat hasil langsung satu langkah, sadar sasaran, sedikit acak
+function humPick(core, rn) {
+  const mv = core.findMoves(false), g = core.def.goal; if (!mv.length) return null;
+  let best = null, bv = -1e9;
+  for (const q of mv) {
+    const c = core.clone(KIT.rng((rn() * 4e9) >>> 0)); c.swap(q.a, q.b); c.step();
+    let v = (c.score - core.score) * 0.01 + rn() * 3 + (q.a >> 3) * 0.3;
+    if (g.kind === "collect") for (const it of g.items) v += Math.max(0, Math.min(it.n, c.got[it.t]) - Math.min(it.n, core.got[it.t])) * 3;
+    if (g.kind === "agar") v += (core.agarLeft() - c.agarLeft()) * 4;
+    if (v > bv) { bv = v; best = q; }
+  }
+  return best;
+}
+// pemula serakah: deret terpanjang yang terlihat, tanpa melihat ke depan
+function greedyPick(core, rn) { const mv = core.findMoves(false); let b = null, bv = -1; for (const q of mv) { const v = q.v + rn() * 0.5; if (v > bv) { bv = v; b = q; } } return b; }
+// main satu level penuh tanpa tampilan; hasil {won, score, stars, used}. skill = fungsi pemilih atau angka (bot pandai)
+function botRun(def, rn, skill) {
+  const c = new Core(); c.load(def);
+  let guard = 0;
+  while (!c.goalDone() && c.moves > 0 && guard++ < 200) {
+    const m = typeof skill === "function" ? skill(c, rn) : botPick(c, rn, skill); if (!m) { c.shuffle(); continue; }
+    c.swap(m.a, m.b); for (let k = 0; k < 60 && c.step(); k++);
+    if (!c.findMoves(true).length) c.shuffle();
+  }
+  const won = c.goalDone();
+  if (won) { let e; while (c.bonus()) for (let k = 0; k < 60 && c.step(); k++); if (c.fireAll()) for (let k = 0; k < 60 && c.step(); k++); }
+  return { won, score: c.score, stars: c.stars(won), used: c.used, core: c };
+}
+
+/* ================= SENI ================= */
+const INK = "#3b1740";
+const KUE = [
+  { nama: "Klepon", c: ["#c8ffb8", "#35d05a", "#0b7a26"] },
+  { nama: "Onde-onde", c: ["#fff2b0", "#ffb52e", "#c05f00"] },
+  { nama: "Dadar gulung", c: ["#cfe6ff", "#3d8bff", "#1440a8"] },
+  { nama: "Kue lapis", c: ["#ffd6ea", "#ff5fa8", "#c01f66"] },
+  { nama: "Cenil", c: ["#ecd8ff", "#a35cff", "#561cb8"] },
+  { nama: "Kue mangkok", c: ["#ffcfc4", "#ff4040", "#a80f18"] }
+];
+const KCOL = KUE.map((k) => k.c[1]);
+// persegi bersudut bulat; cadangan manual untuk WebView lama tanpa roundRect
+function rr(g, x, y, w, h, r) {
+  g.beginPath(); rrPath(g, x, y, w, h, r);
+}
+function rrPath(g, x, y, w, h, r) {
+  r = Math.max(0, Math.min(r || 0, w / 2, h / 2));
+  if (g.roundRect) { g.roundRect(x, y, w, h, r); return; }
+  g.moveTo(x + r, y); g.lineTo(x + w - r, y); g.arcTo(x + w, y, x + w, y + r, r);
+  g.lineTo(x + w, y + h - r); g.arcTo(x + w, y + h, x + w - r, y + h, r);
+  g.lineTo(x + r, y + h); g.arcTo(x, y + h, x, y + h - r, r);
+  g.lineTo(x, y + r); g.arcTo(x, y, x + r, y, r); g.closePath();
+}
+function mk(w, h) { const c = document.createElement("canvas"); c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h || w)); return c; }
+// bentuk tiap jajanan (pusat 0,0, jari-jari R): bulat, bergerigi, gulungan, persegi, segitiga, mangkok
+function shapePath(g, t, R) {
+  g.beginPath();
+  if (t === 0) g.arc(0, 0, R * 0.8, 0, TAU);
+  else if (t === 1) {
+    for (let k = 0; k <= 60; k++) { const a = k / 60 * TAU, r = R * 0.8 * (1 + 0.07 * Math.cos(a * 10)); if (k) g.lineTo(Math.cos(a) * r, Math.sin(a) * r); else g.moveTo(r, 0); }
+    g.closePath();
+  } else if (t === 2) rrPath(g, -R * 0.92, -R * 0.54, R * 1.84, R * 1.08, R * 0.54);
+  else if (t === 3) rrPath(g, -R * 0.76, -R * 0.76, R * 1.52, R * 1.52, R * 0.24);
+  else if (t === 4) {
+    const P = [[0, -R * 0.9], [R * 0.9, R * 0.66], [-R * 0.9, R * 0.66]], q = R * 0.26;
+    g.moveTo((P[2][0] + P[0][0]) / 2, (P[2][1] + P[0][1]) / 2);
+    for (let k = 0; k < 3; k++) { const a = P[k], b = P[(k + 1) % 3]; g.arcTo(a[0], a[1], b[0], b[1], q); }
+    g.closePath();
+  } else if (t === 5) {
+    g.moveTo(-R * 0.62, R * 0.84); g.lineTo(-R * 0.8, R * 0.08); g.lineTo(R * 0.8, R * 0.08); g.lineTo(R * 0.62, R * 0.84); g.closePath(); // searah jarum jam agar menyatu dengan lingkaran
+    for (const [x, y, r] of MANG) { g.moveTo(x * R + r * R, y * R); g.arc(x * R, y * R, r * R, 0, TAU); }
+  } else starPath(g, R * 0.92, R * 0.44);
+}
+const MANG = [[-0.42, -0.04, 0.42], [0.42, -0.04, 0.42], [0, -0.34, 0.46]];
+function starPath(g, Ro, Ri) {
+  for (let k = 0; k < 10; k++) { const a = -Math.PI / 2 + k * Math.PI / 5, r = k & 1 ? Ri : Ro; if (k) g.lineTo(Math.cos(a) * r, Math.sin(a) * r); else g.moveTo(Math.cos(a) * r, Math.sin(a) * r); }
+  g.closePath();
+}
+// gambar satu jajanan (biasa) di titik (0,0)
+function drawKue(g, t, R, noShadow) {
+  const rn = KIT.rng(t * 97 + 13), c = KUE[t].c;
+  if (!noShadow) { g.fillStyle = "rgba(40,8,40,.26)"; g.beginPath(); g.ellipse(0, R * 0.8, R * 0.72, R * 0.17, 0, 0, TAU); g.fill(); }
+  const gr = g.createRadialGradient(-R * 0.34, -R * 0.42, R * 0.08, 0, 0, R * 1.08);
+  gr.addColorStop(0, c[0]); gr.addColorStop(0.42, c[1]); gr.addColorStop(1, c[2]);
+  g.lineJoin = "round"; g.lineWidth = R * 0.11; g.strokeStyle = INK;
+  if (t === 5) { // mangkok: wadah kertas lalu tiga kelopak merekah
+    g.beginPath(); g.moveTo(-R * 0.62, R * 0.84); g.lineTo(R * 0.62, R * 0.84); g.lineTo(R * 0.8, R * 0.1); g.lineTo(-R * 0.8, R * 0.1); g.closePath();
+    const cg = g.createLinearGradient(0, R * 0.1, 0, R * 0.84); cg.addColorStop(0, "#fff4ee"); cg.addColorStop(1, "#ffc9bd");
+    g.fillStyle = cg; g.fill(); g.stroke();
+    g.strokeStyle = "rgba(200,70,70,.55)"; g.lineWidth = R * 0.07;
+    for (let k = -2; k <= 2; k++) { g.beginPath(); g.moveTo(k * R * 0.29, R * 0.18); g.lineTo(k * R * 0.23, R * 0.78); g.stroke(); }
+    for (const q of [0, 1, 2]) {
+      const [x, y, r] = MANG[q], lg = g.createRadialGradient(x * R - r * R * 0.35, y * R - r * R * 0.4, 1, x * R, y * R, r * R * 1.1);
+      lg.addColorStop(0, c[0]); lg.addColorStop(0.45, c[1]); lg.addColorStop(1, c[2]);
+      g.beginPath(); g.arc(x * R, y * R, r * R, 0, TAU); g.fillStyle = lg; g.fill(); g.strokeStyle = INK; g.lineWidth = R * 0.1; g.stroke();
+      g.fillStyle = "rgba(255,255,255,.6)"; g.beginPath(); g.ellipse(x * R - r * R * 0.32, y * R - r * R * 0.38, r * R * 0.3, r * R * 0.18, -0.6, 0, TAU); g.fill();
+    }
+    g.fillStyle = "#fff"; g.beginPath(); g.arc(-R * 0.08, -R * 0.54, R * 0.06, 0, TAU); g.fill();
+    return;
+  }
+  shapePath(g, t, R); g.fillStyle = gr; g.fill();
+  g.save(); shapePath(g, t, R); g.clip();
+  if (t === 0) { // klepon: parutan kelapa di atas
+    g.fillStyle = "rgba(0,60,20,.25)"; g.beginPath(); g.ellipse(0, R * 0.62, R * 0.8, R * 0.3, 0, 0, TAU); g.fill();
+    g.fillStyle = "#fbfff6"; g.beginPath(); g.ellipse(0, -R * 0.62, R * 0.62, R * 0.3, 0, 0, TAU); g.fill();
+    for (let k = 0; k < 44; k++) {
+      const a = -Math.PI * (0.08 + rn() * 0.84), d = R * (0.28 + rn() * 0.56);
+      g.fillStyle = k % 5 ? "#ffffff" : "#dff5d8"; g.beginPath(); g.ellipse(Math.cos(a) * d, Math.sin(a) * d * 0.9 - R * 0.08, R * (0.1 + rn() * 0.08), R * 0.05, rn() * 3, 0, TAU); g.fill();
+    }
+    g.strokeStyle = "rgba(20,100,40,.35)"; g.lineWidth = R * 0.03;
+    for (let k = 0; k < 10; k++) { const x = (rn() - 0.5) * R, y = -R * (0.35 + rn() * 0.4); g.beginPath(); g.moveTo(x, y); g.lineTo(x + R * 0.12, y + R * 0.03); g.stroke(); }
+  } else if (t === 1) { // onde-onde: wijen
+    for (let k = 0; k < 22; k++) {
+      const a = k * 2.4, d = R * 0.7 * Math.sqrt((k + 0.5) / 22), x = Math.cos(a) * d, y = Math.sin(a) * d;
+      g.save(); g.translate(x, y); g.rotate(a + rn()); g.fillStyle = "#fff6d8"; g.strokeStyle = "rgba(120,60,0,.55)"; g.lineWidth = R * 0.03;
+      g.beginPath(); g.ellipse(0, 0, R * 0.085, R * 0.045, 0, 0, TAU); g.fill(); g.stroke(); g.restore();
+    }
+  } else if (t === 2) { // dadar gulung: lipatan dan ujung gulungan berisi kelapa
+    g.strokeStyle = "rgba(10,30,110,.35)"; g.lineWidth = R * 0.07;
+    for (const x of [-0.45, -0.1]) { g.beginPath(); g.moveTo(x * R, -R * 0.5); g.quadraticCurveTo(x * R + R * 0.14, 0, x * R, R * 0.5); g.stroke(); }
+    const ex = R * 0.46;
+    g.fillStyle = c[0]; g.beginPath(); g.ellipse(ex, 0, R * 0.34, R * 0.46, 0, 0, TAU); g.fill();
+    g.strokeStyle = INK; g.lineWidth = R * 0.07; g.stroke();
+    g.fillStyle = "#8a4a1c"; g.beginPath(); g.ellipse(ex, 0, R * 0.2, R * 0.28, 0, 0, TAU); g.fill();
+    g.fillStyle = "#c98a4a"; g.beginPath(); g.ellipse(ex - R * 0.04, -R * 0.05, R * 0.09, R * 0.12, 0, 0, TAU); g.fill();
+    g.strokeStyle = c[2]; g.lineWidth = R * 0.06; g.beginPath(); g.arc(ex, 0, R * 0.27, -2.6, 1.2); g.stroke();
+  } else if (t === 3) { // kue lapis: lapisan merah muda dan putih
+    const h = R * 1.52 / 5;
+    for (let k = 0; k < 5; k++) { g.fillStyle = k % 2 ? "#fff3f8" : c[1]; g.fillRect(-R, -R * 0.76 + k * h, R * 2, h + 0.5); }
+    const sh = g.createLinearGradient(-R, 0, R, 0); sh.addColorStop(0, "rgba(255,255,255,.35)"); sh.addColorStop(0.5, "rgba(255,255,255,0)"); sh.addColorStop(1, "rgba(120,0,50,.35)");
+    g.fillStyle = sh; g.fillRect(-R, -R, R * 2, R * 2);
+    g.fillStyle = "rgba(255,255,255,.5)"; g.fillRect(-R, -R * 0.76, R * 2, h * 0.35);
+  } else if (t === 4) { // cenil: taburan kelapa
+    for (let k = 0; k < 14; k++) { g.fillStyle = "#fff"; g.beginPath(); g.ellipse((rn() - 0.5) * R * 1.1, R * (-0.1 + rn() * 0.7), R * 0.07, R * 0.035, rn() * 3, 0, TAU); g.fill(); }
+  }
+  // kilau
+  g.fillStyle = "rgba(255,255,255,.7)"; g.beginPath(); g.ellipse(-R * 0.3, -R * 0.4, R * 0.26, R * 0.14, -0.6, 0, TAU); g.fill();
+  g.restore();
+  shapePath(g, t, R); g.lineWidth = R * 0.11; g.strokeStyle = INK; g.stroke();
+  g.fillStyle = "#fff"; g.beginPath(); g.arc(-R * 0.08, -R * 0.52, R * 0.055, 0, TAU); g.fill();
+}
+// bintang pelangi: lima sudut, enam warna jajanan
+function drawStar(g, R) {
+  g.fillStyle = "rgba(40,8,40,.26)"; g.beginPath(); g.ellipse(0, R * 0.8, R * 0.7, R * 0.16, 0, 0, TAU); g.fill();
+  g.save(); g.beginPath(); starPath(g, R * 0.95, R * 0.46); g.clip();
+  for (let k = 0; k < 6; k++) { g.fillStyle = KCOL[k]; g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, R * 1.2, k / 6 * TAU - Math.PI / 2, (k + 1) / 6 * TAU - Math.PI / 2 + 0.02); g.closePath(); g.fill(); }
+  const gl = g.createRadialGradient(-R * 0.2, -R * 0.25, 0, 0, 0, R); gl.addColorStop(0, "rgba(255,255,255,.95)"); gl.addColorStop(0.35, "rgba(255,255,255,.35)"); gl.addColorStop(1, "rgba(255,255,255,0)");
+  g.fillStyle = gl; g.fillRect(-R, -R, R * 2, R * 2); g.restore();
+  g.lineJoin = "round"; g.lineWidth = R * 0.11; g.strokeStyle = INK; g.beginPath(); starPath(g, R * 0.95, R * 0.46); g.stroke();
+  g.fillStyle = "#fff"; g.beginPath(); g.arc(-R * 0.14, -R * 0.3, R * 0.09, 0, TAU); g.fill();
+}
+// istimewa: garis gula (SH/SV) atau bungkus daun (BOMB)
+function drawSpecial(g, t, s, R) {
+  if (s === BOMB) {
+    g.save(); g.rotate(Math.PI / 4);
+    g.fillStyle = "rgba(40,8,40,.26)"; rr(g, -R * 0.78, -R * 0.68, R * 1.56, R * 1.56, R * 0.3); g.fill();
+    const lg = g.createLinearGradient(-R, -R, R, R); lg.addColorStop(0, "#9df27a"); lg.addColorStop(0.5, "#39b54a"); lg.addColorStop(1, "#1d7a2f");
+    rr(g, -R * 0.78, -R * 0.78, R * 1.56, R * 1.56, R * 0.3); g.fillStyle = lg; g.fill();
+    g.save(); g.clip(); g.strokeStyle = "rgba(230,255,200,.6)"; g.lineWidth = R * 0.05;
+    for (let k = -3; k <= 3; k++) { g.beginPath(); g.moveTo(-R, k * R * 0.26 - R * 0.3); g.lineTo(R, k * R * 0.26 + R * 0.3); g.stroke(); }
+    g.restore();
+    g.lineWidth = R * 0.1; g.strokeStyle = INK; rr(g, -R * 0.78, -R * 0.78, R * 1.56, R * 1.56, R * 0.3); g.stroke();
+    g.restore();
+    g.save(); g.scale(0.66, 0.66); drawKue(g, t, R, true); g.restore();
+    // lidi penyemat
+    g.strokeStyle = INK; g.lineWidth = R * 0.14; g.lineCap = "round"; g.beginPath(); g.moveTo(-R * 0.62, -R * 0.62); g.lineTo(-R * 0.3, -R * 0.3); g.stroke();
+    g.strokeStyle = "#e9c27a"; g.lineWidth = R * 0.07; g.stroke(); g.lineCap = "butt";
+    return;
+  }
+  drawKue(g, t, R);
+  g.save(); shapePath(g, t, R); g.clip();
+  const w = R * 0.2;
+  for (let k = -1; k <= 1; k++) {
+    g.fillStyle = "rgba(255,255,255,.93)";
+    if (s === SH) g.fillRect(-R * 1.2, k * R * 0.52 - w / 2, R * 2.4, w); else g.fillRect(k * R * 0.52 - w / 2, -R * 1.2, w, R * 2.4);
+    g.fillStyle = INK; const e = R * 0.05;
+    if (s === SH) { g.fillRect(-R * 1.2, k * R * 0.52 - w / 2 - e, R * 2.4, e); g.fillRect(-R * 1.2, k * R * 0.52 + w / 2, R * 2.4, e); }
+    else { g.fillRect(k * R * 0.52 - w / 2 - e, -R * 1.2, e, R * 2.4); g.fillRect(k * R * 0.52 + w / 2, -R * 1.2, e, R * 2.4); }
+  }
+  g.restore();
+  shapePath(g, t, R); g.lineWidth = R * 0.11; g.strokeStyle = INK; g.stroke();
+  // panah arah ledakan
+  for (const sg of [-1, 1]) {
+    g.save(); if (s === SV) g.rotate(Math.PI / 2); g.translate(sg * R * 1.02, 0); g.scale(sg, 1);
+    g.beginPath(); g.moveTo(R * 0.2, 0); g.lineTo(-R * 0.08, -R * 0.2); g.lineTo(-R * 0.08, R * 0.2); g.closePath();
+    g.fillStyle = "#fff"; g.fill(); g.lineWidth = R * 0.07; g.strokeStyle = INK; g.stroke(); g.restore();
+  }
+}
+// cache gambar: SPR[jenis][istimewa], jenis 6 = bintang pelangi
+let SPR = [], SPR_R = 0, SPR_S = 0;
+function buildSprites(cellPx) {
+  const R = cellPx * 0.47, S = Math.ceil(cellPx * 1.34);
+  if (SPR_S === S && SPR.length) return;
+  SPR_R = R; SPR_S = S; SPR = [];
+  for (let t = 0; t <= 6; t++) {
+    SPR[t] = [];
+    for (let s = 0; s <= 3; s++) {
+      if (t === 6 && s) break;
+      const c = mk(S, S), g = c.getContext("2d"); g.translate(S / 2, S / 2);
+      if (t === 6) drawStar(g, R); else if (s) drawSpecial(g, t, s, R); else drawKue(g, t, R);
+      SPR[t][s] = c;
+    }
+  }
+}
+function sprOf(t, s) { return t === RBT ? SPR[6][0] : SPR[t] && SPR[t][s === RB ? 0 : s] || SPR[0][0]; }
+// gambar kecil untuk panel DOM
+const ICONS = [];
+function iconURL(t, s) {
+  const key = t + "-" + (s || 0); if (ICONS[key]) return ICONS[key];
+  const c = mk(72, 72), g = c.getContext("2d"); g.translate(36, 36);
+  if (t === 6) drawStar(g, 30); else if (t === 7) drawAgar(g, 30); else if (s) drawSpecial(g, t, s, 26); else drawKue(g, t, 30);
+  try { ICONS[key] = c.toDataURL(); } catch (e) { ICONS[key] = ""; }
+  return ICONS[key];
+}
+// ikon agar-agar (sasaran)
+function drawAgar(g, R) {
+  const lg = g.createLinearGradient(0, -R, 0, R); lg.addColorStop(0, "#ffc4e4"); lg.addColorStop(1, "#ff5fae");
+  g.globalAlpha = 0.95; rr(g, -R * 0.78, -R * 0.62, R * 1.56, R * 1.4, R * 0.3); g.fillStyle = lg; g.fill(); g.globalAlpha = 1;
+  g.lineWidth = R * 0.1; g.strokeStyle = INK; g.stroke();
+  g.fillStyle = "rgba(255,255,255,.75)"; rr(g, -R * 0.56, -R * 0.44, R * 0.9, R * 0.2, R * 0.1); g.fill();
+  g.fillStyle = "rgba(255,255,255,.5)"; g.beginPath(); g.arc(R * 0.4, R * 0.36, R * 0.12, 0, TAU); g.fill();
+}
+function starSVG(on, cls) {
+  let d = ""; for (let k = 0; k < 10; k++) { const a = -Math.PI / 2 + k * Math.PI / 5, q = k & 1 ? 4.8 : 10.5; d += (k ? "L" : "M") + (12 + Math.cos(a) * q).toFixed(1) + " " + (12.8 + Math.sin(a) * q).toFixed(1); }
+  return '<svg viewBox="0 0 24 24" aria-hidden="true"' + (cls ? ' class="' + cls + '"' : "") + '><path d="' + d + 'Z" fill="' + (on ? "#ffd23a" : "#e6d6dc") + '" stroke="#3b1740" stroke-width="2" stroke-linejoin="round"/></svg>';
+}
+const fmt = (n) => String(Math.max(0, Math.round(n))).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+/* ---------- latar: pasar dengan tenda, lampu, meja ---------- */
+const THEMES = [
+  { sky: ["#7fd3ff", "#c6ecff", "#fff3d6"], aw: ["#ff4f6d", "#fff6ee"], st: "rgba(90,150,210,.35)" },
+  { sky: ["#4cbfff", "#a8e6ff", "#fff0b8"], aw: ["#1fb46a", "#fff6ee"], st: "rgba(70,140,200,.35)" },
+  { sky: ["#ff8f73", "#ffc58a", "#fff0c9"], aw: ["#7a4be0", "#fff6ee"], st: "rgba(190,90,90,.3)" },
+  { sky: ["#241b5e", "#4f3593", "#b56aa9"], aw: ["#ff8a1a", "#fff6ee"], st: "rgba(20,10,60,.55)", night: true }
+];
+let BG = null, BGK = "", themeNow = 0;
+
+const $ = (id) => document.getElementById(id);
+const cv = $("cv"), colEl = $("col");
+const ctx = cv.getContext("2d");
+let vw = 0, vh = 0, dpr = 1, sT = 0, sB = 0, sL = 0, sR = 0, colX = 0, colW = 0, SIDE = false;
+let TITLE_Y = 0, PADB = 0, CELL = 40, BX = 0, BY = 0, BS = 320, HG = null, HM = null, HS = null, TABLE_Y = 0, time = 0;
+
+/* ================= TATA LETAK ================= */
+function layout() {
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+  vw = window.innerWidth; vh = window.innerHeight;
+  const ps = getComputedStyle($("probe"));
+  sT = parseFloat(ps.paddingTop) || 0; sB = parseFloat(ps.paddingBottom) || 0; sL = parseFloat(ps.paddingLeft) || 0; sR = parseFloat(ps.paddingRight) || 0;
+  cv.width = Math.round(vw * dpr); cv.height = Math.round(vh * dpr);
+  SIDE = vw / vh > 1.25 && vh < 520; // ponsel mendatar: papan di tengah, HUD di kiri dan kanan
+  colW = COVER ? vw : Math.min(vw, SIDE ? 560 : 500); colX = Math.round((vw - colW) / 2);
+  colEl.style.left = colX + "px"; colEl.style.width = colW + "px";
+  if (SIDE) {
+    const top = sT + 8, bot = vh - sB - 8, side = Math.max(130, vw * 0.22);
+    CELL = Math.floor(Math.min(bot - top, vw - 2 * side - sL - sR) / 8.6); // 8.6 = 8 sel + bingkai dua sisi + sela
+    BS = CELL * 8; BX = Math.round((vw - BS) / 2); BY = Math.round(top + (bot - top - BS) / 2);
+    const lw = BX - sL - 22, rx = BX + BS + 12, rw = vw - sR - rx - 10;
+    HG = { x: sL + 12, y: sT + 66, w: lw, h: 78 }; HM = { x: sL + 12, y: sT + 152, w: lw, h: 64 };
+    HS = { x: rx, y: sT + 12, w: rw, h: 88, side: true };
+  } else {
+    const top = sT + 8 + 58 + 6 + 28 + 10, bot = vh - sB - 12;
+    CELL = Math.floor(Math.min(colW - 12, bot - top) / 8.6);
+    BS = CELL * 8; BX = Math.round((vw - BS) / 2); BY = Math.round(top + Math.max(0, (bot - top - BS) * 0.18));
+    HG = { x: colX + 62, y: sT + 8, w: colW - 62 - 94, h: 58 }; HM = { x: colX + colW - 88, y: sT + 8, w: 78, h: 58 };
+    HS = { x: colX + 10, y: sT + 72, w: colW - 20, h: 28 };
+  }
+  TABLE_Y = SIDE ? vh * 0.72 : Math.min(vh - sB - 30, BY + BS * 0.62);
+  TITLE_Y = SIDE ? vh * 0.74 : vh * 0.7;
+  PADB = Math.round(vh * (SIDE || vw / vh > 1.3 ? 0.1 : vh > 760 ? 0.28 : 0.22) + sB);
+  document.documentElement.style.setProperty("--padb", PADB + "px");
+  buildSprites(CELL * dpr); BGK = ""; BLK = ""; CARDS.clear(); measureLogo();
+}
+const cellX = (c) => BX + (c + 0.5) * CELL, cellY = (r) => BY + (r + 0.5) * CELL;
+function cellAt(x, y) {
+  const c = Math.floor((x - BX) / CELL), r = Math.floor((y - BY) / CELL);
+  if (c < 0 || c >= N || r < 0 || r >= N) return -1;
+  const i = r * 8 + c; return core.M[i] ? i : -1;
+}
+
+/* ---------- latar (dibuat sekali per ukuran dan tema) ---------- */
+function buildBG() {
+  const key = vw + "x" + vh + ":" + themeNow + ":" + dpr + ":" + BX + ":" + (mode === "title" || COVER ? 1 : 0);
+  if (key === BGK && BG) return; BGK = key;
+  BG = mk(vw * dpr, vh * dpr); const g = BG.getContext("2d"), T = THEMES[themeNow], rn = KIT.rng(77);
+  g.scale(dpr, dpr);
+  const sk = g.createLinearGradient(0, 0, 0, vh); sk.addColorStop(0, T.sky[0]); sk.addColorStop(0.55, T.sky[1]); sk.addColorStop(1, T.sky[2]);
+  g.fillStyle = sk; g.fillRect(0, 0, vw, vh);
+  if (T.night) for (let k = 0; k < 60; k++) { g.globalAlpha = 0.4 + rn() * 0.6; g.fillStyle = "#fff"; g.beginPath(); g.arc(rn() * vw, rn() * vh * 0.6, 0.6 + rn() * 1.4, 0, TAU); g.fill(); }
+  else { g.globalAlpha = 0.8; g.fillStyle = "#fff"; for (const [x, y, s] of [[0.14, 0.2, 1], [0.78, 0.3, 1.3], [0.45, 0.14, 0.8]]) cloud(g, x * vw, y * vh, s * Math.min(1.4, vw / 500)); }
+  g.globalAlpha = 1;
+  // kios-kios pasar di kejauhan
+  const TY = mode === "title" || mode === "leaving" || COVER ? TITLE_Y : TABLE_Y, hy = TY - Math.min(90, vh * 0.12);
+  for (let x = -20; x < vw + 40;) {
+    const w = 70 + rn() * 60, h = 50 + rn() * 50, roof = ["#ff7a8a", "#ffc85a", "#7fd0ff", "#b68cff", "#8fe37a"][(rn() * 5) | 0];
+    g.fillStyle = T.st; g.fillRect(x + 6, hy - h, w - 12, h + 200);
+    g.globalAlpha = T.night ? 0.55 : 0.5; g.fillStyle = roof; g.beginPath(); g.moveTo(x - 4, hy - h + 4); g.lineTo(x + w / 2, hy - h - w * 0.28); g.lineTo(x + w + 4, hy - h + 4); g.fill();
+    if (T.night) { g.globalAlpha = 0.9; g.fillStyle = "#ffd98a"; g.fillRect(x + w * 0.3, hy - h * 0.55, w * 0.4, h * 0.3); }
+    g.globalAlpha = 1; x += w + 8 + rn() * 20;
+  }
+  // meja kayu
+  const tg = g.createLinearGradient(0, TY, 0, vh); tg.addColorStop(0, "#c98a4b"); tg.addColorStop(1, "#8a5226");
+  g.fillStyle = tg; g.fillRect(0, TY, vw, vh - TY);
+  g.fillStyle = "#e0a765"; g.fillRect(0, TY, vw, 7); g.fillStyle = INK; g.fillRect(0, TY + 7, vw, 3);
+  g.strokeStyle = "rgba(70,30,10,.35)"; g.lineWidth = 2;
+  for (let y = TY + 34; y < vh; y += 30) { g.beginPath(); g.moveTo(0, y); g.lineTo(vw, y); g.stroke(); }
+  for (let k = 0; k < 14; k++) { const y = TY + 14 + rn() * (vh - TY), x = rn() * vw; g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + 30, y - 4, x + 70, y); g.stroke(); }
+  // tenda bergaris di atas
+  const AH = Math.max(40, Math.min(78, vh * 0.085)), sw = 34;
+  g.fillStyle = "rgba(40,10,40,.2)"; g.fillRect(0, AH, vw, 10);
+  for (let x = 0, k = 0; x < vw; x += sw, k++) { g.fillStyle = T.aw[k & 1]; g.fillRect(x, 0, sw, AH); }
+  for (let x = 0, k = 0; x < vw + sw; x += sw, k++) { g.fillStyle = T.aw[k & 1]; g.beginPath(); g.arc(x + sw / 2, AH, sw / 2, 0, Math.PI); g.fill(); g.strokeStyle = INK; g.lineWidth = 3; g.stroke(); }
+  g.fillStyle = INK; g.fillRect(0, AH - 1.5, vw, 3);
+  // untaian lampu
+  LAMPS = [];
+  const ly = AH + 26;
+  g.strokeStyle = INK; g.lineWidth = 2; g.beginPath();
+  for (let x = 0; x <= vw; x += 6) { const p = (x % 220) / 220, y = ly + Math.sin(p * Math.PI) * 18; if (x) g.lineTo(x, y); else g.moveTo(x, y); }
+  g.stroke();
+  for (let x = 22, k = 0; x < vw; x += 44, k++) { const p = (x % 220) / 220; LAMPS.push([x, ly + Math.sin(p * Math.PI) * 18 + 7, ["#ffd23a", "#ff5c93", "#7fd8ff", "#8ef06a"][k % 4]]); }
+  // layar tinggi: tampah di meja bawah papan
+  const below = vh - sB - (BY + BS + CELL * 0.3);
+  if (below > 110 && mode !== "title" && !COVER) {
+    const rx = Math.min((colW / 2 - 10) / 2.2, below * 0.9, 130), cy = BY + BS + CELL * 0.3 + below * 0.55;
+    tampah(g, vw / 2 - rx * 1.15, cy, rx, KIT.rng(11)); tampah(g, vw / 2 + rx * 1.15, cy + 8, rx * 0.9, KIT.rng(12));
+  }
+  // hiasan samping di layar lebar: tampah berisi jajanan
+  const free = (vw - Math.max(BS + 40, colW)) / 2;
+  if (free > 110 && mode !== "title" && !COVER) for (const sd of [-1, 1]) {
+    const cx = sd < 0 ? free * 0.5 : vw - free * 0.5, cy = Math.min(vh - 40, TABLE_Y + 50), rx = Math.min(free * 0.42, 150);
+    tampah(g, cx, cy, rx, KIT.rng(sd + 5));
+  }
+}
+let LAMPS = [];
+function cloud(g, x, y, s) { for (const [a, b, r] of [[0, 0, 26], [30, -12, 30], [62, 0, 24], [30, 6, 26]]) { g.beginPath(); g.arc(x + a * s, y + b * s, r * s, 0, TAU); g.fill(); } }
+// tampah bambu dengan tumpukan jajanan
+function tampah(g, cx, cy, rx, rn, bob) {
+  const ry = rx * 0.36;
+  g.fillStyle = "rgba(40,10,20,.25)"; g.beginPath(); g.ellipse(cx + 6, cy + ry * 0.5, rx * 1.02, ry * 1.02, 0, 0, TAU); g.fill();
+  g.fillStyle = "#b8782f"; g.beginPath(); g.ellipse(cx, cy + ry * 0.22, rx, ry, 0, 0, TAU); g.fill(); g.strokeStyle = INK; g.lineWidth = 3; g.stroke();
+  g.fillStyle = "#e7b267"; g.beginPath(); g.ellipse(cx, cy, rx, ry, 0, 0, TAU); g.fill(); g.stroke();
+  g.save(); g.beginPath(); g.ellipse(cx, cy, rx * 0.92, ry * 0.9, 0, 0, TAU); g.clip();
+  g.strokeStyle = "rgba(150,90,30,.45)"; g.lineWidth = 2;
+  for (let k = -rx; k < rx; k += 9) { g.beginPath(); g.moveTo(cx + k, cy - ry); g.lineTo(cx + k + ry, cy + ry); g.stroke(); g.beginPath(); g.moveTo(cx + k, cy + ry); g.lineTo(cx + k + ry, cy - ry); g.stroke(); }
+  g.restore();
+  g.fillStyle = "#5cc45a"; g.beginPath(); g.ellipse(cx, cy - ry * 0.05, rx * 0.72, ry * 0.62, 0, 0, TAU); g.fill(); g.strokeStyle = "#2f8a38"; g.lineWidth = 2; g.stroke();
+  const R = Math.min(rx * 0.2, 44), spots = [[0, -0.75], [-0.22, -0.35], [0.24, -0.35], [-0.45, 0.05], [0.45, 0.05], [0, 0.12]], off = (rn() * 6) | 0;
+  spots.forEach(([a, b], k) => {
+    const t = (k + off) % 6, x = cx + a * rx, y = cy + b * ry * 1.3 - R * 0.5 - (bob ? Math.abs(Math.sin(time * 2.4 + k)) * R * 0.25 : 0);
+    if (bob && SPR.length) sprAt(g, t, 0, x, y, R); else { g.save(); g.translate(x, y); drawKue(g, t, R, true); g.restore(); }
+  });
+}
+// gambar dari cache dengan jari-jari R (hemat untuk yang digambar tiap bingkai)
+function sprAt(g, t, s, x, y, R) { const k = R / (SPR_R / dpr), D = SPR_S / dpr * k; g.drawImage(sprOf(t, s), x - D / 2, y - D / 2, D, D); }
+function drawBackdrop() {
+  buildBG();
+  const g = ctx; g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(BG, 0, 0);
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const night = THEMES[themeNow].night;
+  for (let k = 0; k < LAMPS.length; k++) { // lampu berkedip
+    const [x, y, c] = LAMPS[k], on = 0.55 + 0.45 * Math.sin(time * 3 + k * 1.7);
+    if (night) { g.globalAlpha = 0.25 * on; g.fillStyle = c; g.beginPath(); g.arc(x, y, 13, 0, TAU); g.fill(); }
+    g.globalAlpha = 1; g.fillStyle = c; g.beginPath(); g.arc(x, y, 5.5, 0, TAU); g.fill(); g.strokeStyle = INK; g.lineWidth = 1.5; g.stroke();
+    g.fillStyle = "rgba(255,255,255," + (0.4 + 0.5 * on).toFixed(2) + ")"; g.beginPath(); g.arc(x - 1.5, y - 1.5, 1.8, 0, TAU); g.fill();
+  }
+  for (let k = 0; k < 14; k++) { // gelembung cahaya melayang
+    const x = ((k * 0.137 + time * 0.01 * (1 + k % 3)) % 1) * vw, y = vh - ((k * 0.29 + time * 0.018 * (1 + k % 4)) % 1) * vh, r = 6 + (k % 5) * 5;
+    g.globalAlpha = night ? 0.16 : 0.2; g.fillStyle = k % 2 ? "#fff" : "#ffe0f0"; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
+  }
+  g.globalAlpha = 1;
+}
+
+/* ================= PAPAN ================= */
+// satu sel (latar kotak + agar-agar); w = goyangan agar
+function drawCell(g, i, x, y, w) {
+  const r = i >> 3, c = i & 7;
+  g.fillStyle = (r + c) & 1 ? "#ffe9d6" : "#fff6ec"; rr(g, x + 1.5, y + 1.5, CELL - 3, CELL - 3, CELL * 0.18); g.fill();
+  const L = core.J[i];
+  if (L) {
+    const k = w > 0 ? Math.sin(w * 40) * w * 0.25 : 0, p = CELL * (0.06 - k * 0.1);
+    g.globalAlpha = L > 1 ? 0.88 : 0.7; g.fillStyle = L > 1 ? "#e04aa8" : "#ff8fcb"; rr(g, x + p, y + p, CELL - 2 * p, CELL - 2 * p, CELL * 0.2); g.fill(); g.globalAlpha = 1;
+    g.strokeStyle = L > 1 ? "#8a1f6a" : "#e0579f"; g.lineWidth = L > 1 ? 3 : 2; g.stroke();
+    g.fillStyle = "rgba(255,255,255,.55)"; rr(g, x + CELL * 0.18, y + CELL * 0.14, CELL * 0.4, CELL * 0.1, CELL * 0.05); g.fill();
+  }
+}
+// lapisan papan diam (bingkai, anyaman, sel, agar) digambar ulang hanya bila agar atau ukuran berubah
+let BL = null, BLK = "", BLM = 0;
+function boardLayer() {
+  const fw = Math.max(6, CELL * 0.26), m = fw + 14;
+  let h = 0; for (let i = 0; i < NN; i++) h = (h * 31 + core.J[i] * 3 + core.M[i]) | 0;
+  const key = BX + ":" + BY + ":" + CELL + ":" + dpr + ":" + h;
+  if (key === BLK && BL) return; BLK = key; BLM = m;
+  BL = mk((BS + 2 * m) * dpr, (BS + 2 * m) * dpr); const g = BL.getContext("2d"); g.scale(dpr, dpr); g.translate(m - BX, m - BY);
+  const x0 = BX - fw, y0 = BY - fw, S = BS + fw * 2;
+  g.fillStyle = "rgba(40,10,30,.3)"; rr(g, x0 + 5, y0 + 9, S, S, fw * 1.6); g.fill();
+  const fg = g.createLinearGradient(0, y0, 0, y0 + S); fg.addColorStop(0, "#f0c07a"); fg.addColorStop(1, "#c98a4b");
+  rr(g, x0, y0, S, S, fw * 1.6); g.fillStyle = fg; g.fill(); g.lineWidth = 3; g.strokeStyle = INK; g.stroke();
+  g.save(); rr(g, x0, y0, S, S, fw * 1.6); g.clip(); // anyaman bambu di bingkai
+  g.strokeStyle = "rgba(140,80,25,.45)"; g.lineWidth = 2; g.beginPath();
+  for (let k = -S; k < S; k += 8) { g.moveTo(x0 + k, y0); g.lineTo(x0 + k + S, y0 + S); }
+  g.stroke(); g.restore();
+  g.fillStyle = "#9b6431"; rr(g, BX - 2, BY - 2, BS + 4, BS + 4, CELL * 0.22); g.fill(); g.strokeStyle = INK; g.lineWidth = 2.5; g.stroke();
+  for (let i = 0; i < NN; i++) if (core.M[i]) drawCell(g, i, BX + (i & 7) * CELL, BY + (i >> 3) * CELL, 0);
+}
+function drawBoard() {
+  const g = ctx; boardLayer();
+  g.drawImage(BL, BX - BLM, BY - BLM, BS + 2 * BLM, BS + 2 * BLM);
+  for (let i = 0; i < NN; i++) if (AGW[i] > 0 && core.M[i]) drawCell(g, i, BX + (i & 7) * CELL, BY + (i >> 3) * CELL, AGW[i]); // agar bergoyang
+  if (sel >= 0 && mode === "play") { const x = BX + (sel & 7) * CELL, y = BY + (sel >> 3) * CELL; g.strokeStyle = "#fff"; g.lineWidth = 3 + Math.sin(time * 8); rr(g, x + 3, y + 3, CELL - 6, CELL - 6, CELL * 0.2); g.stroke(); }
+  if (kbd && mode === "play" && kc !== sel) { const x = BX + (kc & 7) * CELL, y = BY + (kc >> 3) * CELL; g.save(); g.setLineDash([6, 5]); g.lineDashOffset = -time * 20; g.strokeStyle = "#3b1740"; g.lineWidth = 3; rr(g, x + 3, y + 3, CELL - 6, CELL - 6, CELL * 0.2); g.stroke(); g.strokeStyle = "#fff"; g.lineWidth = 1.5; g.stroke(); g.restore(); }
+}
+// bidak (dipotong ke papan agar yang baru jatuh muncul dari tepi atas)
+function drawPieces() {
+  const g = ctx, D = SPR_S / dpr;
+  g.save(); g.beginPath(); g.rect(BX - CELL * 0.3, BY - 2, BS + CELL * 0.6, BS + CELL * 0.4); g.clip();
+  const hOn = hint && (guide || idleT > hintDelay()), hA = hOn ? hint.a : -1, hB = hOn ? hint.b : -1;
+  for (const sp of VIS.values()) {
+    let x = BX + (sp.x + 0.5) * CELL, y = BY + (sp.y + 0.5) * CELL, sx = 1, sy = 1, rot = 0;
+    if (sp.sq > 0) { const k = sp.sq / 0.18, q = Math.sin(k * Math.PI) * 0.2; sx = 1 + q; sy = 1 - q; y += CELL * 0.47 * q; }
+    if (sp.grow > 0) { const k = sp.grow / 0.4; sx *= 1 + Math.sin(k * Math.PI) * 0.35; sy = sx; }
+    if (sp.cell === sel && mode === "play") { sx *= 1.1; sy *= 1.1; y -= Math.abs(Math.sin(time * 6)) * CELL * 0.06; }
+    if (sp.cell === hA || sp.cell === hB) { const o = Math.sin(time * 9) * CELL * 0.08, d = sp.cell === hA ? hB - hA : hA - hB; x += (d === 1 || d === -1 ? Math.sign(d) : 0) * o; y += (d === 8 || d === -8 ? Math.sign(d) : 0) * o; }
+    if (sp.s && sp.s !== BOMB && sp.s !== RB) { g.globalAlpha = 0.3 + 0.2 * Math.sin(time * 5 + sp.id); g.fillStyle = "#fff"; g.beginPath(); g.arc(x, y, CELL * 0.5, 0, TAU); g.fill(); g.globalAlpha = 1; }
+    if (sp.s === BOMB) { const p = 0.5 + 0.5 * Math.sin(time * 6 + sp.id); g.globalAlpha = 0.35 * p; g.fillStyle = "#fff38a"; g.beginPath(); g.arc(x, y, CELL * (0.52 + 0.08 * p), 0, TAU); g.fill(); g.globalAlpha = 1; }
+    if (sp.t === RBT) rot = time * 1.6;
+    const img = sprOf(sp.t, sp.s);
+    if (rot || sx !== 1 || sy !== 1) { g.save(); g.translate(x, y); if (rot) g.rotate(Math.sin(rot) * 0.3); g.scale(sx, sy); g.drawImage(img, -D / 2, -D / 2, D, D); g.restore(); }
+    else g.drawImage(img, x - D / 2, y - D / 2, D, D);
+  }
+  for (const d of DYING) { // letup
+    if (d.age < 0) continue;
+    const k = d.age / 0.2, s = 1 + k * 0.45, x = BX + (d.x + 0.5) * CELL, y = BY + (d.y + 0.5) * CELL;
+    g.globalAlpha = Math.max(0, 1 - k); g.drawImage(sprOf(d.t, d.s), x - D * s / 2, y - D * s / 2, D * s, D * s); g.globalAlpha = 1;
+  }
+  g.restore();
+}
+const hintDelay = () => def && !def.daily && def.n <= 5 ? 2.5 : 5;
+// panduan langkah pertama: papan diredupkan kecuali dua sel, tangan menggeser
+function drawGuide() {
+  if (!guide || !hint || mode !== "play" || introT > 0 || ph !== "idle") return;
+  if (guide === 2 && TIP.t < 1) TIP.t = 1;
+  const g = ctx, a = hint.a, b = hint.b;
+  if (guide === 2) {
+    g.save(); g.beginPath(); g.rect(BX - 4, BY - 4, BS + 8, BS + 8);
+    const ca = Math.min(a, b), wide = Math.abs(a - b) === 1, x = BX + (ca & 7) * CELL, y = BY + (ca >> 3) * CELL;
+    g.rect(x, y, wide ? 2 * CELL : CELL, wide ? CELL : 2 * CELL); // lubang untuk dua sel
+    g.fillStyle = "rgba(42,13,46,.55)"; g.fill("evenodd"); g.restore();
+  }
+  const ax = cellX(a & 7), ay = cellY(a >> 3), bx = cellX(b & 7), by = cellY(b >> 3), p = (time % 1.1) / 1.1;
+  const e = p < 0.2 ? 0 : p < 0.7 ? (p - 0.2) / 0.5 : 1, k = e * e * (3 - 2 * e), hx = ax + (bx - ax) * k, hy = ay + (by - ay) * k;
+  const al = p > 0.85 ? (1 - p) / 0.15 : p < 0.08 ? p / 0.08 : 1, press = p > 0.12 && p < 0.75;
+  g.save(); g.globalAlpha = al; g.translate(hx + CELL * 0.18, hy + CELL * 0.22); g.rotate(-0.35); const s = CELL / 44 * (press ? 0.92 : 1); g.scale(s, s);
+  // jari telunjuk kartun
+  g.lineJoin = "round"; g.lineWidth = 3; g.strokeStyle = INK; g.fillStyle = "#fff";
+  g.beginPath(); g.moveTo(-6, -2); g.lineTo(-6, -24); g.quadraticCurveTo(0, -31, 6, -24); g.lineTo(6, -6); g.lineTo(9, -8); g.quadraticCurveTo(15, -10, 16, -4); g.lineTo(17, -2); g.quadraticCurveTo(22, -3, 23, 3); g.lineTo(23, 18); g.quadraticCurveTo(20, 30, 6, 30); g.lineTo(-2, 30); g.quadraticCurveTo(-12, 28, -15, 14); g.lineTo(-19, 4); g.quadraticCurveTo(-19, -3, -12, -1); g.closePath(); g.fill(); g.stroke();
+  g.beginPath(); g.moveTo(6, -6); g.lineTo(6, 4); g.moveTo(16, -4); g.lineTo(16, 5); g.stroke();
+  if (press) { g.globalAlpha = al * 0.6; g.strokeStyle = "#fff"; g.lineWidth = 3; g.beginPath(); g.arc(0, -30, 9, 0, TAU); g.stroke(); }
+  g.restore();
+}
+
+/* ================= EFEK ================= */
+const PN = 700, pX = new Float32Array(PN), pY = new Float32Array(PN), pVX = new Float32Array(PN), pVY = new Float32Array(PN), pL = new Float32Array(PN), pM = new Float32Array(PN), pS = new Float32Array(PN), pR = new Float32Array(PN), pK = new Uint8Array(PN), pC = new Array(PN).fill("#fff");
+let pHead = 0;
+function part(x, y, vx, vy, life, size, col, kind) { const i = pHead; pHead = (pHead + 1) % PN; pX[i] = x; pY[i] = y; pVX[i] = vx; pVY[i] = vy; pL[i] = life; pM[i] = life; pS[i] = size; pC[i] = col; pK[i] = kind || 0; pR[i] = Math.random() * TAU; }
+function burst(x, y, col, n, sp) {
+  for (let k = 0; k < n; k++) { const a = Math.random() * TAU, s = (60 + Math.random() * 200) * (sp || 1); part(x, y, Math.cos(a) * s, Math.sin(a) * s - 80, 0.5 + Math.random() * 0.4, CELL * (0.07 + Math.random() * 0.08), col, 0); }
+}
+function sparkle(x, y, n, col, sp) {
+  for (let k = 0; k < n; k++) { const a = Math.random() * TAU, s = (40 + Math.random() * 140) * (sp || 1); part(x, y, Math.cos(a) * s, Math.sin(a) * s - 40, 0.5 + Math.random() * 0.4, CELL * (0.12 + Math.random() * 0.1), col || "#fff6b0", 1); }
+}
+let DYING = [], FXL = [], TXT = [], TL = [], AGW = new Float32Array(NN), shake = 0, flash = 0, flashC = "#fff";
+function later(t, fn) { if (t <= 0) fn(); else TL.push({ t, fn }); }
+function popPiece(t, s, x, y, casc, lite) {
+  DYING.push({ t, s, x, y, age: 0 });
+  const px = cellX(x), py = cellY(y), col = t === RBT ? KCOL[(Math.random() * 6) | 0] : KCOL[t] || "#fff";
+  if (lite) burst(px, py, col, 3); else { burst(px, py, col, 7); sparkle(px, py, 3); }
+  if (!lite && (t === 0 || t === 4)) for (let k = 0; k < 4; k++) part(px, py, (Math.random() - 0.5) * 160, -60 - Math.random() * 120, 0.7, CELL * 0.07, "#ffffff", 2);
+  if (t >= 0 && t < RBT && LAG[t] > 0) { const k = goalSlot(t); if (k >= 0 && flyN < 12 && core.got[t] - LAG[t] < itemN(t)) { flyN++; FLY.push({ ic: t, k, x0: px, y0: py, age: 0 }); } else LAG[t]--; }
+  SFX.pop(casc);
+}
+function agarHit(i, left) {
+  AGW[i] = 0.35; const x = cellX(i & 7), y = cellY(i >> 3);
+  burst(x, y, left ? "#e04aa8" : "#ff8fcb", 6, 0.8); if (!left) { sparkle(x, y, 4, "#ffd0ec"); SFX.agar(); }
+  if (LAGA > 0) { if (flyN < 12) { flyN++; FLY.push({ ic: 7, k: 0, x0: x, y0: y, age: 0 }); } else LAGA--; }
+}
+/* ---------- jajan terbang ke kartu sasaran ---------- */
+let FLY = [], LAG = [0, 0, 0, 0, 0, 0], LAGA = 0, flyN = 0, goalPulse = [0, 0, 0], plingAt = 0;
+function goalSlot(t) { const g = def && def.goal; if (!g || g.kind !== "collect") return -1; return g.items.findIndex((it) => it.t === t); }
+function itemN(t) { const k = goalSlot(t); return k >= 0 ? def.goal.items[k].n : 0; }
+function slotXY(k) { const G = HG, n = def.goal.kind === "collect" ? def.goal.items.length : 1, slot = Math.min(G.w / n, 150), cx = G.x + G.w / 2 + (k - (n - 1) / 2) * slot; return [cx - 18, G.y + G.h * 0.42]; }
+function drawFly(dt) {
+  const g = ctx, D = 0.45;
+  for (let j = FLY.length - 1; j >= 0; j--) {
+    const f = FLY[j]; f.age += dt; const k = Math.min(1, f.age / D), e = k * k * (3 - 2 * k), [tx, ty] = slotXY(f.k);
+    if (k >= 1) { FLY.splice(j, 1); if (f.ic === 7) LAGA = Math.max(0, LAGA - 1); else LAG[f.ic] = Math.max(0, LAG[f.ic] - 1); goalPulse[f.k] = 0.25; const now = performance.now(); if (now - plingAt > 45) { plingAt = now; SFX.pling(); } continue; }
+    const cx = (f.x0 + tx) / 2 + (f.x0 < tx ? -1 : 1) * 40, cy = Math.min(f.y0, ty) - 70;
+    const x = (1 - e) * (1 - e) * f.x0 + 2 * (1 - e) * e * cx + e * e * tx, y = (1 - e) * (1 - e) * f.y0 + 2 * (1 - e) * e * cy + e * e * ty, R = CELL * 0.42 * (1 - 0.5 * e);
+    if (f.ic === 7) { g.save(); g.translate(x, y); drawAgar(g, R); g.restore(); } else sprAt(g, f.ic, 0, x, y, R);
+  }
+  for (let k = 0; k < 3; k++) if (goalPulse[k] > 0) goalPulse[k] = Math.max(0, goalPulse[k] - dt);
+}
+function fxStart(f) {
+  const x = cellX(f.c), y = cellY(f.r);
+  if (f.k === "row" || f.k === "col") { FXL.push({ k: f.k, x, y, t: 0, d: 0.42 }); SFX.zap(); for (let k = 0; k < 10; k++) sparkle(f.k === "row" ? BX + Math.random() * BS : x, f.k === "row" ? y : BY + Math.random() * BS, 1, "#fff"); shake = Math.max(shake, 4); }
+  else if (f.k === "bomb") { FXL.push({ k: "bomb", x, y, t: 0, d: 0.5, rad: f.rad }); SFX.boom(f.rad); shake = Math.max(shake, 7 + f.rad * 4); flash = Math.max(flash, 0.12); sparkle(x, y, 14, "#fff38a", 1.6); }
+  else if (f.k === "rb") { FXL.push({ k: "rb", x, y, t: 0, d: 0.6, to: f.to.map((i) => [cellX(i & 7), cellY(i >> 3)]), col: KCOL[f.t] }); SFX.rainbow(); shake = Math.max(shake, 5); }
+  else if (f.k === "all") { flash = 0.45; flashC = "#fff"; shake = 16; SFX.rainbow(); SFX.boom(2); FXL.push({ k: "bomb", x, y, t: 0, d: 0.8, rad: 4 }); }
+}
+function drawFx(dt) {
+  const g = ctx;
+  for (let j = FXL.length - 1; j >= 0; j--) {
+    const F = FXL[j]; F.t += dt; if (F.t > F.d) { FXL.splice(j, 1); continue; }
+    const k = F.t / F.d, a = 1 - k;
+    if (F.k === "row" || F.k === "col") {
+      const h = CELL * (0.9 - 0.6 * k), gr = F.k === "row" ? g.createLinearGradient(0, F.y - h, 0, F.y + h) : g.createLinearGradient(F.x - h, 0, F.x + h, 0);
+      gr.addColorStop(0, "rgba(255,120,200,0)"); gr.addColorStop(0.35, "rgba(255,160,220," + (0.7 * a).toFixed(3) + ")"); gr.addColorStop(0.5, "rgba(255,255,255," + a.toFixed(3) + ")"); gr.addColorStop(0.65, "rgba(160,220,255," + (0.7 * a).toFixed(3) + ")"); gr.addColorStop(1, "rgba(120,200,255,0)");
+      g.fillStyle = gr; const ext = CELL * 0.3;
+      if (F.k === "row") g.fillRect(BX - ext, F.y - h, BS + 2 * ext, h * 2); else g.fillRect(F.x - h, BY - ext, h * 2, BS + 2 * ext);
+    } else if (F.k === "bomb") {
+      const R = CELL * (F.rad + 0.6) * (0.4 + k * 1.1);
+      g.globalAlpha = a; g.strokeStyle = "#fff38a"; g.lineWidth = CELL * 0.35 * a + 2; g.beginPath(); g.arc(F.x, F.y, R, 0, TAU); g.stroke();
+      g.strokeStyle = "#fff"; g.lineWidth = CELL * 0.12 * a + 1; g.stroke();
+      const gl = g.createRadialGradient(F.x, F.y, 0, F.x, F.y, R); gl.addColorStop(0, "rgba(255,250,200," + (0.8 * a).toFixed(3) + ")"); gl.addColorStop(1, "rgba(255,200,80,0)");
+      g.fillStyle = gl; g.beginPath(); g.arc(F.x, F.y, R, 0, TAU); g.fill(); g.globalAlpha = 1;
+    } else if (F.k === "rb") {
+      g.lineCap = "round";
+      F.to.forEach(([x, y], n) => {
+        const p = Math.min(1, F.t / 0.18 + 0.001 - n * 0.004); if (p <= 0) return;
+        g.globalAlpha = Math.min(1, a * 1.6); g.strokeStyle = KCOL[n % 6]; g.lineWidth = CELL * 0.14 + 2; g.beginPath(); g.moveTo(F.x, F.y); g.lineTo(F.x + (x - F.x) * p, F.y + (y - F.y) * p); g.stroke();
+        g.strokeStyle = "#fff"; g.lineWidth = CELL * 0.05 + 1; g.stroke();
+      });
+      g.globalAlpha = 1; g.lineCap = "butt";
+    }
+  }
+}
+function drawParticles(dt) {
+  const g = ctx;
+  for (let i = 0; i < PN; i++) {
+    if (pL[i] <= 0) continue; pL[i] -= dt; if (pL[i] <= 0) continue;
+    const k = pK[i]; pVY[i] += (k === 1 ? 200 : 700) * dt; pVX[i] *= 1 - dt * 1.5; pX[i] += pVX[i] * dt; pY[i] += pVY[i] * dt; pR[i] += dt * 7;
+    const l = pL[i] / pM[i], x = pX[i], y = pY[i], s = pS[i] * (k === 1 ? (l > 0.8 ? (1 - l) * 5 : 1) : 1);
+    g.globalAlpha = l < 0.35 ? l / 0.35 : 1; g.fillStyle = pC[i];
+    if (k === 1) { g.beginPath(); g.moveTo(x, y - s); g.quadraticCurveTo(x, y, x + s, y); g.quadraticCurveTo(x, y, x, y + s); g.quadraticCurveTo(x, y, x - s, y); g.quadraticCurveTo(x, y, x, y - s); g.fill(); }
+    else if (k === 2) { g.save(); g.translate(x, y); g.rotate(pR[i]); g.fillRect(-s, -s * 0.4, s * 2, s * 0.8); g.restore(); }
+    else { g.beginPath(); g.arc(x, y, s, 0, TAU); g.fill(); }
+  }
+  g.globalAlpha = 1;
+}
+function fontPx(n) { return "800 " + (n | 0) + "px 'Baloo 2','Arial Rounded MT Bold',sans-serif"; }
+function ftext(x, y, s, size, col) { TXT.push({ x, y, s, size, col, l: 1 }); if (TXT.length > 14) TXT.shift(); }
+const BN = { s: "", t: 0, d: 1, sz: 40, gr: null, y: 0 };
+function banner(s, dur, sz, cols) {
+  BN.s = s; BN.t = dur; BN.d = dur; BN.sz = Math.min(sz, Math.max(26, (SIDE ? BS * 1.3 : vw) * 0.92 / (s.length * 0.55)));
+  const f = BN.sz, gr = ctx.createLinearGradient(0, -f * 0.5, 0, f * 0.4), c = cols || ["#fffbd0", "#ffd32e", "#ff7a1a"];
+  gr.addColorStop(0, c[0]); gr.addColorStop(0.5, c[1]); gr.addColorStop(1, c[2]); BN.gr = gr;
+}
+function drawTexts(dt) {
+  const g = ctx; g.textAlign = "center"; g.textBaseline = "middle"; g.lineJoin = "round";
+  for (let j = TXT.length - 1; j >= 0; j--) {
+    const T = TXT[j]; T.l -= dt * 1.2; if (T.l <= 0) { TXT.splice(j, 1); continue; }
+    const age = 1 - T.l; T.y -= 34 * dt;
+    const s = age < 0.12 ? 0.5 + age / 0.12 * 0.7 : age < 0.26 ? 1.2 - (age - 0.12) / 0.14 * 0.2 : 1;
+    g.globalAlpha = T.l < 0.3 ? T.l / 0.3 : 1; g.font = fontPx(T.size * s);
+    const x = Math.max(BX + 30, Math.min(BX + BS - 30, T.x));
+    g.lineWidth = T.size * 0.24; g.strokeStyle = INK; g.strokeText(T.s, x, T.y + 2); g.strokeText(T.s, x, T.y); g.fillStyle = T.col; g.fillText(T.s, x, T.y);
+  }
+  if (BN.t > 0) {
+    BN.t -= dt; const age = BN.d - BN.t, s = age < 0.18 ? 0.3 + age / 0.18 : age < 0.32 ? 1.3 - (age - 0.18) / 0.14 * 0.3 : 1, f = BN.sz;
+    g.globalAlpha = BN.t < 0.3 ? Math.max(0, BN.t / 0.3) : 1;
+    g.setTransform(dpr * s, 0, 0, dpr * s, (BX + BS / 2) * dpr, (BY + BS * 0.36 - age * 10) * dpr); g.rotate(-0.05 + Math.sin(time * 7) * 0.02);
+    g.font = fontPx(f); g.lineWidth = f * 0.26; g.strokeStyle = INK; g.strokeText(BN.s, 0, f * 0.1); g.strokeText(BN.s, 0, 0);
+    g.fillStyle = BN.gr || "#fff"; g.fillText(BN.s, 0, 0); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  g.globalAlpha = 1;
+}
+
+/* ================= HUD (digambar di kanvas) ================= */
+// kartu HUD: dibuat sekali per ukuran dan warna, lalu hanya ditempel
+const CARDS = new Map();
+function card(x, y, w, h, c1, c2) {
+  const key = (w | 0) + "x" + (h | 0) + (c1 || "") + (c2 || ""), p = 3;
+  let cc = CARDS.get(key);
+  if (!cc) {
+    cc = mk((w + 2 * p) * dpr, (h + 4 + 2 * p) * dpr); const g = cc.getContext("2d"); g.scale(dpr, dpr); g.translate(p, p);
+    g.fillStyle = INK; rr(g, 0, 4, w, h, 16); g.fill();
+    const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, c1 || "#fffaf4"); gr.addColorStop(1, c2 || "#ffe4f0");
+    rr(g, 0, 0, w, h, 16); g.fillStyle = gr; g.fill(); g.lineWidth = 3; g.strokeStyle = INK; g.stroke();
+    g.fillStyle = "rgba(255,255,255,.7)"; rr(g, 6, 4, w - 12, 4, 2); g.fill();
+    if (CARDS.size > 24) CARDS.clear(); CARDS.set(key, cc);
+  }
+  ctx.drawImage(cc, x - p, y - p, w + 2 * p, h + 4 + 2 * p);
+}
+function olText(s, x, y, size, col, align) {
+  const g = ctx; g.font = fontPx(size); g.textAlign = align || "center"; g.textBaseline = "middle"; g.lineJoin = "round";
+  g.lineWidth = size * 0.22; g.strokeStyle = INK; g.strokeText(s, x, y + 1.5); g.strokeText(s, x, y); g.fillStyle = col || "#fff"; g.fillText(s, x, y);
+}
+// isi kartu sasaran; angka yang tampil tertinggal sampai jajan yang terbang tiba
+function goalItems() {
+  const g = def.goal;
+  if (g.kind === "score") return [{ ic: "star", txt: fmt(g.n), done: core.score >= g.n }];
+  if (g.kind === "agar") { const l = core.agarLeft() + LAGA; return [{ ic: 7, txt: String(l), done: !l }]; }
+  return g.items.map((it) => { const l = Math.max(0, it.n - core.got[it.t] + LAG[it.t]); return { ic: it.t, txt: String(l), done: !l }; });
+}
+const goalVerb = () => def.goal.kind === "score" ? "Capai skor" : def.goal.kind === "agar" ? "Bersihkan" : "Kumpulkan";
+function drawIcon(ic, x, y, R) {
+  const g = ctx; g.save(); g.translate(x, y);
+  if (ic === "star") { g.beginPath(); starPath(g, R, R * 0.46); g.fillStyle = "#ffd23a"; g.fill(); g.lineWidth = R * 0.16; g.strokeStyle = INK; g.lineJoin = "round"; g.stroke(); }
+  else if (ic === 7) drawAgar(g, R); else { g.restore(); sprAt(g, ic, 0, x, y, R); return; }
+  g.restore();
+}
+function check(x, y, s) { const g = ctx; g.fillStyle = "#3dbb2c"; g.beginPath(); g.arc(x, y, s, 0, TAU); g.fill(); g.lineWidth = 2.5; g.strokeStyle = INK; g.stroke(); g.strokeStyle = "#fff"; g.lineWidth = s * 0.35; g.lineCap = "round"; g.beginPath(); g.moveTo(x - s * 0.45, y); g.lineTo(x - s * 0.1, y + s * 0.4); g.lineTo(x + s * 0.5, y - s * 0.35); g.stroke(); g.lineCap = "butt"; }
+function drawHUD() {
+  if (!def) return;
+  const G = HG, it = goalItems();
+  card(G.x, G.y, G.w, G.h);
+  const n = it.length, R = Math.min(G.h * 0.26, 18), slot = Math.min(G.w / n, 150);
+  it.forEach((q, k) => {
+    const cx = G.x + G.w / 2 + (k - (n - 1) / 2) * slot, cy = G.y + G.h * 0.42, ix = cx - (q.ic === "star" ? 34 : 18), pu = 1 + goalPulse[k] * 1.4;
+    ctx.save(); ctx.translate(ix, cy); ctx.scale(pu, pu); ctx.translate(-ix, -cy);
+    drawIcon(q.ic, ix, cy, R);
+    if (q.done) check(ix + R * 1.9, cy, R * 0.62); else olText(q.txt, ix + R + 6, cy + 1, q.ic === "star" ? 19 : 23, "#fff", "left");
+    ctx.restore();
+  });
+  ctx.font = fontPx(12); ctx.fillStyle = "#8a4a6a"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(goalVerb(), G.x + G.w / 2, G.y + G.h - 10);
+  const M = HM, low = core.moves <= 5 && mode === "play" && !winning;
+  card(M.x, M.y, M.w, M.h, low ? "#ffb3b3" : "#fffaf4", low ? "#ff6f7f" : "#ffe4f0");
+  const ps = low ? 1 + Math.sin(time * 9) * 0.06 : 1;
+  olText(String(Math.max(0, core.moves)), M.x + M.w / 2, M.y + M.h * 0.42, 30 * ps, low ? "#fff" : "#ffd23a");
+  ctx.font = fontPx(12); ctx.fillStyle = low ? "#fff" : "#8a4a6a"; ctx.textAlign = "center"; ctx.fillText("Langkah", M.x + M.w / 2, M.y + M.h - 10);
+  // skor dan bintang
+  const S = HS, sc = scoreShow, s3 = def.stars[2], frac = Math.min(1, sc / s3), g = ctx;
+  let bx = S.x, bw = S.w, by = S.y, bh = S.h;
+  if (S.side) {
+    card(S.x, S.y, S.w, S.h);
+    ctx.font = fontPx(13); ctx.fillStyle = "#8a4a6a"; ctx.textAlign = "center"; ctx.fillText(levelLabel(), S.x + S.w / 2, S.y + 16);
+    olText(fmt(sc), S.x + S.w / 2, S.y + 40, 24, "#fff");
+    bx = S.x + 12; bw = S.w - 24; by = S.y + 60; bh = 16;
+  } else {
+    const tw = 74; g.fillStyle = INK; rr(g, bx, by + 2, tw + 14, bh, bh / 2); g.fill();
+    ctx.font = fontPx(14); ctx.fillStyle = "#ffe36a"; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillText(levelLabel(), bx + 10, by + bh / 2 + 2);
+    bx += tw; bw -= tw;
+  }
+  g.fillStyle = INK; rr(g, bx - 1, by + 1, bw + 2, bh + 2, (bh + 2) / 2); g.fill();
+  g.fillStyle = "#f3dde8"; rr(g, bx + 2, by + 2, bw - 4, bh - 4, (bh - 4) / 2); g.fill();
+  if (frac > 0) { const fg = g.createLinearGradient(0, by, 0, by + bh); fg.addColorStop(0, "#ffb3d9"); fg.addColorStop(1, "#ff4f93"); g.fillStyle = fg; rr(g, bx + 2, by + 2, Math.max(bh - 4, (bw - 4) * frac), bh - 4, (bh - 4) / 2); g.fill(); }
+  if (!S.side) olText(fmt(sc), bx + bw * 0.38, by + bh / 2 + 1, 17, "#fff");
+  // bintang di dalam bilah; di mode samping diberi jarak minimum agar tidak menumpuk
+  const R0 = S.side ? 9 : 11, xs = [];
+  for (let k = 0; k < 3; k++) xs.push(bx + R0 * 1.5 + 2 + (bw - 3 * R0 - 4) * Math.min(1, (def.stars[k] || 0) / s3)); // ruang untuk bintang yang membesar
+  for (let k = 1; k >= 0; k--) if (def.stars[k]) xs[k] = Math.min(xs[k], xs[k + 1] - 2.4 * R0);
+  for (let k = 0; k < 3; k++) {
+    const v = def.stars[k]; if (!v) continue;
+    const x = Math.max(bx + R0, xs[k]), on = sc >= v;
+    g.save(); g.translate(x, by + bh / 2); const R = R0 * (on ? 1 + Math.max(0, starPop[k]) * 0.6 : 1);
+    g.beginPath(); starPath(g, R, R * 0.46); g.fillStyle = on ? "#ffd23a" : "#e6d6dc"; g.fill(); g.lineWidth = 2; g.strokeStyle = INK; g.lineJoin = "round"; g.stroke(); g.restore();
+  }
+}
+const newMarket = () => kind === "normal" && def && !def.daily && def.n > 1 && (def.n - 1) % 10 === 0;
+function levelLabel() { return kind === "daily" ? "Harian" : kind === "practice" ? "Latihan" : def.daily ? "Tantang" : "Level " + def.n; }
+// kartu pembuka level
+function drawIntro() {
+  if (introT <= 0 || !def) return;
+  const g = ctx, age = INTRO_D - introT, s = age < 0.25 ? 0.4 + age / 0.25 * 0.6 : 1, a = introT < 0.3 ? introT / 0.3 : 1;
+  g.globalAlpha = 0.45 * a; g.fillStyle = "#2a0d2e"; rr(g, BX, BY, BS, BS, CELL * 0.2); g.fill(); g.globalAlpha = a;
+  const w = Math.min(BS * 0.86, 300), h = 150, x = BX + BS / 2, y = BY + BS / 2;
+  g.save(); g.translate(x, y); g.scale(s, s); g.translate(-x, -y);
+  card(x - w / 2, y - h / 2, w, h);
+  const rw = Math.min(w * 0.8, 190); g.fillStyle = INK; rr(g, x - rw / 2, y - h / 2 - 20, rw, 42, 14); g.fill();
+  const rg = g.createLinearGradient(0, y - h / 2 - 22, 0, y - h / 2 + 18); rg.addColorStop(0, "#ff7a7a"); rg.addColorStop(1, "#e8384f");
+  g.fillStyle = rg; rr(g, x - rw / 2 + 3, y - h / 2 - 19, rw - 6, 34, 12); g.fill();
+  olText(levelLabel(), x, y - h / 2 - 2, 24);
+  const it = goalItems(), n = it.length;
+  g.font = fontPx(16); g.fillStyle = "#8a4a6a"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(goalVerb(), x, y - 34);
+  it.forEach((q, k) => { const cx = x + (k - (n - 1) / 2) * 110; drawIcon(q.ic, cx - (q.ic === "star" ? 40 : 24), y + 8, 22); olText(q.txt, cx + (q.ic === "star" ? 0 : 10), y + 10, q.ic === "star" ? 22 : 28, "#fff", "left"); });
+  g.font = fontPx(15); g.fillStyle = "#8a4a6a"; g.textAlign = "center"; g.fillText(def.moves + (extraMoves ? " (+" + extraMoves + ")" : "") + " langkah", x, y + h / 2 - 18);
+  if (newMarket()) { // tiap 10 level: pasar baru
+    g.save(); g.translate(x + w / 2 - 18, y + h / 2 - 6); g.rotate(-0.18); const tw = 112;
+    g.fillStyle = INK; rr(g, -tw / 2, -14, tw, 30, 12); g.fill(); g.fillStyle = "#ffe36a"; rr(g, -tw / 2 + 3, -12, tw - 6, 24, 10); g.fill();
+    g.font = fontPx(15); g.fillStyle = INK; g.fillText("Pasar baru!", 0, 1); g.restore();
+  }
+  g.restore(); g.globalAlpha = 1;
+}
+
+/* ================= SUARA ================= */
+const A = KIT.audio;
+let popAt = 0, landAt = 0;
+const SFX = {
+  tap() { A.tone({ freq: 880, dur: 0.06, vol: 0.22, slideTo: 1320 }); },
+  swap() { A.tone({ freq: 520, dur: 0.09, type: "triangle", vol: 0.18, slideTo: 760 }); },
+  bad() { A.tone({ freq: 300, dur: 0.14, type: "square", vol: 0.07, slideTo: 200 }); A.tone({ freq: 240, dur: 0.16, type: "triangle", vol: 0.14, slideTo: 170, delay: 0.1 }); },
+  // letupan: nada naik sepanjang runtuhan beruntun
+  pop(k) {
+    const now = performance.now(); if (now - popAt < 32) return; popAt = now;
+    const f = 520 * Math.pow(2, Math.min(14, (k - 1) * 2 + Math.random() * 0.6) / 12);
+    A.tone({ freq: f, dur: 0.08, type: "sine", vol: 0.24, slideTo: f * 1.6 }); A.noise({ dur: 0.03, vol: 0.06, filter: 3000 });
+  },
+  land() { const now = performance.now(); if (now - landAt < 50) return; landAt = now; A.tone({ freq: 190 + Math.random() * 40, dur: 0.04, type: "triangle", vol: 0.12 }); },
+  zap() { A.tone({ freq: 1600, dur: 0.22, type: "sawtooth", vol: 0.06, slideTo: 300 }); A.noise({ dur: 0.18, vol: 0.14, filter: 4200, type: "highpass" }); },
+  boom(r) { A.tone({ freq: 130, dur: 0.4 + r * 0.15, type: "sine", vol: 0.5, slideTo: 40 }); A.noise({ dur: 0.3, vol: 0.28, filter: 380, type: "lowpass" }); },
+  rainbow() { [1047, 1319, 1568, 2093, 1568, 2637].forEach((f, i) => A.tone({ freq: f, dur: 0.16, vol: 0.09, delay: i * 0.05 })); },
+  made(s) { const b = s === RB ? 784 : s === BOMB ? 659 : 587; [1, 1.25, 1.5, 2].forEach((m, i) => A.tone({ freq: b * m, dur: 0.14, type: "triangle", vol: 0.12, delay: i * 0.05 })); },
+  praise(k) { const b = 392 * Math.pow(2, Math.min(k, 7) / 12 * 2); [1, 1.26, 1.5, 2].forEach((m, i) => A.tone({ freq: b * m, dur: 0.22, type: "square", vol: 0.05, delay: i * 0.06 })); },
+  agar() { A.tone({ freq: 700, dur: 0.1, type: "sine", vol: 0.14, slideTo: 1100 }); },
+  win() { [523, 659, 784, 1047].forEach((f, i) => A.tone({ freq: f, dur: 0.2, type: "square", vol: 0.07, delay: i * 0.1 })); A.tone({ freq: 1047, dur: 0.6, type: "triangle", vol: 0.2, delay: 0.42 }); A.tone({ freq: 1319, dur: 0.6, type: "triangle", vol: 0.14, delay: 0.42 }); },
+  lose() { [523, 466, 392, 330].forEach((f, i) => A.tone({ freq: f, dur: 0.24, type: "triangle", vol: 0.16, delay: i * 0.14 })); },
+  star(k) { A.tone({ freq: 880 * Math.pow(1.26, k), dur: 0.3, type: "triangle", vol: 0.22 }); A.tone({ freq: 1760 * Math.pow(1.26, k), dur: 0.2, vol: 0.08, delay: 0.03 }); },
+  shuffle() { for (let i = 0; i < 6; i++) A.tone({ freq: 400 + i * 90, dur: 0.06, type: "triangle", vol: 0.1, delay: i * 0.04 }); },
+  tick() { A.tone({ freq: 1500, dur: 0.03, vol: 0.05 }); },
+  pling() { A.tone({ freq: 1760 + Math.random() * 200, dur: 0.07, type: "sine", vol: 0.09, slideTo: 2400 }); },
+  rec() { [659, 784, 988, 1319].forEach((f, k) => A.tone({ freq: f, dur: 0.25, type: "square", vol: 0.08, delay: k * 0.08 })); [1319, 1568, 2093].forEach((f, k) => A.tone({ freq: f, dur: 0.4, vol: 0.14, delay: 0.35 + k * 0.1 })); }
+};
+const MUSIC = { step: 0.17, root: 53, scale: [0, 2, 4, 7, 9, 12, 14, 16, 19, 21], chords: [0, 5, 7, 5], lead: "triangle", melody: [4, -1, 5, 4, 2, -1, 4, -1, 7, -1, 6, 5, 4, -1, -1, -1, 2, -1, 4, 2, 1, -1, 2, -1, 4, 5, 4, 2, 0, -1, -1, -1] };
+
+/* ================= STATUS ================= */
+const core = new Core();
+let def = null, mode = "title", kind = "normal", seedNow = 1, dailyKey = "", chal = null, chalLast = null;
+let ph = "idle", phT = 0, sel = -1, hint = null, idleT = 0, drag = null, swp = null, bonusMode = false, firedAll = false, winning = false, won = false;
+let guide = 0, queued = null, kbd = false;
+let VIS = new Map(), introT = 0, scoreShow = 0, starPop = [0, 0, 0], extraMoves = 0, recPrev = 0, onWait = null, lastSpawnTip = 0;
+const INTRO_D = 1.9;
+const lvMax = () => Math.max(1, ST.get("lv", 1) | 0);
+function starsStr() { const s = ST.get("bin", ""); return typeof s === "string" ? s : ""; }
+function starsOf(n) { return +(starsStr()[n - 1] || 0); }
+function totalStars() { let t = 0; for (const ch of starsStr()) t += +ch || 0; return t; }
+function topOf(n) { const a = ST.get("top", []); return Array.isArray(a) ? a[n - 1] | 0 : 0; }
+function daily() { const d = ST.get("harian", null); return d && d.d === KIT.dateKey() ? d : null; }
+function toples() { const a = ST.get("toples", null); return Array.isArray(a) && a.length === 6 ? a.map((x) => x | 0) : [0, 0, 0, 0, 0, 0]; }
+// benih sah: nomor level, atau Harian hari ini sampai 30 hari lalu
+function seedOk(sd) { if (sd > LV_BASE && sd <= LV_BASE + LV_MAX) return true; const d = new Date(); for (let k = 0; k <= 30; k++) { if ((KIT.hash(SLUG + "|" + KIT.dateKey(d)) || 1) === sd) return true; d.setDate(d.getDate() - 1); } return false; }
+function readChal() { const c = KIT.readChallenge(); return c && c.score <= SC_CAP && seedOk(c.seed >>> 0) ? c : null; }
+function defOfSeed(seed) { return seed > LV_BASE && seed <= LV_BASE + LV_MAX ? levelDef(seed - LV_BASE) : levelDef(0, seed); }
+
+const vib = (p) => { if (DEMO || UJI) return; try { const ua = navigator.userActivation; if (ua && !ua.hasBeenActive) return; } catch (e) { } KIT.vibrate(p); };
+/* ---------- bidak tampilan ---------- */
+function syncAll() {
+  VIS = new Map(); DYING = [];
+  for (let i = 0; i < NN; i++) if (core.T[i] >= 0) VIS.set(core.ID[i], { id: core.ID[i], t: core.T[i], s: core.S[i], x: i & 7, y: i >> 3, ty: i >> 3, vy: 0, wait: 0, sq: 0, grow: 0, cell: i, mv: null });
+}
+function relink() { for (let i = 0; i < NN; i++) { const sp = VIS.get(core.ID[i]); if (sp) sp.cell = i; } }
+function settled() {
+  if (TL.length) return false;
+  for (const sp of VIS.values()) if (sp.wait > 0 || sp.mv || Math.abs(sp.y - sp.ty) > 1e-3) return false;
+  return true;
+}
+function applyEvent(ev) {
+  let md = 0; for (const c of ev.clears) md = Math.max(md, c.d);
+  flyN = 0; const lite = ev.clears.length > 30;
+  if (!bonusMode && def.goal.kind === "collect") for (const c of ev.clears) if (c.t >= 0 && c.t < RBT && goalSlot(c.t) >= 0) LAG[c.t]++;
+  if (!bonusMode && def.goal.kind === "agar") LAGA += ev.agar.length;
+  for (const c of ev.conv) { const sp = VIS.get(c.id); if (sp) { sp.s = c.s; sp.grow = 0.4; } }
+  for (const c of ev.clears) {
+    const sp = VIS.get(c.id), x = sp ? sp.x : c.i & 7, y = sp ? sp.y : c.i >> 3, t = sp ? sp.t : c.t, s = c.s;
+    later(c.d, () => { VIS.delete(c.id); popPiece(t, s, x, y, ev.cascade, lite); });
+  }
+  for (const a of ev.agar) later(a.d, () => agarHit(a.i, a.left));
+  for (const f of ev.fx) later(f.d, () => fxStart(f));
+  for (const m of ev.made) {
+    const sp = VIS.get(m.id); if (sp) { sp.s = m.s; if (m.s === RB) sp.t = RBT; sp.grow = 0.4; }
+    later(0.06, () => { sparkle(cellX(m.i & 7), cellY(m.i >> 3), 10, "#fff6b0", 1.2); SFX.made(m.s); tipSpecial(m.s); });
+  }
+  const wait = md + 0.16;
+  for (const f of ev.falls) { const sp = VIS.get(f.id); if (sp) { sp.ty = f.to; sp.wait = wait; sp.vy = 0; } }
+  for (const s of ev.spawns) VIS.set(s.id, { id: s.id, t: s.t, s: 0, x: s.c, y: s.from, ty: s.to, vy: 0, wait, sq: 0, grow: 0, cell: -1, mv: null });
+  if (ev.clears.length) {
+    let sx = 0, sy = 0; for (const c of ev.clears) { sx += cellX(c.i & 7); sy += cellY(c.i >> 3); }
+    const n = ev.clears.length; later(Math.min(md, 0.3) * 0.5 + 0.05, () => ftext(sx / n, sy / n, "+" + fmt(ev.gain), Math.min(34, 18 + n), n >= 10 ? "#ffe36a" : "#fff"));
+  }
+  if (ev.label) { banner(ev.label, 1.4, 50, ["#fff0f7", "#ff7ab8", "#ff3d7f"]); SFX.praise(6); vib([20, 30, 20]); }
+  else if (ev.cascade >= 2 && !bonusMode) { const p = praiseOf(ev.cascade); banner(p, 1.1, 38 + ev.cascade * 3); later(0.1, () => SFX.praise(ev.cascade)); if (ev.cascade >= 4) vib(20); }
+  if (ev.clears.length >= 14 || ev.label) shake = Math.max(shake, Math.min(16, 5 + ev.clears.length / 3));
+  vib(ev.clears.length >= 8 ? 12 : 6);
+  $("sr").textContent = ev.cascade >= 2 ? praiseOf(ev.cascade) : "";
+  ph = "fall"; phT = wait;
+}
+let tipNext = 0;
+function tipSpecial(s) {
+  if (DEMO || UJI) return;
+  const got = ST.get("tipSp", 0) | 0, bit = 1 << s; if (got & bit) return;
+  ST.set("tipSp", got | bit); tipNext = 1;
+  showTip(s === RB ? "Bintang pelangi: tukar dengan jajan!" : s === BOMB ? "Bungkus daun: meledak 3x3!" : "Garis gula: sapu satu baris!", 3.2);
+}
+// pesan singkat di atas papan (tidak menutupi bidak)
+const TIP = { s: "", t: 0 };
+function showTip(s, d) { TIP.s = s; TIP.t = d; }
+function drawTip(dt) {
+  if (TIP.t <= 0) return; TIP.t -= dt; const g = ctx, a = Math.min(1, TIP.t / 0.3);
+  const fw = Math.max(6, CELL * 0.26); let cx, cy, mw;
+  if (SIDE) { cx = HM.x + HM.w / 2; cy = HM.y + HM.h + 40; mw = HM.w; } else { cx = BX + BS / 2; cy = Math.max(HS.y + HS.h + 18, BY - fw - 20); mw = Math.min(BS + 2 * fw, colW - 16); }
+  let f = 16; g.font = fontPx(f); let tw = g.measureText(TIP.s).width; if (tw + 28 > mw) { f = Math.max(10, f * (mw - 28) / tw); g.font = fontPx(f); tw = g.measureText(TIP.s).width; }
+  const w = tw + 28, h = f + 16, bob = Math.sin(time * 5) * 2;
+  g.save(); g.globalAlpha = Math.max(0, a); g.translate(cx, cy + bob);
+  g.fillStyle = INK; rr(g, -w / 2, -h / 2 + 3, w, h, h / 2); g.fill(); g.fillStyle = "#fff"; rr(g, -w / 2, -h / 2, w, h, h / 2); g.fill(); g.lineWidth = 3; g.strokeStyle = INK; g.stroke();
+  g.fillStyle = INK; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(TIP.s, 0, 1); g.restore();
+}
+
+/* ================= ALUR ================= */
+function startGame(k, arg) {
+  kind = k; clearFx();
+  if (k === "daily" || k === "practice") { seedNow = KIT.dailySeed(SLUG); def = levelDef(0, seedNow); }
+  else if (k === "chal") { seedNow = arg >>> 0; def = defOfSeed(seedNow); }
+  else { const n = Math.max(1, Math.min(lvMax(), arg | 0 || lvMax())); def = levelDef(n); seedNow = LV_BASE + n; }
+  dailyKey = KIT.dateKey();
+  if (k === "daily") ST.set("harian", { d: dailyKey, score: 0, stars: 0, done: false });
+  extraMoves = 0;
+  if (k === "normal") { const f = ST.get("gagal", null); if (f && f.n === def.n) extraMoves = pityOf(def.n, f.k | 0); }
+  def = Object.assign({}, def, { moves: def.moves + extraMoves });
+  themeNow = def.daily ? 3 : Math.floor((def.n - 1) / 5) % 3; BGK = "";
+  core.load(def); syncAll();
+  recPrev = k === "normal" || k === "chal" ? topOf(def.n || 0) : k === "daily" ? 0 : 0;
+  ph = "idle"; sel = -1; hint = null; idleT = 0; drag = null; swp = null; guide = 0; queued = null; bonusMode = false; firedAll = false; winning = false; won = false;
+  scoreShow = 0; starPop = [0, 0, 0];
+  hideAll(); $("hud").hidden = false; mode = "play"; introT = DEMO && Q.get("fast") ? 0.3 : INTRO_D;
+  $("sr").textContent = levelLabel() + ". " + goalText();
+  if (extraMoves && !DEMO) setTimeout(() => KIT.ui.toast("Bantuan: +" + extraMoves + " langkah"), 400);
+  try { document.activeElement && document.activeElement.blur(); } catch (e) { }
+  if (document.hidden) pause();
+}
+function remainText() {
+  const g = def.goal;
+  if (g.kind === "score") return fmt(g.n - core.score) + " poin";
+  if (g.kind === "agar") return core.agarLeft() + " agar-agar";
+  return g.items.filter((it) => core.got[it.t] < it.n).map((it) => (it.n - core.got[it.t]) + " " + KUE[it.t].nama).join(", ");
+}
+function goalText() {
+  const g = def.goal;
+  return g.kind === "score" ? "Capai " + fmt(g.n) + " poin" : g.kind === "agar" ? "Bersihkan " + g.n + " agar-agar" : "Kumpulkan " + g.items.map((it) => it.n + " " + KUE[it.t].nama).join(" dan ");
+}
+function clearFx() { DYING = []; FXL = []; TXT = []; TL = []; AGW.fill(0); pL.fill(0); BN.t = 0; shake = 0; flash = 0; FLY = []; LAG = [0, 0, 0, 0, 0, 0]; LAGA = 0; goalPulse = [0, 0, 0]; queued = null; }
+// bantuan langkah untuk percobaan berikutnya: level 1-10 sejak kalah pertama, lainnya sejak kalah kedua
+function pityOf(n, k) { return n <= 10 ? Math.min(9, 3 * k) : k >= 2 ? Math.min(9, 3 * (k - 1)) : 0; }
+function doSwap(a, b) {
+  if (mode !== "play" || ph !== "idle" || introT > 0 || !core.canSwap(a, b)) return false;
+  if (guide === 2 && hint && !((a === hint.a && b === hint.b) || (a === hint.b && b === hint.a))) { SFX.bad(); idleT = 0; return false; }
+  const ia = core.ID[a], ib = core.ID[b], A1 = VIS.get(ia), B1 = VIS.get(ib), res = core.swap(a, b);
+  if (!res) return false;
+  if (guide === 2) TIP.t = Math.min(TIP.t, 0.3);
+  sel = -1; hint = null; idleT = 0; guide = 0;
+  const pa = [a & 7, a >> 3], pb = [b & 7, b >> 3];
+  if (A1) A1.mv = { x0: pa[0], y0: pa[1], x1: pb[0], y1: pb[1], t: 0, d: 0.15 };
+  if (B1) B1.mv = { x0: pb[0], y0: pb[1], x1: pa[0], y1: pa[1], t: 0, d: 0.15 };
+  swp = { a, b, ok: res.ok, A1, B1, pa, pb }; ph = "swap"; phT = 0.16;
+  SFX.swap();
+  return true;
+}
+// papan tenang: menang, kalah, acak ulang, atau giliran pemain
+function settle() {
+  relink();
+  if (bonusMode) {
+    const ev = core.bonus(); if (ev) { applyEvent(ev); later(0.05, () => sparkle(cellX(ev.bonusAt & 7), cellY(ev.bonusAt >> 3), 12, "#ffe36a", 1.4)); return; }
+    if (!firedAll) { firedAll = true; const e2 = core.fireAll(); if (e2) { applyEvent(e2); return; } }
+    ph = "wait"; phT = 0.7; onWait = () => endGame(true); return;
+  }
+  if (core.goalDone()) {
+    winning = true; won = true; banner(core.moves > 0 ? "Sasaran tercapai!" : "Berhasil!", 1.6, 44, ["#f4ffe0", "#8ef06a", "#2fae3a"]); SFX.win(); vib([20, 40, 20]);
+    ph = "wait"; phT = 1.5;
+    onWait = () => { if (core.moves > 0) { banner("Pesta Manis!", 1.5, 50, ["#fff0f7", "#ff7ab8", "#ff3d7f"]); bonusMode = true; ph = "wait"; phT = 0.6; onWait = () => settle(); } else { bonusMode = true; firedAll = false; settle(); } };
+    return;
+  }
+  if (core.moves <= 0) { banner("Langkah habis", 1.6, 44, ["#ffffff", "#c9d6ff", "#7f8fd8"]); SFX.lose(); ph = "wait"; phT = 1.5; onWait = () => endGame(false); return; }
+  if (!core.findMoves(true).length) {
+    banner("Acak ulang!", 1.2, 44); SFX.shuffle();
+    const mv = core.shuffle();
+    for (const m of mv) { const sp = VIS.get(m.id); if (sp) { sp.mv = { x0: sp.x, y0: sp.y, x1: m.to & 7, y1: m.to >> 3, t: 0, d: 0.55, arc: 1 }; sp.ty = m.to >> 3; } }
+    ph = "fall"; phT = 0.6; return;
+  }
+  ph = "idle"; idleT = 0; hint = null;
+  if (tipNext) { const m = specialMove(); if (m) { hint = m; guide = 1; } tipNext = 0; }
+  runQueued();
+}
+function runQueued() { const q = queued; queued = null; if (q && mode === "play" && core.canSwap(q.a, q.b)) doSwap(q.a, q.b); }
+// langkah yang memakai bidak istimewa (untuk tangan penunjuk saat istimewa pertama muncul)
+function specialMove() { const mv = core.findMoves(false).filter((m) => core.S[m.a] || core.S[m.b]); return mv.length ? mv.reduce((p, q) => q.v > p.v ? q : p) : null; }
+function skipBonus() {
+  if (!bonusMode) return;
+  while (core.bonus()) for (let k = 0; k < 60 && core.step(); k++);
+  if (!firedAll) { firedAll = true; if (core.fireAll()) for (let k = 0; k < 60 && core.step(); k++); }
+  clearFx(); syncAll(); ph = "wait"; phT = 0.2; onWait = () => endGame(true);
+}
+function endGame(win) {
+  if (mode !== "play") return;
+  mode = "over"; ph = "idle"; won = win; $("hud").hidden = true; scoreShow = core.score;
+  const sc = core.score, st = core.stars(win), n = def.n, today = dailyKey || KIT.dateKey();
+  let rec = false;
+  if (kind === "normal" || (kind === "chal" && n)) {
+    if (n) { const a = ST.get("top", []), t = Array.isArray(a) ? a.slice(0, 3000) : []; while (t.length < n) t.push(0); if (win && sc > (t[n - 1] | 0)) { rec = recPrev > 0; t[n - 1] = sc; ST.set("top", t); } }
+  }
+  if (kind === "normal") {
+    if (win) {
+      let b = starsStr(); while (b.length < n) b += "0"; if (st > +b[n - 1]) b = b.slice(0, n - 1) + st + b.slice(n); ST.set("bin", b.slice(0, 3000));
+      if (n >= lvMax() && n < LV_MAX) ST.set("lv", n + 1);
+      ST.set("gagal", null);
+    } else { const f = ST.get("gagal", null); ST.set("gagal", { n, k: f && f.n === n ? (f.k | 0) + 1 : 1 }); }
+  }
+  if (kind === "daily") {
+    ST.set("harian", { d: today, score: sc, stars: st, done: true });
+    if (ST.get("hariD", "") !== today) { ST.set("hariD", today); ST.set("hariN", (ST.get("hariN", 0) | 0) + 1); }
+  }
+  const tp0 = toples(), tp = tp0.slice(); core.got.forEach((v, t) => { tp[t] = Math.min(99999999, tp[t] + v); }); ST.set("toples", tp);
+  const upT = []; tp.forEach((v, t) => { if (tierOf(v) > tierOf(tp0[t])) upT.push(t); });
+  ST.set("last", { seed: seedNow, score: sc, n, d: def.daily ? 1 : 0 });
+  const pr = KIT.progress.record({ game: SLUG, score: sc, mutu: win ? 0.25 + st * 0.25 : 0.25 * core.goalFrac(), papan: DEMO ? "" : kind === "daily" ? "harian" : kind === "practice" || kind === "chal" ? "" : "bebas" });
+  // layar hasil
+  $("rRib").textContent = kind === "daily" ? "Harian" : kind === "practice" ? "Latihan" : kind === "chal" ? "Tantangan" : "Level " + n;
+  $("rRib").className = "dk-ribbon dk-ol " + (win ? "dk-green" : "dk-red");
+  const stars = $("rStars"); stars.hidden = !win; stars.innerHTML = starSVG(false) + starSVG(false) + starSVG(false);
+  $("rMode").textContent = "Skor";
+  $("rCas").textContent = "x" + Math.max(1, core.bestCascade); $("rSp").textContent = core.made; $("rSpI").src = iconURL(6);
+  const vd = $("rVerd"); vd.hidden = true; vd.className = "verd dk-ol";
+  const gf = core.goalFrac();
+  if (!win) { vd.hidden = false; vd.innerHTML = gf >= 0.8 ? "Hampir!<small>Langkah habis</small>" : gf >= 0.5 ? "Sedikit lagi<small>Langkah habis</small>" : "Langkah habis"; }
+  // bantuan langkah untuk percobaan berikutnya
+  const gift = $("rGift"), fk = kind === "normal" && !win ? (ST.get("gagal", null) || {}).k | 0 : 0, nextX = fk ? pityOf(n, fk) : 0;
+  gift.hidden = !nextX; if (nextX) $("rGiftN").textContent = "+" + nextX + " langkah bantuan";
+  $("rAgain").classList.toggle("pul", !win);
+  // toples terdekat ke tingkat berikutnya
+  let bj = -1, br = -1; tp.forEach((v, t) => { const k = tierOf(v); if (k < TIERS.length - 1) { const r = v / TIERS[k + 1]; if (r > br) { br = r; bj = t; } } });
+  const jp = $("rJar"); jp.hidden = bj < 0 || DEMO;
+  if (bj >= 0) { const nx = TIERS[tierOf(tp[bj]) + 1]; $("rJarI").src = iconURL(bj); $("rJarT").textContent = fmt(tp[bj]) + "/" + fmt(nx) + " → " + TN[tierOf(tp[bj]) + 1]; $("rJarB").style.width = Math.min(100, tp[bj] / nx * 100) + "%"; }
+  if (kind === "chal" && chal) {
+    vd.hidden = false; vd.classList.toggle("win", sc > chal.score);
+    vd.innerHTML = sc > chal.score ? "MENANG!<small>Skor teman " + fmt(chal.score) + " terlewati</small>" : "KALAH<small>Kurang " + fmt(chal.score - sc + 1) + " poin</small>";
+    chalLast = chal; chal = null; try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { }
+  }
+  const done = $("rDone"); done.hidden = !(kind === "daily" || kind === "practice"); done.textContent = kind === "practice" ? "Latihan · tidak dihitung" : "Sudah main hari ini";
+  $("rNormal").hidden = kind !== "chal";
+  const nx = win && kind === "normal"; $("rAgainT").textContent = nx ? "Lanjut" : "Main lagi"; $("rAgain").querySelector("svg").innerHTML = nx ? PLAY_SVG : AGAIN_SVG;
+  let rt, full, pink = false;
+  if (!win) { rt = "Sasaran " + Math.round(core.goalFrac() * 100) + "% · kurang " + remainText(); full = sc / Math.max(0.01, core.goalFrac()); }
+  else {
+    const head = rec ? "+" + fmt(sc - recPrev) + " dari rekor lama" : kind === "normal" && !recPrev ? "Rekor pertamamu!" : recPrev && sc < recPrev ? "Rekor " + fmt(recPrev) + " · kurang " + fmt(recPrev - sc + 1) : "";
+    if (st < 3) { rt = (head ? head + "\n" : "") + "Kurang " + fmt(def.stars[st] - sc) + " untuk " + (st + 1) + " bintang"; full = def.stars[st]; }
+    else { rt = head || "Tiga bintang!"; full = sc; pink = true; }
+  }
+  $("rRec").textContent = rt; full = Math.max(1, full);
+  const barW = $("rBarW"), bar = $("rBar"); barW.classList.toggle("rec", pink); bar.style.width = "0%";
+  const xp = $("rXp"); xp.hidden = false; xp.textContent = (pr.leveledUp ? "Naik level! " : "+" + pr.gain + " XP · ") + "Lv " + pr.level;
+  $("rRek").hidden = true;
+  KIT.ui.show($("sOver"));
+  const starEls = stars.querySelectorAll("svg");
+  if (win) for (let k = 0; k < st; k++) setTimeout(() => { if (mode !== "over") return; starEls[k].outerHTML = starSVG(true, "on"); SFX.star(k); vib(15); }, 350 + k * 330);
+  let lastTick = 0;
+  KIT.ui.countUp($("rScore"), sc, Math.min(1500, 500 + sc / 60), (v) => {
+    $("rScore").textContent = fmt(v); bar.style.width = Math.min(100, v / full * 100) + "%";
+    if (v - lastTick >= Math.max(1, sc / 30)) { lastTick = v; SFX.tick(); }
+  }).then(() => {
+    if (mode !== "over") return;
+    if (rec) { const e = $("rRek"); e.hidden = false; e.classList.remove("go"); void e.offsetWidth; e.classList.add("go"); KIT.ui.confetti(160); SFX.rec(); vib([30, 40, 30]); }
+    else if (win && st === 3) KIT.ui.confetti(90);
+    if (upT.length) { const t = upT[0]; KIT.ui.toast("Toples " + KUE[t].nama + ": " + TN[tierOf(tp[t])] + "!"); if (!rec) KIT.ui.confetti(120); }
+    else if (win && kind === "normal" && n === lvMax() - 1) KIT.ui.toast("Level " + (n + 1) + " terbuka!");
+  });
+}
+
+/* ================= LAYAR ================= */
+const AGAIN_SVG = $("rAgain").querySelector("svg").innerHTML, PLAY_SVG = '<path fill="#fff" stroke="#3b1740" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/>';
+const SCR = ["sTitle", "sPause", "sOver", "sHarian", "sTantang", "sKoleksi"];
+function hideAll() { for (const id of SCR) $(id).hidden = true; }
+function toTitle() {
+  hideAll(); $("hud").hidden = true; mode = "title"; clearFx(); def = null; themeNow = 0; BGK = "";
+  $("tBest").querySelector("span").textContent = totalStars();
+  $("bLv").innerHTML = "Level " + lvMax() + '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="#ff5c93" stroke="#3b1740" stroke-width="2"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></g></svg>';
+  const p = KIT.progress.get();
+  $("tLv").textContent = "Lv " + p.level;
+  $("tStrk").hidden = p.streak <= 0; $("tStrkN").textContent = p.streak + " hari";
+  const dd = daily(); $("dDaily").hidden = !!dd;
+  const ds = $("dStarN"); ds.hidden = !(dd && dd.done);
+  if (dd && dd.done) ds.innerHTML = starSVG(true) + (dd.stars | 0);
+  const c = $("tChal"); c.hidden = !chal; if (chal) { const d = defOfSeed(chal.seed); c.textContent = "Temanmu dapat " + fmt(chal.score) + (d.daily ? "" : " di Level " + d.n) + ". Kalahkan!"; }
+  $("sTitle").hidden = false;
+  const m = $("tMid"); m.classList.remove("ent", "leave"); void m.offsetWidth; m.classList.add("ent");
+  measureLogo();
+}
+function leaveTitle(fn) { $("tMid").classList.add("leave"); mode = "leaving"; setTimeout(fn, 260); }
+function goalHTML(d) {
+  const g = d.goal;
+  if (g.kind === "score") return '<div class="goal"><span>' + starSVG(true) + "</span><b>" + fmt(g.n) + "</b><i>poin</i></div>";
+  if (g.kind === "agar") return '<div class="goal"><img src="' + iconURL(7) + '" alt=""><b>' + g.n + "</b><i>agar-agar</i></div>";
+  return g.items.map((it) => '<div class="goal"><img src="' + iconURL(it.t) + '" alt=""><b>' + it.n + "</b><i>" + KUE[it.t].nama + "</i></div>").join("");
+}
+function openHarian() {
+  const d = new Date(), M = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
+  $("dMonth").textContent = M[d.getMonth()]; $("dDay").textContent = d.getDate();
+  $("dN").textContent = "Hari ke-" + KIT.dayNumber();
+  const dd = daily(), dv = levelDef(0, KIT.dailySeed(SLUG));
+  $("dGoals").innerHTML = goalHTML(dv) + '<div class="goal"><span>' + [0, 1, 2].map((k) => starSVG(dd && dd.done && (dd.stars | 0) > k)).join("") + "</span><b>" + dv.moves + "</b><i>langkah</i></div>";
+  const p = KIT.progress.get();
+  $("dStrkN").textContent = p.streak > 0 ? p.streak + " hari beruntun" : "Mulai beruntun hari ini";
+  $("dInfo").textContent = dd ? (dd.done ? "Skor hari ini: " + fmt(dd.score) + " · kembali besok!" : "Percobaan hari ini tidak selesai") : "Level sama untuk semua. 1 kesempatan.";
+  $("dPlay").querySelector("span").textContent = dd ? "Latihan" : "Main";
+  $("dPlay").className = "dk-btn dk-ol " + (dd ? "dk-yellow" : "dk-green");
+  KIT.ui.show($("sHarian"));
+}
+function openTantang() {
+  const L = ST.get("last", null);
+  $("cPieces").innerHTML = [0, 1, 2, 3, 4, 5].map((t) => '<img src="' + iconURL(t) + '" alt="" style="width:34px;height:34px">').join("");
+  if (L && L.score) { $("cScore").textContent = fmt(L.score); $("cInfo").textContent = L.d ? "Skor Harian terakhirmu" : "Skormu di Level " + L.n; $("cSend").querySelector("span").textContent = "Kirim"; }
+  else { $("cScore").textContent = "?"; $("cInfo").textContent = "Main dulu, lalu kirim skormu"; $("cSend").querySelector("span").textContent = "Main"; }
+  KIT.ui.show($("sTantang"));
+}
+// tingkat toples: 0 = belum, 1 = Perunggu ...
+const TIERS = [0, 100, 500, 2000, 10000], TN = ["", "Perunggu", "Perak", "Emas", "Berlian"];
+function tierOf(v) { let k = 0; TIERS.forEach((q, i) => { if (v >= q) k = i; }); return k; }
+function openKoleksi(onlyLv) {
+  $("kJars").hidden = !!onlyLv;
+  const tp = toples(), lid = ["#35d05a", "#ffb52e", "#3d8bff", "#ff5fa8", "#a35cff", "#ff4040"];
+  $("kJars").innerHTML = tp.map((v, t) => { let tier = -1; TIERS.forEach((q, k) => { if (v >= q) tier = k; }); return '<div class="jar"><div style="--lid:' + lid[t] + '"><img src="' + iconURL(t) + '" alt="">' + (tier >= 1 ? '<b class="tier">' + TN[tier] + "</b>" : "") + "</div><b>" + KUE[t].nama + "</b><span>" + fmt(v) + "</span></div>"; }).join("");
+  $("kInfo").textContent = "Toples jajan · " + totalStars() + " bintang";
+  const mx = lvMax(); let h = "";
+  for (let n = 1; n <= mx; n++) { const s = starsOf(n); h += '<button class="lvb' + (n === mx ? " cur" : "") + '" data-lv="' + n + '" aria-label="Level ' + n + ", " + s + ' bintang">' + n + "<i>" + [0, 1, 2].map((k) => starSVG(s > k)).join("") + "</i></button>"; }
+  $("kLv").innerHTML = h;
+  KIT.ui.show($("sKoleksi"));
+  const cur = $("kLv").querySelector(".cur"); if (cur) try { $("kLv").scrollTop = cur.offsetTop - 80; } catch (e) { }
+}
+$("kLv").addEventListener("click", (e) => { const b = e.target.closest("[data-lv]"); if (!b || mode !== "title") return; SFX.tap(); $("sKoleksi").hidden = true; const n = +b.dataset.lv; leaveTitle(() => startGame("normal", n)); });
+function shareScore(seed, score, n, isDaily) {
+  KIT.share({ title: "Jajan Manis", text: "Aku dapat " + fmt(score) + " poin di Jajan Manis" + (isDaily ? " (Harian)" : " Level " + n) + "! Bisa kalahkan?", url: KIT.challengeLink(SLUG, seed, score) });
+}
+function pause() {
+  if (mode !== "play") return;
+  mode = "pause"; drag = null; $("pGoals").innerHTML = def ? goalHTML(def) : ""; KIT.ui.show($("sPause"));
+}
+function resume() { if (mode !== "pause") return; $("sPause").hidden = true; mode = "play"; }
+
+/* ================= MASUKAN ================= */
+// ok = syarat layar; klik yang diabaikan tidak berbunyi
+function on(id, fn, ok) { $(id).addEventListener("click", (e) => { if (ok && !ok()) return; SFX.tap(); fn(e); }); }
+const atTitle = () => mode === "title", atOver = () => mode === "over", atPause = () => mode === "pause";
+on("bMain", () => leaveTitle(() => chal ? startGame("chal", chal.seed) : startGame("normal")), atTitle);
+on("bLv", () => openKoleksi(true), atTitle);
+on("bHarian", openHarian, atTitle); on("bTantang", openTantang, atTitle); on("bKoleksi", () => openKoleksi(), atTitle); on("bPeringkat", () => KIT.papan && KIT.papan.buka(SLUG)); on("bSetelan", () => KIT.ui.openSettings());
+on("dPlay", () => { const k = daily() ? "practice" : "daily"; $("sHarian").hidden = true; leaveTitle(() => startGame(k)); }, atTitle);
+on("cSend", () => { const L = ST.get("last", null); if (L && L.score) shareScore(L.seed, L.score, L.n, L.d); else { $("sTantang").hidden = true; leaveTitle(() => startGame("normal")); } }, atTitle);
+on("bPause", pause, () => mode === "play");
+on("pGo", resume, atPause);
+on("pRe", () => startGame(kind === "daily" ? "practice" : kind, kind === "chal" ? seedNow : def.n), atPause);
+on("pMenu", toTitle, atPause);
+on("rAgain", () => {
+  // klik ulang dari iklan app saat sudah bermain diabaikan (dijaga atOver)
+  if (kind === "chal") { chal = chalLast; startGame("chal", seedNow); return; }
+  if (kind === "daily" || kind === "practice") { startGame("practice"); return; }
+  startGame("normal", won ? Math.min(lvMax(), def.n + 1) : def.n);
+}, atOver);
+on("rNormal", () => startGame("normal"), atOver);
+on("rShare", () => shareScore(seedNow, core.score, def.n, def.daily), atOver);
+on("rMenu", toTitle, atOver);
+for (const b of document.querySelectorAll("[data-close]")) b.addEventListener("click", () => { SFX.tap(); b.closest(".dk-overlay").hidden = true; });
+function localXY(e) { return [e.clientX, e.clientY]; }
+cv.addEventListener("pointerdown", (e) => {
+  if (mode !== "play") return;
+  e.preventDefault();
+  if (introT > 0) { introT = Math.min(introT, 0.25); return; }
+  if (bonusMode) { skipBonus(); return; }
+  if (drag && drag.id !== e.pointerId) return; // jari kedua diabaikan
+  idleT = 0; kbd = false;
+  const [x, y] = localXY(e), i = cellAt(x, y);
+  if (ph !== "idle") { if (i >= 0 && core.T[i] >= 0) { drag = { id: e.pointerId, a: i, x, y, queued: true }; try { cv.setPointerCapture(e.pointerId); } catch (er) { } } return; }
+  if (i < 0 || core.T[i] < 0) { sel = -1; return; }
+  if (sel >= 0 && adj(sel, i)) { const a = sel; sel = -1; doSwap(a, i); return; }
+  sel = i; drag = { id: e.pointerId, a: i, x, y };
+  try { cv.setPointerCapture(e.pointerId); } catch (er) { }
+});
+cv.addEventListener("pointermove", (e) => {
+  if (!drag || drag.id !== e.pointerId || mode !== "play") return;
+  const [x, y] = localXY(e), dx = x - drag.x, dy = y - drag.y, th = CELL * 0.32;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < th) return;
+  const a = drag.a, b = Math.abs(dx) > Math.abs(dy) ? (dx > 0 && (a & 7) < 7 ? a + 1 : dx < 0 && (a & 7) > 0 ? a - 1 : -1) : (dy > 0 ? a + 8 : a - 8);
+  drag = null;
+  if (b >= 0 && b < NN && core.M[b]) { if (ph !== "idle") queued = { a, b }; else doSwap(a, b); } // saat runtuhan: disimpan satu
+});
+const endDrag = (e) => { if (drag && drag.id === e.pointerId) drag = null; };
+cv.addEventListener("pointerup", endDrag); cv.addEventListener("pointercancel", endDrag);
+// papan ketik: panah pindah, Spasi/Enter pilih
+let kc = 27;
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" || e.key === "p") {
+    if (mode === "play") pause(); else if (mode === "pause") resume();
+    else if (e.key === "Escape") { const ov = [...document.querySelectorAll(".dk-overlay")].filter((o) => !o.hidden && o.id !== "sOver" && o.id !== "sPause").pop(); if (ov) { const x = ov.querySelector("[data-close],[data-x]"); if (x) x.click(); else ov.hidden = true; } }
+    return;
+  }
+  if (mode !== "play") return;
+  const mv = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -8, ArrowDown: 8 }[e.key];
+  if (mv) {
+    e.preventDefault(); if (introT > 0) return; kbd = true;
+    const nx = kc + mv; if (!adj(kc, nx)) return;
+    if (sel >= 0 && sel === kc) { if (doSwap(kc, nx)) kc = nx; } else kc = nx;
+  } else if (e.key === " " || e.key === "Enter") { e.preventDefault(); kbd = true; if (introT > 0) introT = 0.2; else if (bonusMode) skipBonus(); else sel = sel === kc ? -1 : kc; }
+});
+document.addEventListener("visibilitychange", () => { if (document.hidden) pause(); });
+window.addEventListener("contextmenu", (e) => e.preventDefault());
+let rsT = 0; window.addEventListener("resize", () => { clearTimeout(rsT); rsT = setTimeout(layout, 120); });
+
+/* ================= LOGO ================= */
+let LOGO = null;
+function letterSprite(ch, fs, c) {
+  const t = mk(4), q = t.getContext("2d"), font = "800 " + fs + "px 'Baloo 2','Arial Rounded MT Bold',sans-serif";
+  q.font = font; const mw = q.measureText(ch).width, pad = fs * 0.2, W = mw + pad * 2, H = fs * 1.25;
+  const cc = mk(W * dpr, H * dpr), g = cc.getContext("2d"); g.scale(dpr, dpr);
+  g.font = font; g.textAlign = "center"; g.textBaseline = "alphabetic"; g.lineJoin = "round";
+  const x = W / 2, by = fs * 0.95, top = by - fs * 0.72;
+  g.fillStyle = INK; g.strokeStyle = INK; g.lineWidth = fs * 0.22; g.strokeText(ch, x, by + fs * 0.1); g.fillText(ch, x, by + fs * 0.1); g.strokeText(ch, x, by);
+  const gr = g.createLinearGradient(0, top, 0, by); gr.addColorStop(0, c[0]); gr.addColorStop(0.5, c[1]); gr.addColorStop(1, c[2]);
+  g.fillStyle = gr; g.fillText(ch, x, by);
+  g.save(); g.globalCompositeOperation = "source-atop"; g.fillStyle = "rgba(255,255,255,.45)"; g.beginPath(); g.ellipse(x - fs * 0.1, top + fs * 0.12, fs * 0.28, fs * 0.1, -0.3, 0, TAU); g.fill(); g.restore();
+  cc.w = W; cc.h = H; return cc;
+}
+function measureLogo() {
+  const el = $("logo"); if (!el) return;
+  const r = el.getBoundingClientRect(); if (r.width < 10) { LOGO = null; return; }
+  const w = r.width, h = r.height, f1 = Math.min(h * 0.44, w / 3.5), f2 = Math.min(h * 0.5, w / 3.6);
+  const L1 = [..."JAJAN"].map((ch, i) => letterSprite(ch, f1, KUE[[0, 1, 2, 1, 0][i]].c));
+  const L2 = [..."MANIS"].map((ch, i) => letterSprite(ch, f2, KUE[[3, 5, 4, 5, 3][i]].c));
+  LOGO = { x: r.left, y: r.top, w, h, L1, L2, f1, f2 };
+}
+function drawLogo() {
+  const L = LOGO; if (!L) return;
+  const g = ctx, rows = [[L.L1, L.f1, L.y + L.h * 0.0, 0], [L.L2, L.f2, L.y + L.h * 0.42, 1]];
+  let ex = 0, ey = 0;
+  for (const [arr, fs, ty, ri] of rows) {
+    const tot = arr.reduce((s, c) => s + c.w - fs * 0.34, 0) + fs * 0.34;
+    let x = L.x + L.w / 2 - tot / 2;
+    for (let i = 0; i < arr.length; i++) {
+      const c = arr[i], hop = Math.pow(Math.max(0, Math.sin(time * 2.2 - i * 0.5 - ri * 1.7)), 10);
+      const rot = (i & 1 ? 0.06 : -0.06) * (ri ? -1 : 1) + hop * 0.06, cx = x + c.w / 2, cy = ty + c.h / 2 - hop * fs * 0.16, co = Math.cos(rot), si = Math.sin(rot);
+      g.setTransform(co * dpr, si * dpr, -si * dpr, co * dpr, cx * dpr, cy * dpr); g.drawImage(c, -c.w / 2, -c.h / 2, c.w, c.h);
+      if (ri && i === arr.length - 1) { ex = cx + c.w * 0.45; ey = cy - c.h * 0.32; }
+      x += c.w - fs * 0.34;
+    }
+  }
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  sprAt(g, 0, 0, ex, ey - Math.abs(Math.sin(time * 2.2)) * 6, L.f1 * 0.24);
+}
+// adegan judul: tampah besar berisi jajanan yang melompat
+function drawTitleScene() {
+  const g = ctx, cover = COVER, side = (vw - colW) / 2;
+  if (!cover) {
+    if (side > 150) { const rx = Math.min(side * 0.4, 170); tampah(g, side * 0.5, Math.min(vh - rx * 0.4, TITLE_Y + rx * 0.5), rx, KIT.rng(3), true); tampah(g, vw - side * 0.5, Math.min(vh - rx * 0.4, TITLE_Y + rx * 0.55), rx * 0.9, KIT.rng(4), true); return; }
+    if (vh < 560 || vw > vh) return; // layar pendek: judul saja
+  }
+  const rx = cover ? Math.min(vw * 0.26, vh * 0.5) : Math.min(colW * 0.42, vh * 0.2, 210), cx = cover ? vw * 0.72 : vw / 2;
+  const cy = cover ? vh * 0.72 : Math.max(TITLE_Y + rx * 0.3, vh - sB - Math.max(rx * 0.5, PADB * 0.5));
+  tampah(g, cx, cy, rx, KIT.rng(3), true);
+  if (cover) { // bidak istimewa melayang
+    const R = rx * 0.22, items = [[6, 0, 0.14, -0.98], [0, SH, 0.8, -0.6], [1, BOMB, -0.3, -0.66]];
+    for (const [t, s, a, b] of items) { g.save(); g.translate(cx + a * rx, cy + b * rx + Math.sin(time * 2 + a) * 6); if (t === 6) { g.rotate(Math.sin(time) * 0.2); drawStar(g, R * 1.2); } else if (s) drawSpecial(g, t, s, R); else drawKue(g, t, R); g.restore(); }
+  }
+}
+
+/* ================= BINGKAI ================= */
+let lastTs = 0, sizeChk = 0;
+function frame(ts) { requestAnimationFrame(frame); frameCore(ts); }
+function frameCore(ts) {
+  let dt = (ts - lastTs) / 1000; lastTs = ts;
+  if (!(dt > 0)) dt = 0; if (dt > 0.05) dt = 0.05;
+  if ((window.innerWidth !== vw || window.innerHeight !== vh) && window.innerWidth > 0 && ++sizeChk > 10) { sizeChk = 0; layout(); }
+  if (mode === "pause") dt = 0;
+  time += dt;
+  if (mode === "play") update(dt);
+  render(dt);
+}
+function update(dt) {
+  if (introT > 0) { introT -= dt; if (introT <= 0) { introT = 0; if (!DEMO && !UJI && kind === "normal" && def.n === 1 && !core.used && !starsOf(1)) { const mv = core.findMoves(false); hint = mv.length ? mv.reduce((p, q) => q.v > p.v ? q : p) : null; if (hint) { guide = 2; showTip("Geser jajan: jejerkan 3!", 4); } } } }
+  for (let j = 0; j < TL.length; j++) { const e = TL[j]; e.t -= dt; if (e.t <= 0) { TL.splice(j--, 1); e.fn(); } }
+  for (let i = 0; i < NN; i++) if (AGW[i] > 0) AGW[i] = Math.max(0, AGW[i] - dt);
+  for (let j = DYING.length - 1; j >= 0; j--) { DYING[j].age += dt; if (DYING[j].age > 0.2) DYING.splice(j, 1); }
+  for (const sp of VIS.values()) {
+    if (sp.sq > 0) sp.sq -= dt; if (sp.grow > 0) sp.grow -= dt;
+    if (sp.mv) {
+      const m = sp.mv; m.t += dt; const k = Math.min(1, m.t / m.d), e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      sp.x = m.x0 + (m.x1 - m.x0) * e; sp.y = m.y0 + (m.y1 - m.y0) * e - (m.arc ? Math.sin(k * Math.PI) * 0.8 : 0);
+      if (k >= 1) { sp.x = m.x1; sp.y = sp.ty = m.y1; sp.mv = null; }
+      continue;
+    }
+    if (sp.wait > 0) { sp.wait -= dt; continue; }
+    if (sp.y < sp.ty) { sp.vy = Math.min(24, sp.vy + 95 * dt); sp.y += sp.vy * dt; if (sp.y >= sp.ty) { sp.y = sp.ty; if (sp.vy > 3) { sp.sq = 0.18; SFX.land(); } sp.vy = 0; } }
+  }
+  scoreShow += (core.score - scoreShow) * Math.min(1, dt * 8); if (Math.abs(core.score - scoreShow) < 1) scoreShow = core.score;
+  for (let k = 0; k < 3; k++) { if (starPop[k] > 0) starPop[k] -= dt * 2; if (def.stars[k] && scoreShow >= def.stars[k] && starPop[k] === 0) { starPop[k] = 1; if (k || def.kind === "score") SFX.star(k); } }
+  if (ph === "swap") {
+    phT -= dt;
+    if (phT <= 0) {
+      if (swp.ok) { relink(); const ev = core.step(); if (ev) applyEvent(ev); else settle(); }
+      else { SFX.bad(); vib(8); if (swp.A1) swp.A1.mv = { x0: swp.pb[0], y0: swp.pb[1], x1: swp.pa[0], y1: swp.pa[1], t: 0, d: 0.15 }; if (swp.B1) swp.B1.mv = { x0: swp.pa[0], y0: swp.pa[1], x1: swp.pb[0], y1: swp.pb[1], t: 0, d: 0.15 }; ph = "back"; phT = 0.16; }
+    }
+  } else if (ph === "back") { phT -= dt; if (phT <= 0) { ph = "idle"; relink(); runQueued(); } }
+  else if (ph === "fall") { phT -= dt; if (phT <= 0 && settled()) { relink(); const ev = core.step(); if (ev) applyEvent(ev); else settle(); } }
+  else if (ph === "wait") { phT -= dt; if (phT <= 0 && settled()) { const f = onWait; onWait = null; ph = "idle"; if (f) f(); } }
+  else if (ph === "idle") {
+    idleT += dt;
+    if (idleT > hintDelay() && !hint) { const mv = core.findMoves(false); hint = mv.length ? mv.reduce((p, q) => q.v > p.v ? q : p) : null; }
+    if (DEMO && idleT > (Q.get("fast") ? 0.15 : 0.7) && introT <= 0) { const m = botPick(core, demoRn, 0.9); if (m) doSwap(m.a, m.b); }
+  }
+}
+const demoRn = KIT.rng(4242);
+function render(dt) {
+  const g = ctx;
+  g.setTransform(dpr, 0, 0, dpr, 0, 0); g.globalAlpha = 1;
+  drawBackdrop();
+  shake *= Math.pow(0.02, dt); if (shake < 0.3) shake = 0;
+  if (mode === "title" || mode === "leaving" || COVER) { drawTitleScene(); drawLogo(); drawParticles(dt); return; }
+  if (!def) return;
+  const ox = shake ? (Math.random() - 0.5) * shake : 0, oy = shake ? (Math.random() - 0.5) * shake : 0;
+  g.save(); g.translate(ox, oy);
+  drawBoard(); drawPieces(); drawGuide(); drawFx(dt);
+  g.restore();
+  drawParticles(dt);
+  drawHUD(); drawFly(dt);
+  drawTexts(dt); drawTip(dt);
+  drawIntro();
+  if (flash > 0) { flash -= dt; g.globalAlpha = Math.max(0, flash) * 0.9; g.fillStyle = flashC; g.fillRect(0, 0, vw, vh); g.globalAlpha = 1; }
+}
+
+/* ================= UJI (?uji=1) ================= */
+// papan uji: baris teks 8 huruf; 0-5 jenis, h/v/b = garis mendatar/menurun/bungkus berjenis 0, H/V/B berjenis 1, * bintang, . lubang
+function board(rows, extra) {
+  const c = new Core(), d = levelDef(20);
+  d.mask = []; d.agar = []; for (let i = 0; i < NN; i++) { d.mask.push(rows[i >> 3][i & 7] === "." ? 0 : 1); d.agar.push(0); }
+  d.moves = 30; d.goal = { kind: "score", n: 1e9 }; d.colors = 6; Object.assign(d, extra || {});
+  c.load(d, KIT.rng(5));
+  const MAP = { x: [2, SH], h: [0, SH], v: [0, SV], b: [0, BOMB], H: [1, SH], V: [1, SV], B: [1, BOMB], "*": [RBT, RB] };
+  for (let i = 0; i < NN; i++) {
+    const ch = rows[i >> 3][i & 7];
+    if (ch === ".") { c.T[i] = -1; c.S[i] = 0; c.ID[i] = 0; continue; }
+    const m = MAP[ch]; c.T[i] = m ? m[0] : +ch; c.S[i] = m ? m[1] : 0; c.ID[i] = c.idc++;
+  }
+  return c;
+}
+// latar tanpa deret: pola 2-4-3-5 bergeser (tak ada tiga sejajar)
+const BASE = ["23452345", "45234523", "34523452", "52345234", "23452345", "45234523", "34523452", "52345234"];
+function withRow(r, s) { const b = BASE.slice(); b[r] = s; return b; }
+function runUji() {
+  const out = []; let ok = true;
+  const chk = (c, m) => { if (!c) ok = false; out.push((c ? "ok    " : "GAGAL ") + m); };
+  const empties = (c) => { let e = 0; for (let i = 0; i < NN; i++) if (c.M[i] && c.T[i] < 0) e++; return e; };
+  const settleAll = (c) => { let n = 0, e; while ((e = c.step()) && n < 80) n++; return n; };
+  try {
+    // a) latar uji memang tanpa deret
+    chk(board(BASE).groups().length === 0, "a) papan latar tanpa deret");
+    // b) tiga sejajar mendatar
+    let c = board(withRow(3, "00302345")), r = c.swap(26, 27);
+    let ev = c.step();
+    chk(r.ok && ev.clears.length === 3 && !ev.made.length && empties(c) === 0 && c.moves === 29, "b) tukar jadi tiga sejajar: 3 bidak hilang, papan terisi lagi, langkah 30 → 29");
+    // c) tukar tanpa deret memantul kembali
+    c = board(BASE); const before = Array.from(c.T).join(); r = c.swap(0, 1);
+    chk(r && !r.ok && Array.from(c.T).join() === before && c.moves === 30, "c) tukar tanpa deret memantul, papan dan langkah tetap");
+    // d) empat sejajar = garis gula di sel tukar
+    c = board(withRow(3, "00030345")); r = c.swap(27, 28); ev = c.step();
+    chk(r.ok && ev.made.length === 1 && ev.made[0].s === SH && ev.made[0].i === 27 && ev.clears.length === 3, "d) empat mendatar = garis gula mendatar di sel tukar");
+    // e) lima sejajar = bintang pelangi
+    c = board(["23452345", "45234523", "34023452", "00300345", "23452345", "45234523", "34523452", "52345234"]); r = c.swap(18, 26); ev = c.step();
+    chk(r.ok && ev.made.length === 1 && ev.made[0].s === RB && c.T[26] === RBT && ev.clears.length === 4, "e) lima sejajar = bintang pelangi (sisa 4 hilang)");
+    // f) bentuk L = bungkus daun di sudut
+    c = board(["23452345", "05234523", "04523452", "30045234", "03452345", "45234523", "34523452", "52345234"]); r = c.swap(24, 32); ev = r && r.ok ? c.step() : null;
+    chk(ev && ev.made.length === 1 && ev.made[0].s === BOMB && ev.made[0].i === 24 && ev.clears.length === 4, "f) bentuk L = bungkus daun di sudut");
+    // g) bentuk T = bungkus daun di persilangan
+    c = board(["23452345", "45234523", "34023452", "50305234", "23052345", "45034523", "34523452", "52345234"]); r = c.swap(18, 26); ev = r && r.ok ? c.step() : null;
+    chk(ev && ev.made.length === 1 && ev.made[0].s === BOMB && ev.made[0].i === 26 && ev.clears.length === 4, "g) bentuk T = bungkus daun di persilangan");
+    // h) garis gula tersambar = satu baris penuh
+    c = board(withRow(3, "0h302345")); r = c.swap(26, 27); ev = c.step();
+    chk(r.ok && ev.clears.length === 8 && ev.fx.some((f) => f.k === "row" && f.r === 3), "h) garis gula dalam deret menyapu 8 sel satu baris");
+    c = board(["23452345", "45234523", "34523452", "5v345234", "23452345", "45234523", "34523452", "52345234"]); c.fired = new Set();
+    const hitV = c.blast([{ i: 25 }], new Set(), []);
+    chk(hitV.size === 8 && [...hitV.keys()].every((i) => (i & 7) === 1), "h2) garis menurun menyapu satu kolom");
+    // i) bungkus daun = 3x3
+    c = board(BASE); c.S[27] = BOMB; c.fired = new Set();
+    const hb = c.blast([{ i: 27 }], new Set(), []);
+    chk(hb.size === 9, "i) bungkus daun meledak 3x3 (" + hb.size + " sel)");
+    // j) bintang + jajan = semua jenis itu hilang
+    c = board(withRow(3, "234*2345")); let n2 = 0; for (let i = 0; i < NN; i++) if (c.T[i] === 2) n2++;
+    r = c.swap(27, 28); ev = c.step();
+    chk(r.ok && r.combo && ev.clears.length === n2 + 1 && ev.clears.filter((q) => q.t === 2).length === n2, "j) bintang pelangi + jajan: " + n2 + " jajan sejenis + bintangnya hilang");
+    // k) garis + garis = silang (15 sel)
+    c = board(withRow(3, "234hH345")); r = c.swap(27, 28); ev = c.step();
+    chk(r.ok && r.combo && ev.clears.length === 15, "k) garis + garis = silang 15 sel (" + ev.clears.length + ")");
+    // l) garis + bungkus = silang raksasa 3 baris + 3 kolom
+    c = board(withRow(3, "234hB345")); r = c.swap(27, 28); ev = c.step();
+    chk(r.ok && ev.clears.length === 3 * 8 + 3 * 8 - 9 && ev.label === "Silang raksasa!", "l) garis + bungkus = 3 baris + 3 kolom (" + ev.clears.length + " sel)");
+    // m) bungkus + bungkus = 5x5
+    c = board(withRow(3, "234bB345")); r = c.swap(27, 28); ev = c.step();
+    chk(r.ok && ev.clears.length === 25, "m) bungkus + bungkus = 5x5 (" + ev.clears.length + ")");
+    // n) bintang + bintang = sapu bersih
+    c = board(withRow(3, "234**345")); r = c.swap(27, 28); ev = c.step();
+    chk(r.ok && ev.clears.length === 64 && empties(c) === 0, "n) bintang + bintang = seluruh papan (" + ev.clears.length + ")");
+    // o) bintang + garis = semua jenis itu jadi garis lalu meledak
+    c = board(withRow(3, "234*x345")); r = c.swap(27, 28); ev = c.step();
+    chk(r.ok && ev.conv.length >= 6 && ev.clears.length > 20, "o) bintang + garis: " + ev.conv.length + " jajan jadi garis, " + ev.clears.length + " sel hilang");
+    // p) lubang: bidak jatuh melewati lubang, lubang tetap kosong
+    const hole = ["23452345", "45234523", "34.23452", "52345234", "00302345", "45234523", "34523452", "52345234"];
+    c = board(hole); r = c.swap(34, 35); ev = c.step();
+    let holeOk = c.T[18] === -1 && empties(c) === 0; const ids = new Set(); for (let i = 0; i < NN; i++) if (c.T[i] >= 0) { if (ids.has(c.ID[i])) holeOk = false; ids.add(c.ID[i]); }
+    chk(r.ok && holeOk && ev.falls.some((f) => f.c === 2 && f.from < 2 && f.to > 2), "p) jatuh melewati lubang, lubang kosong, id unik");
+    // q) papan awal: tanpa deret dan selalu ada langkah (300 level)
+    let initOk = true, moveOk = true;
+    for (let n = 1; n <= 300; n++) { const q = new Core(); q.load(levelDef(n)); if (q.groups().length) initOk = false; if (!q.findMoves(true).length) moveOk = false; }
+    chk(initOk && moveOk, "q) 300 level: papan awal tanpa deret dan selalu ada langkah");
+    // r) benih sama = level sama
+    const d1 = levelDef(37), d2 = levelDef(37), c1 = new Core(), c2 = new Core(); c1.load(d1); c2.load(d2);
+    chk(JSON.stringify(d1) === JSON.stringify(d2) && Array.from(c1.T).join() === Array.from(c2.T).join() && Array.from(c1.T).join() !== (() => { const c3 = new Core(); c3.load(levelDef(38)); return Array.from(c3.T).join(); })(), "r) level 37 selalu sama untuk semua; level 38 berbeda");
+    // s) acak ulang: jenis sama, tanpa deret, ada langkah
+    c = board(["01010101", "23232323", "01010101", "23232323", "01010101", "23232323", "01010101", "23232323"]);
+    const mv0 = c.findMoves(true).length, cnt = (q) => { const a = [0, 0, 0, 0, 0, 0]; for (let i = 0; i < NN; i++) if (q.T[i] >= 0 && q.T[i] < 6) a[q.T[i]]++; return a.join(); }, pre = cnt(c);
+    const sm = c.shuffle();
+    chk(mv0 === 0 && cnt(c) === pre && !c.groups().length && c.findMoves(true).length > 0 && sm.length === 64, "s) papan buntu diacak ulang: isi sama, tanpa deret, ada langkah");
+    // t) agar-agar berkurang saat bidak di atasnya hilang; sasaran tercapai
+    c = board(withRow(3, "00302345"), { goal: { kind: "agar", n: 4 } }); c.J[24] = 1; c.J[25] = 2; c.J[26] = 1; c.agar0 = 4;
+    c.swap(26, 27); ev = c.step();
+    chk(c.J[24] === 0 && c.J[25] === 1 && c.J[26] === 0 && ev.agar.length === 3 && c.agarLeft() === 1 && !c.goalDone(), "t) agar 1 lapis hilang, 2 lapis tinggal 1, sasaran belum selesai");
+    // u) kumpul jajan dihitung per jenis
+    c = board(withRow(3, "00302345"), { goal: { kind: "collect", items: [{ t: 0, n: 3 }] } }); c.swap(26, 27); c.step();
+    chk(c.got[0] >= 3 && c.goalDone() && c.goalFrac() === 1, "u) tiga klepon terkumpul = sasaran kumpul selesai");
+    // v) skor naik berlipat pada runtuhan beruntun
+    c = board(withRow(3, "00302345")); c.swap(26, 27); const e1 = c.step(); c.cascade = 2; c.T[0] = 5; c.T[1] = 5; c.T[2] = 5; const e2 = c.step();
+    chk(e1.gain === 60 && e2 && e2.gain >= 120 && praiseOf(2) === "Bagus!" && praiseOf(3) === "Mantap!" && praiseOf(4) === "Hebat!" && praiseOf(5) === "Luar biasa!" && praiseOf(9) === "Dahsyat!", "v) 3 bidak = 60, runtuhan ke-3 = x3; pujian Bagus → Mantap → Hebat → Luar biasa → Dahsyat");
+    // w) pemain otomatis menamatkan level awal; tanpa NaN, skor di bawah batas
+    let wins = 0, nan = false, maxS = 0; const rn = KIT.rng(99);
+    for (let n = 1; n <= 24; n++) { const res = botRun(levelDef(n), rn, 0.9); if (res.won) wins++; if (!isFinite(res.score)) nan = true; maxS = Math.max(maxS, res.score); }
+    chk(wins >= 17 && !nan && maxS < SC_CAP, "w) pemain otomatis menang " + wins + "/24 level awal, skor tertinggi " + fmt(maxS));
+    // w2) pemain mirip manusia (lihat satu langkah) dan pemula serakah tidak tersandung di level awal
+    const winRate = (from, to, pick, R, salt) => { let w = 0, t = 0; for (let n = from; n <= to; n++) for (let k = 0; k < R; k++) { t++; if (botRun(levelDef(n), KIT.rng(n * 1009 + k * 17 + salt), pick).won) w++; } return w / t; };
+    const h13 = winRate(1, 3, humPick, 20, 1), h410 = winRate(4, 10, humPick, 20, 2), g1 = winRate(1, 1, greedyPick, 40, 3), g25 = winRate(2, 5, greedyPick, 40, 4);
+    chk(h13 >= 0.95 && h410 >= 0.85, "w2) pemain mirip manusia menang " + Math.round(h13 * 100) + "% di level 1-3, " + Math.round(h410 * 100) + "% di level 4-10");
+    chk(g1 >= 0.9 && g25 >= 0.7, "w3) pemula serakah menang " + Math.round(g1 * 100) + "% di level 1, " + Math.round(g25 * 100) + "% di level 2-5");
+    chk(levelDef(1).kind === "collect" && levelDef(1).colors === 4 && levelDef(2).kind === "collect" && levelDef(3).kind === "agar" && levelDef(4).kind !== "score", "w4) level 1-3 mengajar dulu: kumpul, kumpul, agar; sasaran skor paling cepat level 4+");
+    // x) kesulitan naik mulus: langkah & sasaran wajar, gigi gergaji tiap 10 level
+    let ramp = true; for (let n = 1; n < 300; n++) if (diffOf(n + 10) < diffOf(n) - 1e-9) ramp = false;
+    let sane = true; for (let n = 1; n <= 400; n++) { const d = levelDef(n); if (d.moves < 10 || d.moves > 40 || !(d.stars[1] < d.stars[2])) sane = false; }
+    chk(ramp && sane && diffOf(1) === 0 && diffOf(100) > 0.8, "x) kesulitan " + [1, 10, 30, 60, 100].map((n) => diffOf(n).toFixed(2)).join(" → ") + "; 400 level: langkah 10-40, bintang naik");
+    // y) Harian: sama untuk semua hari ini, berbeda besok
+    const ds = KIT.dailySeed(SLUG), h1 = levelDef(0, ds), h2 = levelDef(0, ds), h3 = levelDef(0, ds + 1);
+    chk(JSON.stringify(h1) === JSON.stringify(h2) && h1.daily && h1.seed !== h3.seed, "y) level Harian dari benih hari ini, sama untuk semua");
+    // z) tautan tantangan membawa nomor level
+    const lk = KIT.challengeLink(SLUG, LV_BASE + 12, 34560), mm = /#t=([0-9a-z]+)-(\d+)/.exec(lk), sd = parseInt(mm[1], 36);
+    chk(defOfSeed(sd).n === 12 && +mm[2] === 34560 && defOfSeed(ds).daily, "z) link tantangan " + mm[0] + " = level 12, skor 34.560");
+    // rr) cadangan roundRect untuk WebView lama
+    const calls = []; const fake = { beginPath() { }, moveTo() { calls.push("m"); }, lineTo() { calls.push("l"); }, arcTo() { calls.push("a"); }, closePath() { calls.push("c"); } };
+    rr(fake, 0, 0, 40, 20, 8);
+    chk(calls.join("") === "mlalalalac", "rr) roundRect cadangan menggambar 4 sudut");
+  } catch (err) { chk(false, "inti: galat " + err.message + " " + (err.stack || "").split("\n")[1]); }
+  // ---- alur layar (penyimpanan dipulihkan setelahnya) ----
+  const PFX = "dehayuk." + SLUG + ".", snap = {}; let lsOk = true;
+  try { for (let q = 0; q < localStorage.length; q++) { const k = localStorage.key(q); if (k && k.indexOf(PFX) === 0) snap[k] = localStorage.getItem(k); } } catch (e) { lsOk = false; }
+  const recOrig = KIT.progress.record, toastOrig = KIT.ui.toast, confOrig = KIT.ui.confetti, recs = [];
+  KIT.progress.record = (o) => { recs.push(o); return { gain: 10, level: 1, leveledUp: false }; }; KIT.ui.toast = () => { }; KIT.ui.confetti = () => { };
+  const finish = (win) => { if (win) { core.score = 999999; } else core.moves = 0; endGame(win); };
+  try {
+    ST.set("lv", 1); ST.set("bin", ""); ST.set("top", []); ST.set("harian", null); ST.set("gagal", null);
+    startGame("normal", 1);
+    chk(mode === "play" && def.n === 1 && core.moves === def.moves, "ui1) MAIN memulai level 1 (" + def.moves + " langkah)");
+    $("rAgain").click(); $("rMenu").click(); $("rShare").click();
+    chk(mode === "play" && def.n === 1, "ui2) Main lagi/Menu/Bagikan saat bermain diabaikan (klik ulang dari iklan app)");
+    finish(true);
+    chk(mode === "over" && ST.get("lv", 1) === 2 && starsOf(1) >= 1 && $("rAgainT").textContent === "Lanjut" && recs.pop().papan === "bebas", "ui3) menang: level 2 terbuka, bintang tersimpan, tombol Lanjut, skor ke papan bebas");
+    $("rAgain").click();
+    chk(mode === "play" && def.n === 2, "ui4) Lanjut memulai level 2");
+    finish(false); finish(false);
+    chk(mode === "over" && $("rAgainT").textContent === "Main lagi" && ST.get("gagal", {}).k === 1, "ui5) kalah: Main lagi, gagal tercatat");
+    chk(!$("rGift").hidden && $("rGiftN").textContent.indexOf("+3") === 0 && $("rVerd").textContent.indexOf("Hampir") < 0 && $("rAgain").classList.contains("pul"), "ui5b) kalah jauh: bukan Hampir, bantuan +3 ditampilkan, tombol berdenyut");
+    $("rAgain").click(); chk(extraMoves === 3, "ui5c) level awal: bantuan +3 sejak kalah pertama"); finish(false); $("rAgain").click();
+    chk(extraMoves === 6 && core.moves === levelDef(2).moves + 6, "ui6) gagal 2 kali: bantuan +6 langkah");
+    // geseran saat papan runtuh disimpan lalu dijalankan
+    startGame("normal", 2); introT = 0; const qm = core.findMoves(false)[0]; queued = { a: qm.a, b: qm.b }; settle();
+    chk(ph === "swap" && core.used === 1 && queued === null, "ui6b) geseran saat runtuhan tidak hilang");
+    // panduan langkah pertama hanya menerima langkah yang ditunjuk
+    startGame("normal", 2); introT = 0; const all = core.findMoves(false); hint = all[0]; guide = 2; const other = all.find((m) => m.a !== hint.a || m.b !== hint.b);
+    const okOther = other ? doSwap(other.a, other.b) : false, okHint = doSwap(hint.a, hint.b);
+    chk(!okOther && okHint && guide === 0, "ui6c) panduan: langkah lain ditolak, langkah yang ditunjuk diterima");
+    // tautan tantangan palsu ditolak
+    chk(!seedOk(parseInt("zzzzzzzzzz", 36) >>> 0) && seedOk(LV_BASE + 7) && seedOk(KIT.dailySeed(SLUG)), "ui6d) tautan tantangan dengan benih asing ditolak");
+    // Harian satu percobaan
+    startGame("daily"); toTitle(); openHarian();
+    chk(daily() && !daily().done && $("dPlay").textContent.trim() === "Latihan", "ui7) keluar dari Harian menghabiskan percobaan resmi, tombol jadi Latihan");
+    $("sHarian").hidden = true;
+    ST.set("harian", { d: KIT.dateKey(), score: 1234, stars: 2, done: true });
+    startGame("practice"); finish(true);
+    chk(daily().score === 1234 && recs.pop().papan === "", "ui8) latihan tidak menimpa Harian dan tidak dikirim ke papan");
+    startGame("daily"); finish(true);
+    chk(daily().done && recs.pop().papan === "harian", "ui9) Harian resmi dikirim ke papan harian");
+    // rekor per level
+    ST.set("top", [5000]); startGame("normal", 1); core.score = 7000; core.moves = 0; endGame(true);
+    chk($("rRec").textContent.indexOf("+2.000") === 0 && topOf(1) === 7000, "ui10) rekor level terlewati: " + $("rRec").textContent.replace("\n", " / "));
+    // tantangan: Main lagi mengulang level yang sama
+    chal = { seed: LV_BASE + 1, score: 50 }; startGame("chal", chal.seed); finish(true); $("rAgain").click();
+    chk(kind === "chal" && seedNow === LV_BASE + 1 && chal && chal.score === 50, "ui11) Main lagi setelah tantangan mengulang level dan target yang sama");
+    // jeda: tombol hanya bekerja saat jeda tampil
+    startGame("normal", 1); $("pMenu").click(); $("bMain").click();
+    chk(mode === "play", "ui12) tombol Menu di panel jeda diabaikan saat bermain");
+    pause(); chk(mode === "pause" && !$("sPause").hidden, "ui13) tab tersembunyi / jeda membekukan permainan");
+    resume();
+    // penyimpanan gagal: game tetap jalan
+    const sOrig = Storage.prototype.setItem, gOrig = Storage.prototype.getItem;
+    Storage.prototype.setItem = function () { throw new Error("penuh"); }; Storage.prototype.getItem = function () { throw new Error("mati"); };
+    let survive = true; try { toTitle(); startGame("normal"); finish(true); toTitle(); } catch (e) { survive = false; }
+    Storage.prototype.setItem = sOrig; Storage.prototype.getItem = gOrig;
+    chk(survive, "ui14) penyimpanan rusak: tetap bisa main dan selesai");
+  } catch (err) { chk(false, "ui: galat " + err.message + " " + (err.stack || "").split("\n")[1]); }
+  finally {
+    KIT.progress.record = recOrig; KIT.ui.toast = toastOrig; KIT.ui.confetti = confOrig;
+    if (lsOk) try { const del = []; for (let q = 0; q < localStorage.length; q++) { const k = localStorage.key(q); if (k && k.indexOf(PFX) === 0 && !(k in snap)) del.push(k); } del.forEach((k) => localStorage.removeItem(k)); for (const k in snap) localStorage.setItem(k, snap[k]); } catch (e) { }
+    chal = null; chalLast = null; toTitle();
+  }
+  const el = document.createElement("pre"); el.id = "uji"; el.textContent = (ok ? "UJI LULUS" : "UJI GAGAL") + "\n" + out.join("\n");
+  document.body.appendChild(el); document.title = ok ? "UJI LULUS" : "UJI GAGAL";
+  return ok;
+}
+
+/* ================= MULAI ================= */
+function boot() {
+  if (COVER) document.documentElement.classList.add("cover");
+  if (Q.get("noanim") === "1") document.documentElement.classList.add("dk-noanim");
+  layout();
+  chal = readChal();
+  window.addEventListener("hashchange", () => { chal = readChal(); if (mode === "title") toTitle(); });
+  toTitle();
+  KIT.music.start(MUSIC);
+  if (UJI) runUji();
+  if (DEMO && !COVER) setTimeout(() => {
+    const m = Q.get("mode");
+    if (m === "harian") startGame("daily"); else if (m === "chal" && chal) startGame("chal", chal.seed);
+    else { const n = +(Q.get("lv") || 1); if (n > lvMax()) try { ST.set("lv", n); } catch (e) { } startGame("normal", n); }
+  }, 50);
+  const s = Q.get("s");
+  if (s) setTimeout(() => {
+    if (s === "harian") openHarian(); else if (s === "tantang") openTantang(); else if (s === "koleksi") openKoleksi(); else if (s === "setelan") KIT.ui.openSettings(); else if (s === "pause") pause();
+  }, DEMO ? parseFloat(Q.get("st") || "2500") : 80);
+  if (DEMO || COVER) { let ft = 0; lastTs = 0; setInterval(() => { ft += 1000 / 60; frameCore(ft); }, 16); } else requestAnimationFrame((t) => { lastTs = t; frame(t); });
+  if (document.fonts && document.fonts.load) document.fonts.load("800 40px 'Baloo 2'").then(() => { measureLogo(); }).catch(() => { });
+}
+boot();
+</script>
+</body>
+</html>

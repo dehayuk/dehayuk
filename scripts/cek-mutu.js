@@ -171,7 +171,8 @@ for (const g of games) {
 
   // Penyimpanan: kunci milik game harus "dehayuk.<slug>." (lewat DehayukKit.store), agar tidak bertabrakan.
   const consts = {};
-  for (const m of html.matchAll(/\b([A-Za-z_$][\w$]*)\s*=\s*["']([^"'\n]{1,80})["']/g)) consts[m[1]] = m[2];
+  // Variabel yang diberi teks, kecuali penugasan properti seperti e.k = "..." (bukan kunci penyimpanan).
+  for (const m of html.matchAll(/(?<![.\w$])([A-Za-z_$][\w$]*)\s*=\s*["']([^"'\n]{1,80})["']/g)) if (!(m[1] in consts)) consts[m[1]] = m[2];
   const keys = new Set();
   for (const m of html.matchAll(/localStorage\s*\.\s*(?:getItem|setItem|removeItem)\s*\(\s*(?:["']([^"']+)["']|([A-Za-z_$][\w$]*))/g)) keys.add(m[1] || consts[m[2]] || "?" + m[2]);
   for (const k of keys) {

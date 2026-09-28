@@ -35,12 +35,15 @@ function runOne(port, slug) {
     const p = spawn(browser, ["--headless=new", "--disable-gpu", "--no-first-run", "--user-data-dir=" + dir, "--window-size=390,844", "--dump-dom", "--virtual-time-budget=60000", "http://127.0.0.1:" + port + "/" + slug + "/?uji=1"]);
     let out = "";
     p.stdout.on("data", (d) => { out += d; });
-    // Mode demo atau animasi tanpa henti bisa membuat Edge menggantung: dihentikan setelah 90 detik.
-    const t = setTimeout(() => { try { p.kill(); } catch (e) { } }, 90000);
+    // Mode demo atau animasi tanpa henti bisa membuat Edge menggantung: dihentikan setelah 10 menit
+    // (uji yang berat bisa butuh beberapa menit di laptop yang memorinya sedang penuh).
+    const t = setTimeout(() => { try { p.kill(); } catch (e) { } }, 600000);
     p.on("close", () => {
       clearTimeout(t);
       try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) { }
-      const m = /<pre id="uji">([\s\S]*?)<\/pre>/.exec(out);
+      // Kode sumber game bisa memuat teks '<pre id="uji">' (misalnya pesan cadangan), jadi yang dipakai adalah
+      // kemunculan terakhir: elemen hasil uji yang ditambahkan ke halaman setelah semua skrip berjalan.
+      const all = [...out.matchAll(/<pre id="uji">([\s\S]*?)<\/pre>/g)], m = all[all.length - 1];
       done(m ? m[1].replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&") : null);
     });
   });

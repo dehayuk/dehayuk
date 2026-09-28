@@ -1,0 +1,16 @@
+{
+  "deskripsi": [
+    "Susun Kata adalah teka-teki silang bahasa Indonesia yang dimainkan dengan satu jari. Geser jari di roda huruf dari tampah anyaman untuk menyambung huruf menjadi kata, lalu lihat hurufnya terbang mengisi kotak di papan.",
+    "Setiap babak berisi tiga level yang makin menantang, dimulai dari kata sehari-hari. Kata sah yang tidak ada di papan menjadi kata bonus dan mengisi toples petunjuk. Selesaikan level dengan cepat dan tanpa petunjuk untuk tiga bintang dan hadiah petunjuk, sambil naik Tahap dan meraih gelar dari Pemula sampai Sastrawan.",
+    "Ikuti teka-teki Harian 7 huruf yang sama untuk semua pemain, kumpulkan lencana di Koleksi, dan kirim link Tantang ke teman lewat WhatsApp."
+  ],
+  "caraMain": [
+    "Geser jari dari huruf ke huruf di roda untuk membentuk kata, lalu lepaskan.",
+    "Kata yang ada di papan langsung mengisi kotaknya; kata sah lainnya menjadi kata bonus.",
+    "Empat kata bonus mengisi toples dan memberi 1 petunjuk. Lampu membuka satu huruf, palu membuka kotak pilihanmu dengan 2 petunjuk.",
+    "Temukan semua kata untuk menyelesaikan level. Makin cepat dan tanpa petunjuk, makin banyak bintang dan poin."
+  ],
+  "kontrol": "Geser jari atau seret mouse di roda huruf. Di papan ketik: ketik huruf, Enter untuk kirim, Backspace untuk hapus, Spasi untuk mengacak. Tombol jeda di kiri atas, atau tekan Esc/P.",
+  "orientasi": "Tegak",
+  "diperbarui": "2026-09-28"
+}
