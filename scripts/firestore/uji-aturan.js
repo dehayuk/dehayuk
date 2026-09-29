@@ -29,7 +29,8 @@ function acakId() { const c = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvw
   });
   await env.clearFirestore();
   const db = (u) => (u ? env.authenticatedContext(u).firestore() : env.unauthenticatedContext().firestore());
-  const bebas = (fn) => env.withSecurityRulesDisabled((c) => fn(c.firestore()));
+  // withSecurityRulesDisabled tidak meneruskan nilai kembalian, jadi hasilnya ditangkap sendiri.
+  const bebas = async (fn) => { let hasil; await env.withSecurityRulesDisabled(async (c) => { hasil = await fn(c.firestore()); }); return hasil; };
 
   // ---------- 1. papan peringkat (perilaku lama) ----------
   const P = "tumpuk-lapis~semua", skor = (u, uid) => doc(db(u), "papan", P, "skor", uid || u);

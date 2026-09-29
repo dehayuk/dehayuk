@@ -244,6 +244,41 @@ for (const f of ["index.html", "privasi/index.html"].concat(games.map((g) => "ma
   }
 }
 
+// ---------- Lapor & Saran dan laporan error otomatis ----------
+// Pengumpul error dan formulir hidup di kit, jadi setiap game yang memuat kit otomatis ikut.
+// Game hanya wajib punya jalan ke formulir: panel Setelan bawaan kit, atau tombol sendiri yang memanggil lapor.buka().
+{
+  const before = fails;
+  const kitSrc = fs.readFileSync(path.join(root, "kit", "v1", "kit.js"), "utf8");
+  const lapFile = path.join(root, "kit", "lapor", "v1", "lapor.js");
+  const lapSrc = fs.existsSync(lapFile) ? fs.readFileSync(lapFile, "utf8") : "";
+  if (!lapSrc) fail("kit/lapor/v1/lapor.js tidak ada");
+  else if (!lapSrc.includes('"__VERSI_APP__"')) fail("kit/lapor/v1/lapor.js: penanda \"__VERSI_APP__\" hilang (diisi scripts/build-www.js untuk versi app)");
+  if (!kitSrc.includes("/kit/lapor/v1/lapor.js") || !/K\.lapor\s*=/.test(kitSrc) || !/addEventListener\("error"/.test(kitSrc) || !/addEventListener\("unhandledrejection"/.test(kitSrc)) fail("kit v1 tidak lagi memuat pengumpul error dan Lapor & Saran");
+  if (!/data-lapor/.test(kitSrc)) fail("panel Setelan kit kehilangan tombol Lapor & Saran");
+  const tanpaJalan = [], tanpaKit = [];
+  for (const g of games) {
+    const f = path.join(root, g.slug, "index.html"); if (!fs.existsSync(f)) continue;
+    const html = fs.readFileSync(f, "utf8");
+    if (!/\/kit\/(v\d+\/)?kit\.js/.test(html)) tanpaKit.push(g.slug);
+    if (!/ui\.openSettings\(/.test(html) && !/lapor\.buka\(/.test(html)) tanpaJalan.push(g.slug);
+  }
+  if (tanpaKit.length) fail("game tanpa kit tidak punya pengumpul error: " + tanpaKit.join(", "));
+  if (tanpaJalan.length) fail("game tanpa tombol Lapor & Saran (pakai DehayukKit.ui.openSettings() atau panggil DehayukKit.lapor.buka() dari panel Setelan sendiri): " + tanpaJalan.join(", "));
+  const portal = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  if (!portal.includes('src="/kit/lapor/v1/lapor.js"') || !/data-lapor/.test(portal)) fail("portal (index.html) kehilangan Lapor & Saran atau pengumpul errornya");
+  if (!/id="lapor"/.test(fs.readFileSync(path.join(root, "privasi", "index.html"), "utf8"))) fail("privasi/index.html belum menjelaskan Lapor & Saran (bagian id=\"lapor\")");
+  if (fails === before) ok("lapor: kit, " + games.length + " game, portal, dan privasi terhubung ke Lapor & Saran dan laporan error");
+  // Aturan Firestore yang ditempel di konsol: setiap game harus punya batas skor, atau skornya ditolak papan peringkat.
+  const rulesFile = path.join(root, "scripts", "firestore", "firestore.rules");
+  if (fs.existsSync(rulesFile)) {
+    const m = /function batas\(\)\s*\{\s*return (\{[^}]*\});/.exec(fs.readFileSync(rulesFile, "utf8"));
+    let batasGame = {}; try { batasGame = JSON.parse(m[1].replace(/'/g, '"')); } catch (e) { fail("scripts/firestore/firestore.rules: daftar batas() tidak terbaca"); }
+    const belum = games.map((g) => g.slug).filter((s) => !(s in batasGame));
+    if (belum.length) warn("scripts/firestore/firestore.rules: batas skor papan belum ada untuk " + belum.join(", ") + " (tambahkan di batas(), lalu tempel ulang di konsol Firebase)");
+  }
+}
+
 for (const f of ["app-ads.txt", "privasi/index.html", "kit/v1/kit.js", "kit/v1/kit.css", "kit/kit.js", "kit/kit.css", "index.html", "og.png", "robots.txt", "sitemap.xml"]) {
   if (!fs.existsSync(path.join(root, f))) fail("berkas wajib hilang: " + f);
 }
