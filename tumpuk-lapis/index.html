@@ -680,9 +680,9 @@ const PLATES = [
   { id: "daun", nama: "Daun pisang", top: "#5cc45a", rim: "#2f8a38", ring: "#3f9f45", butuh: "c10", krim: 800 },
   { id: "emas", nama: "Piring emas", top: "#ffe07a", rim: "#d99a1a", ring: "#f1b82a", butuh: "l100", krim: 2000 }
 ]; // harga krim [ANGKA SEMENTARA]
-let plateSel = 0;
+let plateSel = 0, piringSkala = 1; // gelanggang belah dua: piring sedikit lebih kecil agar dua piring tidak bersentuhan
 function drawPlate(pi) {
-  const P = PLATES[pi], g = ctx, k = KZ, cx = OX, cy = OY + (-CAM + 3) * k, rx = 140 * k, ry = 70 * k, th = Math.max(3, 9 * k);
+  const P = PLATES[pi], g = ctx, k = KZ * piringSkala, cx = OX, cy = OY + (-CAM + 3) * KZ, rx = 140 * k, ry = 70 * k, th = Math.max(3, 9 * k);
   if (cy - ry > vh + 10) return;
   g.fillStyle = "rgba(40,10,30,.18)"; g.beginPath(); g.ellipse(cx + 6 * k, cy + th + 7 * k, rx * 1.02, ry * 1.02, 0, 0, TAU); g.fill();
   g.fillStyle = P.rim; g.beginPath(); g.ellipse(cx, cy + th, rx, ry, 0, 0, Math.PI); g.lineTo(cx - rx, cy); g.ellipse(cx, cy, rx, ry, 0, Math.PI, 0, true); g.closePath(); g.fill();
@@ -1325,6 +1325,10 @@ function render(dt) {
   OY = camA * vh + (shake ? (Math.random() - 0.5) * shake : 0) + (bobT > 0 ? Math.sin((1 - bobT / 0.15) * Math.PI) * 2 : 0);
   g.setTransform(dpr, 0, 0, dpr, 0, 0); g.globalAlpha = 1;
   drawBackdrop(COVER ? 0 : skyL, OY + (-CAM + 3) * KZ);
+  // Gelanggang belah dua: dunia game hanya di setengah kiri, dipotong rapi di garis tengah (hanya tampilan).
+  const belah = kind === "arena" && (mode === "play" || mode === "count" || mode === "ending" || mode === "arenaTunggu");
+  piringSkala = belah ? 0.8 : 1;
+  if (belah) { g.save(); g.beginPath(); g.rect(0, 0, vw / 2 - 2, vh); g.clip(); }
   drawPlate(plateSel);
   drawFall(dt, true);
   if (G) drawGhost();
@@ -1369,6 +1373,7 @@ function render(dt) {
   if (vign > 0) { const gr = g.createRadialGradient(vw / 2, vh / 2, Math.min(vw, vh) * 0.3, vw / 2, vh / 2, Math.max(vw, vh) * 0.75); gr.addColorStop(0, "rgba(255,30,60,0)"); gr.addColorStop(1, "rgba(255,30,60," + (0.3 * vign / 0.25).toFixed(3) + ")"); g.fillStyle = gr; g.fillRect(0, 0, vw, vh); }
   if (flash > 0) { g.globalAlpha = flash * 0.9; g.fillStyle = "#fff"; g.fillRect(0, 0, vw, vh); g.globalAlpha = 1; }
   if (mode === "ending" && endT < 0.6) { g.globalAlpha = 0.18 * (1 - endT / 0.6); g.fillStyle = "#3a0a1a"; g.fillRect(0, 0, vw, vh); g.globalAlpha = 1; }
+  if (belah) { g.restore(); piringSkala = 1; }
   if (mode === "title" || mode === "leaving" || COVER) drawLogo();
 }
 function drawFall(dt, behind) {
@@ -1548,7 +1553,7 @@ function tontonMenara(el, o) {
       if (sk) { KZ = sk.kz; CAM = Math.min(topV, -(sk.base - sk.a) * h / KZ) - sk.a * h / KZ; } // kamera sama dengan menaraku
       else CAM = Math.min(3 - h * (mini ? 0.8 : 0.86) / KZ, topV - h * (mini ? 0.36 : 0.3) / KZ);
       c2.setTransform(d, 0, 0, d, 0, 0); c2.clearRect(0, 0, w, h);
-      drawPlate(0);
+      piringSkala = sk ? 0.8 : 1; drawPlate(0); piringSkala = 1;
       for (let i = 0; i <= n; i++) drawLayer(g.L[i], i, 1);
     } finally { [ctx, OX, OY, KZ, CAM, vh, vw] = sv; }
   }
