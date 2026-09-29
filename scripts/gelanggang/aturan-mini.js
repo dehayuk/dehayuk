@@ -68,6 +68,26 @@ class Snap {
 }
 
 function salin(v) { return v == null ? v : JSON.parse(JSON.stringify(v)); }
+// Regex aturan RTDB hanya subset kecil. Tolak sejak awal fitur yang membuat Firebase gagal memuat aturan:
+// alternatif kosong (a|), grup (?: (?= (?! (?<, rujukan balik \1, \d \w \s \b, flag selain i.
+function cekRegex(rules) {
+  const salah = [];
+  (function jalan(o, p) {
+    for (const k in o) {
+      const v = o[k];
+      if (typeof v === "string" && k[0] === ".") {
+        for (const m of v.matchAll(/matches\(\/((?:\\.|[^/])*)\/([a-z]*)\)/g)) {
+          const re = m[1], fl = m[2];
+          if (fl && fl !== "i") salah.push(p + ": flag " + fl);
+          if (/\(\?/.test(re)) salah.push(p + ": grup (?…) tidak didukung: " + re);
+          if (/\|\)|\(\||^\||\|$|\|\|/.test(re)) salah.push(p + ": alternatif kosong: " + re);
+          if (/\\[1-9dwsbDWSB]/.test(re)) salah.push(p + ": escape tidak didukung: " + re);
+        }
+      } else if (v && typeof v === "object") jalan(v, p + "/" + k);
+    }
+  })(rules, "");
+  if (salah.length) throw new Error("Regex aturan tidak didukung RTDB:\n  " + salah.join("\n  "));
+}
 function pasangNilai(tree, parts, val) {
   if (!parts.length) return val == null ? {} : salin(val);
   let o = tree;
@@ -89,6 +109,7 @@ const pisah = (p) => String(p).split("/").filter(Boolean);
 function buatDB(rules, opsi) {
   opsi = opsi || {};
   const R = rules.rules || rules;
+  cekRegex(R);
   let tree = {};
   const pantau = [];
   const jam = opsi.jam || (() => Date.now());
@@ -200,7 +221,7 @@ function buatDB(rules, opsi) {
   return db;
 }
 
-module.exports = { buatDB, ketat };
+module.exports = { buatDB, ketat, cekRegex };
 
 // Alat bantu cari-salah: pecah ekspresi and(...) tingkat atas, nilai tiap bagian, kembalikan bagian yang false.
 function pecahDan(expr) {

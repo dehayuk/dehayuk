@@ -335,6 +335,7 @@
 @media (prefers-reduced-motion:reduce){.gl *{animation:none!important;transition:none!important}}
 
 /* game pemakai: ruang untuk laci dan papan duel */
-html.gl-main #bPause,html.gl-main #hBestP{display:none!important}
+/* di gelanggang skor tampil sekali saja, di papan duel atas */
+html.gl-main #bPause,html.gl-main #hBestP,html.gl-main #hScore,html.gl-main #hTag{display:none!important}
 html.gl-main #hud{padding-top:calc(var(--dk-st,0px) + 150px)!important}
 html.gl-laci-buka .icons{display:none!important}

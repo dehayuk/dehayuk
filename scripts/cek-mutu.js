@@ -221,6 +221,7 @@ for (const f of ["index.html", "privasi/index.html"].concat(games.map((g) => "ma
     const baru = require(path.join(G, "buat-aturan.js")).text;
     if (berkas !== baru) fail("scripts/gelanggang/database.rules.json belum mutakhir, jalankan: node scripts/gelanggang/buat-aturan.js");
     aturan = JSON.parse(berkas);
+    require(path.join(G, "aturan-mini.js")).cekRegex(aturan.rules); // regex di luar subset RTDB membuat aturan gagal dimuat
   } catch (e) { fail("aturan gelanggang: " + e.message); }
   if (aturan) {
     // Jalur DUKUNGAN terpisah total: aturan pertandingan tidak boleh membacanya (dokumen teknis 8.1).

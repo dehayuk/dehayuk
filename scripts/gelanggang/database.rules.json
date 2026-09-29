@@ -641,7 +641,7 @@
                 ".validate": "newData.isNumber()"
               },
               "d": {
-                ".validate": "newData.val().matches(/^(a|b|)$/)"
+                ".validate": "newData.val() == 'a' || newData.val() == 'b' || newData.val() == ''"
               },
               "t": {
                 ".validate": "newData.val() == now"

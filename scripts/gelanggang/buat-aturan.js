@@ -566,7 +566,7 @@ const rules = {
         $uid: {
           ".write": and("auth.uid == $uid", or("!data.exists()", "!newData.exists()", "now - data.child('t').val() >= 4000")),
           ".validate": "newData.hasChildren(['r','d','t'])",
-          r: isNum, d: { ".validate": "newData.val().matches(/^(a|b|)$/)" }, t: { ".validate": "newData.val() == now" },
+          r: isNum, d: { ".validate": "newData.val() == 'a' || newData.val() == 'b' || newData.val() == ''" }, t: { ".validate": "newData.val() == now" },
           e: emoNode, $other: { ".validate": false }
         } } } },
       hadir: { $s: { $a: { ".read": "auth != null", $uid: { ".write": "auth.uid == $uid", ".validate": "newData.val() == now" } } } },
