@@ -30,11 +30,11 @@
 
   function buat(o) {
     var slug = o.slug, plug = o.plug, layar = o.layar || "B", S = I.SETELAN_BAKU.raja;
-    var T0 = Date.now(), beku = layar !== "C", tree = { v1: { setelan: {}, profil: {}, tayang: {}, rekaman: {}, catatan: {}, prestasi: {}, ringkas: {} } }, dengar = [];
+    var T0 = Date.now(), beku = layar !== "C" && layar !== "C3", tree = { v1: { setelan: {}, profil: {}, tayang: {}, rekaman: {}, catatan: {}, prestasi: {}, ringkas: {} } }, dengar = [];
     var v1 = tree.v1;
     v1.setelan[slug] = { nama: plug.nama || slug, arena: { raja: I.SETELAN_BAKU.raja, rebutan: I.SETELAN_BAKU.rebutan } };
     for (var k in ORANG) v1.profil[ORANG[k].uid] = ORANG[k].P;
-    var aku = layar === "C" || layar === "E" ? ORANG.budi : layar === "F" ? ORANG.rina : ORANG.tamu;
+    var aku = layar === "C" || layar === "E" ? ORANG.budi : layar === "F" || layar === "C3" ? ORANG.rina : ORANG.tamu;
     var sekarang = function () { return beku ? T0 : Date.now(); };
     var contoh = function (seed, n, pas) { return plug.rekaman && plug.rekaman.contoh ? plug.rekaman.contoh(seed, n, pas) : Array.from({ length: n }, function () { return 700; }); };
     var tay = function () { return v1.tayang[slug] = v1.tayang[slug] || {}; };
@@ -44,6 +44,12 @@
     v1.rekaman[slug] = { raja: { u: ORANG.budi.uid, n: "Budi", no: "4821", av: "kucing", bk: "bk-raja", rid: "DemoRekaman01", r: rekR, m: rekM, skor: 41, p: 17, d: I.pack(rekTaps), t: T0 - 3600000 } };
     var dkContoh = { by: ORANG.tamu.uid, sejak: T0 - 20000, t: T0 - 1000, r: 118, a: 62, b: 38, n: 23, e: { api: 48, tepuk: 14, senyum: 9, kuat: 6, wow: 4, gg: 3 } };
 
+    if (layar === "C3") {
+      // Tantang Rekor: Rina melawan rekaman Budi (belah dua, sisi kanan berlabel REKAMAN)
+      var m3 = T0 - S.hitungMs + 600;
+      tay().raja = { f: { v: 1, st: "main", t: m3, r: 119, rid: "DemoRonde119", mulai: m3, w: 241, buka: m3 - 40000, jeda: 0, raja: false, bt: 0, rek: true, rr: rekR, rm: rekM, rn: 41, rp: 17, lw: "", l10: "", a: kursi(ORANG.rina), b: { u: ORANG.budi.uid, n: "Budi", no: "4821", av: "kucing", bk: "bk-raja", lc: "" } }, dk: salin(dkContoh),
+        live: { a: { u: ORANG.rina.uid, r: 119, siap: true, hb: T0, s: 0, tS: T0, p: 0, e: 0, rk: "awal", sel: false } } };
+    }
     if (layar === "B" || layar === "C" || layar === "D1") {
       var mulai = layar === "B" ? T0 - S.hitungMs - 72000 : layar === "C" ? T0 - S.hitungMs + 600 : T0 - 1500;
       var f = { v: 1, st: "main", t: mulai, r: 118, rid: "DemoRonde118", mulai: mulai, w: 240, buka: mulai - 9000, jeda: 0, raja: true, bt: 7, rek: false, lw: "", l10: "", a: kursi(ORANG.budi), b: kursi(ORANG.andi) };
