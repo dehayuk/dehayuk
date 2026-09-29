@@ -250,6 +250,7 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
         <div class="tg"><span class="ico"><svg viewBox="0 0 24 24" stroke="#3d1a0c" stroke-width="1.8" stroke-linejoin="round"><path d="M3 9.5h4l5-4.5v14l-5-4.5H3z" fill="#fff"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke-width="2.4" stroke-linecap="round"/></svg></span><b>Suara</b><button class="sw" role="switch" aria-checked="false" data-k="snd" aria-label="Suara"></button></div>
         <div class="tg"><span class="ico" style="background:#7fd8ff"><svg viewBox="0 0 24 24" stroke="#3d1a0c" stroke-width="1.8" stroke-linejoin="round"><path d="M9 17V5l11-2v12" fill="none" stroke-width="2.6"/><ellipse cx="6.5" cy="17.5" rx="3.3" ry="2.7" fill="#fff"/><ellipse cx="17.5" cy="15.5" rx="3.3" ry="2.7" fill="#fff"/></svg></span><b>Musik</b><button class="sw" role="switch" aria-checked="false" data-k="mus" aria-label="Musik"></button></div>
         <div class="tg"><span class="ico" style="background:#ff9fc3"><svg viewBox="0 0 24 24" stroke="#3d1a0c" stroke-width="1.8" stroke-linecap="round"><rect x="8" y="3.5" width="8" height="17" rx="2" fill="#fff"/><path d="M4.5 8v8M19.5 8v8M2 10.5v3M22 10.5v3" stroke-width="2.2"/></svg></span><b>Getar</b><button class="sw" role="switch" aria-checked="false" data-k="vib" aria-label="Getar"></button></div>
+        <button class="b bl ol" id="bLapor" style="font-size:19px"><svg viewBox="0 0 24 24" fill="#fff" stroke="#3d1a0c" stroke-width="2" stroke-linejoin="round"><path d="M4 4.5h16v11.5H9.5L4 20.5z"/><path d="M8.5 9h7M8.5 12h4.5" fill="none" stroke-linecap="round"/></svg>Lapor &amp; Saran</button>
       </div>
     </div>
   </section>
@@ -1216,6 +1217,7 @@ document.addEventListener("pointerdown", pressFx, true);
 function on(id, fn) { $(id).addEventListener("click", (e) => { SFX.tap(); fn(e); }); }
 on("bMain", () => leaveTitle(() => chal ? startGame("chal", chal.seed) : startGame("normal")));
 on("bHarian", openHarian); on("bTantang", openTantang); on("bKoleksi", openKoleksi); on("bPeringkat", () => KIT.papan && KIT.papan.buka(SLUG)); on("bSetelan", openSetelan);
+on("bLapor", () => KIT.lapor && KIT.lapor.buka());
 on("dPlay", () => { const seed = hashStr("harian-" + ymd(new Date())); const k = dailyDone() ? "practice" : "daily"; $("sHarian").hidden = true; leaveTitle(() => startGame(k, seed)); });
 on("cSend", () => { if (SV.last) share(SV.last.seed, SV.last.score); else { $("sTantang").hidden = true; leaveTitle(() => startGame("normal")); } });
 on("bPause", () => { if (mode === "play") { mode = "pause"; show($("sPause")); } });

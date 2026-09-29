@@ -1,0 +1,36 @@
+# Uji aturan Firestore (papan peringkat, Lapor & Saran, laporan error) dengan emulator Firebase resmi.
+# Emulator butuh Java, jadi dijalankan di server GitHub, bukan di laptop.
+# Jalankan manual dari tab Actions ("Run workflow"), atau push ke cabang uji-masukan.
+name: Uji Firestore
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [uji-masukan]
+
+jobs:
+  uji:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # Modul klien (kit/lapor/v1/lapor.js) diuji tanpa server dulu: penyaring error, info perangkat, bentuk kiriman.
+      - name: Uji klien
+        run: node scripts/firestore/uji-klien.js
+
+      - name: Pasang alat emulator
+        working-directory: scripts/firestore
+        run: npm install --no-audit --no-fund
+
+      - name: Uji aturan dengan emulator
+        working-directory: scripts/firestore
+        run: npx firebase emulators:exec --only firestore --project demo-dehayuk "node uji-aturan.js"

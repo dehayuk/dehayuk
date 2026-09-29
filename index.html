@@ -508,12 +508,13 @@
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
-  <footer>© 2026 Dehayuk · Game ringan buatan Indonesia · <a href="#offline">Main tanpa internet</a> · <a href="/privasi/">Kebijakan Privasi</a></footer>
+  <footer>© 2026 Dehayuk · Game ringan buatan Indonesia · <a href="#offline">Main tanpa internet</a> · <a href="/privasi/">Kebijakan Privasi</a> · <a href="/privasi/#lapor" data-lapor>Lapor &amp; Saran</a></footer>
 </main>
 
 <nav class="nav" id="nav" aria-label="Menu utama"></nav>
 
 <script src="/katalog.js"></script>
+<script src="/kit/lapor/v1/lapor.js" defer></script>
 <script>
 (function () {
   var DATA = window.DEHAYUK || { kategori: [], game: [] };
@@ -893,7 +894,8 @@
     return '<nav class="crumbs" aria-label="Lokasi"><a href="#">Beranda</a>»' + (cats[0] ? '<a href="#k-' + cats[0].id + '">' + esc(cats[0].nama) + "</a>»" : "") + "<span>" + esc(g.nama) + "</span></nav>" +
       "<h1>" + esc(g.nama) + "</h1>" +
       '<div class="actions"><button class="pbtn icon save-btn" type="button" data-save aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg><span class="lbl">Simpan</span></button>' +
-      '<button class="pbtn icon" type="button" data-share><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6a2.5 2.5 0 1 0 0-.01M18 18a2.5 2.5 0 1 0 0-.01M6 12a2.5 2.5 0 1 0 0-.01M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span class="lbl">Bagikan</span></button></div>' +
+      '<button class="pbtn icon" type="button" data-share><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6a2.5 2.5 0 1 0 0-.01M18 18a2.5 2.5 0 1 0 0-.01M6 12a2.5 2.5 0 1 0 0-.01M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span class="lbl">Bagikan</span></button>' +
+      '<button class="pbtn icon" type="button" data-lapor="game" title="Laporkan masalah atau kirim saran untuk game ini"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4M5 4h12l-2.5 4L17 12H5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">Lapor</span></button></div>' +
       '<dl class="facts">' + facts.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + f[1] + "</dd>"; }).join("") + "</dl>" + body;
   }
 
@@ -914,6 +916,16 @@
     clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 2600);
   }
   document.addEventListener("click", function (ev) {
+    // Lapor & Saran (/kit/lapor/v1/lapor.js). Bila modulnya belum termuat (misalnya offline), tautan footer
+    // tetap membuka penjelasannya di halaman privasi.
+    var lapor = ev.target.closest && ev.target.closest("[data-lapor]");
+    if (lapor && window.DehayukLapor) {
+      ev.preventDefault();
+      var lg = lapor.getAttribute("data-lapor") === "game" && current && bySlug[current];
+      window.DehayukLapor.buka(lg ? { tema: "portal", halaman: lg.slug, nama: lg.nama, jenis: "masalah" } : { tema: "portal", halaman: "portal", nama: "Dehayuk" });
+      return;
+    }
+    if (lapor && lapor.tagName !== "A") { toast("Lapor & Saran butuh internet. Coba lagi nanti, ya."); return; }
     var save = ev.target.closest && ev.target.closest("[data-save]");
     if (save && current) {
       var list = savedList(), i = list.indexOf(current);

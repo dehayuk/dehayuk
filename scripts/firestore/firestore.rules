@@ -1,0 +1,115 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /papan/{papan}/skor/{uid} {
+      function batas() {
+        return {'jatuh-buah': 500000, 'blok-ledak': 300000, 'tumpuk-lapis': 3000, 'oyen-nyebrang': 5000, 'jajan-manis': 5000000, 'susun-kata': 500000, 'congklak': 1000, 'bola-pantul': 5000};
+      }
+      function sah() {
+        let d = request.resource.data;
+        let game = papan.split('~')[0];
+        return papan.matches('^[a-z0-9-]{2,32}~(harian~[0-9]{8}|minggu~[0-9]{4}-W[0-9]{2}|semua)$')
+          && game in batas()
+          && d.keys().hasOnly(['nama', 'skor', 't'])
+          && d.nama is string && d.nama.size() >= 1 && d.nama.size() <= 16
+          && !d.nama.lower().matches('.*(anjing|anjg|bangsat|babi|kontol|memek|ngentot|jancok|jancuk|goblok|tolol|pepek|lonte|bajingan|kampret|fuck|shit|bitch).*')
+          && d.skor is int && d.skor >= 1 && d.skor <= batas()[game]
+          && d.t == request.time;
+      }
+      allow read: if true;
+      allow create: if request.auth != null && request.auth.uid == uid && sah();
+      allow update: if request.auth != null && request.auth.uid == uid && sah()
+        && request.resource.data.skor >= resource.data.skor
+        && request.time > resource.data.t + duration.value(5, 's');
+      allow delete: if false;
+    }
+
+    // ---------- Lapor & Saran (masukan) dan laporan error otomatis (galat) ----------
+    // Klien hanya boleh MEMBUAT dokumen. Membaca, mengubah, dan menghapus hanya lewat konsol Firebase.
+    // Setiap kiriman wajib memperbarui dokumen jejak milik akunnya dalam commit yang sama:
+    //   jejak.t    == waktu kiriman ini (request.time)
+    //   jejak.id   == id dokumen yang dibuat, jadi satu commit hanya bisa membuat SATU dokumen
+    //   jejak.awal  awal jendela 24 jam; jejak.n jumlah kiriman di jendela itu
+    // Dengan begitu aturan menegakkan jeda antarkiriman dan batas per 24 jam per akun tamu.
+    // Kolom "v" adalah versi skema. Tambahan kelak (tangkapan layar, balasan pengurus) memakai v baru
+    // dan koleksi terpisah, tanpa mengubah dokumen yang sudah ada.
+
+    function jejakSah(maks) {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['t', 'awal', 'n', 'id']) && d.keys().hasAll(['t', 'awal', 'n', 'id'])
+        && d.t == request.time
+        && d.id is string && d.id.matches('^[A-Za-z0-9]{20}$')
+        && d.n is int && d.n >= 1 && d.n <= maks;
+    }
+    function jejakAwal(maks) {
+      return jejakSah(maks) && request.resource.data.awal == request.time && request.resource.data.n == 1;
+    }
+    function jejakLanjut(jedaDetik, maks) {
+      let d = request.resource.data;
+      let lama = resource.data;
+      let jendelaHabis = request.time >= lama.awal + duration.value(24, 'h');
+      return jejakSah(maks)
+        && request.time >= lama.t + duration.value(jedaDetik, 's')
+        && d.id != lama.id
+        && ((!jendelaHabis && d.awal == lama.awal && d.n == lama.n + 1)
+          || (jendelaHabis && d.awal == request.time && d.n == 1));
+    }
+    function lewatJejak(koleksiJejak, id) {
+      let j = getAfter(/databases/$(database)/documents/$(koleksiJejak)/$(request.auth.uid));
+      return j != null && j.data.id == id && j.data.t == request.time;
+    }
+    function infoSah(d) {
+      return d.v == 1
+        && d.uid == request.auth.uid
+        && d.t == request.time
+        && d.halaman is string && d.halaman.matches('^[a-z0-9-]{1,40}$')
+        && d.versi is string && d.versi.size() >= 1 && d.versi.size() <= 40
+        && d.perangkat is string && d.perangkat.size() >= 1 && d.perangkat.size() <= 80
+        && d.layar is string && d.layar.matches('^[0-9]{2,5}x[0-9]{2,5}$')
+        && d.app is bool;
+    }
+
+    match /masukan/{id} {
+      function sah() {
+        let d = request.resource.data;
+        let kolom = ['v', 'jenis', 'teks', 'halaman', 'versi', 'perangkat', 'layar', 'app', 'uid', 't'];
+        return d.keys().hasOnly(kolom) && d.keys().hasAll(kolom)
+          && d.jenis in ['saran', 'masalah', 'lainnya']
+          && d.teks is string && d.teks.size() <= 500 && d.teks.trim().size() >= 3
+          && infoSah(d);
+      }
+      allow create: if request.auth != null && id.matches('^[A-Za-z0-9]{20}$') && sah() && lewatJejak('jejakMasukan', id);
+      allow read, update, delete: if false;
+    }
+    match /jejakMasukan/{uid} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid && jejakAwal(10);
+      allow update: if request.auth != null && request.auth.uid == uid && jejakLanjut(60, 10);
+      allow list, delete: if false;
+    }
+
+    match /galat/{id} {
+      function sah() {
+        let d = request.resource.data;
+        let kolom = ['v', 'jenis', 'pesan', 'sumber', 'halaman', 'versi', 'perangkat', 'layar', 'app', 'uid', 't'];
+        return d.keys().hasOnly(kolom) && d.keys().hasAll(kolom)
+          && d.jenis in ['error', 'promise']
+          && d.pesan is string && d.pesan.size() >= 1 && d.pesan.size() <= 200
+          && d.sumber is string && d.sumber.size() >= 1 && d.sumber.size() <= 160
+          && infoSah(d);
+      }
+      allow create: if request.auth != null && id.matches('^[A-Za-z0-9]{20}$') && sah() && lewatJejak('jejakGalat', id);
+      allow read, update, delete: if false;
+    }
+    match /jejakGalat/{uid} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid && jejakAwal(20);
+      allow update: if request.auth != null && request.auth.uid == uid && jejakLanjut(10, 20);
+      allow list, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

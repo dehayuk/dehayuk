@@ -123,6 +123,12 @@
   [headers.values]
     Cache-Control = "no-cache"
 
+# Lapor & Saran: modul selalu dicek ulang, seperti kit v1.
+[[headers]]
+  for = "/kit/lapor/*"
+  [headers.values]
+    Cache-Control = "no-cache"
+
 [[headers]]
   for = "/gelanggang.json"
   [headers.values]

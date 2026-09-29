@@ -51,7 +51,8 @@ Pakai `window.DehayukKit` untuk:
 - Harian (`dailySeed`);
 - bagikan dan link tantangan (`share`, `challengeLink`);
 - kemajuan bersama (`progress.record` di akhir setiap permainan);
-- tampilan tombol dan panel (`dk-btn`, `dk-panel`, `dk-ribbon`).
+- tampilan tombol dan panel (`dk-btn`, `dk-panel`, `dk-ribbon`);
+- **Lapor & Saran** dan laporan error otomatis. Pengumpul error sudah menyala di setiap halaman yang memuat kit. Tombol Lapor & Saran ada di panel Setelan bawaan (`DehayukKit.ui.openSettings()`); game yang membuat panel Setelan sendiri wajib menambahkan tombol yang memanggil `DehayukKit.lapor.buka()`. Diperiksa oleh `npm run cek`.
 
 Perubahan pada kit memengaruhi semua game, jadi ujilah semua game setelah mengubahnya.
 

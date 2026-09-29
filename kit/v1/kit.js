@@ -381,9 +381,12 @@
       }).join("");
       setEl.innerHTML = '<div class="dk-panel"><div class="dk-ribbon dk-purple dk-ol">Setelan</div>' +
         '<button class="dk-btn dk-red dk-circle dk-close" data-x aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="6" style="color:var(--dk-ink)"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>' +
-        '<div class="dk-stack">' + rows + '</div></div>';
+        '<div class="dk-stack">' + rows +
+        '<button type="button" class="dk-btn dk-blue dk-ol" data-lapor style="font-size:19px"><svg viewBox="0 0 24 24" fill="#fff" stroke="currentColor" stroke-width="2" stroke-linejoin="round" style="color:var(--dk-ink)"><path d="M4 4.5h16v11.5H9.5L4 20.5z"/><path d="M8.5 9h7M8.5 12h4.5" fill="none" stroke-linecap="round"/></svg>Lapor &amp; Saran</button>' +
+        '</div></div>';
       (document.getElementById("col") || document.body).appendChild(setEl);
       setEl.addEventListener("click", function (e) {
+        if (e.target.closest("[data-lapor]")) { tone({ freq: 880, dur: 0.06, vol: 0.22, slideTo: 1320 }); K.lapor.buka(); return; }
         var sw = e.target.closest(".dk-switch");
         if (sw) { var k = sw.dataset.k, p = {}; p[k] = !SET[k]; K.settings.set(p); paint(); if (k === "getar" && SET.getar) K.vibrate(30); tone({ freq: 880, dur: 0.06, vol: 0.22, slideTo: 1320 }); return; }
         if (e.target.closest("[data-x]") || e.target === setEl) { setEl.hidden = true; tone({ freq: 880, dur: 0.06, vol: 0.22, slideTo: 1320 }); }
@@ -393,6 +396,43 @@
     paint(); ui.show(setEl); return setEl;
   };
   K.ui = ui;
+
+  /* ---------- Lapor & Saran dan laporan error otomatis ---------- */
+  // Modulnya (/kit/lapor/v1/lapor.js) baru dimuat saat dibutuhkan: saat formulir dibuka, atau saat ada error.
+  // Kit menangkap error di halaman lalu meneruskannya ke modul; error yang terjadi sebelum modul siap
+  // ditampung sebentar (paling banyak 5). Mode ?uji=1 tidak pernah memuat modul atau mengirim apa pun.
+  // Tombol "Lapor & Saran" ada di panel Setelan bersama; game dengan panel sendiri memanggil DehayukKit.lapor.buka().
+  (function () {
+    var UJI = /[?&]uji=1/.test(location.search), antre = [], muat = null;
+    function modul() {
+      if (window.DehayukLapor) return Promise.resolve(window.DehayukLapor);
+      if (!muat) muat = new Promise(function (ok, gagal) {
+        var s = document.createElement("script"); s.src = "/kit/lapor/v1/lapor.js"; s.async = true;
+        s.onload = function () { if (window.DehayukLapor) ok(window.DehayukLapor); else { muat = null; gagal(); } };
+        s.onerror = function () { muat = null; s.remove(); gagal(); };
+        (document.head || document.documentElement).appendChild(s);
+      });
+      return muat;
+    }
+    function tangkap(e) {
+      if (UJI) return;
+      try {
+        if (window.DehayukLapor) { window.DehayukLapor.galat(e); return; }
+        if (antre.length >= 5) return;
+        antre.push(e);
+        modul().then(function (L) { var q = antre; antre = []; q.forEach(function (x) { L.galat(x); }); }, function () { antre = []; });
+      } catch (x) { }
+    }
+    window.addEventListener("error", tangkap);
+    window.addEventListener("unhandledrejection", tangkap);
+    K.lapor = {
+      // buka({jenis: "saran"|"masalah"|"lainnya", halaman: slug, nama: "Nama Game"}); tanpa isian memakai game ini.
+      buka: function (o) {
+        if (UJI) return Promise.resolve(null);
+        return modul().then(function (L) { return L.buka(o); }, function () { ui.toast("Lapor & Saran butuh internet. Coba lagi nanti, ya."); return null; });
+      }
+    };
+  })();
 
   /* ---------- papan peringkat global (Firebase: login tamu + Firestore lewat REST, tanpa pustaka) ---------- */
   // Tiap game punya tiga papan: harian~YYYYMMDD, minggu~YYYY-Www, semua. Skor hanya naik (dijaga aturan Firestore).
@@ -452,6 +492,8 @@
       }).catch(function () {}).then(function () { sibuk = false; });
     }
     if (!uji) { window.addEventListener("online", kirimAntre); setTimeout(kirimAntre, 3000); }
+    // Akun tamu yang sama dipakai modul Lapor & Saran, agar satu pemain tidak pernah punya dua akun.
+    K.akunTamu = akun;
 
     function ambil(papan, n) {
       var body = { structuredQuery: { from: [{ collectionId: "skor" }], orderBy: [{ field: { fieldPath: "skor" }, direction: "DESCENDING" }], limit: n || 30 } };
