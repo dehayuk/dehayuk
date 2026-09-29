@@ -1,0 +1,15 @@
+{
+  "name": "dehayuk-firestore-uji",
+  "private": true,
+  "description": "Alat uji aturan Firestore Dehayuk (papan peringkat, Lapor & Saran, laporan error). Dipasang hanya di GitHub Actions (emulator butuh Java), bukan di laptop.",
+  "scripts": {
+    "uji-klien": "node uji-klien.js",
+    "uji-aturan": "firebase emulators:exec --only firestore --project demo-dehayuk \"node uji-aturan.js\"",
+    "uji-live": "node uji-live.js"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^3.0.4",
+    "firebase": "^10.14.1",
+    "firebase-tools": "^13.29.1"
+  }
+}

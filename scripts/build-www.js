@@ -66,4 +66,11 @@ function copyDir(from, to) {
 
 copyPage(path.join(root, "index.html"), path.join(out, "index.html"));
 for (const dir of SITE_DIRS) if (fs.existsSync(path.join(root, dir))) copyDir(path.join(root, dir), path.join(out, dir));
+
+// Versi app yang ikut terkirim di Lapor & Saran dan laporan error: sama dengan versionName Android
+// ("1.0.<nomor build GitHub>"). Dibuat di laptop tanpa nomor build: tampil "app lokal".
+const laporApp = path.join(out, "kit", "lapor", "v1", "lapor.js");
+if (fs.existsSync(laporApp) && process.env.GITHUB_RUN_NUMBER) {
+  fs.writeFileSync(laporApp, fs.readFileSync(laporApp, "utf8").replace('"__VERSI_APP__"', JSON.stringify("1.0." + process.env.GITHUB_RUN_NUMBER)));
+}
 console.log("www siap: halaman depan + " + SITE_DIRS.join(", "));
