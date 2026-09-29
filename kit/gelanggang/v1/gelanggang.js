@@ -443,11 +443,12 @@
   }
 
   /* ---------- menara lewat colokan game ---------- */
-  function menara(kunci, wadah, seed, mini) {
+  function menara(kunci, wadah, seed, mini, lain) {
     var M = towers[kunci];
     if (M && M.seed === seed && M.wadah === wadah) return M;
     if (M && M.ctl && M.ctl.lepas) try { M.ctl.lepas(); } catch (e) { }
-    var ctl = plug.tonton ? plug.tonton(wadah, { seed: seed, mini: !!mini, anginDetik: Sarena.anginMs / 1000 }) : null;
+    var o = { seed: seed, mini: !!mini, anginDetik: Sarena.anginMs / 1000 }; if (lain) for (var q in lain) o[q] = lain[q];
+    var ctl = plug.tonton ? plug.tonton(wadah, o) : null;
     M = towers[kunci] = { ctl: ctl, seed: seed, wadah: wadah, n: 0, skor: 0 };
     return M;
   }
@@ -638,67 +639,89 @@
   function jumlahPenekan(t, f) { return t.m ? Object.keys(t.m).filter(function (k) { return t.m[k].w === f.w; }).length : 0; }
   function cincin(n, p) { var c = el("span", "gl-cincin"); c.style.setProperty("--p", Math.round(Math.max(0, Math.min(1, p)) * 100) + "%"); c.appendChild(el("span", "", String(Math.max(0, n)))); return c; }
 
-  /* ---------- C. PEMAIN BERTANDING ---------- */
+  /* ---------- C. PEMAIN BERTANDING: BELAH DUA seperti live battle ----------
+     Kiri = menaraku (kanvas game asli, fisika penuh, hanya kamera digeser ke setengah kiri).
+     Kanan = menara lawan (atau rekaman), dibangun ulang dari ketukannya dengan skala yang sama (plug.skala()).
+     Lapisan ini tembus ketukan: ketuk di mana saja (juga di sisi lawan) menaruh lapisku; hanya tombol yang menangkap ketukan. */
   function layarC(baru) {
     var t = mesin.tree, f = t.f, now = mesin.sekarang(), S = Sarena, k = ref.kol, m = mesin.main, me = m ? m.k : mesin.peran(), op = me === "a" ? "b" : "a";
     if (baru) {
       panggung.classList.add("hud");
-      var hud = el("div", "gl-hud"); k.appendChild(hud);
-      var duel = el("div", "gl-duel");
-      var mundurB = ikon('<svg viewBox="0 0 24 24"><path d="M6 21V4m0 1h11l-2 4 2 4H6" fill="#fff" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>', "gl-btn ungu", "Keluar", tutupPanggung);
-      mundurB.style.cssText = "width:40px;height:40px;border-radius:13px;padding:0!important";
-      var bar = el("div", "gl-duelbar"), sm = el("div", "side me"), mid = el("div", "mid"), so = el("div", "side op");
-      ref.cMeAv = el("span"); ref.cMeN = el("div", "n", "0"); ref.cOpAv = el("span"); ref.cOpN = el("div", "n", "0"); ref.cJam = el("b", "", "2:00"); ref.cSel = el("small", "", "");
-      tambah(sm, ref.cMeAv, tambah(el("div"), el("div", "who", "KAMU"), ref.cMeN));
-      ref.cOpNama = el("div", "who", ""); var od = el("div"); od.style.textAlign = "right"; tambah(od, ref.cOpNama, ref.cOpN); tambah(so, ref.cOpAv, od);
-      tambah(mid, ref.cJam, ref.cSel); ref.cMid = mid;
-      tambah(bar, sm, mid, so); tambah(duel, mundurB, bar); hud.appendChild(duel);
-      var chips = el("div", "gl-chips"); ref.cAngin = el("div", "gl-angin"); tambah(ref.cAngin, emoSpan("💨"), tambah(el("div"), el("b", "", "Angin Kencang"), ref.cAnginS = el("small", "", ""))); chips.appendChild(ref.cAngin); hud.appendChild(chips);
-      ref.pip = el("div", "gl-pip"); var hd = el("div", "hd"); tambah(hd, el("span", "ld"), ref.pipNama = el("span", "", "")); ref.pip.appendChild(hd);
-      var ft = el("div", "ft"); ref.pipAv = el("span"); ref.pipS = el("b", "gl-ols", "0"); tambah(ft, ref.pipAv, ref.pipS); ref.pip.appendChild(ft); hud.appendChild(ref.pip);
-      ref.terima = el("div", "gl-terima"); hud.appendChild(ref.terima);
-      var bawah = el("div", "gl-cbawah"); ref.cEmo = el("div", "gl-cemo" + (sembunyiEmo ? " sembunyi" : ""));
+      var hud = el("div", "gl-hud gl-belah"); k.appendChild(hud);
+      ref.sisiL = el("div", "gl-sisi kiri"); ref.sisiR = el("div", "gl-sisi kanan"); tambah(hud, ref.sisiL, ref.sisiR);
+      ref.cLawan = el("div", "gl-lawan"); hud.appendChild(ref.cLawan);
+      hud.appendChild(el("div", "gl-garis"));
+      hud.appendChild(el("div", "gl-vs gl-ol gl-vsc", "VS"));
+      ref.jatuhL = el("div", "gl-jatuhc kiri"); ref.jatuhR = el("div", "gl-jatuhc kanan"); tambah(hud, ref.jatuhL, ref.jatuhR);
+      ref.salip = el("div", "gl-salip gl-ol", "MENYALIP!"); ref.salip.hidden = true; hud.appendChild(ref.salip);
+      hud.appendChild(el("div", "gl-pita atas")); hud.appendChild(el("div", "gl-pita bawah"));
+      var heads = el("div", "gl-cheads"); ref.hMe = el("div", "gl-cside"); ref.hOp = el("div", "gl-cside r");
+      ref.cJam = el("div", "gl-jam"); ref.tm = el("span", "tm", "0:00"); ref.tmS = el("small", ""); ref.tmS.style.whiteSpace = "pre-line"; tambah(ref.cJam, ref.tm, ref.tmS);
+      tambah(heads, ref.hMe, ref.cJam, ref.hOp); hud.appendChild(heads);
+      ref.cRek = el("span", "gl-rektag gl-rekc", "REKAMAN"); ref.cRek.hidden = true; hud.appendChild(ref.cRek);
+      var bawah = el("div", "gl-cbawah2");
+      var sup = el("div", "gl-dukungan gl-dukc"), lbl = el("div", "lbl"); ref.supA = el("span", "", "♥ 50%"); ref.supB = el("span", "", "50% ♥");
+      tambah(lbl, ref.supA, el("span", "", "dukungan · tidak mengubah skor"), ref.supB);
+      var bar = el("div", "gl-sbar"); ref.sbA = el("i"); ref.sbB = el("i"); ref.jantung = el("span", "jantung gl-emo", "💖"); tambah(bar, ref.sbA, ref.sbB, ref.jantung);
+      tambah(sup, lbl, bar);
+      var baris = el("div", "gl-cbaris");
+      var keluar = ikon('<svg viewBox="0 0 24 24"><path d="M6 21V4m0 1h11l-2 4 2 4H6" fill="#fff" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>', "gl-btn ungu gl-kotak", "Keluar", tutupPanggung);
+      ref.cEmo = el("div", "gl-cemo" + (sembunyiEmo ? " sembunyi" : ""));
       DUK.EMO.slice(0, 5).forEach(function (x) { ref.cEmo.appendChild(tombol("", x.t, function () { kirimEmo(x.k); })); });
       ref.cEmo.appendChild(tombol("txt", "GG!", function () { kirimEmo("gg"); }));
-      var hide = ikon(SVG_MATA, "gl-btn ungu", "Sembunyikan emotikon penonton", function () { sembunyiEmo = !sembunyiEmo; wr(PREF + "sembunyiEmo", sembunyiEmo); ref.cEmo.classList.toggle("sembunyi", sembunyiEmo); ref.terima.hidden = sembunyiEmo; });
-      hide.style.cssText = "width:46px;height:46px;border-radius:14px;padding:0!important";
-      tambah(bawah, ref.cEmo, hide); hud.appendChild(bawah);
-      ref.terima.hidden = sembunyiEmo;
+      var hide = ikon(SVG_MATA, "gl-btn ungu gl-kotak", "Sembunyikan emotikon", function () { sembunyiEmo = !sembunyiEmo; wr(PREF + "sembunyiEmo", sembunyiEmo); ref.cEmo.classList.toggle("sembunyi", sembunyiEmo); });
+      tambah(baris, keluar, ref.cEmo, hide);
+      ref.cHint = el("div", "gl-chint", "Ketuk di mana saja untuk menaruh lapis");
+      tambah(bawah, sup, baris, ref.cHint); hud.appendChild(bawah);
+      ref._lead = null;
     }
     var KM = f[me], KO = f[op];
-    if (ref._cm !== (KM && KM.u) + (KO && KO.u)) {
-      ref._cm = (KM && KM.u) + (KO && KO.u);
-      ref.cMeAv.textContent = ""; ref.cMeAv.appendChild(avatar({ sp: KM && KM.av, bingkai: I.kelasBingkai(KM && KM.bk), ukuran: 34 }));
-      ref.cOpAv.textContent = ""; ref.cOpAv.appendChild(avatar({ sp: KO && KO.av, bingkai: f.rek ? "rekaman" : I.kelasBingkai(KO && KO.bk), ukuran: 34 }));
-      ref.cOpNama.textContent = KO ? KO.n.toUpperCase() : ""; ref.pipNama.textContent = KO ? (f.rek ? "⏺ " : "") + namaNo(KO) : "";
-      ref.pipAv.textContent = ""; ref.pipAv.appendChild(avatar({ sp: KO && KO.av, bingkai: f.rek ? "rekaman" : I.kelasBingkai(KO && KO.bk), ukuran: 34 }));
+    if (ref._cm !== (KM && KM.u) + (KO && KO.u) + f.rek) {
+      ref._cm = (KM && KM.u) + (KO && KO.u) + f.rek;
+      kepalaC(ref.hMe, KM, true, false, S.bertahan && f.raja && me === "a");
+      kepalaC(ref.hOp, KO, false, f.rek, S.bertahan && f.raja && op === "a" && !f.rek);
+      ref.cRek.hidden = !f.rek;
       bersihkanMenara();
     }
-    var el0 = now - I.mulaiEf(f, S), sisa = S.waktuMs - el0;
-    ref.cJam.textContent = jalan(Math.min(el0, S.waktuMs)); void sisa;
-    var angin = el0 >= S.anginMs; ref.cMid.classList.toggle("angin", angin); ref.cAngin.classList.toggle("aktif", angin);
-    ref.cAnginS.textContent = angin ? "laju maksimum sekarang!" : "dalam " + mmss(S.anginMs - el0) + ", laju maksimum";
-    var skMe = m ? m.skor : 0;
-    // jendela kecil lawan digambar ulang hanya saat data datang, paling sering 2x per detik (kritik T10)
-    var skOp;
-    if (!ref._pipT || now - ref._pipT > 500) {
-      ref._pipT = now;
-      var MO = menara("pip", ref.pip, seedMatch(f), true);
-      skOp = f.rek ? suapi(MO, ketukanRekaman(f, now)) : suapi(MO, ketukanKursi(op));
-      var Lo = I.seatLive(t, op); if (Lo && !f.rek) skOp = Lo.s | 0;
-      ref._skOp = skOp; ref.pipS.textContent = skOp;
-      terimaEmo();
+    // jam berjalan dan Angin Kencang
+    var el0 = now - I.mulaiEf(f, S), angin = el0 >= S.anginMs;
+    ref.tm.textContent = jalan(Math.min(el0, S.waktuMs)); ref.tm.classList.toggle("angin", angin);
+    ref.tmS.textContent = angin ? "💨 ANGIN KENCANG!" : "Angin Kencang\ndalam " + mmss(S.anginMs - el0);
+    // menara lawan: sama besar, digambar hanya saat data datang (dan saat skalaku berubah, paling sering 2x per detik)
+    var MO = menara("lawan", ref.cLawan, seedMatch(f), false, { skala: plug.skala, hemat: true });
+    var skOp = f.rek ? suapi(MO, ketukanRekaman(f, now)) : suapi(MO, ketukanKursi(op)), Lo = I.seatLive(t, op);
+    if (Lo && !f.rek) skOp = Lo.s | 0;
+    var sk = plug.skala ? plug.skala() : null;
+    if (MO.ctl && MO.ctl.gambar && sk && Math.abs((ref._kz || 0) - sk.kz) > sk.kz * 0.02 && now - (ref._kzT || 0) > 500) { ref._kz = sk.kz; ref._kzT = now; MO.ctl.gambar(); }
+    if (MO.ctl && MO.ctl.potongan && MO.ctl.potongan() > 0 && ref._siapGetar) { // lapis lawan terpotong: getar kecil (ikut setelan getar)
+      try { KIT.vibrate(12); } catch (e) { }
+      ref.cLawan.classList.remove("gl-goyang1"); void ref.cLawan.offsetWidth; ref.cLawan.classList.add("gl-goyang1");
     }
-    skOp = ref._skOp | 0;
-    ref.cMeN.textContent = skMe; ref.cOpN.textContent = skOp;
-    var d = skMe - skOp; ref.cSel.textContent = d > 0 ? "+" + d : d < 0 ? String(d) : "seri";
+    ref._siapGetar = true; // gambar pertama (menyusul dari tengah) tidak menggetarkan
+    var skMe = m ? m.skor : 0;
+    ref.hMe._sk.textContent = skMe; ref.hOp._sk.textContent = skOp;
+    var lead = skMe > skOp ? "me" : skOp > skMe ? "op" : ref._lead;
+    ref.sisiL.classList.toggle("on", skMe > skOp); ref.sisiR.classList.toggle("on", skOp > skMe);
+    if (lead && ref._lead && lead !== ref._lead) kilatSalip(lead === "me"); // urutan unggul berganti
+    ref._lead = lead;
+    var jatuhMe = !!(m && m.selesai && m.selKirim), jatuhOp = f.rek ? !!(MO.ctl && MO.ctl.jatuh && MO.ctl.jatuh() && skOp >= (f.rn | 0)) : !!(Lo && Lo.sel);
+    ref.jatuhL.hidden = !jatuhMe; ref.jatuhR.hidden = !jatuhOp;
+    if (skMe >= 3) ref.cHint.classList.add("redup");
+    dukunganBar();
+    ref.supA.textContent = ref.supA.textContent.replace("DUKUNGAN ", ""); // label ringkas di layar pemain
   }
-  function terimaEmo() {
-    var dk = mesin.tree.dk, f = mesin.tree.f;
-    if (!ref.terima || !dk || dk.r !== f.r || !dk.e) { if (ref.terima) ref.terima.textContent = ""; return; }
-    var arr = Object.keys(dk.e).filter(function (k) { return DUK.TEKS[k]; }).sort(function (a, b) { return dk.e[b] - dk.e[a]; }).slice(0, 3);
-    ref.terima.textContent = "";
-    arr.forEach(function (k) { var s = el("span"); tambah(s, emoSpan(DUK.TEKS[k]), document.createTextNode("×" + dk.e[k])); ref.terima.appendChild(s); });
+  function kepalaC(box, K, aku, rek, mahkota) {
+    box.textContent = ""; box._sk = el("div", "gl-csk gl-ol", "0"); if (!K) return;
+    var lc = lencanaEm(K.lc);
+    box.appendChild(avatar({ sp: K.av, bingkai: rek ? "rekaman" : I.kelasBingkai(K.bk), ukuran: 44, mahkota: mahkota, lc: lc ? lc.em : "" }));
+    var d = el("div", "gl-cinfo"), nm = el("div", "nm gl-ols", aku ? "Kamu" : K.n); nm.appendChild(el("small", "", " #" + K.no));
+    tambah(d, nm, box._sk); box.appendChild(d);
+  }
+  function kilatSalip(aku) {
+    var e = ref.salip; if (!e) return;
+    e.hidden = false; e.className = "gl-salip gl-ol " + (aku ? "kiri" : "kanan"); void e.offsetWidth; e.classList.add("jalan");
+    clearTimeout(ref._salipT); ref._salipT = setTimeout(function () { e.hidden = true; }, 1300);
+    if (aku) try { KIT.vibrate([12, 30, 12]); } catch (e2) { }
   }
 
   /* ---------- D1. SIAP + HITUNG MUNDUR ---------- */
