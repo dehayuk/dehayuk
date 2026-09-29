@@ -1,0 +1,16 @@
+{
+  "name": "dehayuk-gelanggang-uji",
+  "private": true,
+  "description": "Alat uji aturan Realtime Database Gelanggang. Dipasang hanya di GitHub Actions (butuh Java untuk emulator), bukan di laptop.",
+  "scripts": {
+    "aturan": "node buat-aturan.js",
+    "uji-mesin": "node uji-mesin.js",
+    "uji-aturan": "firebase emulators:exec --only database --project demo-dehayuk \"node uji-aturan.js\"",
+    "uji-live": "node uji-live.js"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^3.0.4",
+    "firebase": "^10.14.1",
+    "firebase-tools": "^13.29.1"
+  }
+}

@@ -1326,7 +1326,7 @@ function toTitle() {
   $("tLv").textContent = "Lv " + p.level;
   $("tStrk").hidden = p.streak <= 0; $("tStrkN").textContent = p.streak + " hari";
   $("dDaily").hidden = !!daily();
-  const c = $("tChal"); c.hidden = !chal; if (chal) c.textContent = chal.rekaman ? chal.nama + " sampai langkah " + chal.score + ". Kalahkan hantunya!" : "Oyen temanmu sampai langkah " + chal.score + ". Kalahkan!";
+  const c = $("tChal"); c.hidden = !chal; if (chal) c.textContent = chal.rekaman ? chal.nama + " sampai langkah " + chal.score + ". Kalahkan rekamannya!" : "Oyen temanmu sampai langkah " + chal.score + ". Kalahkan!";
   $("sTitle").hidden = false;
   const m = $("tMid"); m.classList.remove("ent", "leave"); void m.offsetWidth; m.classList.add("ent");
   measureTitle();
@@ -1380,7 +1380,7 @@ function openKoleksi() { kSel = curSkin(); paintKoleksi(); KIT.ui.show($("sKolek
 function closeKoleksi() { if (mode === "over") paintCan(); }
 function shareScore(seed, score, h) {
   const n = KIT.papan && KIT.papan.nama ? KIT.papan.nama() : "";
-  KIT.share({ title: "Oyen Nyebrang", text: (n || "Aku") + " menantangmu di Oyen Nyebrang: " + score + " langkah. Berani kalahkan hantuku?", url: KIT.hantu.link(SLUG, seed, score, h) });
+  KIT.share({ title: "Oyen Nyebrang", text: (n || "Aku") + " menantangmu di Oyen Nyebrang: " + score + " langkah. Berani kalahkan rekamanku?", url: KIT.hantu.link(SLUG, seed, score, h) });
 }
 // tantangan dari alamat; rekaman rusak dibuang, jadi berlaku seperti link lama
 function readChal() { const c = KIT.hantu.baca(); if (c && !ghostOf(c.rekaman)) c.rekaman = null; return c; }

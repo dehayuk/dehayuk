@@ -1,0 +1,43 @@
+# Uji aturan keamanan Realtime Database Gelanggang dengan emulator Firebase resmi.
+# Emulator butuh Java, jadi dijalankan di server GitHub, bukan di laptop.
+# Jalankan manual dari tab Actions ("Run workflow"), atau push ke cabang uji-gelanggang.
+name: Uji Gelanggang
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [uji-gelanggang]
+
+jobs:
+  uji:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # Berkas aturan harus sama persis dengan hasil pembuatnya (tidak ada suntingan tangan yang terlupa).
+      - name: Aturan mutakhir
+        run: |
+          cp scripts/gelanggang/database.rules.json /tmp/aturan-lama.json
+          node scripts/gelanggang/buat-aturan.js
+          diff -q /tmp/aturan-lama.json scripts/gelanggang/database.rules.json
+
+      # Simulasi mesin: banyak HP tiruan bertanding lewat database tiruan yang menilai aturan yang sama.
+      - name: Simulasi mesin
+        run: node scripts/gelanggang/uji-mesin.js
+
+      - name: Pasang alat emulator
+        working-directory: scripts/gelanggang
+        run: npm install --no-audit --no-fund
+
+      - name: Uji aturan dengan emulator
+        working-directory: scripts/gelanggang
+        run: npx firebase emulators:exec --only database --project demo-dehayuk "node uji-aturan.js"
