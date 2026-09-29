@@ -35,8 +35,14 @@
     if (DEMO) return (saklarJanji = Promise.resolve(Object.assign({}, BAKU, { aktif: true })));
     saklarJanji = fetch(situs() + "/gelanggang.json?v=" + Math.floor(Date.now() / 60000), { cache: "no-cache" })
       .then(function (r) { if (!r.ok) throw new Error("saklar"); return r.json(); })
-      .then(function (j) { var s = Object.assign({}, BAKU, j || {}); if (COBA && s.coba !== false) s.aktif = true; return s; })
-      .catch(function () { saklarJanji = null; return navigator.onLine === false ? { offline: true } : Object.assign({}, BAKU); });
+      .then(function (j) {
+        var s = Object.assign({}, BAKU, j || {});
+        // "web": true membuka gelanggang khusus di web selagi "aktif" (yang juga dibaca app lama) masih false.
+        if (!s.aktif && s.web === true && !inApp()) s.aktif = true;
+        if (COBA && s.coba !== false) s.aktif = true;
+        return s;
+      })
+      .catch(function () { saklarJanji = null; return navigator.onLine === false ? { offline: true } : Object.assign({}, BAKU, { aktif: !inApp() }); });
     return saklarJanji;
   }
 
