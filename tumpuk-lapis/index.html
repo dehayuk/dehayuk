@@ -15,6 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/kit/kit.css">
+<link rel="stylesheet" href="/kit/gelanggang/v1/gelanggang.css">
 <style>
 :root{--dk-ink:#4a1d2e;--dk-lbl:#8a4a5a;--dk-p1:#fffaf2;--dk-p2:#ffe6ec;--dk-pe:#f5c9d4}
 html,body{background:#6fc8ff}
@@ -24,7 +25,7 @@ canvas{display:block}
 #col{position:fixed;top:0;bottom:0;pointer-events:none;z-index:10}
 #probe{position:fixed;left:0;top:0;width:0;height:0;padding:var(--dk-st) var(--dk-sr) var(--dk-sb) var(--dk-sl);visibility:hidden}
 .scr{position:absolute;inset:0}
-#sTitle{display:flex;flex-direction:column;align-items:center;padding:calc(var(--dk-st) + 66px) 14px var(--padb,180px)}
+#sTitle{display:flex;flex-direction:column;align-items:center;padding:calc(var(--dk-st) + 66px) 14px max(var(--padb,180px),calc(var(--gl-laci,0px) + 12px))}
 #sTitle>*{pointer-events:auto}
 .home{position:absolute!important;left:calc(var(--dk-sl) + 12px);top:calc(var(--dk-st) + 12px);width:44px!important;height:44px!important}
 .home svg{width:22px!important;height:22px!important;filter:none!important}
@@ -270,6 +271,9 @@ canvas{display:block}
   </section>
 </div>
 <script src="/kit/kit.js"></script>
+<script src="/kit/gelanggang/v1/inti.js"></script>
+<script src="/kit/gelanggang/v1/dukungan.js"></script>
+<script src="/kit/gelanggang/v1/gelanggang.js"></script>
 <script>
 "use strict";
 const KIT = window.DehayukKit, SLUG = "tumpuk-lapis", ST = KIT.store(SLUG), TAU = Math.PI * 2;
@@ -306,6 +310,7 @@ Core.prototype.reset = function (seed) {
   this.seed = (seed >>> 0) || 1; this.rng = KIT.rng(this.seed); this.P = [null];
   this.L = [{ cx: 0, cz: 0, w: BASE, d: BASE, gold: false, i: 0 }];
   this.n = 0; this.combo = 0; this.bestCombo = 0; this.krim = 0; this.goldPerf = 0; this.perfects = 0; this.over = false; this.res = null;
+  this.aT = 0; this.angin = 0; // gelanggang: detik main saat lapis muncul, dan detik mulai Angin Kencang (0 = mati)
   this.spawn();
 };
 // parameter tiap lapis diambil berurutan dari benih: tak bergantung pada ketukan
@@ -319,7 +324,7 @@ Core.prototype.gen = function (i) {
 Core.prototype.speedOf = function (i) { const p = this.gen(i); return Math.min(MAXV, speedBase(i) * p.jit * (p.napas ? 0.8 : 1)); };
 Core.prototype.spawn = function () {
   const i = this.n + 1, p = this.gen(i), top = this.L[this.n], axis = i % 2 ? 0 : 1, W = axis ? top.d : top.w, S = Math.max(W, 40);
-  const spd = this.speedOf(i) * S, A = W + Math.max(0.25 * S, 0.36 * spd); // selalu mulai di luar menara, >= 0,35 dtk sebelum bisa menumpuk
+  const spd = (this.angin && this.aT >= this.angin ? MAXV : this.speedOf(i)) * S, A = W + Math.max(0.25 * S, 0.36 * spd); // selalu mulai di luar menara, >= 0,35 dtk sebelum bisa menumpuk
   this.cur = { i, axis, W, S, spd, A, side: p.side, gold: p.gold, napas: p.napas, t: 0, crossed: false };
 };
 // gelombang segitiga (bolak-balik), laju rata
@@ -328,6 +333,14 @@ Core.prototype.offsetAt = function (t) {
   return c.side * (p < 2 * c.A ? c.A - p : p - 3 * c.A);
 };
 Core.prototype.offset = function () { return this.offsetAt(this.cur.t); };
+// Gelanggang: satu ketukan = waktu (md) sejak lapis mulai bergerak. Jam main dihitung dari ketukan itu sendiri
+// (jeda awal 0,25 dtk lalu 0,12 dtk tiap lapis), jadi pemain, penonton, dan pemeriksa mendapat menara yang sama persis.
+Core.prototype.tapArena = function (ms) {
+  if (this.over || !this.cur) return null;
+  const t = ms / 1000, o = this.offsetAt(t);
+  this.aT += (this.n === 0 ? 0.25 : 0.12) + t;
+  return this.dropAt(o);
+};
 Core.prototype.top = function () { return this.L[this.n]; };
 // lapis baru "siap" setelah pertama kali masuk di atas menara; ketukan sebelum itu diabaikan (ketuk ganda tak pernah membunuh)
 Core.prototype.armed = function () { const c = this.cur; if (!c || c.t < 0) return false; if (!c.crossed && Math.abs(this.offset()) < c.W) c.crossed = true; return c.crossed; };
@@ -479,6 +492,43 @@ function runUji() {
   g.reset(31); for (let i = 0; i < 600; i++) g.dropAt(0);
   const recL = encodeRun(g.L, 600, [], 0), decL = decodeRun(KIT.hantu.unpack(KIT.hantu.pack(recL)), 600);
   chk(recL.length === 3 + 3 * HMAX && recL.length <= 1500 && decL && decL.n === HMAX && decodeRun(recL, 479) === null, "q3) permainan 600 lapis direkam " + HMAX + " lapis pertama (" + recL.length + " bilangan)");
+  // r) gelanggang: rekaman ketukan dibangun ulang persis, Angin Kencang, pemeriksaan, dan tanpa layar hasil game
+  {
+    const ga = new Core(); ga.reset(8080); ga.angin = 90; const rr = KIT.rng(5), taps = [];
+    for (let i = 0; i < 400 && !ga.over; i++) { const c = ga.cur, ms = Math.round(((c.A - (rr() < 0.7 ? 0 : (rr() - 0.5) * 6) * c.side) / c.spd) * 1000); taps.push(ms); ga.tapArena(ms); }
+    const rb = arenaBangun(8080, taps, 90).g;
+    let sama = rb.n === ga.n && rb.perfects === ga.perfects;
+    for (let i = 0; sama && i <= ga.n; i++) { const a = ga.L[i], b = rb.L[i]; if (a.cx !== b.cx || a.cz !== b.cz || a.w !== b.w || a.d !== b.d) sama = false; }
+    chk(sama && ga.n > 30, "r1) " + ga.n + " lapis dari " + taps.length + " ketukan dibangun ulang persis sama (penonton = pemain)");
+    const gw = new Core(); gw.reset(9090); gw.angin = 90; let sebelum = 0, sesudah = 0;
+    for (let i = 0; i < 300 && !gw.over; i++) { const c = gw.cur; if (gw.aT < 90) sebelum = Math.max(sebelum, c.spd / c.S); else sesudah = c.spd / c.S; gw.tapArena(Math.round(c.A / c.spd * 1000)); if (gw.aT >= 95) break; }
+    const gb = new Core(); gb.reset(9090); for (let i = 0; i < 40; i++) gb.tapArena(Math.round(gb.cur.A / gb.cur.spd * 1000));
+    chk(sesudah === MAXV && sebelum < MAXV && gb.cur.spd / gb.cur.S < MAXV, "r2) Angin Kencang: setelah detik 90 laju langsung " + MAXV + " (sebelumnya paling tinggi " + sebelum.toFixed(2) + "); main biasa tidak berubah");
+    const ok1 = arenaPeriksa(taps, 8080, ga.n, ga.perfects, { anginMs: 90000, waktuMs: 1e9 });
+    const bohong = arenaPeriksa(taps, 8080, ga.n + 5, ga.perfects, { anginMs: 90000, waktuMs: 1e9 });
+    const awal = taps.slice(); awal[3] = 30; const cepat = arenaPeriksa(awal, 8080, ga.n, ga.perfects, { anginMs: 90000, waktuMs: 1e9 });
+    const lebih = arenaPeriksa(taps.concat([500, 500]), 8080, ga.n, ga.perfects, { anginMs: 90000, waktuMs: 1e9 });
+    const lama = arenaPeriksa(taps, 8080, ga.n, ga.perfects, { anginMs: 90000, waktuMs: 20000 });
+    chk(ok1.sah && !bohong.sah && !cepat.sah && !lebih.sah && !lama.sah, "r3) pemeriksa rekaman: asli sah; skor dilebihkan, ketukan terlalu cepat, ketukan sesudah jatuh, dan lewat jam ditolak (" + [bohong.alasan, cepat.alasan, lebih.alasan, lama.alasan].join(" / ") + ")");
+    const ct = arenaContoh(4242, 25, 0.5), cg = arenaBangun(4242, ct, 90).g, jd = arenaJadwal(ct);
+    chk(cg.n === 25 && !cg.over && jd.length === 25 && Math.abs(jd[24] - cg.aT) < 1e-9, "r4) ketukan contoh 25 lapis; jadwal waktu sama dengan jam menara (" + jd[24].toFixed(2) + " dtk)");
+    // alur game sungguhan di mode gelanggang (kritik T9)
+    const GL0 = GL, kirim = [], rec0 = KIT.progress.record;
+    KIT.progress.record = () => ({ gain: 0, level: 1, leveledUp: false, xp: 0 });
+    GL = { kemajuan: (d) => kirim.push(d), selesai: (d) => kirim.push(Object.assign({ sel: true }, d)), kartu() { } };
+    try {
+      arenaMulai(606, { anginDetik: 90 });
+      for (let i = 0; i < 6; i++) { core.cur.t = core.cur.A / core.cur.spd; tapDrop(); }
+      core.cur.t = core.cur.A / core.cur.spd; core.armed(); core.cur.t = (core.cur.A + core.cur.W + 5) / core.cur.spd; tapDrop();
+      const tp = [].concat(...kirim.map((d) => d.potongan || [])), jadi = arenaBangun(606, tp, 90).g;
+      chk(kind === "arena" && kirim.length === 7 && kirim[6].sel && jadi.n === core.n && jadi.over && kirim[5].skor === 6, "r5) mode gelanggang mengirim " + kirim.length + " ketukan; rekaman membangun menara yang sama (" + jadi.n + " lapis, lalu jatuh)");
+      pause(); const takJeda = mode === "ending";
+      endT = 3; frameCore(lastTs + 16); frameCore(lastTs + 32);
+      const btn = $("rAgain"), terlihat = btn && !btn.closest("[hidden]");
+      chk(takJeda && mode === "arenaTunggu" && $("sOver").hidden && !terlihat, "r6) di gelanggang: tanpa jeda, dan layar hasil game (tombol rAgain = iklan) TIDAK pernah muncul");
+    } catch (e) { chk(false, "r) galat: " + e.message); }
+    finally { GL = GL0; KIT.progress.record = rec0; kind = "normal"; toTitle(); }
+  }
   const h0 = location.hash, setH = (h) => { try { history.replaceState(null, "", location.pathname + location.search + h); } catch (e) { } };
   // p) alur layar: data pemain disalin dulu lalu dipulihkan; kemajuan bersama tidak disentuh
   const PFX = "dehayuk." + SLUG + ".", snap = {}; let lsOk = true;
@@ -532,7 +582,7 @@ function runUji() {
     setH("#t=zz-" + gr.n + "&n=Budi&h=" + recS); const cg = readChal(); chal = cg; toTitle(); const tg = $("tChal").textContent;
     startGame("chal", cg.seed); const G1 = G; gT = cg.ghost.T[4] + 0.001; ghostTick(); const ahead = gN === 5 && !gPass;
     stack(6); ghostTick(); const passTxt = BN[1].s; BN[1].s = ""; stack(2); ghostTick(); const once = BN[1].s === "";
-    chk(tg === "Budi menumpuk " + gr.n + " lapis. Kalahkan hantunya!" && G1 && G1.nama === "Budi" && ahead && passTxt === "Kamu menyalip Budi!" && once, "q6) hantu Budi di depan (5), disalip di 6: \"" + passTxt + "\" sekali saja");
+    chk(tg === "Budi menumpuk " + gr.n + " lapis. Kalahkan rekamannya!" && G1 && G1.nama === "Budi" && ahead && passTxt === "Kamu menyalip Budi!" && once, "q6) hantu Budi di depan (5), disalip di 6: \"" + passTxt + "\" sekali saja");
     finish(); const vLose = $("rVerd").textContent;
     $("rAgain").click(); const again = G && G.g === cg.ghost && kind === "chal" && seedNow === cg.seed && gN === 0 && !gPass;
     stack(gr.n + 1); finish(); const vWin = $("rVerd").textContent, lastH = ST.get("last", {}).h;
@@ -910,6 +960,7 @@ function camTarget(c) {
     else if (LAND) { z = 0.5; a = 0.88; base = 0.99; }
     else if (vh > 760) { z = 0.74; a = 0.8; base = 0.9; }
     else { z = 0.66; a = 0.8; base = 0.93; }
+    if (glLaci > 0 && !LAND) { const b2 = (vh - glLaci - 18) / vh; if (b2 < base) { base = b2; a = Math.min(a, b2 - 0.1); z = Math.min(z, glLaci > 220 ? 0.5 : 0.62); } }
   }
   if (G && !LAND) x = 0.44; // beri ruang hantu di kanan
   const topU = Math.min(topV, G && (mode === "over" || mode === "ending") ? -(G.g.n + 1) * LH * HK : Infinity) - 70, botU = 95;
@@ -938,7 +989,11 @@ function setOvr() {
 /* ================= JATUHKAN ================= */
 function doDrop(c, loud, oForce) {
   const cur = c.cur; if (!cur || c.over) return null;
-  const top = c.top(), res = c.dropAt(oForce == null ? c.offset() : oForce); if (!res) return null;
+  const top = c.top();
+  let res;
+  if (c === core && loud && kind === "arena") { const ms = Math.max(0, Math.round(cur.t * 1000)); res = c.tapArena(ms); if (res) arenaKetuk(ms, res); }
+  else res = c.dropAt(oForce == null ? c.offset() : oForce);
+  if (!res) return null;
   lastRes = res;
   if (c === core && loud) { const ms = (runT - lastDropT) * 1000; lastDropT = runT; if (res.over) endMs = ms; else dropMs.push(ms); } // rekam jeda tiap lapis
   const ax = cur.axis, y0 = cur.i * LH, y1 = y0 + LH, C = cur.C || colsOf(cur.i, cur.gold), ym = (y0 + y1) / 2;
@@ -1018,18 +1073,20 @@ function startGame(k, seed) {
   dailyKey = KIT.dateKey(); // Harian dicatat pada tanggal mulai, walau selesai lewat tengah malam
   if (k === "daily") ST.set("harian", { d: dailyKey, score: 0, combo: 0, done: false });
   core.reset(seedNow); core.cur.t = -0.25; OVR = null; clearFx(); timeScale = 1;
+  core.angin = k === "arena" ? arenaAngin : 0; if (GL) GL.kartu(false);
   endT = 0; recPrev = best(); recHit = false; lastRes = null;
   runT = 0; lastDropT = 0; dropMs = []; endMs = 0;
   G = k === "chal" && chal && chal.ghost ? { g: chal.ghost, nama: chal.nama || "Penantang", score: chal.score } : null; gT = 0; gN = 0; gPass = false; gAhead = false;
   hideAll(); $("hud").hidden = false; $("hBest").textContent = recPrev; $("hBestP").classList.remove("live"); $("hBestP").hidden = recPrev <= 0; $("hScore").textContent = "0"; $("sr").textContent = "";
   $("hCombo").hidden = true;
-  const tag = $("hTag"); tag.hidden = k === "normal"; tag.textContent = k === "daily" ? "Harian" : k === "practice" ? "Latihan" : "Tantangan";
+  const tag = $("hTag"); tag.hidden = k === "normal"; tag.textContent = k === "daily" ? "Harian" : k === "practice" ? "Latihan" : k === "arena" ? "Gelanggang" : "Tantangan";
   const h = $("hint"); h.hidden = !!ST.get("hint", 0) || DEMO; h.classList.remove("off");
   mode = "play"; skyL = 0; camUpdate(0, true);
   try { document.activeElement && document.activeElement.blur(); } catch (e) { }
   if (document.hidden) pause(); // tab tersembunyi saat peralihan judul
 }
 function endGame() {
+  if (kind === "arena") { arenaSelesaiAnimasi(); return; }
   mode = "over";
   const sc = core.n, rec = sc > recPrev && sc > 0, today = dailyKey || KIT.dateKey();
   if (rec) ST.set("best", sc);
@@ -1116,10 +1173,11 @@ function toTitle() {
   const dd = daily(); $("dDaily").hidden = !!dd;
   const ds = $("dStarN"); ds.hidden = !(dd && dd.done);
   if (dd && dd.done) ds.innerHTML = starSVG(true) + starsFor(dd.score, dd.combo | 0);
-  const c = $("tChal"); c.hidden = !chal; if (chal) c.textContent = chal.ghost ? chal.nama + " menumpuk " + chal.score + " lapis. Kalahkan hantunya!" : "Temanmu menumpuk " + chal.score + " lapis. Kalahkan!";
+  const c = $("tChal"); c.hidden = !chal; if (chal) c.textContent = chal.ghost ? chal.nama + " menumpuk " + chal.score + " lapis. Kalahkan rekamannya!" : "Temanmu menumpuk " + chal.score + " lapis. Kalahkan!";
   $("sTitle").hidden = false;
   const m = $("tMid"); m.classList.remove("ent", "leave"); void m.offsetWidth; m.classList.add("ent");
   camUpdate(0, true); measureLogo();
+  if (GL && !COVER && !UJI && !(DEMO && !Q.get("gl"))) GL.kartu(true); // mode demo game (potret toko) tanpa laci
 }
 function leaveTitle(fn) { $("tMid").classList.add("leave"); mode = "leaving"; setTimeout(fn, 260); }
 function openHarian() {
@@ -1165,10 +1223,11 @@ $("kPlates").addEventListener("click", (e) => {
 // link tantangan membawa rekaman: penerima melawan hantu kita; tanpa rekaman tetap link skor biasa
 function shareScore(seed, score, nums) {
   const nm = KIT.papan && KIT.papan.nama ? KIT.papan.nama() : "", ada = nums && nums.length;
-  KIT.share({ title: "Tumpuk Lapis", text: ada ? (nm || "Aku") + " menantangmu di Tumpuk Lapis: " + score + " lapis. Berani kalahkan hantuku?" : "Aku numpuk " + score + " lapis di Tumpuk Lapis! Kuat nyaingin?", url: KIT.hantu.link(SLUG, seed, score, nums) });
+  KIT.share({ title: "Tumpuk Lapis", text: ada ? (nm || "Aku") + " menantangmu di Tumpuk Lapis: " + score + " lapis. Berani kalahkan rekamanku?" : "Aku numpuk " + score + " lapis di Tumpuk Lapis! Kuat nyaingin?", url: KIT.hantu.link(SLUG, seed, score, nums) });
 }
 function pause() {
   if (mode !== "play" && mode !== "count") return;
+  if (kind === "arena") return; // gelanggang tanpa jeda: keluar app = putus setelah tenggang (dokumen 1, bagian 7)
   mode = "pause"; $("cd").hidden = true; KIT.ui.show($("sPause"));
 }
 function resume() { if (mode !== "pause") return; $("sPause").hidden = true; mode = "count"; cdT = 3; cdShown = 0; }
@@ -1395,6 +1454,113 @@ function drawGhostTag() {
   if (done && y - ft > 12) { g.fillStyle = "#cdd5ff"; g.beginPath(); g.moveTo(x, ft); g.lineTo(x + 16, ft + 5); g.lineTo(x, ft + 10); g.closePath(); g.fill(); g.stroke(); }
   pill(x, py, done ? G.nama + " · " + G.score : G.nama, BG);
 }
+
+/* ================= GELANGGANG (duel live global) ================= */
+// Colokan ke /kit/gelanggang/v1/. Game tidak pernah menyentuh jaringan; mesin gelanggang yang mengurus.
+// Rekaman gelanggang = daftar waktu ketukan (md sejak lapis mulai bergerak). Dari benih + ketukan, menara bisa
+// dibangun ulang persis oleh penonton dan diperiksa oleh HP lain (lapis mustahil, skor, jumlah pas).
+let GL = null, arenaAngin = 90, glLaci = 0;
+function arenaEks(res) {
+  if (res.over) return 2;
+  if (res.perfect && core.combo >= 5) return 1;
+  if (res.cut > 8) return 2;
+  if (res.near || Math.min(core.top().w, core.top().d) < 30) return 3;
+  return 0;
+}
+function arenaKetuk(ms, res) {
+  if (!GL) return;
+  if (res.over) GL.selesai({ skor: core.n, seri: core.perfects, potongan: [ms] });
+  else GL.kemajuan({ skor: core.n, seri: core.perfects, potongan: [ms], ekspresi: arenaEks(res) });
+}
+function arenaSelesaiAnimasi() {
+  // Tidak ada layar hasil game di gelanggang: layar hasil milik mesin (tanpa tombol rAgain, jadi tanpa iklan)
+  mode = "arenaTunggu"; $("hud").hidden = true; $("hint").hidden = true;
+  KIT.progress.record({ game: SLUG, score: core.n, papan: "", mutu: Math.min(1, core.n / 60) }); // XP ya, papan peringkat tidak
+}
+function arenaMulai(seed, o) {
+  arenaAngin = o && o.anginDetik ? o.anginDetik : 90;
+  hideAll(); $("sOver").hidden = true;
+  startGame("arena", seed);
+}
+function arenaHenti(alasan) {
+  if (kind !== "arena") return;
+  if (mode === "play" || mode === "count") {
+    mode = "arenaTunggu"; $("hud").hidden = true; $("hint").hidden = true;
+    if (alasan === "waktu") { banner(0, "PELUIT!", 1.6, 54); SFX.fanfare(); }
+    if (alasan === "menang") { banner(1, "MENANG!", 1.6, 54); SFX.rec(); }
+  }
+}
+// membangun ulang menara dari ketukan (untuk pemeriksaan dan penonton)
+function arenaBangun(seed, taps, anginDetik) {
+  const g = new Core(); g.reset(seed); g.angin = anginDetik || 90;
+  for (let i = 0; i < taps.length; i++) { if (g.over || !g.cur) return { g, sisa: taps.length - i }; g.tapArena(taps[i]); }
+  return { g, sisa: 0 };
+}
+function arenaPeriksa(taps, seed, skor, pas, o) {
+  if (!Array.isArray(taps)) return { sah: false, alasan: "rekaman kosong" };
+  const angin = o && o.anginMs ? o.anginMs / 1000 : 90, batas = o && o.waktuMs ? o.waktuMs / 1000 + 3 : 123;
+  if (taps.some((x) => !(x >= 0 && x <= 60000))) return { sah: false, alasan: "ketukan mustahil" };
+  const b = arenaBangun(seed, taps, angin), g = b.g;
+  if (b.sisa) return { sah: false, alasan: "ketukan setelah menara jatuh" };
+  if (g.n !== skor) return { sah: false, alasan: "skor " + g.n + " tidak sama dengan laporan " + skor };
+  if (pas != null && g.perfects !== pas) return { sah: false, alasan: "jumlah pas " + g.perfects + " tidak sama dengan laporan " + pas };
+  if (g.aT > batas + 1) return { sah: false, alasan: "lebih lama dari jam pertandingan" };
+  // Statistik manusiawi hanya ditandai, tidak menolak (dokumen teknis 11.1 no. 4)
+  let beda = 0; for (let i = 1; i < taps.length; i++) beda += Math.abs(taps[i] - taps[i - 1]);
+  const curiga = taps.length > 40 && (g.perfects / Math.max(1, g.n) > 0.97 || beda / taps.length < 8);
+  return { sah: true, curiga };
+}
+function arenaJadwal(taps) { const out = []; let t = 0; for (let i = 0; i < taps.length; i++) { t += (i === 0 ? 0.25 : 0.12) + taps[i] / 1000; out.push(t); } return out; }
+// ketukan contoh buatan pemain otomatis (hanya untuk mode demo/potret layar)
+function arenaContoh(seed, n, pasRate) {
+  const g = new Core(); g.reset(seed); g.angin = 90; const r = KIT.rng((seed ^ 0x9e3779b9) >>> 0), out = [];
+  while (g.n < n && !g.over && g.cur) {
+    const c = g.cur, tol = tolOf(c.W), pasKah = r() < pasRate;
+    const dev = pasKah ? (r() - 0.5) * tol * 0.8 : (r() < 0.5 ? -1 : 1) * (tol + 0.6 + r() * Math.min(5, c.W * 0.1));
+    const ms = Math.max(Math.ceil((c.A - c.W) / c.spd * 1000) + 8, Math.round((c.A - dev * c.side) / c.spd * 1000));
+    out.push(ms); g.tapArena(ms);
+  }
+  return out;
+}
+// penggambar menara untuk layar penonton dan jendela kecil lawan: digambar ulang hanya saat data datang (kritik T10)
+const TONTON = [];
+function tontonMenara(el, o) {
+  const cvs = document.createElement("canvas"); el.insertBefore(cvs, el.firstChild);
+  const g = new Core(); g.reset(o.seed); g.angin = o.anginDetik || 90;
+  const c2 = cvs.getContext("2d"), mini = !!o.mini;
+  function gambar() {
+    const w = el.clientWidth, h = el.clientHeight; if (!w || !h) return;
+    const d = Math.min(2, window.devicePixelRatio || 1);
+    if (cvs.width !== Math.round(w * d) || cvs.height !== Math.round(h * d)) { cvs.width = Math.round(w * d); cvs.height = Math.round(h * d); }
+    const sv = [ctx, OX, OY, KZ, CAM, vh, vw];
+    try {
+      ctx = c2; vw = w; vh = h; KZ = w / (mini ? 205 : 225); OX = w / 2; OY = 0;
+      const n = g.n, top = g.L[n], topV = (top.cx + top.cz) * 0.5 - (n + 1) * LH * HK;
+      CAM = Math.min(3 - h * (mini ? 0.8 : 0.86) / KZ, topV - h * (mini ? 0.36 : 0.3) / KZ);
+      c2.setTransform(d, 0, 0, d, 0, 0); c2.clearRect(0, 0, w, h);
+      drawPlate(0);
+      for (let i = 0; i <= n; i++) drawLayer(g.L[i], i, 1);
+    } finally { [ctx, OX, OY, KZ, CAM, vh, vw] = sv; }
+  }
+  const t = { g, gambar };
+  TONTON.push(t); requestAnimationFrame(gambar);
+  return {
+    tambah(taps) { for (const ms of taps) { if (g.over || !g.cur) break; g.tapArena(ms); } gambar(); return g.n; },
+    skor() { return g.n; }, ekspresi() { }, selesai() { gambar(); },
+    lepas() { cvs.remove(); const i = TONTON.indexOf(t); if (i >= 0) TONTON.splice(i, 1); }
+  };
+}
+window.addEventListener("resize", () => setTimeout(() => TONTON.forEach((t) => t.gambar()), 150));
+if (KIT.gelanggang && !COVER) GL = KIT.gelanggang.pasang({
+  api: 1, slug: SLUG, nama: "Tumpuk Lapis", satuan: "LAPIS", satuanKecil: "lapis",
+  mulai: arenaMulai, henti: arenaHenti,
+  fase(n) { if (n === "akhir-dekat" && kind === "arena") { banner(1, "ANGIN KENCANG!", 2, 44); KIT.vibrate([20, 30, 20]); } },
+  rekaman: { versi: 2, periksa: arenaPeriksa, jadwal: arenaJadwal, contoh: arenaContoh },
+  tonton: tontonMenara,
+  tataLetak(px) { glLaci = px | 0; if (mode === "title") camUpdate(0, true); },
+  keluar() { if (kind === "arena" || mode === "arenaTunggu") toTitle(); },
+  rekorPribadi() { return best(); }
+});
 
 /* ================= MULAI ================= */
 function buildCover() {

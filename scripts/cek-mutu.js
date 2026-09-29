@@ -209,6 +209,40 @@ for (const f of ["index.html", "privasi/index.html"].concat(games.map((g) => "ma
   if (fs.existsSync(p) && AD_PATTERNS.test(fs.readFileSync(p, "utf8"))) fail(f + ": halaman web tidak boleh memuat skrip iklan");
 }
 
+// ---------- Gelanggang (duel live) ----------
+{
+  const G = path.join(root, "scripts", "gelanggang");
+  let Ig = null, aturan = null, setelan = null, saklar = null;
+  try { Ig = require(path.join(root, "kit", "gelanggang", "v1", "inti.js")); } catch (e) { fail("kit/gelanggang/v1/inti.js tidak bisa dimuat: " + e.message); }
+  try { setelan = JSON.parse(fs.readFileSync(path.join(G, "setelan.json"), "utf8")); } catch (e) { fail("scripts/gelanggang/setelan.json tidak ada atau rusak"); }
+  try { saklar = JSON.parse(fs.readFileSync(path.join(root, "gelanggang.json"), "utf8")); } catch (e) { fail("gelanggang.json (saklar darurat) tidak ada atau rusak"); }
+  try {
+    const berkas = fs.readFileSync(path.join(G, "database.rules.json"), "utf8");
+    const baru = require(path.join(G, "buat-aturan.js")).text;
+    if (berkas !== baru) fail("scripts/gelanggang/database.rules.json belum mutakhir, jalankan: node scripts/gelanggang/buat-aturan.js");
+    aturan = JSON.parse(berkas);
+  } catch (e) { fail("aturan gelanggang: " + e.message); }
+  if (aturan) {
+    // Jalur DUKUNGAN terpisah total: aturan pertandingan tidak boleh membacanya (dokumen teknis 8.1).
+    const t = aturan.rules.v1.tayang.$s.$a, main = JSON.stringify([t.f, t.live, t.rek, t.m, t.j, aturan.rules.v1.hasil]);
+    if (/dukung|'dk|\/dk\b/.test(main)) fail("aturan kursi/hasil gelanggang menyebut jalur dukungan (dukung/dk)");
+    else ok("gelanggang: aturan mutakhir, jalur dukungan terpisah dari pertandingan");
+  }
+  if (Ig && saklar && (saklar.protoMin | 0) > Ig.PROTO) fail("gelanggang.json protoMin " + saklar.protoMin + " lebih tinggi dari protokol kit (" + Ig.PROTO + ")");
+  for (const g of games) {
+    const f = path.join(root, g.slug, "index.html"); if (!fs.existsSync(f)) continue;
+    const html = fs.readFileSync(f, "utf8"); if (!/gelanggang\.pasang\(/.test(html)) continue;
+    const i0 = html.indexOf("/kit/kit.js") >= 0 ? html.indexOf("/kit/kit.js") : html.indexOf("/kit/v1/kit.js");
+    const urut = ["/kit/gelanggang/v1/inti.js", "/kit/gelanggang/v1/dukungan.js", "/kit/gelanggang/v1/gelanggang.js"].map((s) => html.indexOf(s));
+    if (urut.some((x) => x < 0) || !(i0 < urut[0] && urut[0] < urut[1] && urut[1] < urut[2])) fail(g.slug + ": gelanggang harus memuat kit, inti.js, dukungan.js, gelanggang.js berurutan");
+    if (!/\/kit\/gelanggang\/v1\/gelanggang\.css/.test(html)) fail(g.slug + ": gelanggang.css belum dimuat");
+    const S = setelan && setelan[g.slug];
+    if (!S || !S.arena) { fail(g.slug + ": ikut gelanggang tetapi tidak ada di scripts/gelanggang/setelan.json"); continue; }
+    for (const a in S.arena) { const salah = Ig && Ig.cekSetelan(S.arena[a]); if (salah) fail(g.slug + "/" + a + ": setelan gelanggang tidak wajar: " + salah); }
+    ok(g.slug + ": ikut gelanggang (" + Object.keys(S.arena).join(", ") + ")");
+  }
+}
+
 for (const f of ["app-ads.txt", "privasi/index.html", "kit/v1/kit.js", "kit/v1/kit.css", "kit/kit.js", "kit/kit.css", "index.html", "og.png", "robots.txt", "sitemap.xml"]) {
   if (!fs.existsSync(path.join(root, f))) fail("berkas wajib hilang: " + f);
 }

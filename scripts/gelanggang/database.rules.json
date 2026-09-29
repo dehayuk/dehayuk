@@ -1,0 +1,700 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "v1": {
+      "setelan": {
+        ".read": "auth != null"
+      },
+      "jam": {
+        "$uid": {
+          ".read": "auth.uid == $uid",
+          ".write": "auth.uid == $uid",
+          ".validate": "newData.val() == now"
+        }
+      },
+      "profil": {
+        "$uid": {
+          ".read": "auth != null",
+          ".write": "auth.uid == $uid",
+          ".validate": "newData.hasChildren(['nama','nomor','avatar','bingkai','lencana','dibuat','v','gambar'])",
+          "nama": {
+            ".validate": "(newData.isString() && newData.val().length >= 3 && newData.val().length <= 16 && newData.val().matches(/^[A-Za-z]+( [A-Za-z]+)?$/) && !newData.val().matches(/(anjing|anjg|bangsat|babi|kontol|memek|ngentot|jancok|jancuk|goblok|tolol|asu|pepek|lonte|bajingan|kampret|tai|fuck|shit|bitch)/i) && (!data.exists() || data.val() == newData.val() || newData.parent().child('ganti').val() == now))"
+          },
+          "nomor": {
+            ".validate": "(newData.isString() && newData.val().matches(/^[0-9]{4}$/) && newData.parent().parent().parent().child('tag/'+newData.parent().child('nama').val().toLowerCase().replace(' ', '_')+'~'+newData.val()).val() == $uid)"
+          },
+          "avatar": {
+            ".validate": "newData.isString() && newData.val().matches(/^(kucing|kancil|utan|komodo|badak|harimau|madu|tarsius|gajah)$/)"
+          },
+          "bingkai": {
+            ".validate": "(newData.val() == 'biasa' || (newData.isString() && newData.val().matches(/^bk-(penantang|raja|legenda)$/) && newData.parent().parent().parent().child('prestasi/'+$uid+'/'+newData.val()).exists()))"
+          },
+          "lencana": {
+            ".validate": "(newData.val() == '' || (newData.isString() && newData.val().matches(/^lc-[a-z]+$/) && newData.parent().parent().parent().child('prestasi/'+$uid+'/'+newData.val()).exists()))"
+          },
+          "dibuat": {
+            ".validate": "((!data.exists() && newData.val() == now) || newData.val() == data.val())"
+          },
+          "ganti": {
+            ".validate": "(newData.val() == data.val() || (newData.val() == now && (!data.exists() || now - data.val() > 604800000)))"
+          },
+          "v": {
+            ".validate": "newData.val() == 1"
+          },
+          "gambar": {
+            ".validate": "newData.hasChildren(['jenis']) && newData.child('jenis').val() == 'avatar'",
+            "jenis": {
+              ".validate": "newData.isString()"
+            },
+            "$other": {
+              ".validate": false
+            }
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      },
+      "tag": {
+        "$t": {
+          ".read": "auth != null",
+          ".write": "((auth != null && !data.exists() && newData.val() == auth.uid) || (data.val() == auth.uid && !newData.exists()))",
+          ".validate": "$t.matches(/^[a-z_]{3,16}~[0-9]{4}$/)"
+        }
+      },
+      "tayang": {
+        "$s": {
+          "$a": {
+            ".read": "auth != null",
+            "f": {
+              ".write": "(auth != null && ((!data.exists() && root.child('v1/setelan/'+$s+'/arena/'+$a+'/aktif').val() == true && newData.child('st').val() == 'kosong' && newData.child('r').val() == 0 && newData.child('w').val() == 0 && newData.child('raja').val() == false && newData.child('bt').val() == 0 && newData.child('rek').val() == false && newData.child('lw').val() == '' && newData.child('l10').val() == '' && !newData.child('rid').exists() && !newData.child('mulai').exists() && !newData.child('buka').exists() && !newData.child('jeda').exists() && !newData.child('sendiri').exists() && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && !newData.child('a').exists() && !newData.child('b').exists() && !newData.child('h').exists()) || (data.exists() && newData.child('v').val() == root.child('v1/setelan/'+$s+'/arena/'+$a+'/proto').val() && newData.child('t').val() == now && ((root.child('v1/setelan/'+$s+'/arena/'+$a+'/aktif').val() == true && (data.child('st').val() == 'kosong' || (data.child('st').val() == 'rebut' && data.child('a').exists() && (now > (data.child('buka').val() + data.child('jeda').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/jendelaMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/lantikMs').val() && now >= (data.child('buka').val() + data.child('jeda').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/jendelaMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/ulangMs').val() && !(data.parent().child('j/w').val() == data.child('w').val() && data.parent().child('j/p1').exists())))) && (newData.child('st').val() == 'rebut' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() + 1 && newData.child('buka').val() == now && newData.child('jeda').val() == 0 && newData.child('sendiri').val() == data.child('sendiri').val() && newData.child('raja').val() == data.child('raja').val() && newData.child('bt').val() == data.child('bt').val() && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == data.child('lw').val() && newData.child('l10').val() == data.child('l10').val() && ((!newData.child('a').exists() && !data.child('a').exists()) || (newData.child('a').exists() && newData.child('a/u').val() == data.child('a/u').val() && newData.child('a/n').val() == data.child('a/n').val() && newData.child('a/no').val() == data.child('a/no').val() && newData.child('a/av').val() == data.child('a/av').val() && newData.child('a/bk').val() == data.child('a/bk').val() && newData.child('a/lc').val() == data.child('a/lc').val())) && !newData.child('b').exists() && !newData.child('h').exists())) || (data.child('st').val() == 'rebut' && !data.child('a').exists() && (now > (data.child('buka').val() + data.child('jeda').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/jendelaMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/lantikMs').val() && now >= (data.child('buka').val() + data.child('jeda').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/jendelaMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/ulangMs').val() && !(data.parent().child('j/w').val() == data.child('w').val() && data.parent().child('j/p1').exists())) && (newData.child('st').val() == 'kosong' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() && newData.child('buka').val() == data.child('buka').val() && newData.child('jeda').val() == data.child('jeda').val() && !newData.child('sendiri').exists() && newData.child('raja').val() == false && newData.child('bt').val() == 0 && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == '' && newData.child('l10').val() == '' && !newData.child('a').exists() && !newData.child('b').exists() && !newData.child('h').exists())) || ((root.child('v1/setelan/'+$s+'/arena/'+$a+'/aktif').val() == true && data.child('st').val() == 'rebut' && now >= (data.child('buka').val() + data.child('jeda').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/jendelaMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/lantikMs').val() && (data.parent().child('j/w').val() == data.child('w').val() && data.parent().child('j/p1').exists())) && !data.child('a').exists() && data.parent().child('j/p2').exists() && (newData.child('st').val() == 'siap' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() && newData.child('buka').val() == data.child('buka').val() && newData.child('jeda').val() == data.child('jeda').val() && !newData.child('sendiri').exists() && newData.child('raja').val() == false && newData.child('bt').val() == 0 && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == data.child('lw').val() && newData.child('l10').val() == '' && (newData.child('a/u').val() == data.parent().child('j/p1/u').val() && root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/nama').val() != null && newData.child('a/n').val() == root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/nama').val() && newData.child('a/no').val() == root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/nomor').val() && newData.child('a/av').val() == root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/avatar').val() && newData.child('a/bk').val() == root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/bingkai').val() && newData.child('a/lc').val() == root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/lencana').val()) && (newData.child('b/u').val() == data.parent().child('j/p2/u').val() && root.child('v1/profil/'+data.parent().child('j/p2/u').val()+'/nama').val() != null && newData.child('b/n').val() == root.child('v1/profil/'+data.parent().child('j/p2/u').val()+'/nama').val() && newData.child('b/no').val() == root.child('v1/profil/'+data.parent().child('j/p2/u').val()+'/nomor').val() && newData.child('b/av').val() == root.child('v1/profil/'+data.parent().child('j/p2/u').val()+'/avatar').val() && newData.child('b/bk').val() == root.child('v1/profil/'+data.parent().child('j/p2/u').val()+'/bingkai').val() && newData.child('b/lc').val() == root.child('v1/profil/'+data.parent().child('j/p2/u').val()+'/lencana').val()) && !newData.child('h').exists())) || ((root.child('v1/setelan/'+$s+'/arena/'+$a+'/aktif').val() == true && data.child('st').val() == 'rebut' && now >= (data.child('buka').val() + data.child('jeda').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/jendelaMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/lantikMs').val() && (data.parent().child('j/w').val() == data.child('w').val() && data.parent().child('j/p1').exists())) && !data.child('a').exists() && !data.parent().child('j/p2').exists() && (newData.child('st').val() == 'rebut' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() + 1 && newData.child('buka').val() == now && newData.child('jeda').val() == root.child('v1/setelan/'+$s+'/arena/'+$a+'/ulangMs').val() && newData.child('sendiri').val() == now && newData.child('raja').val() == false && newData.child('bt').val() == 0 && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == data.child('lw').val() && newData.child('l10').val() == '' && (newData.child('a/u').val() == data.parent().child('j/p1/u').val() && root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/nama').val() != null && newData.child('a/n').val() == root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/nama').val() && newData.child('a/no').val() == root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/nomor').val() && newData.child('a/av').val() == root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/avatar').val() && newData.child('a/bk').val() == root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/bingkai').val() && newData.child('a/lc').val() == root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/lencana').val()) && !newData.child('b').exists() && !newData.child('h').exists())) || ((root.child('v1/setelan/'+$s+'/arena/'+$a+'/aktif').val() == true && data.child('st').val() == 'rebut' && now >= (data.child('buka').val() + data.child('jeda').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/jendelaMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/lantikMs').val() && (data.parent().child('j/w').val() == data.child('w').val() && data.parent().child('j/p1').exists())) && data.child('a').exists() && (newData.child('st').val() == 'siap' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() && newData.child('buka').val() == data.child('buka').val() && newData.child('jeda').val() == data.child('jeda').val() && !newData.child('sendiri').exists() && newData.child('raja').val() == data.child('raja').val() && newData.child('bt').val() == data.child('bt').val() && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == data.child('lw').val() && newData.child('l10').val() == data.child('l10').val() && ((!newData.child('a').exists() && !data.child('a').exists()) || (newData.child('a').exists() && newData.child('a/u').val() == data.child('a/u').val() && newData.child('a/n').val() == data.child('a/n').val() && newData.child('a/no').val() == data.child('a/no').val() && newData.child('a/av').val() == data.child('a/av').val() && newData.child('a/bk').val() == data.child('a/bk').val() && newData.child('a/lc').val() == data.child('a/lc').val())) && (newData.child('b/u').val() == data.parent().child('j/p1/u').val() && root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/nama').val() != null && newData.child('b/n').val() == root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/nama').val() && newData.child('b/no').val() == root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/nomor').val() && newData.child('b/av').val() == root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/avatar').val() && newData.child('b/bk').val() == root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/bingkai').val() && newData.child('b/lc').val() == root.child('v1/profil/'+data.parent().child('j/p1/u').val()+'/lencana').val()) && !newData.child('h').exists())) || (root.child('v1/setelan/'+$s+'/arena/'+$a+'/aktif').val() == true && data.child('st').val() == 'siap' && (data.parent().child('live/a/u').val() == data.child('a/u').val() && data.parent().child('live/a/siap').val() == true && data.parent().child('live/a/r').val() == data.child('r').val() + 1 && now - data.parent().child('live/a/hb').val() <= root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && (data.parent().child('live/b/u').val() == data.child('b/u').val() && data.parent().child('live/b/siap').val() == true && data.parent().child('live/b/r').val() == data.child('r').val() + 1 && now - data.parent().child('live/b/hb').val() <= root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && (newData.child('st').val() == 'main' && newData.child('r').val() == data.child('r').val() + 1 && (newData.child('rid').isString() && newData.child('rid').val().matches(/^[A-Za-z0-9]{8,20}$/) && newData.child('rid').val() != data.child('rid').val() && !root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()).exists()) && newData.child('mulai').val() == now && newData.child('w').val() == data.child('w').val() && newData.child('buka').val() == data.child('buka').val() && newData.child('jeda').val() == data.child('jeda').val() && !newData.child('sendiri').exists() && newData.child('raja').val() == data.child('raja').val() && newData.child('bt').val() == data.child('bt').val() && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == '' && newData.child('l10').val() == data.child('l10').val() && ((!newData.child('a').exists() && !data.child('a').exists()) || (newData.child('a').exists() && newData.child('a/u').val() == data.child('a/u').val() && newData.child('a/n').val() == data.child('a/n').val() && newData.child('a/no').val() == data.child('a/no').val() && newData.child('a/av').val() == data.child('a/av').val() && newData.child('a/bk').val() == data.child('a/bk').val() && newData.child('a/lc').val() == data.child('a/lc').val())) && ((!newData.child('b').exists() && !data.child('b').exists()) || (newData.child('b').exists() && newData.child('b/u').val() == data.child('b/u').val() && newData.child('b/n').val() == data.child('b/n').val() && newData.child('b/no').val() == data.child('b/no').val() && newData.child('b/av').val() == data.child('b/av').val() && newData.child('b/bk').val() == data.child('b/bk').val() && newData.child('b/lc').val() == data.child('b/lc').val())) && !newData.child('h').exists())) || (data.child('st').val() == 'siap' && (((!(data.parent().child('live/a/u').val() == data.child('a/u').val() && data.parent().child('live/a/siap').val() == true && data.parent().child('live/a/r').val() == data.child('r').val() + 1 && now - data.parent().child('live/a/hb').val() <= root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now > data.child('t').val() + (data.child('raja').val() == true ? root.child('v1/setelan/'+$s+'/arena/'+$a+'/siapRajaMs').val() : root.child('v1/setelan/'+$s+'/arena/'+$a+'/siapMs').val())) && (!(data.parent().child('live/b/u').val() == data.child('b/u').val() && data.parent().child('live/b/siap').val() == true && data.parent().child('live/b/r').val() == data.child('r').val() + 1 && now - data.parent().child('live/b/hb').val() <= root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now > data.child('t').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/siapMs').val()) && (newData.child('st').val() == 'kosong' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() && newData.child('buka').val() == data.child('buka').val() && newData.child('jeda').val() == data.child('jeda').val() && !newData.child('sendiri').exists() && newData.child('raja').val() == false && newData.child('bt').val() == 0 && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == data.child('lw').val() && newData.child('l10').val() == '' && !newData.child('a').exists() && !newData.child('b').exists() && !newData.child('h').exists())) || ((!(data.parent().child('live/a/u').val() == data.child('a/u').val() && data.parent().child('live/a/siap').val() == true && data.parent().child('live/a/r').val() == data.child('r').val() + 1 && now - data.parent().child('live/a/hb').val() <= root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now > data.child('t').val() + (data.child('raja').val() == true ? root.child('v1/setelan/'+$s+'/arena/'+$a+'/siapRajaMs').val() : root.child('v1/setelan/'+$s+'/arena/'+$a+'/siapMs').val())) && !(!(data.parent().child('live/b/u').val() == data.child('b/u').val() && data.parent().child('live/b/siap').val() == true && data.parent().child('live/b/r').val() == data.child('r').val() + 1 && now - data.parent().child('live/b/hb').val() <= root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now > data.child('t').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/siapMs').val()) && (newData.child('st').val() == 'rebut' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() + 1 && newData.child('buka').val() == now && newData.child('jeda').val() == 0 && newData.child('sendiri').val() == now && newData.child('raja').val() == false && newData.child('bt').val() == 0 && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == data.child('lw').val() && newData.child('l10').val() == '' && (data.child('b').exists() && ((!newData.child('a').exists() && !data.child('b').exists()) || (newData.child('a').exists() && newData.child('a/u').val() == data.child('b/u').val() && newData.child('a/n').val() == data.child('b/n').val() && newData.child('a/no').val() == data.child('b/no').val() && newData.child('a/av').val() == data.child('b/av').val() && newData.child('a/bk').val() == data.child('b/bk').val() && newData.child('a/lc').val() == data.child('b/lc').val()))) && !newData.child('b').exists() && !newData.child('h').exists())) || (!(!(data.parent().child('live/a/u').val() == data.child('a/u').val() && data.parent().child('live/a/siap').val() == true && data.parent().child('live/a/r').val() == data.child('r').val() + 1 && now - data.parent().child('live/a/hb').val() <= root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now > data.child('t').val() + (data.child('raja').val() == true ? root.child('v1/setelan/'+$s+'/arena/'+$a+'/siapRajaMs').val() : root.child('v1/setelan/'+$s+'/arena/'+$a+'/siapMs').val())) && (!(data.parent().child('live/b/u').val() == data.child('b/u').val() && data.parent().child('live/b/siap').val() == true && data.parent().child('live/b/r').val() == data.child('r').val() + 1 && now - data.parent().child('live/b/hb').val() <= root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now > data.child('t').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/siapMs').val()) && (newData.child('st').val() == 'rebut' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() + 1 && newData.child('buka').val() == now && newData.child('jeda').val() == 0 && newData.child('sendiri').val() == now && newData.child('raja').val() == data.child('raja').val() && newData.child('bt').val() == data.child('bt').val() && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == data.child('lw').val() && newData.child('l10').val() == data.child('l10').val() && ((!newData.child('a').exists() && !data.child('a').exists()) || (newData.child('a').exists() && newData.child('a/u').val() == data.child('a/u').val() && newData.child('a/n').val() == data.child('a/n').val() && newData.child('a/no').val() == data.child('a/no').val() && newData.child('a/av').val() == data.child('a/av').val() && newData.child('a/bk').val() == data.child('a/bk').val() && newData.child('a/lc').val() == data.child('a/lc').val())) && !newData.child('b').exists() && !newData.child('h').exists())))) || (data.child('st').val() == 'main' && data.child('rek').val() == false && now >= (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) && (newData.child('st').val() == 'usai' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() && newData.child('buka').val() == data.child('buka').val() && newData.child('jeda').val() == data.child('jeda').val() && !newData.child('sendiri').exists() && true && true && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == data.child('lw').val() && true && ((!newData.child('a').exists() && !data.child('a').exists()) || (newData.child('a').exists() && newData.child('a/u').val() == data.child('a/u').val() && newData.child('a/n').val() == data.child('a/n').val() && newData.child('a/no').val() == data.child('a/no').val() && newData.child('a/av').val() == data.child('a/av').val() && newData.child('a/bk').val() == data.child('a/bk').val() && newData.child('a/lc').val() == data.child('a/lc').val())) && ((!newData.child('b').exists() && !data.child('b').exists()) || (newData.child('b').exists() && newData.child('b/u').val() == data.child('b/u').val() && newData.child('b/n').val() == data.child('b/n').val() && newData.child('b/no').val() == data.child('b/no').val() && newData.child('b/av').val() == data.child('b/av').val() && newData.child('b/bk').val() == data.child('b/bk').val() && newData.child('b/lc').val() == data.child('b/lc').val())) && ((newData.child('h/ua').val() == data.child('a/u').val() && newData.child('h/ub').val() == data.child('b/u').val() && newData.child('h/r').val() == data.child('r').val() && newData.child('h/m').val() == data.child('mulai').val() && newData.child('h/wkt').val() == (now > (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val()) && newData.child('h/ber').val() == root.child('v1/setelan/'+$s+'/arena/'+$a+'/bertahan').val() && newData.child('h/rek').val() == false && newData.child('h/bt').val() == newData.child('bt').val()) && newData.child('h/sa').val() == data.parent().child('live/a/s').val() && newData.child('h/sb').val() == data.parent().child('live/b/s').val() && newData.child('h/pa').val() == data.parent().child('live/a/p').val() && newData.child('h/pb').val() == data.parent().child('live/b/p').val() && ((newData.child('h/p').val() == 'a' && (!((now - data.parent().child('live/a/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) || (data.parent().child('live/a/sel').val() != true && !(now - data.parent().child('live/a/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now - data.parent().child('live/a/hb').val() < 4500 && (data.parent().child('live/a/tS').val() < (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) ? now - (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) : now - data.parent().child('live/a/tS').val()) > root.child('v1/setelan/'+$s+'/arena/'+$a+'/diamMs').val())) && (((now - data.parent().child('live/b/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) || (data.parent().child('live/b/sel').val() != true && !(now - data.parent().child('live/b/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now - data.parent().child('live/b/hb').val() < 4500 && (data.parent().child('live/b/tS').val() < (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) ? now - (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) : now - data.parent().child('live/b/tS').val()) > root.child('v1/setelan/'+$s+'/arena/'+$a+'/diamMs').val())) || ((data.parent().child('live/b/sel').val() == true) && data.parent().child('live/a/s').val() > data.parent().child('live/b/s').val()) || (((now > (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val()) || ((data.parent().child('live/a/sel').val() == true) && (data.parent().child('live/b/sel').val() == true))) && (data.parent().child('live/a/s').val() > data.parent().child('live/b/s').val() || (data.parent().child('live/a/s').val() == data.parent().child('live/b/s').val() && (data.parent().child('live/a/p').val() > data.parent().child('live/b/p').val() || (data.parent().child('live/a/p').val() == data.parent().child('live/b/p').val() && root.child('v1/setelan/'+$s+'/arena/'+$a+'/bertahan').val() == true && data.child('raja').val() == true))))))) && newData.child('h/al').val().matches(/^(skor|pas|raja|putus|diam|seri|batal)$/) && (root.child('v1/setelan/'+$s+'/arena/'+$a+'/bertahan').val() == true ? (newData.child('raja').val() == true && newData.child('h/jr').val() == data.child('a/u').val() && newData.child('h/gd').val() == 0 && newData.child('h/jb').val() == (data.child('raja').val() != true) && (((!((now - data.parent().child('live/b/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) || (data.parent().child('live/b/sel').val() != true && !(now - data.parent().child('live/b/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now - data.parent().child('live/b/hb').val() < 4500 && (data.parent().child('live/b/tS').val() < (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) ? now - (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) : now - data.parent().child('live/b/tS').val()) > root.child('v1/setelan/'+$s+'/arena/'+$a+'/diamMs').val())) && (data.parent().child('live/b/s').val() >= root.child('v1/setelan/'+$s+'/arena/'+$a+'/usahaMin').val() || ((now > (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val()) && data.parent().child('live/b/s').val() * 100 >= data.parent().child('live/a/s').val() * root.child('v1/setelan/'+$s+'/arena/'+$a+'/usahaPersen').val())) && !data.child('l10').val().contains(data.child('b/u').val())) && !(data.parent().child('live/a/s').val() == data.parent().child('live/b/s').val() && data.parent().child('live/a/p').val() == data.parent().child('live/b/p').val())) ? (data.child('raja').val() == true ? (newData.child('bt').val() == data.child('bt').val() + 1 && (newData.child('l10').val() == data.child('b/u').val() + ',' + data.child('l10').val() || ((data.child('b/u').val() + ',' + data.child('l10').val()).beginsWith(newData.child('l10').val()) && newData.child('l10').val().beginsWith(data.child('b/u').val() + ',') && newData.child('l10').val().length >= 290))) : (newData.child('bt').val() == 1 && newData.child('l10').val() == data.child('b/u').val() + ',')) : (data.child('raja').val() == true ? (newData.child('bt').val() == data.child('bt').val() && newData.child('l10').val() == data.child('l10').val()) : (newData.child('bt').val() == 0 && newData.child('l10').val() == '')))) : (newData.child('raja').val() == false && newData.child('bt').val() == 0 && newData.child('l10').val() == data.child('l10').val() && newData.child('h/jr').val() == '' && newData.child('h/jb').val() == false && newData.child('h/gd').val() == 0))) || (newData.child('h/p').val() == 'b' && (!((now - data.parent().child('live/b/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) || (data.parent().child('live/b/sel').val() != true && !(now - data.parent().child('live/b/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now - data.parent().child('live/b/hb').val() < 4500 && (data.parent().child('live/b/tS').val() < (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) ? now - (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) : now - data.parent().child('live/b/tS').val()) > root.child('v1/setelan/'+$s+'/arena/'+$a+'/diamMs').val())) && (((now - data.parent().child('live/a/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) || (data.parent().child('live/a/sel').val() != true && !(now - data.parent().child('live/a/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now - data.parent().child('live/a/hb').val() < 4500 && (data.parent().child('live/a/tS').val() < (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) ? now - (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) : now - data.parent().child('live/a/tS').val()) > root.child('v1/setelan/'+$s+'/arena/'+$a+'/diamMs').val())) || ((data.parent().child('live/a/sel').val() == true) && data.parent().child('live/b/s').val() > data.parent().child('live/a/s').val()) || (((now > (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val()) || ((data.parent().child('live/a/sel').val() == true) && (data.parent().child('live/b/sel').val() == true))) && (data.parent().child('live/b/s').val() > data.parent().child('live/a/s').val() || (data.parent().child('live/a/s').val() == data.parent().child('live/b/s').val() && data.parent().child('live/b/p').val() > data.parent().child('live/a/p').val()))))) && newData.child('h/al').val().matches(/^(skor|pas|raja|putus|diam|seri|batal)$/) && (root.child('v1/setelan/'+$s+'/arena/'+$a+'/bertahan').val() == true ? (newData.child('raja').val() == true && newData.child('h/jr').val() == data.child('b/u').val() && newData.child('h/jb').val() == true && newData.child('h/gd').val() == (data.child('raja').val() == true ? data.child('bt').val() : 0) && ((!((now - data.parent().child('live/a/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) || (data.parent().child('live/a/sel').val() != true && !(now - data.parent().child('live/a/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now - data.parent().child('live/a/hb').val() < 4500 && (data.parent().child('live/a/tS').val() < (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) ? now - (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) : now - data.parent().child('live/a/tS').val()) > root.child('v1/setelan/'+$s+'/arena/'+$a+'/diamMs').val())) && (data.parent().child('live/a/s').val() >= root.child('v1/setelan/'+$s+'/arena/'+$a+'/usahaMin').val() || ((now > (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val()) && data.parent().child('live/a/s').val() * 100 >= data.parent().child('live/b/s').val() * root.child('v1/setelan/'+$s+'/arena/'+$a+'/usahaPersen').val())) && !data.child('l10').val().contains(data.child('a/u').val())) ? (newData.child('bt').val() == 1 && newData.child('l10').val() == data.child('a/u').val() + ',') : (newData.child('bt').val() == 0 && newData.child('l10').val() == ''))) : (newData.child('raja').val() == false && newData.child('bt').val() == 0 && newData.child('l10').val() == data.child('l10').val() && newData.child('h/jr').val() == '' && newData.child('h/jb').val() == false && newData.child('h/gd').val() == 0))) || (newData.child('h/p').val() == 'seri' && (!((now - data.parent().child('live/a/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) || (data.parent().child('live/a/sel').val() != true && !(now - data.parent().child('live/a/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now - data.parent().child('live/a/hb').val() < 4500 && (data.parent().child('live/a/tS').val() < (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) ? now - (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) : now - data.parent().child('live/a/tS').val()) > root.child('v1/setelan/'+$s+'/arena/'+$a+'/diamMs').val())) && !((now - data.parent().child('live/b/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) || (data.parent().child('live/b/sel').val() != true && !(now - data.parent().child('live/b/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now - data.parent().child('live/b/hb').val() < 4500 && (data.parent().child('live/b/tS').val() < (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) ? now - (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) : now - data.parent().child('live/b/tS').val()) > root.child('v1/setelan/'+$s+'/arena/'+$a+'/diamMs').val())) && ((now > (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val()) || ((data.parent().child('live/a/sel').val() == true) && (data.parent().child('live/b/sel').val() == true))) && data.parent().child('live/a/s').val() == data.parent().child('live/b/s').val() && data.parent().child('live/a/p').val() == data.parent().child('live/b/p').val() && !(root.child('v1/setelan/'+$s+'/arena/'+$a+'/bertahan').val() == true && data.child('raja').val() == true)) && newData.child('h/al').val() == 'seri' && newData.child('raja').val() == data.child('raja').val() && newData.child('bt').val() == data.child('bt').val() && newData.child('l10').val() == data.child('l10').val() && newData.child('h/jr').val() == (data.child('raja').val() == true ? data.child('a/u').val() : '') && newData.child('h/jb').val() == false && newData.child('h/gd').val() == 0) || (newData.child('h/p').val() == 'batal' && (((now - data.parent().child('live/a/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) || (data.parent().child('live/a/sel').val() != true && !(now - data.parent().child('live/a/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now - data.parent().child('live/a/hb').val() < 4500 && (data.parent().child('live/a/tS').val() < (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) ? now - (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) : now - data.parent().child('live/a/tS').val()) > root.child('v1/setelan/'+$s+'/arena/'+$a+'/diamMs').val())) && ((now - data.parent().child('live/b/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) || (data.parent().child('live/b/sel').val() != true && !(now - data.parent().child('live/b/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now - data.parent().child('live/b/hb').val() < 4500 && (data.parent().child('live/b/tS').val() < (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) ? now - (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) : now - data.parent().child('live/b/tS').val()) > root.child('v1/setelan/'+$s+'/arena/'+$a+'/diamMs').val()))) && newData.child('h/al').val() == 'batal' && newData.child('raja').val() == data.child('raja').val() && newData.child('bt').val() == data.child('bt').val() && newData.child('l10').val() == data.child('l10').val() && newData.child('h/jr').val() == '' && newData.child('h/jb').val() == false && newData.child('h/gd').val() == 0))))) || (data.child('st').val() == 'main' && data.child('rek').val() == true && now >= (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) && (newData.child('st').val() == 'usai' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() && newData.child('buka').val() == data.child('buka').val() && newData.child('jeda').val() == data.child('jeda').val() && !newData.child('sendiri').exists() && true && true && newData.child('rek').val() == true && newData.child('rr').val() == data.child('rr').val() && newData.child('rm').val() == data.child('rm').val() && newData.child('rn').val() == data.child('rn').val() && newData.child('rp').val() == data.child('rp').val() && newData.child('lw').val() == data.child('lw').val() && true && ((!newData.child('a').exists() && !data.child('a').exists()) || (newData.child('a').exists() && newData.child('a/u').val() == data.child('a/u').val() && newData.child('a/n').val() == data.child('a/n').val() && newData.child('a/no').val() == data.child('a/no').val() && newData.child('a/av').val() == data.child('a/av').val() && newData.child('a/bk').val() == data.child('a/bk').val() && newData.child('a/lc').val() == data.child('a/lc').val())) && ((!newData.child('b').exists() && !data.child('b').exists()) || (newData.child('b').exists() && newData.child('b/u').val() == data.child('b/u').val() && newData.child('b/n').val() == data.child('b/n').val() && newData.child('b/no').val() == data.child('b/no').val() && newData.child('b/av').val() == data.child('b/av').val() && newData.child('b/bk').val() == data.child('b/bk').val() && newData.child('b/lc').val() == data.child('b/lc').val())) && ((newData.child('h/ua').val() == data.child('a/u').val() && newData.child('h/ub').val() == data.child('b/u').val() && newData.child('h/r').val() == data.child('r').val() && newData.child('h/m').val() == data.child('mulai').val() && newData.child('h/wkt').val() == (now > (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val()) && newData.child('h/ber').val() == root.child('v1/setelan/'+$s+'/arena/'+$a+'/bertahan').val() && newData.child('h/rek').val() == true && newData.child('h/bt').val() == newData.child('bt').val()) && newData.child('h/sa').val() == data.parent().child('live/a/s').val() && newData.child('h/sb').val() == data.child('rn').val() && newData.child('h/pa').val() == data.parent().child('live/a/p').val() && newData.child('h/pb').val() == data.child('rp').val() && newData.child('h/gd').val() == 0 && newData.child('l10').val() == data.child('l10').val() && ((newData.child('h/p').val() == 'a' && (!((now - data.parent().child('live/a/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) || (data.parent().child('live/a/sel').val() != true && !(now - data.parent().child('live/a/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now - data.parent().child('live/a/hb').val() < 4500 && (data.parent().child('live/a/tS').val() < (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) ? now - (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) : now - data.parent().child('live/a/tS').val()) > root.child('v1/setelan/'+$s+'/arena/'+$a+'/diamMs').val())) && (data.parent().child('live/a/s').val() > data.child('rn').val() || (((data.parent().child('live/a/sel').val() == true) || (now > (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val())) && data.parent().child('live/a/s').val() == data.child('rn').val() && data.parent().child('live/a/p').val() > data.child('rp').val()))) && newData.child('h/al').val().matches(/^(skor|pas|raja|putus|diam|seri|batal)$/) && (root.child('v1/setelan/'+$s+'/arena/'+$a+'/bertahan').val() == true ? (newData.child('raja').val() == true && newData.child('bt').val() == (data.child('raja').val() == true ? data.child('bt').val() : 0) && newData.child('h/jb').val() == (data.child('raja').val() != true) && newData.child('h/jr').val() == data.child('a/u').val()) : (newData.child('raja').val() == false && newData.child('bt').val() == 0 && newData.child('h/jr').val() == '' && newData.child('h/jb').val() == false))) || (newData.child('h/p').val() == 'b' && (((now - data.parent().child('live/a/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) || (data.parent().child('live/a/sel').val() != true && !(now - data.parent().child('live/a/hb').val() > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val()) && now - data.parent().child('live/a/hb').val() < 4500 && (data.parent().child('live/a/tS').val() < (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) ? now - (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) : now - data.parent().child('live/a/tS').val()) > root.child('v1/setelan/'+$s+'/arena/'+$a+'/diamMs').val())) || (((data.parent().child('live/a/sel').val() == true) || (now > (data.child('mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val())) && (data.parent().child('live/a/s').val() < data.child('rn').val() || (data.parent().child('live/a/s').val() == data.child('rn').val() && data.parent().child('live/a/p').val() <= data.child('rp').val())))) && newData.child('h/al').val().matches(/^(skor|pas|raja|putus|diam|seri|batal)$/) && newData.child('raja').val() == data.child('raja').val() && newData.child('bt').val() == data.child('bt').val() && newData.child('h/jr').val() == (data.child('raja').val() == true ? data.child('a/u').val() : '') && newData.child('h/jb').val() == false))))) || (data.child('st').val() == 'main' && data.child('rek').val() == true && data.parent().child('sela/r').val() == data.child('r').val() && data.parent().child('sela/u').exists() && (newData.child('st').val() == 'rebut' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() + 1 && newData.child('buka').val() == now && newData.child('jeda').val() == 0 && newData.child('sendiri').val() == now && newData.child('raja').val() == data.child('raja').val() && newData.child('bt').val() == data.child('bt').val() && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == data.child('lw').val() && newData.child('l10').val() == data.child('l10').val() && ((!newData.child('a').exists() && !data.child('a').exists()) || (newData.child('a').exists() && newData.child('a/u').val() == data.child('a/u').val() && newData.child('a/n').val() == data.child('a/n').val() && newData.child('a/no').val() == data.child('a/no').val() && newData.child('a/av').val() == data.child('a/av').val() && newData.child('a/bk').val() == data.child('a/bk').val() && newData.child('a/lc').val() == data.child('a/lc').val())) && !newData.child('b').exists() && !newData.child('h').exists())) || ((data.child('st').val() == 'usai' && now >= data.child('t').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/perayaanMs').val()) && ((data.child('rek').val() == true && (newData.child('st').val() == 'rebut' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() + 1 && newData.child('buka').val() == now && newData.child('jeda').val() == root.child('v1/setelan/'+$s+'/arena/'+$a+'/jedaMs').val() && newData.child('sendiri').val() == now && newData.child('raja').val() == data.child('raja').val() && newData.child('bt').val() == data.child('bt').val() && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == data.child('lw').val() && newData.child('l10').val() == data.child('l10').val() && ((!newData.child('a').exists() && !data.child('a').exists()) || (newData.child('a').exists() && newData.child('a/u').val() == data.child('a/u').val() && newData.child('a/n').val() == data.child('a/n').val() && newData.child('a/no').val() == data.child('a/no').val() && newData.child('a/av').val() == data.child('a/av').val() && newData.child('a/bk').val() == data.child('a/bk').val() && newData.child('a/lc').val() == data.child('a/lc').val())) && !newData.child('b').exists() && !newData.child('h').exists())) || (data.child('rek').val() == false && root.child('v1/setelan/'+$s+'/arena/'+$a+'/bertahan').val() == true && (data.child('h/p').val() == 'a' || data.child('h/p').val() == 'seri') && (newData.child('st').val() == 'rebut' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() + 1 && newData.child('buka').val() == now && newData.child('jeda').val() == root.child('v1/setelan/'+$s+'/arena/'+$a+'/jedaMs').val() && newData.child('sendiri').val() == now && newData.child('raja').val() == data.child('raja').val() && newData.child('bt').val() == data.child('bt').val() && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == data.child('b/u').val() && newData.child('l10').val() == data.child('l10').val() && ((!newData.child('a').exists() && !data.child('a').exists()) || (newData.child('a').exists() && newData.child('a/u').val() == data.child('a/u').val() && newData.child('a/n').val() == data.child('a/n').val() && newData.child('a/no').val() == data.child('a/no').val() && newData.child('a/av').val() == data.child('a/av').val() && newData.child('a/bk').val() == data.child('a/bk').val() && newData.child('a/lc').val() == data.child('a/lc').val())) && !newData.child('b').exists() && !newData.child('h').exists())) || (data.child('rek').val() == false && root.child('v1/setelan/'+$s+'/arena/'+$a+'/bertahan').val() == true && data.child('h/p').val() == 'b' && (newData.child('st').val() == 'rebut' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() + 1 && newData.child('buka').val() == now && newData.child('jeda').val() == root.child('v1/setelan/'+$s+'/arena/'+$a+'/jedaMs').val() && newData.child('sendiri').val() == now && newData.child('raja').val() == data.child('raja').val() && newData.child('bt').val() == data.child('bt').val() && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == data.child('a/u').val() && newData.child('l10').val() == data.child('l10').val() && (data.child('b').exists() && ((!newData.child('a').exists() && !data.child('b').exists()) || (newData.child('a').exists() && newData.child('a/u').val() == data.child('b/u').val() && newData.child('a/n').val() == data.child('b/n').val() && newData.child('a/no').val() == data.child('b/no').val() && newData.child('a/av').val() == data.child('b/av').val() && newData.child('a/bk').val() == data.child('b/bk').val() && newData.child('a/lc').val() == data.child('b/lc').val()))) && !newData.child('b').exists() && !newData.child('h').exists())) || (data.child('rek').val() == false && root.child('v1/setelan/'+$s+'/arena/'+$a+'/bertahan').val() == true && data.child('h/p').val() == 'batal' && (newData.child('st').val() == 'rebut' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() + 1 && newData.child('buka').val() == now && newData.child('jeda').val() == root.child('v1/setelan/'+$s+'/arena/'+$a+'/jedaMs').val() && !newData.child('sendiri').exists() && newData.child('raja').val() == false && newData.child('bt').val() == 0 && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == '' && newData.child('l10').val() == '' && !newData.child('a').exists() && !newData.child('b').exists() && !newData.child('h').exists())) || (data.child('rek').val() == false && root.child('v1/setelan/'+$s+'/arena/'+$a+'/bertahan').val() != true && (newData.child('st').val() == 'rebut' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() + 1 && newData.child('buka').val() == now && newData.child('jeda').val() == root.child('v1/setelan/'+$s+'/arena/'+$a+'/jedaMs').val() && !newData.child('sendiri').exists() && newData.child('raja').val() == false && newData.child('bt').val() == 0 && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == (data.child('h/p').val() == 'a' ? data.child('b/u').val() : (data.child('h/p').val() == 'b' ? data.child('a/u').val() : (data.child('h/p').val() == 'seri' ? data.child('a/u').val() + ',' + data.child('b/u').val() : ''))) && newData.child('l10').val() == '' && !newData.child('a').exists() && !newData.child('b').exists() && !newData.child('h').exists())))) || (data.child('st').val() == 'rebut' && data.child('a').exists() && now - ((data.parent().child('live/a/u').val() == data.child('a/u').val() && data.parent().child('live/a/hb').exists()) ? data.parent().child('live/a/hb').val() : data.child('sendiri').val()) > root.child('v1/setelan/'+$s+'/arena/'+$a+'/putusMs').val() && (newData.child('st').val() == data.child('st').val() && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() && newData.child('buka').val() == data.child('buka').val() && newData.child('jeda').val() == data.child('jeda').val() && !newData.child('sendiri').exists() && newData.child('raja').val() == false && newData.child('bt').val() == 0 && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == '' && newData.child('l10').val() == '' && !newData.child('a').exists() && !newData.child('b').exists() && !newData.child('h').exists())) || ((data.child('st').val() == 'rebut' && data.child('a/u').val() == auth.uid && (newData.child('st').val() == data.child('st').val() && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() && newData.child('buka').val() == data.child('buka').val() && newData.child('jeda').val() == data.child('jeda').val() && !newData.child('sendiri').exists() && newData.child('raja').val() == false && newData.child('bt').val() == 0 && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == '' && newData.child('l10').val() == '' && !newData.child('a').exists() && !newData.child('b').exists() && !newData.child('h').exists())) || (data.child('st').val() == 'siap' && data.child('a/u').val() == auth.uid && (newData.child('st').val() == 'rebut' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() + 1 && newData.child('buka').val() == now && newData.child('jeda').val() == 0 && newData.child('sendiri').val() == now && newData.child('raja').val() == false && newData.child('bt').val() == 0 && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == data.child('lw').val() && newData.child('l10').val() == '' && (data.child('b').exists() && ((!newData.child('a').exists() && !data.child('b').exists()) || (newData.child('a').exists() && newData.child('a/u').val() == data.child('b/u').val() && newData.child('a/n').val() == data.child('b/n').val() && newData.child('a/no').val() == data.child('b/no').val() && newData.child('a/av').val() == data.child('b/av').val() && newData.child('a/bk').val() == data.child('b/bk').val() && newData.child('a/lc').val() == data.child('b/lc').val()))) && !newData.child('b').exists() && !newData.child('h').exists())) || (data.child('st').val() == 'siap' && data.child('b/u').val() == auth.uid && (newData.child('st').val() == 'rebut' && newData.child('r').val() == data.child('r').val() && newData.child('rid').val() == data.child('rid').val() && newData.child('mulai').val() == data.child('mulai').val() && newData.child('w').val() == data.child('w').val() + 1 && newData.child('buka').val() == now && newData.child('jeda').val() == 0 && newData.child('sendiri').val() == now && newData.child('raja').val() == data.child('raja').val() && newData.child('bt').val() == data.child('bt').val() && newData.child('rek').val() == false && !newData.child('rr').exists() && !newData.child('rm').exists() && !newData.child('rn').exists() && !newData.child('rp').exists() && newData.child('lw').val() == data.child('lw').val() && newData.child('l10').val() == data.child('l10').val() && ((!newData.child('a').exists() && !data.child('a').exists()) || (newData.child('a').exists() && newData.child('a/u').val() == data.child('a/u').val() && newData.child('a/n').val() == data.child('a/n').val() && newData.child('a/no').val() == data.child('a/no').val() && newData.child('a/av').val() == data.child('a/av').val() && newData.child('a/bk').val() == data.child('a/bk').val() && newData.child('a/lc').val() == data.child('a/lc').val())) && !newData.child('b').exists() && !newData.child('h').exists()))) || (root.child('v1/setelan/'+$s+'/arena/'+$a+'/aktif').val() == true && data.child('st').val() == 'rebut' && data.child('a').exists() && !data.child('b').exists() && data.child('a/u').val() == auth.uid && now >= data.child('sendiri').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/rekamanSetelahMs').val() && !(data.parent().child('j/w').val() == data.child('w').val() && data.parent().child('j/p1').exists()) && root.child('v1/rekaman/'+$s+'/'+$a+'/u').exists() && root.child('v1/rekaman/'+$s+'/'+$a+'/u').val() != auth.uid && (newData.child('st').val() == 'main' && newData.child('r').val() == data.child('r').val() + 1 && (newData.child('rid').isString() && newData.child('rid').val().matches(/^[A-Za-z0-9]{8,20}$/) && newData.child('rid').val() != data.child('rid').val() && !root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()).exists()) && newData.child('mulai').val() == now && newData.child('w').val() == data.child('w').val() && newData.child('buka').val() == data.child('buka').val() && newData.child('jeda').val() == data.child('jeda').val() && !newData.child('sendiri').exists() && newData.child('raja').val() == data.child('raja').val() && newData.child('bt').val() == data.child('bt').val() && newData.child('rek').val() == true && newData.child('rr').val() == root.child('v1/rekaman/'+$s+'/'+$a+'/r').val() && newData.child('rm').val() == root.child('v1/rekaman/'+$s+'/'+$a+'/m').val() && newData.child('rn').val() == root.child('v1/rekaman/'+$s+'/'+$a+'/skor').val() && newData.child('rp').val() == root.child('v1/rekaman/'+$s+'/'+$a+'/p').val() && newData.child('lw').val() == data.child('lw').val() && newData.child('l10').val() == data.child('l10').val() && ((!newData.child('a').exists() && !data.child('a').exists()) || (newData.child('a').exists() && newData.child('a/u').val() == data.child('a/u').val() && newData.child('a/n').val() == data.child('a/n').val() && newData.child('a/no').val() == data.child('a/no').val() && newData.child('a/av').val() == data.child('a/av').val() && newData.child('a/bk').val() == data.child('a/bk').val() && newData.child('a/lc').val() == data.child('a/lc').val())) && (newData.child('b/u').val() == root.child('v1/rekaman/'+$s+'/'+$a+'/u').val() && newData.child('b/n').val() == root.child('v1/rekaman/'+$s+'/'+$a+'/n').val() && newData.child('b/no').val() == root.child('v1/rekaman/'+$s+'/'+$a+'/no').val() && newData.child('b/av').val() == root.child('v1/rekaman/'+$s+'/'+$a+'/av').val() && newData.child('b/bk').val() == root.child('v1/rekaman/'+$s+'/'+$a+'/bk').val() && newData.child('b/lc').val() == '') && !newData.child('h').exists()))))))",
+              ".validate": "newData.hasChildren(['v','st','t','r','w','raja','bt','rek','lw','l10'])",
+              "v": {
+                ".validate": "newData.isNumber()"
+              },
+              "st": {
+                ".validate": "newData.val().matches(/^(kosong|rebut|siap|main|usai)$/)"
+              },
+              "t": {
+                ".validate": "newData.isNumber()"
+              },
+              "r": {
+                ".validate": "newData.isNumber()"
+              },
+              "rid": {
+                ".validate": "newData.isString()"
+              },
+              "mulai": {
+                ".validate": "newData.isNumber()"
+              },
+              "w": {
+                ".validate": "newData.isNumber()"
+              },
+              "buka": {
+                ".validate": "newData.isNumber()"
+              },
+              "jeda": {
+                ".validate": "newData.isNumber()"
+              },
+              "sendiri": {
+                ".validate": "newData.isNumber()"
+              },
+              "raja": {
+                ".validate": "newData.isBoolean()"
+              },
+              "bt": {
+                ".validate": "newData.isNumber()"
+              },
+              "rek": {
+                ".validate": "newData.isBoolean()"
+              },
+              "rr": {
+                ".validate": "newData.isNumber()"
+              },
+              "rm": {
+                ".validate": "newData.isNumber()"
+              },
+              "rn": {
+                ".validate": "newData.isNumber()"
+              },
+              "rp": {
+                ".validate": "newData.isNumber()"
+              },
+              "lw": {
+                ".validate": "newData.isString() && newData.val().length <= 100"
+              },
+              "l10": {
+                ".validate": "newData.isString() && newData.val().length <= 400"
+              },
+              "a": {
+                ".validate": "newData.hasChildren(['u','n','no','av','bk','lc'])",
+                "u": {
+                  ".validate": "newData.isString()"
+                },
+                "n": {
+                  ".validate": "newData.isString()"
+                },
+                "no": {
+                  ".validate": "newData.isString()"
+                },
+                "av": {
+                  ".validate": "newData.isString()"
+                },
+                "bk": {
+                  ".validate": "newData.isString()"
+                },
+                "lc": {
+                  ".validate": "newData.isString()"
+                },
+                "$other": {
+                  ".validate": false
+                }
+              },
+              "b": {
+                ".validate": "newData.hasChildren(['u','n','no','av','bk','lc'])",
+                "u": {
+                  ".validate": "newData.isString()"
+                },
+                "n": {
+                  ".validate": "newData.isString()"
+                },
+                "no": {
+                  ".validate": "newData.isString()"
+                },
+                "av": {
+                  ".validate": "newData.isString()"
+                },
+                "bk": {
+                  ".validate": "newData.isString()"
+                },
+                "lc": {
+                  ".validate": "newData.isString()"
+                },
+                "$other": {
+                  ".validate": false
+                }
+              },
+              "h": {
+                ".validate": "newData.hasChildren(['p','al','sa','sb','pa','pb','ua','ub','r','m','wkt','ber','jr','jb','bt','gd','rek'])",
+                "p": {
+                  ".validate": "newData.val().matches(/^(a|b|seri|batal)$/)"
+                },
+                "al": {
+                  ".validate": "newData.isString()"
+                },
+                "sa": {
+                  ".validate": "newData.isNumber()"
+                },
+                "sb": {
+                  ".validate": "newData.isNumber()"
+                },
+                "pa": {
+                  ".validate": "newData.isNumber()"
+                },
+                "pb": {
+                  ".validate": "newData.isNumber()"
+                },
+                "ua": {
+                  ".validate": "newData.isString()"
+                },
+                "ub": {
+                  ".validate": "newData.isString()"
+                },
+                "r": {
+                  ".validate": "newData.isNumber()"
+                },
+                "m": {
+                  ".validate": "newData.isNumber()"
+                },
+                "wkt": {
+                  ".validate": "newData.isBoolean()"
+                },
+                "ber": {
+                  ".validate": "newData.isBoolean()"
+                },
+                "jr": {
+                  ".validate": "newData.isString()"
+                },
+                "jb": {
+                  ".validate": "newData.isBoolean()"
+                },
+                "bt": {
+                  ".validate": "newData.isNumber()"
+                },
+                "gd": {
+                  ".validate": "newData.isNumber()"
+                },
+                "rek": {
+                  ".validate": "newData.isBoolean()"
+                },
+                "$other": {
+                  ".validate": false
+                }
+              },
+              "$other": {
+                ".validate": false
+              }
+            },
+            "live": {
+              "$k": {
+                ".write": "($k.matches(/^(a|b)$/) && newData.exists() && newData.child('u').val() == auth.uid && ((data.parent().parent().child('f/st').val() == 'siap' && data.parent().parent().child('f/'+$k+'/u').val() == auth.uid && newData.child('r').val() == data.parent().parent().child('f/r').val() + 1) || ($k == 'a' && newData.parent().parent().child('f/st').val() == 'main' && newData.parent().parent().child('f/rek').val() == true && newData.parent().parent().child('f/'+$k+'/u').val() == auth.uid && newData.child('r').val() == newData.parent().parent().child('f/r').val() && data.parent().parent().child('f/st').val() == 'rebut')) && newData.child('siap').val() == true && newData.child('s').val() == 0 && newData.child('p').val() == 0 && newData.child('sel').val() == false && newData.child('rk').val() == 'awal' && newData.child('hb').val() == now && newData.child('tS').val() == now && newData.child('e').val() == 0)",
+                "u": {
+                  ".write": "(data.parent().parent().parent().child('f/'+$k+'/u').val() == auth.uid && newData.val() == auth.uid && data.parent().parent().parent().child('f/st').val() != 'main')",
+                  ".validate": "newData.isString()"
+                },
+                "r": {
+                  ".validate": "newData.isNumber()"
+                },
+                "siap": {
+                  ".validate": "newData.isBoolean()"
+                },
+                "hb": {
+                  ".write": "(data.parent().parent().parent().child('f/'+$k+'/u').val() == auth.uid && newData.parent().child('u').val() == auth.uid)",
+                  ".validate": "newData.isNumber() && (newData.val() == now || newData.val() == data.val())"
+                },
+                "s": {
+                  ".write": "(data.parent().parent().parent().child('f/'+$k+'/u').val() == auth.uid && data.parent().parent().parent().child('f/st').val() == 'main' && ($k == 'a' || data.parent().parent().parent().child('f/rek').val() == false) && data.parent().child('u').val() == auth.uid && data.parent().child('r').val() == data.parent().parent().parent().child('f/r').val() && data.parent().child('sel').val() != true && now >= data.parent().parent().parent().child('f/mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val() && now <= data.parent().parent().parent().child('f/mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val())",
+                  ".validate": "(newData.isNumber() && (newData.val() == 0 ? (newData.parent().child('rk').val() == 'awal' || newData.parent().parent().parent().child('rek').child($k).child(newData.parent().child('rk').val()).child('n').val() == 0) : ((newData.parent().child('r').val() == data.parent().child('r').val() && newData.parent().child('u').val() == data.parent().child('u').val()) && newData.val() >= data.val() && newData.val() <= (now - data.parent().parent().parent().child('f/mulai').val() - root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val()) / root.child('v1/setelan/'+$s+'/arena/'+$a+'/msPerSkor').val() + 1 && newData.parent().parent().parent().child('rek').child($k).child(newData.parent().child('rk').val()).child('n').val() == newData.val() && (newData.val() == data.val() || newData.parent().child('tS').val() == now))))"
+                },
+                "tS": {
+                  ".write": "(data.parent().parent().parent().child('f/'+$k+'/u').val() == auth.uid && data.parent().parent().parent().child('f/st').val() == 'main' && ($k == 'a' || data.parent().parent().parent().child('f/rek').val() == false) && data.parent().child('u').val() == auth.uid && data.parent().child('r').val() == data.parent().parent().parent().child('f/r').val() && data.parent().child('sel').val() != true && now >= data.parent().parent().parent().child('f/mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val() && now <= data.parent().parent().parent().child('f/mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val())",
+                  ".validate": "newData.isNumber() && (newData.val() == now || newData.val() == data.val())"
+                },
+                "p": {
+                  ".write": "(data.parent().parent().parent().child('f/'+$k+'/u').val() == auth.uid && data.parent().parent().parent().child('f/st').val() == 'main' && ($k == 'a' || data.parent().parent().parent().child('f/rek').val() == false) && data.parent().child('u').val() == auth.uid && data.parent().child('r').val() == data.parent().parent().parent().child('f/r').val() && data.parent().child('sel').val() != true && now >= data.parent().parent().parent().child('f/mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val() && now <= data.parent().parent().parent().child('f/mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val())",
+                  ".validate": "(newData.isNumber() && newData.val() >= 0 && newData.val() <= newData.parent().child('s').val() && (!(newData.parent().child('r').val() == data.parent().child('r').val() && newData.parent().child('u').val() == data.parent().child('u').val()) || !data.exists() || newData.val() >= data.val()))"
+                },
+                "e": {
+                  ".write": "(data.parent().parent().parent().child('f/'+$k+'/u').val() == auth.uid && data.parent().parent().parent().child('f/st').val() == 'main' && ($k == 'a' || data.parent().parent().parent().child('f/rek').val() == false) && data.parent().child('u').val() == auth.uid && data.parent().child('r').val() == data.parent().parent().parent().child('f/r').val() && data.parent().child('sel').val() != true && now >= data.parent().parent().parent().child('f/mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val() && now <= data.parent().parent().parent().child('f/mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val())",
+                  ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 15"
+                },
+                "rk": {
+                  ".write": "(data.parent().parent().parent().child('f/'+$k+'/u').val() == auth.uid && data.parent().parent().parent().child('f/st').val() == 'main' && ($k == 'a' || data.parent().parent().parent().child('f/rek').val() == false) && data.parent().child('u').val() == auth.uid && data.parent().child('r').val() == data.parent().parent().parent().child('f/r').val() && data.parent().child('sel').val() != true && now >= data.parent().parent().parent().child('f/mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val() && now <= data.parent().parent().parent().child('f/mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val())",
+                  ".validate": "(newData.isString() && (newData.val() == 'awal' || (newData.val().matches(/^c[0-9]{1,4}$/) && newData.parent().parent().parent().child('rek').child($k).child(newData.val()).child('n').exists())))"
+                },
+                "sel": {
+                  ".write": "(data.parent().parent().parent().child('f/'+$k+'/u').val() == auth.uid && data.parent().parent().parent().child('f/st').val() == 'main' && ($k == 'a' || data.parent().parent().parent().child('f/rek').val() == false) && data.parent().child('u').val() == auth.uid && data.parent().child('r').val() == data.parent().parent().parent().child('f/r').val() && data.parent().child('sel').val() != true && now >= data.parent().parent().parent().child('f/mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val() && now <= data.parent().parent().parent().child('f/mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val())",
+                  ".validate": "(newData.isBoolean() && (!(newData.parent().child('r').val() == data.parent().child('r').val() && newData.parent().child('u').val() == data.parent().child('u').val()) || data.val() != true || newData.val() == true))"
+                },
+                "$other": {
+                  ".validate": false
+                }
+              }
+            },
+            "rek": {
+              "$k": {
+                ".write": "(!newData.exists() && data.parent().parent().child('f/'+$k+'/u').val() == auth.uid && (data.parent().parent().child('f/st').val() == 'siap' || ($k == 'a' && newData.parent().parent().child('f/st').val() == 'main' && newData.parent().parent().child('f/rek').val() == true && data.parent().parent().child('f/st').val() == 'rebut')))",
+                "$c": {
+                  ".write": "(data.parent().parent().parent().child('f/'+$k+'/u').val() == auth.uid && newData.exists() && data.parent().parent().parent().child('f/st').val() == 'main' && ($k == 'a' || data.parent().parent().parent().child('f/rek').val() == false) && data.parent().parent().parent().child('live').child($k).child('u').val() == auth.uid && data.parent().parent().parent().child('live').child($k).child('r').val() == data.parent().parent().parent().child('f/r').val() && now <= data.parent().parent().parent().child('f/mulai').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/hitungMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/waktuMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/graceMs').val() && (!data.exists() || data.child('d').val() == newData.child('d').val()))",
+                  ".validate": "(newData.hasChildren(['r','f','n','d','p']) && $c.matches(/^c[0-9]{1,4}$/) && newData.child('r').val() == data.parent().parent().parent().child('f/r').val() && newData.child('n').isNumber() && newData.child('f').isNumber() && newData.child('n').val() >= newData.child('f').val() && newData.child('d').isString() && newData.child('d').val().length >= (newData.child('n').val() - newData.child('f').val()) * 2 && newData.child('d').val().length <= 1200 && newData.child('p').isString() && (data.exists() || newData.child('p').val() == data.parent().parent().parent().child('live').child($k).child('rk').val()) && newData.child('f').val() == (newData.child('p').val() == 'awal' ? 0 : data.parent().child(newData.child('p').val()).child('n').val()))",
+                  "r": {
+                    ".validate": "newData.isNumber()"
+                  },
+                  "f": {
+                    ".validate": "newData.isNumber()"
+                  },
+                  "n": {
+                    ".validate": "newData.isNumber()"
+                  },
+                  "d": {
+                    ".validate": "newData.isString()"
+                  },
+                  "p": {
+                    ".validate": "newData.isString()"
+                  },
+                  "$other": {
+                    ".validate": false
+                  }
+                }
+              }
+            },
+            "m": {
+              ".write": "(!newData.exists() && newData.parent().child('f/w').val() == data.parent().child('f/w').val() + 1)",
+              "$uid": {
+                ".write": "(auth.uid == $uid && newData.exists() && root.child('v1/setelan/'+$s+'/arena/'+$a+'/aktif').val() == true && newData.parent().parent().child('f/st').val() == 'rebut' && now >= newData.parent().parent().child('f/buka').val() + newData.parent().parent().child('f/jeda').val() && now <= newData.parent().parent().child('f/buka').val() + newData.parent().parent().child('f/jeda').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/jendelaMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/telatMs').val() && newData.child('w').val() == newData.parent().parent().child('f/w').val() && newData.child('t').val() == now && (!data.exists() || data.child('w').val() != newData.parent().parent().child('f/w').val()) && newData.parent().parent().child('f/a/u').val() != $uid && newData.parent().parent().child('f/b/u').val() != $uid && !newData.parent().parent().child('f/lw').val().contains($uid) && root.child('v1/profil/'+$uid+'/nama').exists() && !root.child('v1/larang/'+$uid).exists())",
+                ".validate": "newData.hasChildren(['w','t'])",
+                "w": {
+                  ".validate": "newData.isNumber()"
+                },
+                "t": {
+                  ".validate": "newData.isNumber()"
+                },
+                "$other": {
+                  ".validate": false
+                }
+              }
+            },
+            "j": {
+              ".write": "((!newData.exists() && newData.parent().child('f/w').val() == data.parent().child('f/w').val() + 1) || (auth != null && newData.exists() && data.parent().child('f/st').val() == 'rebut' && now <= data.parent().child('f/buka').val() + data.parent().child('f/jeda').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/jendelaMs').val() + root.child('v1/setelan/'+$s+'/arena/'+$a+'/lantikMs').val() && newData.child('w').val() == data.parent().child('f/w').val() && data.parent().child('m').child(newData.child(newData.child('x').val()).child('u').val()).child('w').val() == data.parent().child('f/w').val() && data.parent().child('m').child(newData.child(newData.child('x').val()).child('u').val()).child('t').val() == newData.child(newData.child('x').val()).child('t').val() && newData.child(newData.child('x').val()).child('k').val() == ((newData.child(newData.child('x').val()).child('t').val() % 9973) * 7907 + data.parent().child('f/buka').val() % 9973) % 9973 && (!(data.exists() && data.child('w').val() == data.parent().child('f/w').val()) || (newData.child(newData.child('x').val()).child('u').val() != data.child('p1/u').val() && newData.child(newData.child('x').val()).child('u').val() != data.child('p2/u').val() && newData.child(newData.child('x').val()).child('u').val() != data.child('p3/u').val())) && ((newData.child('x').val() == 'p1' && (!(data.exists() && data.child('w').val() == data.parent().child('f/w').val()) || !data.child('p1').exists() || newData.child(newData.child('x').val()).child('k').val() < data.child('p1/k').val() || (newData.child(newData.child('x').val()).child('k').val() == data.child('p1/k').val() && newData.child(newData.child('x').val()).child('t').val() < data.child('p1/t').val())) && ((!newData.child('p2').exists() && (!(data.exists() && data.child('w').val() == data.parent().child('f/w').val()) || !data.child('p1').exists())) || ((data.exists() && data.child('w').val() == data.parent().child('f/w').val()) && data.child('p1').exists() && newData.child('p2/u').val() == data.child('p1/u').val() && newData.child('p2/k').val() == data.child('p1/k').val() && newData.child('p2/t').val() == data.child('p1/t').val())) && ((!newData.child('p3').exists() && (!(data.exists() && data.child('w').val() == data.parent().child('f/w').val()) || !data.child('p2').exists())) || ((data.exists() && data.child('w').val() == data.parent().child('f/w').val()) && data.child('p2').exists() && newData.child('p3/u').val() == data.child('p2/u').val() && newData.child('p3/k').val() == data.child('p2/k').val() && newData.child('p3/t').val() == data.child('p2/t').val()))) || (newData.child('x').val() == 'p2' && (data.exists() && data.child('w').val() == data.parent().child('f/w').val()) && data.child('p1').exists() && !(!(data.exists() && data.child('w').val() == data.parent().child('f/w').val()) || !data.child('p1').exists() || newData.child(newData.child('x').val()).child('k').val() < data.child('p1/k').val() || (newData.child(newData.child('x').val()).child('k').val() == data.child('p1/k').val() && newData.child(newData.child('x').val()).child('t').val() < data.child('p1/t').val())) && (!(data.exists() && data.child('w').val() == data.parent().child('f/w').val()) || !data.child('p2').exists() || newData.child(newData.child('x').val()).child('k').val() < data.child('p2/k').val() || (newData.child(newData.child('x').val()).child('k').val() == data.child('p2/k').val() && newData.child(newData.child('x').val()).child('t').val() < data.child('p2/t').val())) && ((!newData.child('p1').exists() && (!(data.exists() && data.child('w').val() == data.parent().child('f/w').val()) || !data.child('p1').exists())) || ((data.exists() && data.child('w').val() == data.parent().child('f/w').val()) && data.child('p1').exists() && newData.child('p1/u').val() == data.child('p1/u').val() && newData.child('p1/k').val() == data.child('p1/k').val() && newData.child('p1/t').val() == data.child('p1/t').val())) && ((!newData.child('p3').exists() && (!(data.exists() && data.child('w').val() == data.parent().child('f/w').val()) || !data.child('p2').exists())) || ((data.exists() && data.child('w').val() == data.parent().child('f/w').val()) && data.child('p2').exists() && newData.child('p3/u').val() == data.child('p2/u').val() && newData.child('p3/k').val() == data.child('p2/k').val() && newData.child('p3/t').val() == data.child('p2/t').val()))) || (newData.child('x').val() == 'p3' && (data.exists() && data.child('w').val() == data.parent().child('f/w').val()) && data.child('p2').exists() && !(!(data.exists() && data.child('w').val() == data.parent().child('f/w').val()) || !data.child('p2').exists() || newData.child(newData.child('x').val()).child('k').val() < data.child('p2/k').val() || (newData.child(newData.child('x').val()).child('k').val() == data.child('p2/k').val() && newData.child(newData.child('x').val()).child('t').val() < data.child('p2/t').val())) && (!(data.exists() && data.child('w').val() == data.parent().child('f/w').val()) || !data.child('p3').exists() || newData.child(newData.child('x').val()).child('k').val() < data.child('p3/k').val() || (newData.child(newData.child('x').val()).child('k').val() == data.child('p3/k').val() && newData.child(newData.child('x').val()).child('t').val() < data.child('p3/t').val())) && ((!newData.child('p1').exists() && (!(data.exists() && data.child('w').val() == data.parent().child('f/w').val()) || !data.child('p1').exists())) || ((data.exists() && data.child('w').val() == data.parent().child('f/w').val()) && data.child('p1').exists() && newData.child('p1/u').val() == data.child('p1/u').val() && newData.child('p1/k').val() == data.child('p1/k').val() && newData.child('p1/t').val() == data.child('p1/t').val())) && ((!newData.child('p2').exists() && (!(data.exists() && data.child('w').val() == data.parent().child('f/w').val()) || !data.child('p2').exists())) || ((data.exists() && data.child('w').val() == data.parent().child('f/w').val()) && data.child('p2').exists() && newData.child('p2/u').val() == data.child('p2/u').val() && newData.child('p2/k').val() == data.child('p2/k').val() && newData.child('p2/t').val() == data.child('p2/t').val()))))))",
+              ".validate": "newData.hasChildren(['w','x','p1'])",
+              "w": {
+                ".validate": "newData.isNumber()"
+              },
+              "x": {
+                ".validate": "newData.val().matches(/^p[123]$/)"
+              },
+              "$p": {
+                ".validate": "$p.matches(/^p[123]$/) && newData.hasChildren(['u','k','t'])",
+                "u": {
+                  ".validate": "newData.isString()"
+                },
+                "k": {
+                  ".validate": "newData.isNumber()"
+                },
+                "t": {
+                  ".validate": "newData.isNumber()"
+                },
+                "$other": {
+                  ".validate": false
+                }
+              }
+            },
+            "sela": {
+              ".write": "(auth != null && newData.exists() && data.parent().child('f/st').val() == 'main' && data.parent().child('f/rek').val() == true && data.parent().child('f/a/u').val() != auth.uid && !data.parent().child('f/lw').val().contains(auth.uid) && newData.child('u').val() == auth.uid && newData.child('r').val() == data.parent().child('f/r').val() && (!data.exists() || data.child('r').val() != data.parent().child('f/r').val()) && root.child('v1/profil/'+auth.uid+'/nama').exists())",
+              ".validate": "newData.hasChildren(['u','r'])",
+              "u": {
+                ".validate": "newData.isString()"
+              },
+              "r": {
+                ".validate": "newData.isNumber()"
+              },
+              "$other": {
+                ".validate": false
+              }
+            },
+            "dk": {
+              ".write": "(auth != null && newData.exists() && data.parent().child('f/a/u').val() != auth.uid && data.parent().child('f/b/u').val() != auth.uid && newData.child('by').val() == auth.uid && ((data.child('by').val() == auth.uid && now - data.child('t').val() >= 2500 && newData.child('sejak').val() == data.child('sejak').val() && now - data.child('sejak').val() < 300000) || ((!data.exists() || now - data.child('t').val() > 8000) && newData.child('sejak').val() == now)))",
+              ".validate": "newData.hasChildren(['by','sejak','t','r','a','b','n'])",
+              "by": {
+                ".validate": "newData.isString()"
+              },
+              "sejak": {
+                ".validate": "newData.isNumber()"
+              },
+              "t": {
+                ".validate": "newData.val() == now"
+              },
+              "r": {
+                ".validate": "newData.isNumber()"
+              },
+              "a": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000"
+              },
+              "b": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000"
+              },
+              "n": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10000"
+              },
+              "e": {
+                "$k": {
+                  ".validate": "$k.matches(/^(senyum|api|tepuk|wow|kuat|hormat|gg|keren|hampir|ayo|hebat)$/) && newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000"
+                }
+              },
+              "$other": {
+                ".validate": false
+              }
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      },
+      "hasil": {
+        "$s": {
+          "$a": {
+            "$rid": {
+              ".read": "auth != null",
+              ".write": "(auth != null && !data.exists() && newData.exists() && newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/st').val() == 'usai' && root.child('v1/tayang/'+$s+'/'+$a+'/f/st').val() == 'main' && newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/rid').val() == $rid && newData.child('p').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/p').val() && newData.child('al').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/al').val() && newData.child('sa').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/sa').val() && newData.child('sb').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/sb').val() && newData.child('pa').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/pa').val() && newData.child('pb').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/pb').val() && newData.child('ua').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/ua').val() && newData.child('ub').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/ub').val() && newData.child('r').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/r').val() && newData.child('m').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/m').val() && newData.child('wkt').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/wkt').val() && newData.child('ber').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/ber').val() && newData.child('jr').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/jr').val() && newData.child('jb').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/jb').val() && newData.child('bt').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/bt').val() && newData.child('gd').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/gd').val() && newData.child('rek').val() == newData.parent().parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/h/rek').val() && newData.child('t').val() == now)",
+              ".validate": "newData.hasChildren(['p','al','sa','sb','pa','pb','ua','ub','r','m','wkt','ber','jr','jb','bt','gd','rek','t'])"
+            }
+          }
+        }
+      },
+      "cek": {
+        "$s": {
+          "$a": {
+            "$rid": {
+              ".read": "auth != null",
+              "$slot": {
+                ".write": "(auth != null && !data.exists() && newData.exists() && root.child('v1/hasil/'+$s+'/'+$a+'/'+$rid+'/p').exists() && ($slot == 's1' || ($slot == 's2' && data.parent().child('s1').exists() && data.parent().child('s1/u').val() != auth.uid)))",
+                ".validate": "(newData.hasChildren(['u','a','b','t']) && newData.child('u').val() == auth.uid && newData.child('t').val() == now && (root.child('v1/hasil/'+$s+'/'+$a+'/'+$rid+'/ua').val() != auth.uid || newData.child('a').val() == -1) && (root.child('v1/hasil/'+$s+'/'+$a+'/'+$rid+'/ub').val() != auth.uid || newData.child('b').val() == -1))",
+                "u": {
+                  ".validate": "newData.isString()"
+                },
+                "t": {
+                  ".validate": "newData.isNumber()"
+                },
+                "a": {
+                  ".validate": "newData.isNumber() && newData.val() >= -1 && newData.val() <= 1"
+                },
+                "b": {
+                  ".validate": "newData.isNumber() && newData.val() >= -1 && newData.val() <= 1"
+                },
+                "$other": {
+                  ".validate": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "rekaman": {
+        "$s": {
+          "$a": {
+            ".read": "auth != null",
+            ".write": "(auth != null && newData.exists() && root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/rek').val() == false && ((root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/p').val() == 'a' && root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/ua').val() == auth.uid && root.child('v1/cek/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/s1/a').val() == 1) || (root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/p').val() == 'b' && root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/ub').val() == auth.uid && root.child('v1/cek/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/s1/b').val() == 1)) && newData.child('u').val() == auth.uid && newData.child('skor').val() == (root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/p').val() == 'a' ? root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/sa').val() : root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/sb').val()) && newData.child('p').val() == (root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/p').val() == 'a' ? root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/pa').val() : root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/pb').val()) && newData.child('r').val() == root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/r').val() && newData.child('m').val() == root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/m').val() && newData.child('n').val() == root.child('v1/profil/'+auth.uid+'/nama').val() && newData.child('no').val() == root.child('v1/profil/'+auth.uid+'/nomor').val() && newData.child('av').val() == root.child('v1/profil/'+auth.uid+'/avatar').val() && newData.child('bk').val() == root.child('v1/profil/'+auth.uid+'/bingkai').val() && now - root.child('v1/hasil/'+$s+'/'+$a+'/'+newData.child('rid').val()+'/t').val() < 900000 && newData.child('d').val().length >= newData.child('skor').val() * 2 && (!data.exists() || newData.child('skor').val() > data.child('skor').val() || now - data.child('t').val() > 259200000) && newData.child('t').val() == now)",
+            ".validate": "newData.hasChildren(['u','n','no','av','bk','rid','r','m','skor','p','d','t'])",
+            "u": {
+              ".validate": "newData.isString()"
+            },
+            "n": {
+              ".validate": "newData.isString()"
+            },
+            "no": {
+              ".validate": "newData.isString()"
+            },
+            "av": {
+              ".validate": "newData.isString()"
+            },
+            "bk": {
+              ".validate": "newData.isString()"
+            },
+            "rid": {
+              ".validate": "newData.isString()"
+            },
+            "r": {
+              ".validate": "newData.isNumber()"
+            },
+            "m": {
+              ".validate": "newData.isNumber()"
+            },
+            "skor": {
+              ".validate": "newData.isNumber()"
+            },
+            "p": {
+              ".validate": "newData.isNumber()"
+            },
+            "t": {
+              ".validate": "newData.isNumber()"
+            },
+            "d": {
+              ".validate": "newData.isString() && newData.val().length <= 4000"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      },
+      "catatan": {
+        "$uid": {
+          ".read": "auth != null",
+          ".write": "auth.uid == $uid",
+          "$slug": {
+            ".validate": "(newData.hasChildren(['main','menang','kalah','raja','terbaik','rebutan','lr','la']) && root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/p').exists() && (root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/ua').val() == $uid || (root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/ub').val() == $uid && root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/rek').val() == false)) && newData.parent().parent().parent().child('hitung/'+$uid+'/'+$slug+'/'+newData.child('lr').val()).val() == true && !root.child('v1/hitung/'+$uid+'/'+$slug+'/'+newData.child('lr').val()).exists() && newData.child('main').val() == (data.child('main').exists() ? data.child('main').val() : 0) + 1 && newData.child('menang').val() == (data.child('menang').exists() ? data.child('menang').val() : 0) + (((root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/p').val() == 'a' && root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/ua').val() == $uid) || (root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/p').val() == 'b' && root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/ub').val() == $uid)) ? 1 : 0) && newData.child('kalah').val() == (data.child('kalah').exists() ? data.child('kalah').val() : 0) + (((root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/p').val() == 'a' && root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/ub').val() == $uid) || (root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/p').val() == 'b' && root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/ua').val() == $uid)) ? 1 : 0) && newData.child('raja').val() == (data.child('raja').exists() ? data.child('raja').val() : 0) + ((root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/jb').val() == true && root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/jr').val() == $uid) ? 1 : 0) && newData.child('terbaik').val() == ((root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/jr').val() == $uid && root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/bt').val() > (data.child('terbaik').exists() ? data.child('terbaik').val() : 0)) ? root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/bt').val() : (data.child('terbaik').exists() ? data.child('terbaik').val() : 0)) && newData.child('rebutan').val() == (data.child('rebutan').exists() ? data.child('rebutan').val() : 0) + ((((root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/p').val() == 'a' && root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/ua').val() == $uid) || (root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/p').val() == 'b' && root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/ub').val() == $uid)) && root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/ber').val() == false && root.child('v1/hasil/'+$slug+'/'+newData.child('la').val()+'/'+newData.child('lr').val()+'/rek').val() == false) ? 1 : 0))",
+            "main": {
+              ".validate": "newData.isNumber()"
+            },
+            "menang": {
+              ".validate": "newData.isNumber()"
+            },
+            "kalah": {
+              ".validate": "newData.isNumber()"
+            },
+            "raja": {
+              ".validate": "newData.isNumber()"
+            },
+            "terbaik": {
+              ".validate": "newData.isNumber()"
+            },
+            "rebutan": {
+              ".validate": "newData.isNumber()"
+            },
+            "lr": {
+              ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9]{8,20}$/)"
+            },
+            "la": {
+              ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9-]{1,24}$/)"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      },
+      "hitung": {
+        "$uid": {
+          ".write": "auth.uid == $uid && !newData.exists()",
+          "$slug": {
+            "$rid": {
+              ".write": "(auth.uid == $uid && !data.exists() && newData.val() == true && newData.parent().parent().parent().parent().child('catatan/'+$uid+'/'+$slug+'/lr').val() == $rid)"
+            }
+          }
+        }
+      },
+      "prestasi": {
+        "$uid": {
+          ".read": "auth != null",
+          ".write": "auth.uid == $uid && !newData.exists()",
+          "$id": {
+            ".write": "(auth.uid == $uid && ((!data.exists() && newData.exists()) || !newData.exists()))",
+            ".validate": "($id.matches(/^(bk-penantang|bk-raja|bk-legenda|lc-guling|lc-dingin|lc-angin|lc-pemburu|lc-rebutan)$/) && newData.hasChildren(['s','ar','rid']) && ($id == 'lc-rebutan' || root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/p').val() != null) && (($id == 'bk-penantang' && (root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/ua').val() == $uid || (root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/ub').val() == $uid && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/rek').val() == false))) || ($id == 'bk-raja' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/jr').val() == $uid && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/rek').val() == false && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/ber').val() == true && ((root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/p').val() == 'a' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/ua').val() == $uid && root.child('v1/cek/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/s1/a').val() == 1) || (root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/p').val() == 'b' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/ub').val() == $uid && root.child('v1/cek/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/s1/b').val() == 1))) || ($id == 'bk-legenda' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/jr').val() == $uid && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/rek').val() == false && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/ber').val() == true && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/bt').val() >= 25 && ((root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/p').val() == 'a' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/ua').val() == $uid && root.child('v1/cek/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/s1/a').val() == 1 && root.child('v1/cek/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/s2/a').val() == 1) || (root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/p').val() == 'b' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/ub').val() == $uid && root.child('v1/cek/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/s1/b').val() == 1 && root.child('v1/cek/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/s2/b').val() == 1))) || ($id == 'lc-guling' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/rek').val() == false && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/gd').val() >= 10 && ((root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/p').val() == 'a' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/ua').val() == $uid && root.child('v1/cek/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/s1/a').val() == 1) || (root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/p').val() == 'b' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/ub').val() == $uid && root.child('v1/cek/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/s1/b').val() == 1))) || ($id == 'lc-dingin' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/rek').val() == false && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/sa').val() == root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/sb').val() && ((root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/p').val() == 'a' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/ua').val() == $uid && root.child('v1/cek/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/s1/a').val() == 1) || (root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/p').val() == 'b' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/ub').val() == $uid && root.child('v1/cek/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/s1/b').val() == 1))) || ($id == 'lc-angin' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/rek').val() == false && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/wkt').val() == true && (root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/p').val() == 'a' ? root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/sa').val() - root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/sb').val() : root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/sb').val() - root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/sa').val()) > 5 && ((root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/p').val() == 'a' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/ua').val() == $uid && root.child('v1/cek/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/s1/a').val() == 1) || (root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/p').val() == 'b' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/ub').val() == $uid && root.child('v1/cek/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/s1/b').val() == 1))) || ($id == 'lc-pemburu' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/rek').val() == true && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/p').val() == 'a' && root.child('v1/hasil/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/ua').val() == $uid && root.child('v1/cek/'+newData.child('s').val()+'/'+newData.child('ar').val()+'/'+newData.child('rid').val()+'/s1/a').val() == 1) || ($id == 'lc-rebutan' && root.child('v1/catatan/'+$uid+'/'+newData.child('s').val()+'/rebutan').val() >= 10)))",
+            "s": {
+              ".validate": "newData.isString()"
+            },
+            "ar": {
+              ".validate": "newData.isString()"
+            },
+            "rid": {
+              ".validate": "newData.isString()"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      },
+      "ringkas": {
+        "$s": {
+          ".read": "auth != null",
+          "$a": {
+            ".write": "(auth != null && newData.exists() && (!data.exists() || now - data.child('t').val() >= 2000))",
+            ".validate": "(newData.hasChildren(['st','t','n','raja','bt','rek']) && newData.child('t').val() == now && newData.child('st').val() == newData.parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/st').val() && newData.child('m').val() == newData.parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/mulai').val() && newData.child('raja').val() == newData.parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/raja').val() && newData.child('bt').val() == newData.parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/bt').val() && newData.child('rek').val() == newData.parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/rek').val() && (newData.child('a/n').val() == newData.parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/a/n').val() && newData.child('a/no').val() == newData.parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/a/no').val() && newData.child('a/av').val() == newData.parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/a/av').val() && newData.child('a/bk').val() == newData.parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/a/bk').val()) && (newData.child('b/n').val() == newData.parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/b/n').val() && newData.child('b/no').val() == newData.parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/b/no').val() && newData.child('b/av').val() == newData.parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/b/av').val() && newData.child('b/bk').val() == newData.parent().parent().parent().child('tayang/'+$s+'/'+$a+'/f/b/bk').val()))",
+            "st": {
+              ".validate": "newData.isString()"
+            },
+            "t": {
+              ".validate": "newData.isNumber()"
+            },
+            "m": {
+              ".validate": "newData.isNumber()"
+            },
+            "raja": {
+              ".validate": "newData.isBoolean()"
+            },
+            "bt": {
+              ".validate": "newData.isNumber()"
+            },
+            "rek": {
+              ".validate": "newData.isBoolean()"
+            },
+            "n": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10000"
+            },
+            "sa": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10000"
+            },
+            "sb": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10000"
+            },
+            "a": {
+              "n": {
+                ".validate": "newData.isString()"
+              },
+              "no": {
+                ".validate": "newData.isString()"
+              },
+              "av": {
+                ".validate": "newData.isString()"
+              },
+              "bk": {
+                ".validate": "newData.isString()"
+              },
+              "$other": {
+                ".validate": false
+              }
+            },
+            "b": {
+              "n": {
+                ".validate": "newData.isString()"
+              },
+              "no": {
+                ".validate": "newData.isString()"
+              },
+              "av": {
+                ".validate": "newData.isString()"
+              },
+              "bk": {
+                ".validate": "newData.isString()"
+              },
+              "$other": {
+                ".validate": false
+              }
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      },
+      "dukung": {
+        "$s": {
+          "$a": {
+            ".read": "auth != null",
+            "$uid": {
+              ".write": "(auth.uid == $uid && (!data.exists() || !newData.exists() || now - data.child('t').val() >= 4000))",
+              ".validate": "newData.hasChildren(['r','d','t'])",
+              "r": {
+                ".validate": "newData.isNumber()"
+              },
+              "d": {
+                ".validate": "newData.val().matches(/^(a|b|)$/)"
+              },
+              "t": {
+                ".validate": "newData.val() == now"
+              },
+              "e": {
+                "$k": {
+                  ".validate": "$k.matches(/^(senyum|api|tepuk|wow|kuat|hormat|gg|keren|hampir|ayo|hebat)$/) && newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000"
+                }
+              },
+              "$other": {
+                ".validate": false
+              }
+            }
+          }
+        }
+      },
+      "hadir": {
+        "$s": {
+          "$a": {
+            ".read": "auth != null",
+            "$uid": {
+              ".write": "auth.uid == $uid",
+              ".validate": "newData.val() == now"
+            }
+          }
+        }
+      },
+      "lapor": {
+        "$ter": {
+          "$pel": {
+            ".write": "(auth.uid == $pel && $ter != $pel && !data.exists() && newData.exists() && root.child('v1/profil/'+$pel+'/nama').exists())",
+            ".validate": "newData.hasChildren(['alasan','s','rid','t'])",
+            "alasan": {
+              ".validate": "newData.val().matches(/^(curang|nama)$/)"
+            },
+            "s": {
+              ".validate": "newData.isString() && newData.val().length <= 32"
+            },
+            "rid": {
+              ".validate": "newData.isString() && newData.val().length <= 24"
+            },
+            "t": {
+              ".validate": "newData.val() == now"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      },
+      "larang": {
+        ".read": false
+      }
+    }
+  }
+}

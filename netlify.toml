@@ -115,6 +115,20 @@
   [headers.values]
     Cache-Control = "no-cache"
 
+# Gelanggang: modul selalu dicek ulang (seperti kit v1), dan saklar darurat /gelanggang.json boleh dibaca app Android
+# (halaman app berasal dari https://localhost, jadi perlu izin lintas asal). Saklar tidak disimpan lama agar
+# mematikan gelanggang langsung berlaku.
+[[headers]]
+  for = "/kit/gelanggang/*"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/gelanggang.json"
+  [headers.values]
+    Cache-Control = "no-cache"
+    Access-Control-Allow-Origin = "*"
+
 [[headers]]
   for = "/katalog.js"
   [headers.values]

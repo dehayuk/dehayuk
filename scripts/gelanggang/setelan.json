@@ -1,0 +1,55 @@
+{
+  "tumpuk-lapis": {
+    "nama": "Tumpuk Lapis",
+    "arena": {
+      "raja": {
+        "aktif": true,
+        "jendelaMs": 3000,
+        "telatMs": 1500,
+        "lantikMs": 2000,
+        "ulangMs": 2000,
+        "siapMs": 6000,
+        "siapRajaMs": 10000,
+        "hitungMs": 3000,
+        "waktuMs": 120000,
+        "anginMs": 90000,
+        "graceMs": 3000,
+        "diamMs": 8000,
+        "putusMs": 10000,
+        "perayaanMs": 6000,
+        "rekamanSetelahMs": 30000,
+        "msPerSkor": 480,
+        "usahaMin": 15,
+        "usahaPersen": 40,
+        "proto": 1,
+        "nama": "Gelanggang Raja",
+        "bertahan": true,
+        "jedaMs": 10000
+      },
+      "rebutan": {
+        "aktif": true,
+        "jendelaMs": 3000,
+        "telatMs": 1500,
+        "lantikMs": 2000,
+        "ulangMs": 2000,
+        "siapMs": 6000,
+        "siapRajaMs": 10000,
+        "hitungMs": 3000,
+        "waktuMs": 120000,
+        "anginMs": 90000,
+        "graceMs": 3000,
+        "diamMs": 8000,
+        "putusMs": 10000,
+        "perayaanMs": 6000,
+        "rekamanSetelahMs": 30000,
+        "msPerSkor": 480,
+        "usahaMin": 15,
+        "usahaPersen": 40,
+        "proto": 1,
+        "nama": "Gelanggang Rebutan",
+        "bertahan": false,
+        "jedaMs": 5000
+      }
+    }
+  }
+}
