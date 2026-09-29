@@ -232,7 +232,8 @@
     { id: "lainnya", label: "Lainnya", contoh: "Tulis apa saja untuk tim Dehayuk.",
       ikon: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01"/>' }
   ];
-  var el = null, opsi = {}, draf = { jenis: "saran", teks: "" }, detik = 0;
+  // Draf disimpan per halaman selama halaman terbuka: pesan untuk satu game tidak terbawa ke game lain.
+  var el = null, opsi = {}, drafSemua = {}, draf = { jenis: "saran", teks: "" }, detik = 0;
 
   function css() {
     if (document.getElementById("dkl-css")) return;
@@ -257,7 +258,7 @@
       ".dkl-jenis button[aria-checked=true]{background:var(--dkl-on);color:var(--dkl-on-ink);border-color:var(--dkl-on-line)}",
       ".dkl-jenis button:active{transform:translateY(2px) scale(.97)}",
       ".dkl-kotak{position:relative;display:block}",
-      ".dkl-kotak textarea{display:block;width:100%;min-height:128px;max-height:40vh;resize:vertical;margin:0;padding:12px 14px 28px;border-radius:16px;font:600 16px/1.45 var(--dkl-fb);",
+      ".dkl-kotak textarea{display:block;width:100%;min-height:128px;max-height:40vh;resize:none;margin:0;padding:12px 14px 28px;border-radius:16px;font:600 16px/1.45 var(--dkl-fb);",
       "color:var(--dkl-ink);background:var(--dkl-field);border:var(--dkl-cbw) solid var(--dkl-cline);box-shadow:var(--dkl-fshadow);-webkit-user-select:text;user-select:text;touch-action:auto}",
       ".dkl-kotak textarea::placeholder{color:var(--dkl-muted);opacity:.85}",
       ".dkl-kotak textarea:focus{outline:none;border-color:var(--dkl-focus);box-shadow:0 0 0 3px var(--dkl-ring)}",
@@ -271,11 +272,12 @@
       ".dkl-kirim{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;border-radius:18px;cursor:pointer;font:800 20px/1 var(--dkl-fd);",
       "color:var(--dkl-go-ink);background:var(--dkl-go);border:var(--dkl-bw2) solid var(--dkl-go-line);box-shadow:var(--dkl-go-shadow);-webkit-tap-highlight-color:transparent;transition:transform .08s,box-shadow .08s,filter .15s}",
       ".dkl-kirim:active:not(:disabled){transform:translateY(3px) scale(.98);box-shadow:var(--dkl-go-press)}",
-      ".dkl-kirim:disabled{cursor:default;filter:grayscale(.85) opacity(.6)}",
+      ".dkl .dkl-kirim:disabled{cursor:default;background:var(--dkl-off);color:var(--dkl-off-ink);box-shadow:var(--dkl-off-shadow);text-shadow:none}",
+      ".dkl .dkl-kirim:disabled svg{filter:none}",
       ".dkl-kirim svg{width:22px;height:22px}",
       ".dkl-putar{width:20px;height:20px;border-radius:50%;border:3px solid currentColor;border-right-color:transparent;animation:dkl-spin .7s linear infinite}",
       ".dkl-terima{align-items:center;text-align:center;padding:6px 0 2px}",
-      ".dkl-terima h3{margin:4px 0 0;font:800 30px/1.05 var(--dkl-fd);color:var(--dkl-jc)}",
+      ".dkl-terima h3:focus{outline:none}.dkl-terima h3{margin:4px 0 0;font:800 30px/1.05 var(--dkl-fd);color:var(--dkl-jc)}",
       ".dkl-terima p{margin:0;font:600 15px/1.5 var(--dkl-fb);color:var(--dkl-ink);max-width:30ch}",
       ".dkl-hati{width:96px;height:96px;display:grid;place-items:center;border-radius:50%;background:var(--dkl-heart-bg);border:var(--dkl-cbw) solid var(--dkl-cline);box-shadow:var(--dkl-cshadow);animation:dkl-beat 1.6s ease-in-out .4s infinite}",
       ".dkl-hati svg{width:54px;height:54px}",
@@ -287,7 +289,8 @@
       "--dkl-chip:#fff;--dkl-cbw:3px;--dkl-cline:var(--dkl-ink);--dkl-cshadow:0 3px 0 var(--dkl-ink);--dkl-on:linear-gradient(#ffe36a,#ffb21a);--dkl-on-ink:var(--dkl-ink);--dkl-on-line:var(--dkl-ink);",
       "--dkl-field:#fff;--dkl-fshadow:inset 0 3px 0 rgba(61,26,12,.08);--dkl-focus:var(--dkl-ink);--dkl-ring:rgba(255,178,26,.55);--dkl-warn:#c2410c;--dkl-soft:rgba(255,255,255,.62);",
       "--dkl-go:linear-gradient(#8ef06a,#3dbb2c);--dkl-go-ink:#fff;--dkl-bw2:3px;--dkl-go-line:var(--dkl-ink);--dkl-go-shadow:0 5px 0 var(--dkl-ink),inset 0 -5px 0 #27881b,inset 0 3px 0 rgba(255,255,255,.55);",
-      "--dkl-go-press:0 1px 0 var(--dkl-ink),inset 0 -3px 0 #27881b;--dkl-heart-bg:linear-gradient(#ffb0cf,#ff5c93)}",
+      "--dkl-go-press:0 1px 0 var(--dkl-ink),inset 0 -3px 0 #27881b;--dkl-heart-bg:linear-gradient(#ffb0cf,#ff5c93);",
+      "--dkl-off:linear-gradient(#f3e6cf,#e3d0b0);--dkl-off-ink:#8a5a3a;--dkl-off-shadow:0 4px 0 var(--dkl-ink),inset 0 -4px 0 #cdb58e}",
       ".dkl-game .dkl-judul{position:absolute;top:-24px;left:50%;transform:translateX(-50%);white-space:nowrap;padding:8px 26px 11px;border-radius:16px;font-size:25px;",
       "background:linear-gradient(#7fd8ff,#2f9df0);border:4px solid var(--dkl-ink);box-shadow:0 5px 0 var(--dkl-ink),inset 0 -5px 0 #1b6fc0,inset 0 3px 0 rgba(255,255,255,.45);",
       "text-shadow:0 2px 0 var(--dkl-ink),2px 0 0 var(--dkl-ink),-2px 0 0 var(--dkl-ink),0 -2px 0 var(--dkl-ink),1.5px 1.5px 0 var(--dkl-ink),-1.5px 1.5px 0 var(--dkl-ink),0 3px 0 var(--dkl-ink)}",
@@ -300,7 +303,8 @@
       "--dkl-bg:#161A2E;--dkl-bw:1px;--dkl-line:#2B3155;--dkl-r:22px;--dkl-pad:22px 18px 18px;--dkl-shadow:0 24px 60px rgba(0,0,0,.55);--dkl-js:26px;--dkl-jc:#F2F3FB;--dkl-muted:#A5AACB;",
       "--dkl-chip:#1F2440;--dkl-cbw:1px;--dkl-cline:#2B3155;--dkl-cshadow:none;--dkl-on:#F4C152;--dkl-on-ink:#3B2A05;--dkl-on-line:#F4C152;",
       "--dkl-field:#0D0F1C;--dkl-fshadow:none;--dkl-focus:#F4C152;--dkl-ring:rgba(244,193,82,.25);--dkl-warn:#FFB27A;--dkl-soft:#1F2440;",
-      "--dkl-go:#F4C152;--dkl-go-ink:#3B2A05;--dkl-bw2:0px;--dkl-go-line:transparent;--dkl-go-shadow:0 6px 18px rgba(244,193,82,.22);--dkl-go-press:none;--dkl-heart-bg:#2A1F3F}",
+      "--dkl-go:#F4C152;--dkl-go-ink:#3B2A05;--dkl-bw2:0px;--dkl-go-line:transparent;--dkl-go-shadow:0 6px 18px rgba(244,193,82,.22);--dkl-go-press:none;--dkl-heart-bg:#2A1F3F;",
+      "--dkl-off:#1F2440;--dkl-off-ink:#6F7599;--dkl-off-shadow:none}",
       ".dkl-portal::before{-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}",
       ".dkl-portal .dkl-judul{margin:0 44px 2px 0}",
       ".dkl-portal .dkl-x{right:12px;top:12px;width:40px;height:40px;border-radius:12px;background:#1F2440;color:#F2F3FB}",
@@ -435,8 +439,10 @@
       el.className = "dkl dkl-" + (tema === "portal" ? "portal" : "game");
       el.querySelector(".dkl-x").innerHTML = tema === "portal" ? IKON_X : IKON_X_GAME;
       el.querySelector("[data-selesai]").textContent = tema === "portal" ? "Selesai" : "Kembali bermain";
-      if (opsi.jenis && /^(saran|masalah|lainnya)$/.test(opsi.jenis)) draf.jenis = opsi.jenis;
-      var i = info(opsi), nama = String(opsi.nama || (i.halaman === "portal" ? "Dehayuk" : document.title || i.halaman)).slice(0, 40);
+      var i = info(opsi);
+      draf = drafSemua[i.halaman] || (drafSemua[i.halaman] = { jenis: "saran", teks: "" });
+      if (opsi.jenis && /^(saran|masalah|lainnya)$/.test(opsi.jenis) && !draf.teks) draf.jenis = opsi.jenis;
+      var nama = String(opsi.nama || (i.halaman === "portal" ? "Dehayuk" : document.title || i.halaman)).slice(0, 40);
       el.querySelector("[data-nama]").textContent = nama;
       el.querySelector("[data-teknis]").innerHTML = "Info ini ikut dikirim agar kami mudah mencari masalah: <b>" + esc(nama) + "</b> · " + esc(i.versi) + " · " + esc(i.perangkat) + " · layar " + esc(i.layar.replace("x", "×")) + ". Tanpa data pribadi.";
       var st = el.querySelector("[data-status]"); st.textContent = ""; st.removeAttribute("data-tetap");
