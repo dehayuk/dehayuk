@@ -654,7 +654,10 @@
           '<p class="theme-desc">' + esc(c.ajakan) + '</p><div class="rail">' + cards(list, "rail") + "</div></section>";
       }
     });
-    if (GAMES.length >= HOME_GRID_MIN && GAMES.length <= HOME_GRID_MAX) {
+    // "Semua game" juga tampil bila ada game yang belum muncul di baris mana pun hari ini,
+    // agar setiap game selalu bisa ditemukan dari Beranda.
+    var hidden = GAMES.some(function (g) { return !used[g.slug]; });
+    if ((GAMES.length >= HOME_GRID_MIN || hidden) && GAMES.length <= HOME_GRID_MAX) {
       html += '<section class="sec"><div class="sec-head"><h2>Semua game</h2><span class="sec-note" style="margin-left:auto">' + GAMES.length + ' game</span></div><div class="grid" id="homeGrid"></div><button class="more-btn" type="button" id="homeMore">Muat lagi</button></section>';
     } else if (GAMES.length > HOME_GRID_MAX) {
       html += '<a class="more-btn" href="#semua">Lihat semua ' + GAMES.length + " game ›</a>";

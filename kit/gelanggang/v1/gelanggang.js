@@ -17,6 +17,9 @@
   if (!KIT || !I || !DUK || KIT.gelanggang) return;
   var Q = new URLSearchParams(location.search);
   var UJI = Q.get("uji") === "1", DEMO = Q.get("gl") === "demo";
+  // ?gl=coba: pemilik mencoba gelanggang sungguhan selagi saklar untuk umum masih tertutup.
+  // Saat darurat, tulis "coba": false di gelanggang.json agar tautan coba ikut tertutup.
+  var COBA = Q.get("gl") === "coba";
   var BAKU = { aktif: true, db: "https://dehayuk78-default-rtdb.asia-southeast1.firebasedatabase.app", kunci: "AIzaSyCyount9nL0FC1ClSr1t0reg3gvOm5ARTE", protoMin: 1, pesan: "" };
   var AKUN = "dehayuk.papan.akun", NAMA = "dehayuk.papan.nama", PREF = "dehayuk.gelanggang.";
   var BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
@@ -32,7 +35,7 @@
     if (DEMO) return (saklarJanji = Promise.resolve(Object.assign({}, BAKU, { aktif: true })));
     saklarJanji = fetch(situs() + "/gelanggang.json?v=" + Math.floor(Date.now() / 60000), { cache: "no-cache" })
       .then(function (r) { if (!r.ok) throw new Error("saklar"); return r.json(); })
-      .then(function (j) { return Object.assign({}, BAKU, j || {}); })
+      .then(function (j) { var s = Object.assign({}, BAKU, j || {}); if (COBA && s.coba !== false) s.aktif = true; return s; })
       .catch(function () { saklarJanji = null; return navigator.onLine === false ? { offline: true } : Object.assign({}, BAKU); });
     return saklarJanji;
   }

@@ -1,5 +1,5 @@
 {
-  "_catatan": "Saklar darurat Gelanggang. aktif:false menutup gelanggang untuk semua pemain web dan app tanpa menyentuh database. db = alamat Realtime Database (ganti ke proyek cadangan bila kuota habis). protoMin = versi protokol paling rendah yang boleh masuk; naikkan untuk memaksa app lama memperbarui.",
+  "_catatan": "Saklar darurat Gelanggang. aktif:false menutup gelanggang untuk semua pemain web dan app tanpa menyentuh database. db = alamat Realtime Database (ganti ke proyek cadangan bila kuota habis). protoMin = versi protokol paling rendah yang boleh masuk; naikkan untuk memaksa app lama memperbarui. coba:false ikut menutup tautan ?gl=coba milik pemilik.",
   "aktif": false,
   "pesan": "Gelanggang segera dibuka. Main sendiri dulu, ya!",
   "db": "https://dehayuk78-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -10,5 +10,6 @@
       "raja",
       "rebutan"
     ]
-  }
+  },
+  "coba": true
 }
