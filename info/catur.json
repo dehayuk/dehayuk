@@ -1,0 +1,17 @@
+{
+  "deskripsi": [
+    "Catur lengkap dengan papan kayu, batik kawung, dan giok, serta bidak bergaya Dehayuk yang bergerak halus. Semua aturan resmi berlaku: rokade, en passant, promosi, skakmat, pat, dan remis.",
+    "Lawan komputer enam tingkat, dari Pemula sampai Master, dengan rating yang naik saat kamu menang. Ada Petunjuk, Mundur, dan Tinjau yang menunjukkan langkah keliru beserta langkah yang lebih baik. Bisa juga main berdua di satu HP.",
+    "Pecahkan teka-teki skakmat Harian yang sama untuk semua orang, adu cepat di Kilat melawan waktu, lalu tantang teman lewat WhatsApp."
+  ],
+  "caraMain": [
+    "Ketuk bidakmu, lalu ketuk kotak tujuan. Titik menandai langkah yang sah.",
+    "Bidak juga bisa diseret ke kotak tujuan.",
+    "Skak raja lawan sampai tidak bisa lolos: itu skakmat, kamu menang.",
+    "Pion yang sampai ujung papan boleh berubah jadi ratu, benteng, gajah, atau kuda.",
+    "Lawan tingkat lebih tinggi memberi poin dan rating lebih besar, dan kemenangan membuka papan baru."
+  ],
+  "kontrol": "Ketuk atau seret bidak. Di komputer, klik atau seret dengan tetikus, dan P atau Esc untuk jeda.",
+  "orientasi": "Tegak",
+  "diperbarui": "2026-10-01"
+}

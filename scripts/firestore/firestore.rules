@@ -3,7 +3,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
     match /papan/{papan}/skor/{uid} {
       function batas() {
-        return {'jatuh-buah': 500000, 'blok-ledak': 300000, 'tumpuk-lapis': 3000, 'oyen-nyebrang': 5000, 'jajan-manis': 5000000, 'susun-kata': 500000, 'congklak': 1000, 'bola-pantul': 5000};
+        return {'jatuh-buah': 500000, 'blok-ledak': 300000, 'tumpuk-lapis': 3000, 'oyen-nyebrang': 5000, 'jajan-manis': 5000000, 'susun-kata': 500000, 'congklak': 1000, 'bola-pantul': 5000, 'catur': 1500, 'adu-penalti': 9000};
       }
       function sah() {
         let d = request.resource.data;
