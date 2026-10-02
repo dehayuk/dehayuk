@@ -21,7 +21,8 @@ const SITE = "https://dehayuk.online";
 const DETAIL = ["deskripsi", "caraMain", "kontrol", "orientasi", "diperbarui"];
 const INDEX_ORDER = ["slug", "nama", "genre", "ajakan", "kategori", "warna", "sampul", "ikon", "ditambahkan", "unggulan", "skor", "tag"];
 // Folder di akar yang bukan game.
-const SITE_FOLDERS = new Set(["kit", "privasi", "main", "info", "kartu", "www", "android", "node_modules", "scripts", ".github", ".git"]);
+// lab/ berisi prototipe yang dicoba pemilik lewat tautan langsung: tidak masuk katalog, peta situs, atau app.
+const SITE_FOLDERS = new Set(["kit", "privasi", "lab", "main", "info", "kartu", "www", "android", "node_modules", "scripts", ".github", ".git"]);
 const CARD_W = 480, CARD_H = 300;
 
 const rel = (p) => path.join(root, p);
@@ -199,7 +200,7 @@ function sitemapText(games) {
   return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + lines.join("\n") + "\n</urlset>\n";
 }
 
-const ROBOTS = "User-agent: *\nDisallow: /android/\nDisallow: /scripts/\nDisallow: /www/\n\nSitemap: " + SITE + "/sitemap.xml\n";
+const ROBOTS = "User-agent: *\nDisallow: /android/\nDisallow: /scripts/\nDisallow: /www/\nDisallow: /lab/\n\nSitemap: " + SITE + "/sitemap.xml\n";
 
 // Folder game di akar yang belum terdaftar di katalog (draf): ditutup di web sampai didaftarkan.
 function draftFolders(slugs) {

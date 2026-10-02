@@ -2,5 +2,6 @@ User-agent: *
 Disallow: /android/
 Disallow: /scripts/
 Disallow: /www/
+Disallow: /lab/
 
 Sitemap: https://dehayuk.online/sitemap.xml

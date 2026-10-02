@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lab Adu Penalti 3D</title>
+<link rel="stylesheet" href="/font/font.css">
+<style>
+  :root { --emas: #ffd23f; --putih: #fff; --gelap: #071022; }
+  html, body { margin: 0; height: 100%; background: #050b18; overflow: hidden; }
+  body { font-family: "Baloo 2", system-ui, sans-serif; color: #fff; -webkit-user-select: none; user-select: none; }
+  #stage { position: fixed; inset: 0; touch-action: none; }
+  #stage canvas { display: block; width: 100%; height: 100%; }
+  #jari { position: fixed; inset: 0; pointer-events: none; }
+  #vignet { position: fixed; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgba(0,0,0,.55) 100%); }
+  #kilat { position: fixed; inset: 0; pointer-events: none; background: #fff; opacity: 0; }
+  /* HUD tipis */
+  #hud { position: fixed; left: 0; right: 0; top: 0; padding: calc(env(safe-area-inset-top) + 10px) 14px 0;
+    display: flex; justify-content: center; pointer-events: none; }
+  .papan { display: flex; align-items: center; gap: 10px; padding: 5px 14px 5px 6px; border-radius: 999px;
+    background: linear-gradient(180deg, rgba(14,24,48,.82), rgba(6,12,28,.82)); box-shadow: 0 6px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.12);
+    font-weight: 800; letter-spacing: .3px; }
+  .peran { font-size: 13px; padding: 3px 10px; border-radius: 999px; background: var(--emas); color: #1d1300; text-transform: uppercase; }
+  .peran.kiper { background: #39e6a0; color: #032015; }
+  .skor { font-size: 15px; opacity: .95; }
+  .skor b { color: var(--emas); }
+  /* tulisan momen */
+  #momen { position: fixed; left: 0; right: 0; top: 17%; text-align: center; pointer-events: none; }
+  #momen .besar { display: inline-block; font-weight: 800; font-size: clamp(54px, 17vw, 110px); line-height: .9; letter-spacing: 1px;
+    background: linear-gradient(180deg, #fff6c9 0%, #ffd23f 45%, #ff9b1a 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 4px 0 #7a3a00) drop-shadow(0 10px 24px rgba(0,0,0,.55)); opacity: 0; transform: scale(.4); }
+  #momen .besar.biru { background-image: linear-gradient(180deg, #f2fffb 0%, #6cf0c2 50%, #18a978 100%); filter: drop-shadow(0 4px 0 #0b4d38) drop-shadow(0 10px 24px rgba(0,0,0,.55)); }
+  #momen .besar.abu { background-image: linear-gradient(180deg, #ffffff 0%, #cfd6e6 60%, #8d97ad 100%); filter: drop-shadow(0 4px 0 #3a4256) drop-shadow(0 10px 24px rgba(0,0,0,.55)); }
+  #momen .kecil { margin-top: 8px; font-weight: 800; font-size: 20px; opacity: 0; text-shadow: 0 2px 10px rgba(0,0,0,.6); }
+  #momen.tampil .besar { animation: muncul .55s cubic-bezier(.2,1.6,.4,1) forwards; }
+  #momen.tampil .kecil { animation: naik .4s .18s ease-out forwards; }
+  @keyframes muncul { 0% { opacity: 0; transform: scale(.4) rotate(-6deg); } 100% { opacity: 1; transform: scale(1) rotate(-3deg); } }
+  @keyframes naik { 0% { opacity: 0; transform: translateY(12px); } 100% { opacity: 1; transform: none; } }
+  #petunjuk { position: fixed; left: 0; right: 0; bottom: calc(env(safe-area-inset-bottom) + 26px); text-align: center; pointer-events: none;
+    font-weight: 800; font-size: 17px; text-shadow: 0 2px 8px rgba(0,0,0,.7); transition: opacity .3s; }
+  #petunjuk span { padding: 6px 14px; border-radius: 999px; background: rgba(5,10,24,.45); }
+  #fps { position: fixed; right: 8px; bottom: 8px; font: 12px monospace; color: #9f9; background: rgba(0,0,0,.5); padding: 2px 6px; display: none; }
+  #muat { position: fixed; inset: 0; display: grid; place-items: center; background: #050b18; font-weight: 800; font-size: 18px; transition: opacity .4s; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<canvas id="jari"></canvas>
+<div id="vignet"></div>
+<div id="kilat"></div>
+<div id="hud"><div class="papan"><span class="peran" id="peran">Tendang</span><span class="skor">Gol <b id="sGol">0</b> · Tepis <b id="sTepis">0</b></span></div></div>
+<div id="momen"><div class="besar" id="mBesar">GOL!</div><div class="kecil" id="mKecil"></div></div>
+<div id="petunjuk"><span id="pTeks">Usap bola ke arah gawang</span></div>
+<div id="fps"></div>
+<div id="muat">Menyiapkan stadion…</div>
+<script type="module" src="./main.js"></script>
+</body>
+</html>
