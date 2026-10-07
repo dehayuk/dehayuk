@@ -494,3 +494,19 @@ html.gl-laci-buka .icons{display:none!important}
 .gl-dukungan .lbl{font-size:10px;letter-spacing:0;gap:4px}
 .gl-dukungan .lbl span:nth-child(2){font-size:9px}
 @media(max-height:650px){.gl-dukungan:not(.gl-dukc){top:calc(var(--st) + 146px)}.gl-panes{top:calc(var(--st) + 180px)}}
+/* Empty and waiting states must never display hidden panels. */
+.gl [hidden]{display:none!important}
+.gl-panggung[data-screen="F"] .gl-kol{justify-content:flex-start;gap:24px}
+.gl-panggung[data-screen="F"] .gl-info{margin-top:0;padding:16px;border:1px solid #ffffff24;border-radius:16px;background:#ffffff08;text-align:left}
+.gl-panggung[data-screen="F"] .gl-rebutb{margin-top:auto}
+.gl-panggung[data-screen="F"] .gl-kosongbesar{width:80px;height:80px;font-size:36px;border:2px dashed #8c9fb8;color:#b8c6db;background:#ffffff05;box-shadow:none}
+.gl-panggung[data-screen="F"] .gl-seat .nm{color:#d5deec!important}
+.gl-panggung[data-screen="F"] .gl-kursi2{padding:12px 0}
+.gl-panggung[data-screen="F"] .gl-seat .sub{font-size:12px;line-height:1.5;color:#b8c6db}
+.gl-cbawah2.rekaman .gl-dukc{display:none}
+.gl-cbawah2.rekaman .gl-cemo{display:none}
+.gl-cbawah2.rekaman .gl-cbaris{justify-content:space-between}
+.gl-cbawah2.ringkas .gl-cemo{display:none}
+.gl-cbawah2.ringkas .gl-cbaris{justify-content:space-between}
+.gl-cbawah2{bottom:calc(var(--sb) + 8px);padding:8px}
+.gl-chint{font-size:11px;line-height:1.4}

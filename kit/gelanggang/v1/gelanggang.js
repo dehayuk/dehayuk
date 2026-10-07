@@ -401,7 +401,7 @@
     if (fLama && fLama.st === "rebut" && (f.st === "siap" || (f.a && (!fLama.a || fLama.a.u !== f.a.u)))) {
       var baru = f.st === "siap" ? (fLama.a ? f.b : f.a) : f.a;
       var masuk = t.m ? Object.keys(t.m).filter(function (k) { return t.m[k].w === fLama.w; }).length : 0;
-      if (baru && baru.u === uid) toast("🎉 Kamu naik ke gelanggang!", true);
+      if (baru && baru.u === uid) toast("Terpilih dalam undian. Menyiapkan kursimu…", true);
       else if (rebutSaya === fLama.w) toast("Belum beruntung. Ada " + masuk + " penekan, kesempatanmu datang lagi.");
       else if (baru) toast("🎉 " + baru.n + " #" + baru.no + " naik ke gelanggang!");
     }
@@ -668,7 +668,7 @@
       ref.cJam = el("div", "gl-jam"); ref.tm = el("span", "tm", "0:00"); ref.tmS = el("small", ""); ref.tmS.style.whiteSpace = "pre-line"; tambah(ref.cJam, ref.tm, ref.tmS);
       tambah(heads, ref.hMe, ref.cJam, ref.hOp); hud.appendChild(heads);
       ref.cRek = el("span", "gl-rektag gl-rekc", "REKAMAN"); ref.cRek.hidden = true; hud.appendChild(ref.cRek);
-      var bawah = el("div", "gl-cbawah2");
+      var bawah = el("div", "gl-cbawah2"); ref.cBawah = bawah;
       var sup = el("div", "gl-dukungan gl-dukc"), lbl = el("div", "lbl"); ref.supA = el("span", "", "♥ 50%"); ref.supB = el("span", "", "50% ♥");
       tambah(lbl, ref.supA, el("span", "", "dukungan · tidak mengubah skor"), ref.supB);
       var bar = el("div", "gl-sbar"); ref.sbA = el("i"); ref.sbB = el("i"); ref.jantung = el("span", "jantung gl-emo", "💖"); tambah(bar, ref.sbA, ref.sbB, ref.jantung);
@@ -678,18 +678,18 @@
       ref.cEmo = el("div", "gl-cemo" + (sembunyiEmo ? " sembunyi" : ""));
       DUK.EMO.slice(0, 5).forEach(function (x) { ref.cEmo.appendChild(tombol("", x.t, function () { kirimEmo(x.k); })); });
       ref.cEmo.appendChild(tombol("txt", "GG!", function () { kirimEmo("gg"); }));
-      var hide = ikon(SVG_MATA, "gl-btn ungu gl-kotak", "Sembunyikan emotikon", function () { sembunyiEmo = !sembunyiEmo; wr(PREF + "sembunyiEmo", sembunyiEmo); ref.cEmo.classList.toggle("sembunyi", sembunyiEmo); });
+      var hide = ikon(SVG_MATA, "gl-btn ungu gl-kotak", "Sembunyikan emotikon", function () { sembunyiEmo = !sembunyiEmo; wr(PREF + "sembunyiEmo", sembunyiEmo); ref.cEmo.classList.toggle("sembunyi", sembunyiEmo); ref.cBawah.classList.toggle("ringkas", sembunyiEmo); });
       tambah(baris, keluar, ref.cEmo, hide);
       ref.cHint = el("div", "gl-chint", "Ketuk di mana saja untuk menaruh lapis");
       tambah(bawah, sup, baris, ref.cHint); hud.appendChild(bawah);
-      ref._lead = null;
+      ref.cBawah.classList.toggle("ringkas", sembunyiEmo); ref._lead = null;
     }
     var KM = f[me], KO = f[op];
     if (ref._cm !== (KM && KM.u) + (KO && KO.u) + f.rek) {
       ref._cm = (KM && KM.u) + (KO && KO.u) + f.rek;
       kepalaC(ref.hMe, KM, true, false, S.bertahan && f.raja && me === "a");
       kepalaC(ref.hOp, KO, false, f.rek, S.bertahan && f.raja && op === "a" && !f.rek);
-      ref.cRek.hidden = !f.rek;
+      ref.cRek.hidden = !f.rek; ref.cBawah.classList.toggle("rekaman", !!f.rek);
       bersihkanMenara();
     }
     // jam berjalan dan Angin Kencang
@@ -866,7 +866,7 @@
       ref.info = el("div", "gl-info"); tambah(ref.info, emoSpan("🌙"), ref.infoT = el("span", "")); k.appendChild(ref.info);
       ref.lembar = el("div", "gl-lembar"); k.appendChild(ref.lembar);
       k.appendChild(bagianRebut());
-      ref._lembarSig = "";
+      ref.lembar.hidden = true; ref._lembarSig = null;
     }
     var sig = [f.a && f.a.u, f.a && f.a.bk, f.raja, f.bt].join("|");
     if (ref._fs !== sig) {
@@ -891,7 +891,10 @@
     }
     ref.infoT.textContent = "";
     if (f.st === "kosong" && !f.a) tambah(ref.infoT, el("b", "", "Gelanggang sepi. "), document.createTextNode("Tekan Naik ke Gelanggang: siapa pun yang menekan dalam 3 detik ikut undian."));
-    else tambah(ref.infoT, el("b", "", "Gelanggang paling ramai malam hari. "), document.createTextNode("Ajak teman lewat tombol Tantang di menu game."));
+    else if (!f.a && f.st === "rebut") {
+      var ikut = t.m && t.m[sb.uid] && t.m[sb.uid].w === f.w;
+      tambah(ref.infoT, el("b", "", ikut ? "Kamu ikut undian. " : "Pendaftaran duel dibuka. "), document.createTextNode(ikut ? "Menunggu hasil undian. Kursi akan menampilkan pemain yang terpilih." : "Tekan Rebut Kursi saat tombol aktif. Pemain dipilih setelah hitung mundur selesai."));
+    } else tambah(ref.infoT, el("b", "", p === "a" ? "Kursimu sudah siap. " : "Satu pemain menunggu. "), document.createTextNode(p === "a" ? "Tetap di sini untuk bertemu penantang. Jika tersedia, kamu dapat menantang rekaman sambil menunggu." : "Ikuti undian saat tombol aktif untuk menjadi penantang."));
     // lembar Tantang Rekor Sang Raja: hanya untuk yang duduk sendirian >= 30 detik
     var R = mesin.rekamanLawan;
     if (p === "a" && !R && !ref._mintaR) { ref._mintaR = true; mesin.bacaRekaman(); }
