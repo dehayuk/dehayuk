@@ -165,6 +165,25 @@ canvas{display:block}
   #sOver .dk-stack{gap:9px}#rAgain{font-size:22px;padding:10px 8px 13px}#sOver .dk-row .dk-btn{padding:8px 6px 10px}
   #sOver .rek{width:78px;height:78px;right:-8px;top:-22px}#sOver .rek span{font-size:14px}
 }
+/* Menu ponsel: kontrol tetap terbaca dan muat tanpa meluber. */
+#sTitle{padding-top:calc(var(--dk-st) + 68px)}
+#sTitle #logo{width:min(86%,300px,calc(24vh * 1.55))}
+#sTitle .tmid{gap:18px;justify-content:center}
+#sTitle .menu-help{margin:0;max-width:260px;text-align:center;font:800 15px/1.45 var(--dk-fb);color:var(--dk-ink);background:rgba(255,255,255,.8);border-radius:14px;padding:8px 14px}
+#sTitle #bMain{font-size:32px;width:min(100%,272px);padding:13px 20px 16px;animation:none}
+#sTitle .icons{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;width:100%;max-width:344px;padding:8px 4px 10px;background:rgba(255,255,255,.88);border-radius:18px}
+#sTitle .icons .dk-round{min-width:0;min-height:72px;gap:8px}
+#sTitle .icons .dk-round>i{width:48px;height:48px;flex:none}
+#sTitle .icons .dk-round>i svg{width:24px;height:24px}
+#sTitle .icons .dk-round>span{font-size:11px;line-height:1.2;color:var(--dk-ink);text-shadow:none}
+#sTitle .ent>*{animation:none}
+@media (max-height:650px){
+  #sTitle #logo{width:min(74%,240px,calc(21vh * 1.55))}
+  #sTitle .tmid{gap:12px}
+  #sTitle .menu-help{font-size:13px;padding:6px 10px}
+  #sTitle #bMain{font-size:27px;padding:10px 18px 13px}
+}
+@media (prefers-reduced-motion:reduce){#sTitle *{animation:none!important}}
 #uji{position:fixed;left:4px;top:4px;right:4px;bottom:4px;overflow:auto;z-index:99;background:rgba(0,0,0,.86);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px}
 </style>
 </head>
@@ -180,6 +199,7 @@ canvas{display:block}
     <div id="logo"></div>
     <div class="tmid ent" id="tMid">
       <div class="chal dk-ol" id="tChal" hidden>Temanmu menumpuk 0 lapis. Kalahkan!</div>
+      <p class="menu-help">Ketuk untuk menjatuhkan lapis.<br>Susun pas agar menara tetap lebar.</p>
       <button class="dk-btn dk-green dk-ol" id="bMain"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#4a1d2e" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></svg>MAIN</button>
       <div class="icons">
         <button class="dk-round dk-yellow" id="bHarian"><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><rect x="4" y="5.5" width="16" height="15" rx="3" fill="#fff" stroke="#4a1d2e" stroke-width="2"/><path d="M4.5 10h15" stroke="#e8384f" stroke-width="4"/><path d="M8.5 3.5v4M15.5 3.5v4" stroke="#4a1d2e" stroke-width="2.6"/><rect x="9.5" y="13" width="5" height="5" rx="1.2" fill="#ff5c93"/></svg><b class="dk-dot" id="dDaily" hidden></b><b class="dstar" id="dStarN" hidden></b></i><span>Harian</span></button>

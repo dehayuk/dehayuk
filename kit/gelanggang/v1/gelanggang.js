@@ -198,7 +198,8 @@
     laci = el("section", "gl-laci tutup"); laci.setAttribute("aria-label", "Gelanggang");
     var h = el("button", "gl-laci-h"); h.type = "button";
     tambah(h, el("span", "gl-grip"), tambah(el("h4", "gl-ols"), document.createTextNode("⚔ Gelanggang")), el("small", "", "Satu pertandingan\nuntuk seluruh dunia"));
-    h.lastChild.style.whiteSpace = "pre-line";
+    h.lastChild.textContent = "Pilih arena untuk duel";
+    h.setAttribute("aria-expanded", "false");
     h.addEventListener("click", function () { bunyi(); setelLaci(!laciBuka); });
     laci.appendChild(h);
     ref.laciIsi = el("div", ""); laci.appendChild(ref.laciIsi);
@@ -207,6 +208,7 @@
   }
   function setelLaci(buka) {
     laciBuka = buka; if (!laci) return;
+    laci.querySelector(".gl-laci-h").setAttribute("aria-expanded", String(buka));
     laci.classList.toggle("tutup", !buka);
     document.documentElement.classList.toggle("gl-laci-buka", buka && kartuTampil);
     if (buka) segarkanRingkas(true);
@@ -267,7 +269,7 @@
       note = raja ? "Gelanggang sepi. Jadilah Raja pertama hari ini!" : "Dua kursi, dua menit, keduanya turun. Seru dan cepat.";
       tb = "Naik"; warna = "kuning";
     }
-    tambah(foot, el("div", "gl-note", note), tombol("gl-btn " + warna + " kecil", tb, function () { buka(a); }));
+    tambah(foot, el("div", "gl-note", note), el("span", "gl-btn " + warna + " kecil", tb));
     tambah(c, top, main, c._bar || null, foot);
     return c;
   }
@@ -360,6 +362,7 @@
     if (layarNow === layar) return false;
     layarNow = layar; ref = { laciIsi: ref.laciIsi };
     panggung.textContent = ""; panggung.className = "gl-panggung";
+    panggung.setAttribute("data-screen", layar);
     document.documentElement.classList.toggle("gl-main", layar === "C");
     if (layar !== "C") { panggung.appendChild(el("div", "gl-malam")); }
     ref.kol = el("div", "gl-kol"); panggung.appendChild(ref.kol);
@@ -587,12 +590,12 @@
     }
   }
   function apung(teks, milikku) {
-    if (!ref.apung || apungN >= 30) return;
+    if (!ref.apung || apungN >= 6) return;
     apungN++;
     var kalimat = teks.length > 3 && /[A-Za-z]/.test(teks), s = el(kalimat ? "b" : "span", "", teks);
     s.style.left = (milikku ? 62 + Math.random() * 25 : 8 + Math.random() * 84) + "%";
     s.style.top = (48 + Math.random() * 18) + "%";
-    if (!kalimat) s.style.fontSize = (18 + Math.random() * 14) + "px";
+    if (!kalimat) s.style.fontSize = (18 + Math.random() * 4) + "px";
     ref.apung.appendChild(s);
     setTimeout(function () { s.remove(); apungN--; }, 2600);
   }

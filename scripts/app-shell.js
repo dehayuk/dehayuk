@@ -34,9 +34,10 @@
   // Awal pemakaian dicatat sekali per pembukaan app, jadi pindah game tidak mengulang masa tenangnya.
   if (!read(sessionStorage, "dehayuk.sessionStart")) write(sessionStorage, "dehayuk.sessionStart", Date.now());
 
-  var ready = false, pending = null, bypass = false;
+  var ready = false, pending = null, bypass = false, canRequestAds = false;
   function prepare() {
     ready = false;
+    if (!canRequestAds) return;
     ads.prepareInterstitial({ adId: ADMOB.interstitial, isTesting: ADMOB.testing })
       .then(function () { ready = true; }).catch(function () {});
   }
@@ -57,19 +58,28 @@
   }
   function allowed() {
     var now = Date.now();
-    return ready && !pending &&
+    return canRequestAds && ready && !pending &&
       now - read(sessionStorage, "dehayuk.sessionStart") >= GRACE_MS &&
       now - read(localStorage, "dehayuk.lastAdAt") >= GAP_MS;
   }
 
+  // Tunggu pemeriksaan privasi dan formulir yang diperlukan sebelum meminta iklan.
+  // Bila pemeriksaan/formulir gagal, ready tetap false dan tombol game berjalan biasa.
   ads.initialize({ maxAdContentRating: "ParentalGuidance" }).then(function () {
-    ads.requestConsentInfo().then(function (c) {
-      if (c && c.isConsentFormAvailable && c.status === "REQUIRED") return ads.showConsentForm();
-    }).catch(function () {});
+    return ads.requestConsentInfo();
+  }).then(function (c) {
+    if (c && c.status === "REQUIRED") {
+      if (!c.isConsentFormAvailable) return null;
+      return ads.showConsentForm();
+    }
+    return c;
+  }).then(function (c) {
+    canRequestAds = !!(c && c.canRequestAds === true);
+    if (!canRequestAds) return;
     ads.addListener("interstitialAdDismissed", resume);
     ads.addListener("interstitialAdFailedToShow", resume);
     prepare();
-  }).catch(function () {});
+  }).catch(function () { canRequestAds = false; ready = false; });
 
   // Klik ditahan sebentar: iklan tampil dulu, lalu klik yang sama diteruskan ke game setelah iklan ditutup.
   document.addEventListener("click", function (ev) {
