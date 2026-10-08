@@ -510,3 +510,45 @@ html.gl-laci-buka .icons{display:none!important}
 .gl-cbawah2.ringkas .gl-cbaris{justify-content:space-between}
 .gl-cbawah2{bottom:calc(var(--sb) + 8px);padding:8px}
 .gl-chint{font-size:11px;line-height:1.4}
+/* Arena redesign: a separate destination, with a compact entry on the game menu. */
+.gl{--fd:'Nunito','Segoe UI',system-ui,sans-serif;--gold-1:#ffe29a;--gold-2:#ffcb55;--blue-1:#82c8ff;--blue-2:#4da6ec;--pink-1:#82c8ff;--pink-2:#4da6ec;--green-1:#82c8ff;--green-2:#4da6ec}
+.gl .gl-ol,.gl .gl-ols{text-shadow:none}
+.gl .gl-btn{border-radius:12px;box-shadow:none!important;font-weight:800!important;background:var(--blue-2)!important;color:#08192b!important}
+.gl .gl-btn.kuning{background:var(--gold-2)!important}
+.gl .gl-btn.ungu{background:#293c57!important;color:#eef5ff!important}
+.gl .gl-btn.redup{background:#26354a!important;color:#a8b8cc!important;opacity:1}
+.gl-malam{background:radial-gradient(ellipse at 20% 0,#263b57,transparent 65%),#0b1423}
+.gl .gl-sinar,.gl .gl-konfeti{display:none}
+.gl-laci.tutup{left:16px;right:16px;bottom:calc(var(--sb) + 14px);max-width:380px;border:1px solid #ffffff30;border-radius:18px;padding:8px 16px;box-shadow:0 6px 24px #08112240;background:#132239;max-height:none}
+.gl-laci.tutup .gl-laci-h{margin:0;min-height:44px}
+.gl-laci.tutup .gl-laci-h h4{font-size:18px}
+.gl-laci.tutup .gl-laci-h small{font-size:12px;color:#8dc9ff;max-width:none}
+.gl-laci.tutup .gl-grip,.gl-laci.tutup .gl-laci-close,.gl-laci.tutup .gl-laci-intro,.gl-laci.tutup .gl-laci-h~div{display:none}
+.gl-laci:not(.tutup){inset:20px 16px auto;max-width:520px;max-height:calc(100dvh - 40px);border:1px solid #ffffff25;border-radius:24px;padding:24px;background:#132239;box-shadow:0 24px 80px #0007;z-index:82}
+.gl-laci:not(.tutup) .gl-laci-h{pointer-events:none;padding-right:44px;justify-content:flex-start}
+.gl-laci:not(.tutup) .gl-laci-h h4{font-size:28px;letter-spacing:-.7px}
+.gl-laci:not(.tutup) .gl-laci-h small,.gl-grip{display:none}
+.gl-laci-close{position:absolute;right:16px;top:16px;width:44px;height:44px;border-radius:12px!important;background:#ffffff0d!important;font-size:28px!important}
+.gl-laci-intro{margin:8px 0 24px;font-size:14px;line-height:1.65;color:#adbed4}
+.gl-laci-tirai{position:fixed;inset:0;z-index:81;background:#060e1bd9!important;backdrop-filter:blur(6px)}
+body:has(.dk-overlay:not([hidden])) .gl-laci,body:has(.dk-overlay:not([hidden])) .gl-laci-tirai{display:none!important}
+.gl-kartu,.gl-kartu.raja{background:#1b2d46;border:1px solid #ffffff20;border-radius:18px;padding:18px;margin-bottom:14px}
+.gl-kartu.raja::after{display:none}
+.gl-lc-top{margin-bottom:18px}.gl-lc-nama{color:#f5f8ff;font-size:17px}.gl-live.mati{background:#36465d;color:#d9e4f4}
+.gl-lc-foot{margin-top:18px;border-top:1px solid #ffffff14;padding-top:14px;align-items:flex-end}.gl-lc-foot .gl-note{font-size:12px;color:#adbed4}
+.gl-lc-p b{font-size:14px}.gl-lc-p em{font-size:11px}.gl-lc-skor{font-size:25px;min-width:58px}
+.gl-topbar{border-bottom:1px solid #ffffff12;padding-bottom:10px;height:54px}.gl-topbar .t b{font-size:18px}.gl-topbar .t em{font-size:11px;color:#9eb1c9}
+.gl-kosongbesar::before,.gl-kosongbesar::after{display:none}
+.gl-panggung[data-screen="F"] .gl-kol{padding-top:calc(var(--st) + 92px);gap:24px}
+.gl-panggung[data-screen="F"] .gl-kursi2{padding:24px 0;background:#ffffff04;border:1px solid #ffffff12;border-radius:20px}
+.gl-panggung[data-screen="F"] .gl-seatvs{font-size:13px;color:#879cb6;border:1px solid #ffffff20;border-radius:50%;padding:10px}
+.gl-panggung[data-screen="F"] .gl-info{background:#17283f;border:0;border-left:3px solid #78baf1;border-radius:10px;font-size:14px}
+.gl-panggung[data-screen="F"] .gl-rebutb{padding-top:20px;border-top:1px solid #ffffff12}.gl-hint{font-size:12px;line-height:1.6;color:#adbed4}
+.gl-cbawah2{background:#101e30e8;border-radius:16px;border:1px solid #ffffff20}.gl-cemo{background:none!important;border:0!important;padding:0!important;gap:6px}.gl-cemo button{background:#ffffff0c!important;border:1px solid #ffffff1c!important;border-radius:10px!important;box-shadow:none!important}
+.gl-panggung[data-screen="D2"] .gl-winav .gl-av{--s:100px!important}.gl-menang h2{font-size:28px;letter-spacing:-.5px}.gl-menang h2 .x{font-size:34px;color:#ffcf65}.gl-menang .tag{background:#ffffff0c;color:#bdcde2;border-radius:8px}
+.gl-winskor{border-radius:18px;background:#182a43}.gl-rebutbuka,.gl-lembar{background:#17283f;color:#eef5ff;border:1px solid #ffffff20;border-radius:18px}.gl-rebutbuka .h small,.gl-lembar .lead{color:#adbed4}.gl-rekkartu{background:#213751;border:1px solid #ffffff20;color:#eef5ff}.gl-rekkartu em{color:#adbed4}.gl-aturan li{color:#d7e4f5}
+@media(max-width:350px){.gl-laci:not(.tutup){padding:18px}.gl-lc-main{gap:5px}.gl-lc-p .gl-av{--s:36px!important}.gl-lc-foot{flex-wrap:wrap}.gl-lc-foot .gl-btn{width:100%}.gl-lc-skor{font-size:20px;min-width:48px}.gl-lc-p b{font-size:12px}}
+.gl button.gl-kartu{background:#1b2d46;border:1px solid #ffffff20;border-radius:18px;padding:18px;display:block;width:100%}
+.gl .gl-seat .nm,.gl .gl-seat .sub{text-shadow:none}
+.gl-lc-p{flex:1 1 0}.gl-lc-skor{flex:none}
+.gl-laci:not(.tutup) .gl-lc-main{flex-wrap:wrap}.gl-laci:not(.tutup) .gl-lc-p{min-width:92px}.gl-laci:not(.tutup) .gl-lc-p b{max-width:82px}

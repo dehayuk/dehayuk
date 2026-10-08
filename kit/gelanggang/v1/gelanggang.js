@@ -178,7 +178,7 @@
 
   /* ================= KEADAAN ================= */
   var akar = null, plug = null, sb = null, saklar = null, profil = null, mesin = null, duk = null, arenaId = "", Sarena = null;
-  var laci = null, laciBuka = false, ringkas = null, ringkasT = 0, kartuTampil = false;
+  var laciTirai = null, laci = null, laciBuka = false, ringkas = null, ringkasT = 0, kartuTampil = false;
   var panggung = null, layarNow = "", ref = {}, putaranT = 0, towers = {}, dkLama = null, apungN = 0;
   var catatanSaya = null, prestasiSaya = null, hasilTerakhir = null, rebutSaya = null, sembunyiEmo = !!rd(PREF + "sembunyiEmo", false);
   var statusAlir = "", rekamanDemo = null;
@@ -195,13 +195,13 @@
   /* ================= A. LACI DI HALAMAN GAME ================= */
   function bangunLaci() {
     pastikanAkar();
-    laci = el("section", "gl-laci tutup"); laci.setAttribute("aria-label", "Gelanggang");
+    laciTirai = tombol("gl-laci-tirai", "", function () { setelLaci(false); }); laciTirai.hidden = true; laciTirai.setAttribute("aria-label", "Tutup pilihan arena"); akar.appendChild(laciTirai); laci = el("section", "gl-laci tutup"); laci.setAttribute("aria-label", "Gelanggang");
     var h = el("button", "gl-laci-h"); h.type = "button";
     tambah(h, el("span", "gl-grip"), tambah(el("h4", "gl-ols"), document.createTextNode("⚔ Gelanggang")), el("small", "", "Satu pertandingan\nuntuk seluruh dunia"));
-    h.lastChild.textContent = "Pilih arena untuk duel";
+    h.lastChild.textContent = "Duel online →";
     h.setAttribute("aria-expanded", "false");
     h.addEventListener("click", function () { bunyi(); setelLaci(!laciBuka); });
-    laci.appendChild(h);
+    laci.appendChild(h); var close = tombol("gl-laci-close", "×", function () { setelLaci(false); }); close.setAttribute("aria-label", "Tutup Gelanggang"); laci.appendChild(close); laci.appendChild(el("p", "gl-laci-intro", "Pilih arenamu. Bertanding langsung, tonton pemain lain, atau tantang rekaman saat lawan belum tersedia."));
     ref.laciIsi = el("div", ""); laci.appendChild(ref.laciIsi);
     akar.appendChild(laci);
     isiLaci();
@@ -209,13 +209,13 @@
   function setelLaci(buka) {
     laciBuka = buka; if (!laci) return;
     laci.querySelector(".gl-laci-h").setAttribute("aria-expanded", String(buka));
-    laci.classList.toggle("tutup", !buka);
+    laci.classList.toggle("tutup", !buka); laciTirai.hidden = !buka; laci.setAttribute("role", buka ? "dialog" : "region"); laci.setAttribute("aria-modal", String(buka)); if (buka) laci.querySelector(".gl-laci-close").focus(); else laci.querySelector(".gl-laci-h").focus();
     document.documentElement.classList.toggle("gl-laci-buka", buka && kartuTampil);
     if (buka) segarkanRingkas(true);
     ukurLaci();
   }
   function ukurLaci() {
-    var px = laci && kartuTampil && !laci.hidden ? Math.round(laci.getBoundingClientRect().height) : 0;
+    var px = laciBuka ? 0 : laci && kartuTampil && !laci.hidden ? Math.round(laci.getBoundingClientRect().height) : 0;
     document.documentElement.style.setProperty("--gl-laci", px + "px");
     if (plug && plug.tataLetak) try { plug.tataLetak(px); } catch (e) { }
   }
@@ -284,7 +284,7 @@
   function buka(a) {
     arenaId = a; pastikanAkar();
     if (!panggung) { panggung = el("section", "gl-panggung"); panggung.setAttribute("role", "dialog"); panggung.setAttribute("aria-label", NAMA_ARENA[a] || "Gelanggang"); akar.appendChild(panggung); }
-    panggung.hidden = false; setelLaci(false); if (laci) laci.hidden = true; kartuTampil = false; ukurLaci();
+    panggung.hidden = false; setelLaci(false); if (laci) laci.hidden = true; if (laciTirai) laciTirai.hidden = true; kartuTampil = false; ukurLaci();
     tampilPesan("⏳", "Menyambung ke gelanggang…", "", null);
     muatSaklar().then(function (s) {
       if (!DEMO && (s.offline || navigator.onLine === false)) return tampilPesan("📶", "Gelanggang butuh internet", "Main sendiri tetap bisa, tanpa internet.", "Main sendiri");
@@ -1028,13 +1028,13 @@
       window.addEventListener("online", function () { saklarJanji = null; if (laci) isiLaci(); });
       window.addEventListener("offline", function () { if (laci) isiLaci(); });
       document.addEventListener("visibilitychange", function () { if (!document.hidden && kartuTampil && laci && !laci.hidden) segarkanRingkas(false); });
-      window.addEventListener("resize", function () { ukurLaci(); });
+      window.addEventListener("resize", function () { ukurLaci(); }); document.addEventListener("keydown", function (e) { if (e.key === "Escape" && laciBuka) { e.preventDefault(); setelLaci(false); } });
       var GL = {
         kemajuan: function (d) { if (mesin) mesin.kemajuan(d || {}); },
         selesai: function (d) { if (mesin) mesin.selesaiMain(d || {}); },
         // tampilkan laci kartu LIVE (halaman judul game) atau sembunyikan (saat bermain)
         kartu: function (tampil) {
-          kartuTampil = !!tampil;
+          kartuTampil = !!tampil; if (!tampil && laciBuka) setelLaci(false);
           if (tampil && !laci) bangunLaci();
           if (laci) { laci.hidden = !tampil || !!(panggung && !panggung.hidden); if (tampil && !laci.hidden) { isiLaci(); if (sb) segarkanRingkas(false); } }
           if (!tampil) document.documentElement.classList.remove("gl-laci-buka"); else document.documentElement.classList.toggle("gl-laci-buka", laciBuka);
