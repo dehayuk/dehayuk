@@ -679,7 +679,7 @@
       DUK.EMO.slice(0, 5).forEach(function (x) { ref.cEmo.appendChild(tombol("", x.t, function () { kirimEmo(x.k); })); });
       ref.cEmo.appendChild(tombol("txt", "GG!", function () { kirimEmo("gg"); }));
       var hide = ikon(SVG_MATA, "gl-btn ungu gl-kotak", "Sembunyikan emotikon", function () { sembunyiEmo = !sembunyiEmo; wr(PREF + "sembunyiEmo", sembunyiEmo); ref.cEmo.classList.toggle("sembunyi", sembunyiEmo); ref.cBawah.classList.toggle("ringkas", sembunyiEmo); });
-      tambah(baris, keluar, ref.cEmo, hide);
+      ref.cHide = hide; tambah(baris, keluar, ref.cEmo, hide);
       ref.cHint = el("div", "gl-chint", "Ketuk di mana saja untuk menaruh lapis");
       tambah(bawah, sup, baris, ref.cHint); hud.appendChild(bawah);
       ref.cBawah.classList.toggle("ringkas", sembunyiEmo); ref._lead = null;
@@ -689,7 +689,7 @@
       ref._cm = (KM && KM.u) + (KO && KO.u) + f.rek;
       kepalaC(ref.hMe, KM, true, false, S.bertahan && f.raja && me === "a");
       kepalaC(ref.hOp, KO, false, f.rek, S.bertahan && f.raja && op === "a" && !f.rek);
-      ref.cRek.hidden = !f.rek; ref.cBawah.classList.toggle("rekaman", !!f.rek);
+      ref.cRek.hidden = !f.rek; ref.cHide.hidden = !!f.rek; ref.cBawah.classList.toggle("rekaman", !!f.rek);
       bersihkanMenara();
     }
     // jam berjalan dan Angin Kencang
