@@ -11,7 +11,7 @@ const rules=require(root+'/scripts/gelanggang/database.rules.json');
 const settings=require(root+'/scripts/gelanggang/setelan.json');
 const db=buatDB(rules,{jam:()=>Date.now()}),streams=new Set(),blocked=new Set(),errors=[],denials=[];
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-let reads=0,writes=0,checks=0,replayCollisions=0,url;
+let reads=0,writes=0,checks=0,replayCollisions=0,readyFailures=1,readyWrites=0,url;
 const uidA='LapisNetworkA0000000000000000',uidB='LapisNetworkB0000000000000000';
 db.setelTanpaAturan('v1/setelan/tumpuk-lapis',settings['tumpuk-lapis']);
 function check(ok,label){assert.ok(ok,label);checks++;console.log('PASS '+label);}
@@ -32,6 +32,10 @@ const server=http.createServer(async(req,res)=>{try{
   }
   if(req.method==='GET'){reads++;const snapshot=db.baca(p,{uid});if(/^v1\/cek\/tumpuk-lapis\/rebutan\/[^/]+$/.test(p)&&snapshot===null)await sleep(500);return json(res,200,snapshot);}
   const chunks=[];for await(const c of req)chunks.push(c);const body=JSON.parse(Buffer.concat(chunks).toString());
+  if(uid===uidA&&Object.entries(body).some(([p,v])=>p.includes('/live/')&&v?.siap===true)){
+   readyWrites++;
+   if(readyFailures>0){readyFailures--;await sleep(650);return json(res,403,{error:'simulated readiness write failure'});}
+  }
   const updates=req.method==='PUT'?{[p]:body}:body;db.tulis(updates,{uid});writes++;
   return json(res,200,req.method==='PUT'?db.nilai(p):true);
  }
@@ -60,7 +64,21 @@ try{
  check(true,'simultaneous join from separate browser accounts');
  await until(()=>tree().f?.st==='siap',12000,'seats');
  const seated=tree().f;check(new Set([seated.a.u,seated.b.u]).size===2&&[seated.a.u,seated.b.u].every(x=>[uidA,uidB].includes(x)),'two distinct seats after concurrent writes');
- await Promise.all(clients.map(c=>c.page.locator('#glSiap').click()));
+ await a.page.locator('#glSiap').click();
+ check(await a.page.locator('#glSiap').isDisabled(),'ready button blocks repeated input while sending');
+ check((await a.page.locator('#glSiap').innerText()).includes('Mengirim kesiapan'),'sending is not presented as confirmed readiness');
+ await a.page.evaluate(()=>{for(let i=0;i<3;i++)document.querySelector('#glSiap').click();});
+ await until(async()=>await a.page.locator('#glSiap').innerText()==='Coba lagi',2500,'ready retry after rejected write');
+ check(readyWrites===1,'repeated input creates only one readiness request');
+ check(!Object.values(tree().live||{}).some(x=>x.u===uidA&&x.siap),'failed readiness is not stored on the server');
+ check(!await a.page.locator('#glSiap').isDisabled(),'failed write restores a usable retry button');
+ const readyRect=await a.page.locator('#glSiap').boundingBox();check(readyRect&&readyRect.y+readyRect.height<=844,'ready retry action fits the phone screen');
+ await sleep(200); // Respect the existing engine retry interval.
+ await a.page.locator('#glSiap').click();
+ await until(async()=>(await a.page.locator('#glSiap').innerText()).includes('Menunggu lawan'),2000,'server-confirmed readiness');
+ check(Object.values(tree().live||{}).some(x=>x.u===uidA&&x.siap),'waiting for opponent follows server confirmation');
+ check(await a.page.locator('#glSiap').isDisabled(),'confirmed readiness prevents another submission');
+ await b.page.locator('#glSiap').click();
  await until(async()=>tree().f?.st==='main'&&(await a.page.evaluate(()=>mode==='play'))&&(await b.page.evaluate(()=>mode==='play')),10000,'both playing');
  check((await a.page.evaluate(()=>seedNow))===(await b.page.evaluate(()=>seedNow)),'both players use the same deterministic seed');
  for(const c of clients)await c.page.evaluate(()=>{window.__networkPilot=setInterval(()=>{if(mode!=='play'||!core.cur||core.cur.t<0.4||!navigator.onLine||document.documentElement.classList.contains('lp-offline'))return;const i=core.cur.i;if(window.__networkTap===i)return;if(Math.abs(core.offset())<3){window.__networkTap=i;cv.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerId:1,pointerType:'mouse'}));}},8);});

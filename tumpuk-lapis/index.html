@@ -184,6 +184,7 @@ canvas{display:block}
   #sTitle #bMain{font-size:27px;padding:10px 18px 13px}
 }
 @media (prefers-reduced-motion:reduce){#sTitle *{animation:none!important}}
+.challenge-help{font-size:13px;line-height:1.5;color:var(--dk-ink);text-align:center;margin:8px 0 14px}
 #uji{position:fixed;left:4px;top:4px;right:4px;bottom:4px;overflow:auto;z-index:99;background:rgba(0,0,0,.86);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px}
 </style>
 </head>
@@ -203,7 +204,7 @@ canvas{display:block}
       <button class="dk-btn dk-green dk-ol" id="bMain"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#4a1d2e" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></svg>MAIN</button>
       <div class="icons">
         <button class="dk-round dk-yellow" id="bHarian"><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><rect x="4" y="5.5" width="16" height="15" rx="3" fill="#fff" stroke="#4a1d2e" stroke-width="2"/><path d="M4.5 10h15" stroke="#e8384f" stroke-width="4"/><path d="M8.5 3.5v4M15.5 3.5v4" stroke="#4a1d2e" stroke-width="2.6"/><rect x="9.5" y="13" width="5" height="5" rx="1.2" fill="#ff5c93"/></svg><b class="dk-dot" id="dDaily" hidden></b><b class="dstar" id="dStarN" hidden></b></i><span>Harian</span></button>
-        <button class="dk-round dk-pink" id="bTantang" aria-label="Tantang"><i class="dk-ol" aria-hidden="true">VS</i><span>Tantang</span></button>
+        <button class="dk-round dk-pink" id="bTantang" aria-label="Tantang skor teman"><i class="dk-ol" aria-hidden="true">VS</i><span>Skor teman</span></button>
         <button class="dk-round dk-blue" id="bKoleksi"><i><svg viewBox="0 0 24 24"><path d="M12 13v9" stroke="#4a1d2e" stroke-width="3" stroke-linecap="round"/><path d="M12 13v9" stroke="#e0b070" stroke-width="1.4" stroke-linecap="round"/><circle cx="12" cy="9" r="7" fill="#ffd23a" stroke="#4a1d2e" stroke-width="2"/><path d="M12 5.3l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z" fill="#fff"/><circle cx="17.5" cy="3.8" r="2.4" fill="#ff3b5c" stroke="#4a1d2e" stroke-width="1.4"/></svg></i><span>Koleksi</span></button>
         <button class="dk-round dk-orange" id="bPeringkat"><i><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="#ffd23f" stroke="#4a1d2e" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 6H4.5a2.5 2.5 0 0 0 3 3.6M17 6h2.5a2.5 2.5 0 0 1-3 3.6" fill="none" stroke="#4a1d2e" stroke-width="1.8" stroke-linecap="round"/><path d="M12 14v3M8.5 20h7l-1-3h-5z" fill="#ffd23f" stroke="#4a1d2e" stroke-width="1.8" stroke-linejoin="round"/></svg></i><span>Peringkat</span></button>
         <button class="dk-round dk-purple" id="bSetelan"><i><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.2" stroke="#4a1d2e" stroke-width="6.5" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="7.2" stroke="#fff" stroke-width="4" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="6" fill="#fff" stroke="#4a1d2e" stroke-width="2"/><circle cx="12" cy="12" r="2.4" fill="#8f5cf0" stroke="#4a1d2e" stroke-width="1.6"/></svg></i><span>Setelan</span></button>
@@ -281,9 +282,10 @@ canvas{display:block}
 
   <section id="sTantang" class="dk-overlay" hidden>
     <div class="dk-panel">
-      <div class="dk-ribbon dk-purple dk-ol">Tantang</div>
+      <div class="dk-ribbon dk-purple dk-ol">Tantang skor</div>
       <button class="dk-btn dk-red dk-circle dk-close" data-close aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#4a1d2e" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
       <div class="mini"><i style="width:44px;background:#ff8fb8"></i><i style="width:56px;background:#fff4f7"></i><i style="width:66px;background:#7fd67a"></i><i style="width:78px;background:#ff8fb8"></i><i style="width:90px;background:#fff4f7"></i></div>
+      <p class="challenge-help">Kirim tantangan skor lewat tautan. Temanmu bermain dengan susunan lapis yang sama.</p>
       <div class="dk-lbl" id="cInfo">Skor terakhirmu</div>
       <div class="big dk-ol" id="cScore">0</div>
       <div class="dk-stack"><button class="dk-btn dk-pink dk-ol" id="cSend"><svg viewBox="0 0 24 24" stroke="#4a1d2e" stroke-width="1.8"><path d="M7 12l10-6M7 12l10 6" stroke-width="4.5"/><path d="M7 12l10-6M7 12l10 6" stroke="#fff" stroke-width="2"/><circle cx="6.5" cy="12" r="3.3" fill="#fff"/><circle cx="17.5" cy="5.5" r="3.3" fill="#fff"/><circle cx="17.5" cy="18.5" r="3.3" fill="#fff"/></svg><span>Kirim</span></button></div>

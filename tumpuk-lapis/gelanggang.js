@@ -229,8 +229,8 @@
     h.lastChild.textContent = "Duel online →";
     h.setAttribute("aria-expanded", "false");
     h.addEventListener("click", function () { bunyi(); setelLaci(!laciBuka); });
-    laci.appendChild(h); var close = tombol("gl-laci-close", "×", function () { setelLaci(false); }); close.setAttribute("aria-label", "Tutup Gelanggang"); laci.appendChild(close); laci.appendChild(el("p", "gl-laci-intro", "Pilih arenamu. Bertanding langsung, tonton pemain lain, atau tantang rekaman saat lawan belum tersedia."));
-    ref.laciIsi = el("div", ""); laci.appendChild(ref.laciIsi);
+    laci.appendChild(h); var close = tombol("gl-laci-close", "×", function () { setelLaci(false); }); close.setAttribute("aria-label", "Tutup Gelanggang"); laci.appendChild(close); laci.appendChild(el("p", "gl-laci-intro", "Pilih arena untuk duel online. Kamu juga bisa menonton sebelum ikut bermain."));
+    ref.laciIsi = el("div", "gl-arena-grid"); laci.appendChild(ref.laciIsi);
     akar.appendChild(laci);
     isiLaci();
   }
@@ -271,34 +271,32 @@
     var top = el("div", "gl-lc-top"), main = el("div", "gl-lc-main"), foot = el("div", "gl-lc-foot");
     var segar = R && ((Date.now() - (R.t || 0)) < 180000);
     var live = R && segar && R.st === "main";
-    var nama = raja ? "Gelanggang Raja" : "⚡ Rebutan";
-    if (raja) tambah(top, el("span", "gl-live" + (live ? "" : " mati"), live ? "LIVE" : "RAJA"), el("span", "gl-lc-nama", nama));
-    else { var pl = el("span", "gl-pill", nama); pl.style.cssText = "background:#ffffff1f;border-color:#ffffff40;font-size:12.5px;padding:2px 8px 3px"; tambah(top, pl, el("span", "", "tiap 2 menit ganti")); top.lastChild.style.cssText = "color:#d9d2ff;font:700 12.5px var(--fb)"; }
-    var v = el("span", "gl-lc-view"); tambah(v, emoSpan("👁"), document.createTextNode(" " + (R && segar ? (R.n | 0) + (raja ? " menonton" : "") : "—"))); top.appendChild(v);
+    var heading = el("div", "gl-lc-heading");
+    tambah(heading, el("span", live && !R.rek ? "gl-live" : "gl-pill", live ? (R.rek ? "REKAMAN" : "LIVE") : "DUEL ONLINE"), el("span", "gl-lc-nama", raja ? "Gelanggang Raja" : "Gelanggang Rebutan"));
+    tambah(top, heading, el("span", "gl-lc-view", R && segar ? (R.n | 0) + " menonton" : ""));
+    var rule = el("p", "gl-lc-rule", raja ? "Menang dan pertahankan takhta." : "Dua kursi. Babak baru setiap 2 menit.");
     function sisi(k, kanan) {
       var d = el("div", "gl-lc-p" + (kanan ? " r" : ""));
-      if (k) { tambah(d, avatar({ sp: k.av, bingkai: I.kelasBingkai(k.bk), ukuran: 48, st: !kanan && R.raja && R.bt ? R.bt + "×" : "" }), tambah(el("div"), el("b", "", k.n), el("em", "", "#" + k.no))); }
-      else { var av = el("i", "gl-av"); av.style.setProperty("--s", "44px"); av.appendChild(el("div", "gl-kosong", "?")); tambah(d, av, tambah(el("div"), el("b", "", "Kamu?"), el("em", "", "langsung main"))); d.lastChild.firstChild.style.color = "#c8bff0"; }
+      if (k) tambah(d, avatar({ sp: k.av, bingkai: live && R.rek && kanan ? "rekaman" : I.kelasBingkai(k.bk), ukuran: 44, st: !kanan && R.raja && R.bt ? R.bt + "\u00d7" : "" }), tambah(el("div"), el("b", "", k.n), el("em", "", "#" + k.no)));
+      else { var av = el("i", "gl-av"); av.style.setProperty("--s", "44px"); av.appendChild(el("div", "gl-kosong", "?")); tambah(d, av, tambah(el("div"), el("b", "", segar ? "Kursi kosong" : kanan ? "Pemain kedua" : "Pemain pertama"), el("em", "", segar ? "Menunggu pemain" : "Lihat di arena"))); }
       return d;
     }
-    var note = "", tb = "Tonton", warna = "pink";
-    if (R && segar && R.a) {
-      main.appendChild(sisi(R.a, false));
-      var sk = el("div", "gl-lc-skor");
-      if (R.st === "main" && R.b) { sk.textContent = (R.sa | 0) + " : " + (R.sb | 0); var sisaK = R.m ? R.m + 3000 + 120000 - ((sb && sb.sekarang) ? sb.sekarang() : Date.now()) : -1; sk.appendChild(el("small", "", R.rek ? "⏺ melawan rekaman" : sisaK > 0 && sisaK < 130000 ? "sisa " + mmss(sisaK) : "sedang bertanding")); note = R.raja && R.bt ? R.a.n + " bertahan " + R.bt + " kali. Siapa yang menggulingkan?" : "Siapa yang lebih tinggi?"; }
-      else { sk.textContent = "vs"; sk.style.cssText = "font-size:18px;color:#c8bff0"; sk.appendChild(el("small", "", R.b ? "bersiap" : "kursi kosong")); sk.lastChild.style.color = "#8fe3ff"; note = R.raja ? "👑 " + R.a.n + " menunggu penantang" + (R.bt ? " · " + R.bt + " beruntun" : "") : "Kursi penantang kosong. Masuk sekarang, tanpa antre."; tb = "Tantang"; warna = "kuning"; }
-      main.appendChild(sk);
-      main.appendChild(sisi(R.b || null, true));
-      if (R.st === "main") { var mb = el("div", "gl-minibar"); var ta = (R.sa | 0) + (R.sb | 0) || 1; tambah(mb, el("i"), el("i")); mb.firstChild.style.width = Math.round((R.sa | 0) / ta * 100) + "%"; mb.lastChild.style.width = Math.round((R.sb | 0) / ta * 100) + "%"; c._bar = mb; }
+    tambah(main, sisi(R && segar ? R.a : null, false), sisi(R && segar ? R.b : null, true));
+    var note = "", action = "Masuk arena", score = el("div", "gl-lc-skor");
+    if (live && R.a && R.b) {
+      var left = el("b", "", String(R.sa | 0)), right = el("b", "", String(R.sb | 0));
+      tambah(score, left, el("span", "gl-lc-divider", ":"), right);
+      var sisa = R.m ? R.m + 3000 + 120000 - ((sb && sb.sekarang) ? sb.sekarang() : Date.now()) : -1;
+      tambah(score, el("small", "", R.rek ? "Melawan rekaman" : sisa > 0 && sisa < 130000 ? "Sisa " + mmss(sisa) : "Duel berlangsung"));
+      note = R.rek ? "Rekaman pemain asli, bukan duel langsung." : R.raja && R.bt ? "Raja bertahan " + R.bt + " kali berturut-turut." : "Siapa yang menumpuk lebih tinggi?";
+      action = "Tonton duel";
     } else {
-      var kosong = el("div", "gl-lc-p"), av2 = el("i", "gl-av"); av2.style.setProperty("--s", "44px"); av2.appendChild(el("div", "gl-kosong", "?"));
-      tambah(kosong, av2, tambah(el("div"), el("b", "", raja ? "Takhta kosong" : "Arena kosong"), el("em", "", "jadilah yang pertama hari ini")));
-      main.appendChild(kosong);
-      note = raja ? "Gelanggang sepi. Jadilah Raja pertama hari ini!" : "Dua kursi, dua menit, keduanya turun. Seru dan cepat.";
-      tb = "Naik"; warna = "kuning";
+      score.classList.add("kosong"); score.textContent = !segar ? "Lihat status pemain di dalam arena" : R.st === "siap" ? "Pemain sedang bersiap" : R.st === "usai" ? "Babak selesai" : "Menunggu penantang";
+      note = segar ? "Masuk arena, lalu ikuti undian saat tombol rebut aktif." : "Tonton pemain atau ikut rebut kursi dari dalam arena.";
     }
-    tambah(foot, el("div", "gl-note", note), el("span", "gl-btn " + warna + " kecil", tb));
-    tambah(c, top, main, c._bar || null, foot);
+    main.appendChild(score);
+    tambah(foot, el("div", "gl-note", note), el("span", "gl-btn " + (live ? "ungu" : "kuning") + " kecil", action));
+    tambah(c, top, rule, main, foot);
     return c;
   }
   function segarkanRingkas(paksa) {
@@ -315,9 +313,9 @@
     panggung.setAttribute("aria-label", NAMA_ARENA[a] || "Gelanggang"); panggung.hidden = false; setelLaci(false); if (laci) laci.hidden = true; if (laciTirai) laciTirai.hidden = true; kartuTampil = false; ukurLaci();
     tampilPesan("⏳", "Menyambung ke gelanggang…", "", null);
     muatSaklar().then(function (s) {
-      if(sesi !== sesiBuka || panggung.hidden) return; if (!DEMO && (s.offline || navigator.onLine === false)) return tampilPesan("📶", "Gelanggang butuh internet", "Main sendiri tetap bisa, tanpa internet.", "Main sendiri");
-      if (!s.aktif) return tampilPesan("🚧", "Gelanggang tutup sementara", s.pesan || "Sedang dirapikan. Coba lagi nanti, ya.", "Main sendiri");
-      if ((s.protoMin | 0) > I.PROTO) return tampilPesan("⬆️", inApp() ? "Perbarui app" : "Muat ulang halaman", "Gelanggang memakai versi baru. " + (inApp() ? "Perbarui app Dehayuk dari toko untuk masuk." : "Muat ulang halaman ini untuk masuk."), "Main sendiri");
+      if(sesi !== sesiBuka || panggung.hidden) return; if (!DEMO && (s.offline || navigator.onLine === false)) return tampilPesan("📶", "Gelanggang butuh internet", "Main sendiri tetap bisa, tanpa internet.", "Kembali ke menu");
+      if (!s.aktif) return tampilPesan("🚧", "Gelanggang tutup sementara", s.pesan || "Sedang dirapikan. Coba lagi nanti, ya.", "Kembali ke menu");
+      if ((s.protoMin | 0) > I.PROTO) return tampilPesan("⬆️", inApp() ? "Perbarui app" : "Muat ulang halaman", "Gelanggang memakai versi baru. " + (inApp() ? "Perbarui app Dehayuk dari toko untuk masuk." : "Muat ulang halaman ini untuk masuk."), "Kembali ke menu");
       saklar = s;
       return siapkanSambungan().then(function () { if (sesi !== sesiBuka || panggung.hidden) return; return mulaiMesin(a); });
     }).catch(function (e) {
@@ -412,9 +410,9 @@
 
   /* ---------- keadaan -> layar ---------- */
   function dengarMesin(jenis, d) {
-    if (jenis === "mati") return tampilPesan("🚧", "Gelanggang belum dibuka", d && d.alasan || "", "Main sendiri");
+    if (jenis === "mati") return tampilPesan("🚧", "Gelanggang belum dibuka", d && d.alasan || "", "Kembali ke menu");
     if (jenis === "penuh") toast("Tribun penuh sesak! Coba lagi sebentar.");
-    if (jenis === "sambungan") { statusAlir = d; perbaruiKoneksi(); if (d === "ditolak") tampilPesan("🚧", "Gelanggang belum dibuka", "Database gelanggang menolak sambungan. Coba lagi nanti.", "Main sendiri"); if (d === "penuh") toast("Tribun penuh sesak! Mencoba lagi sebentar lagi…"); }
+    if (jenis === "sambungan") { statusAlir = d; perbaruiKoneksi(); if (d === "ditolak") tampilPesan("🚧", "Gelanggang belum dibuka", "Database gelanggang menolak sambungan. Coba lagi nanti.", "Kembali ke menu"); if (d === "penuh") toast("Tribun penuh sesak! Mencoba lagi sebentar lagi…"); }
     if (jenis === "tayang") amatiPerubahan(d);
     if (jenis === "catatan") catatanSaya = d;
     if (jenis === "prestasi") { prestasiSaya = null; muatCatatan(); var nm = d.map(function (id) { var b = I.BINGKAI.filter(function (x) { return x.id === id; })[0] || lencanaEm(id); return b ? b.nama : id; }); if (nm.length) toast("🏅 Diraih: " + nm.join(", "), true); }
@@ -452,6 +450,8 @@
   function perbaruiKoneksi() {
     if(!panggung||panggung.hidden)return;
     if(!connectionEl||!connectionEl.isConnected){connectionEl=el('div','lp-connection');connectionEl.setAttribute('role','status');connectionEl.setAttribute('aria-live','polite');panggung.appendChild(connectionEl);}
+    if (layarNow === "D1" && ref.kol && connectionEl.parentElement !== ref.kol) ref.kol.insertBefore(connectionEl, ref.kol.querySelector(".gl-topbar") ? ref.kol.children[1] || null : ref.kol.firstChild);
+    else if (layarNow !== "D1" && connectionEl.parentElement !== panggung) panggung.appendChild(connectionEl);
     var teks={offline:'Koneksi terputus. Mencoba menyambung; waktu duel tetap berjalan.',putus:'Sambungan terganggu. Menunggu pembaruan dari server.',penuh:'Sambungan sedang sibuk. Mencoba kembali otomatis.',ditolak:'Sambungan ditolak. Kembali ke menu dan coba lagi.'}[statusAlir]||'';
     if(connectionEl.textContent!==teks)connectionEl.textContent=teks;
     connectionEl.hidden=!teks;document.documentElement.classList.toggle('lp-offline',!!teks);
@@ -772,9 +772,11 @@
       ref.angka = el("div", "gl-angka"); ref.angkaB = el("b", "gl-ol", "3"); ref.angka.appendChild(ref.angkaB); k.appendChild(ref.angka);
       ref.benih = el("div", "gl-benih"); k.appendChild(ref.benih);
       ref.siapW = el("div", "gl-siapbtn"); ref.siapRing = el("div", "gl-cincinbesar"); ref.siapRingB = el("b", "", "5"); ref.siapRing.appendChild(ref.siapRingB);
-      ref.siapBtn = tombol("gl-btn", "SIAP!", function () { ref.siapBtn.className = "gl-btn redup"; ref.siapBtn.textContent = "Menunggu lawan…"; mesin.siap(); }, "glSiap");
-      tambah(ref.siapW, ref.siapRing, ref.siapBtn); k.appendChild(ref.siapW);
+      ref.siapBtn = tombol("gl-btn kuning", "SIAP!", kirimSiap, "glSiap");
+      ref.siapStatus = el("p", "gl-siap-status"); ref.siapStatus.setAttribute("role", "status");
+      tambah(ref.siapW, tambah(el("div", "gl-siap-waktu"), ref.siapRing, el("span", "", "Waktu untuk bersiap")), ref.siapBtn, ref.siapStatus); k.appendChild(ref.siapW);
     }
+    panggung.setAttribute("data-ready", String(f.st === "siap"));
     var raja = S.bertahan && f.raja;
     var sig = [f.a && f.a.u, f.b && f.b.u, f.st, siapKah(t, "a", f), siapKah(t, "b", f)].join("|");
     if (ref._sig !== sig) {
@@ -787,7 +789,7 @@
       ref.angkaB.textContent = n; ref.angkaB.className = "gl-ol"; ref.angka.style.setProperty("--p", Math.round((1 - (sisa % 1000) / 1000) * 100) + "%");
       if (ref._n !== n) { ref._n = n; try { KIT.audio.tone({ freq: 660, dur: 0.1, vol: 0.2 }); } catch (e) { } }
       var sd = seedMatch(f);
-      ref.benih.textContent = "";
+      ref.benih.hidden = false; ref.benih.textContent = "";
       tambah(ref.benih, el("b", "", "Benih #" + (sd % 100000)), document.createTextNode(", sama untuk berdua · jam " + mmss(S.waktuMs) + "\nAngin Kencang di " + mmss(S.anginMs) + " · " + (f.rek ? "kalahkan rekor " + f.rn + " " + (plug.satuanKecil || "skor") : "yang lebih tinggi menang")));
       ref.benih.style.whiteSpace = "pre-line";
       ref.siapW.hidden = true;
@@ -798,9 +800,38 @@
       var batas = f.t + (p === "a" && raja ? S.siapRajaMs : S.siapMs) - now;
       ref.siapRingB.textContent = Math.max(0, Math.ceil(batas / 1000));
       ref.siapRing.style.setProperty("--p", Math.round(Math.max(0, batas) / (p === "a" && raja ? S.siapRajaMs : S.siapMs) * 100) + "%");
-      if (siapAku) { ref.siapBtn.className = "gl-btn redup"; ref.siapBtn.textContent = "Menunggu lawan…"; }
-      ref.benih.textContent = aku ? "" : "Menunggu kedua pemain menekan SIAP…";
+      var key = f.r + ":" + f.t;
+      if (ref.siapKey !== key) { ref.siapKey = key; ref.siapPermintaan = null; ref.siapGagal = false; }
+      if (siapAku) { ref.siapPermintaan = null; ref.siapGagal = false; }
+      var req = ref.siapPermintaan;
+      // HTTP success is not the readiness snapshot. Give SSE time to confirm it.
+      if (req && req.diterima && Date.now() - req.diterima > 1500) { ref.siapPermintaan = null; ref.siapGagal = true; req = null; }
+      var putus = navigator.onLine === false || !!({offline:1,putus:1,penuh:1,ditolak:1}[statusAlir]);
+      var blocked = siapAku || !!req || putus || batas <= 0;
+      ref.siapBtn.disabled = blocked;
+      ref.siapBtn.setAttribute("aria-busy", String(!!req));
+      ref.siapBtn.className = "gl-btn " + (blocked ? "redup" : "kuning");
+      ref.siapBtn.textContent = siapAku ? "Menunggu lawan\u2026" : batas <= 0 ? "Waktu siap habis" : putus ? "Menunggu koneksi\u2026" : req ? "Mengirim kesiapan\u2026" : ref.siapGagal ? "Coba lagi" : "SIAP!";
+      var info = siapAku ? "Kesiapanmu sudah diterima." : batas <= 0 ? "Menunggu pembaruan pertandingan." : putus ? "Tombol aktif kembali setelah tersambung." : req ? "Menunggu konfirmasi kesiapan dari server." : ref.siapGagal ? "Kesiapan belum dikonfirmasi. Tekan Coba lagi." : "Tekan SIAP agar duel bisa dimulai.";
+      if (ref.siapStatus.textContent !== info) ref.siapStatus.textContent = info;
+      ref.benih.textContent = aku ? "" : "Menunggu kedua pemain menekan SIAP\u2026";
+      ref.benih.hidden = aku;
     }
+  }
+  function kirimSiap() {
+    var m = mesin, ui = ref, f = m && m.tree && m.tree.f, p = m && m.peran();
+    if (!f || f.st !== "siap" || !ui.siapBtn || ui.siapBtn.disabled || ui.siapPermintaan || (p !== "a" && p !== "b") || siapKah(m.tree, p, f)) return;
+    var req = { key: f.r + ":" + f.t, diterima: 0 };
+    ui.siapPermintaan = req; ui.siapGagal = false; gambar();
+    function selesai(ok) {
+      var current = m.tree && m.tree.f;
+      // A delayed request must never change another round or a reopened arena.
+      if (mesin !== m || ref !== ui || ui.siapPermintaan !== req || !current || current.st !== "siap" || current.r + ":" + current.t !== req.key) return;
+      if (ok) req.diterima = Date.now();
+      else { ui.siapPermintaan = null; ui.siapGagal = true; }
+      gambar();
+    }
+    Promise.resolve().then(function () { return m.siap(); }).then(selesai, function () { selesai(false); });
   }
   function siapKah(t, k, f) { var L = I.seatLive(t, k); return !!(L && L.siap && L.r === f.r + 1); }
   function kartuD(box, K, lbl, warna, mahkota, siap, rek) {
@@ -860,7 +891,7 @@
       ref.rest.textContent = rest;
       var gg = el("div", "gl-gg"); ref.cekChip = el("span", "", "⏳ rekaman sedang diperiksa");
       gg.appendChild(ref.cekChip);
-      if (aku && !menangAku) { gg.appendChild(tombol("", "👁 Tonton", function () { hasilTerakhir = null; gambar(); }, "glTonton")); gg.appendChild(tombol("", "▶ Main sendiri", tutupPanggung, "glSendiri")); }
+      if (aku && !menangAku) { gg.appendChild(tombol("", "👁 Tonton", function () { hasilTerakhir = null; gambar(); }, "glTonton")); gg.appendChild(tombol("", "Kembali ke menu", tutupPanggung, "glSendiri")); }
       k.appendChild(gg);
       ref.rebutBuka = el("div", "gl-rebutbuka"); k.appendChild(ref.rebutBuka);
       ref.rebutBuka.appendChild(ref.rbH = el("div", "h"));
