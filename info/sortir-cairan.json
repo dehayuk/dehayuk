@@ -1,0 +1,15 @@
+{
+  "deskripsi": [
+    "Pisahkan cairan berwarna sampai setiap botol penuh dengan satu warna. Nikmati warna cerah dan animasi tuang dalam puzzle santai tanpa batas waktu. Level awal mengenalkan tiga warna, lalu jumlah warna bertambah hingga delapan.",
+    "Batal langkah untuk mencoba jalur lain, gunakan Petunjuk saat buntu, dan lanjutkan permainan yang tersimpan. Harian menyediakan susunan yang sama untuk semua pemain dengan satu percobaan resmi per hari. Setelah menang, bagikan tautan tantangan agar teman mencoba susunan yang sama dan mengalahkan skormu. Semakin sedikit langkah dan bantuan yang dipakai, semakin tinggi skormu."
+  ],
+  "caraMain": [
+    "Ketuk botol berisi cairan untuk memilihnya.",
+    "Ketuk botol kosong atau botol dengan warna paling atas yang sama.",
+    "Tuangkan cairan hingga ruang tujuan penuh atau warna atas habis.",
+    "Rapikan setiap botol hingga penuh dengan satu warna. Botol kosong boleh tersisa."
+  ],
+  "kontrol": "HP: ketuk botol asal, lalu botol tujuan. Komputer: klik atau gunakan Tab, tombol panah, dan Enter. Escape membuka jeda. Batal mengembalikan langkah terakhir; Petunjuk menunjukkan langkah yang bisa dilanjutkan.",
+  "orientasi": "Tegak",
+  "diperbarui": "2026-10-08"
+}

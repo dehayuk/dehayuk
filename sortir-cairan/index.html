@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="id">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="canonical" href="https://dehayuk.online/sortir-cairan/">
+<meta property="og:title" content="Sortir Cairan - Dehayuk">
+<meta property="og:image" content="https://dehayuk.netlify.app/sortir-cairan/sampul.jpg">
+<meta property="og:url" content="https://dehayuk.online/sortir-cairan/">
+<title>Sortir Cairan - Dehayuk</title>
+<meta name="description" content="Satukan cairan sewarna ke dalam botol. Puzzle santai dengan warna cerah, animasi tuang, dan level bertahap.">
+<link rel="stylesheet" href="/font/font.css">
+<link rel="stylesheet" href="/kit/v1/kit.css">
+<link rel="stylesheet" href="gaya.css">
+</head>
+<body>
+<svg class="defs" aria-hidden="true" width="0" height="0"><defs id="paints"></defs></svg>
+<div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<main id="col">
+<section id="titleScreen" class="title-screen" aria-label="Menu Sortir Cairan">
+ <header class="title-header"><a class="round" href="/" aria-label="Beranda Dehayuk"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg></a><span id="progressChip" class="chip"></span><span id="bestChip" class="chip best"></span></header>
+ <div class="title-body"><div class="welcome"><svg class="logo" viewBox="0 0 430 153" role="img" aria-label="Sortir Cairan"><defs><linearGradient id="logoGold" x2="0" y2="1"><stop stop-color="#fff48c"/><stop offset="1" stop-color="#ffb72b"/></linearGradient></defs><g font-family="Baloo 2,Arial,sans-serif" font-weight="900" text-anchor="middle" stroke="#281039" stroke-width="12" paint-order="stroke"><text x="204" y="65" font-size="76" fill="#fff5ff">SORTIR</text><text x="212" y="137" font-size="83" fill="url(#logoGold)">CAIRAN</text></g><path d="M371 15c-17 24-24 36-24 45a24 24 0 0 0 48 0c0-9-7-21-24-45Z" fill="#36dfff" stroke="#281039" stroke-width="7"/><path d="M356 54q-5 14 5 17" fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/></svg><p class="tagline">Satu warna. Satu botol. Puas banget.</p></div>
+ <div class="hero" id="hero" aria-hidden="true"></div>
+ <div class="title-actions"><button id="bMain" class="gold main-btn">MAIN</button><p id="mainNote" class="note">Ketuk botol, lalu pilih tempat menuang.</p><nav class="menu-tools" aria-label="Pilihan permainan"><button id="bDaily"><span data-icon="daily"></span><b>Harian</b></button><button id="bChallenge"><span data-icon="share"></span><b>Skor teman</b></button><button id="bSettings"><span data-icon="settings"></span><b>Setelan</b></button></nav></div>
+ </div>
+</section>
+<section id="playScreen" class="play-screen" hidden aria-label="Papan Sortir Cairan"><header class="hud"><button id="bPause" class="round" aria-label="Jeda"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" stroke-width="4"/></svg></button><div class="level"><strong id="levelLabel"></strong><small id="kindLabel"></small></div><div class="move-counter"><b id="movesLabel">0</b><small>LANGKAH</small></div></header><div id="board" class="board" role="group" aria-label="Botol cairan"></div><p id="status" class="status" role="status" aria-live="polite">Pilih botol yang ingin kamu tuang.</p><footer class="play-tools"><button id="bUndo"><span data-icon="undo"></span><b>Batal</b></button><button id="bHint"><span data-icon="hint"></span><b>Petunjuk</b></button><button id="bRestart"><span data-icon="restart"></span><b>Ulang</b></button></footer></section>
+<section id="sheet" class="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><div class="panel" tabindex="-1"><button id="sheetClose" class="round close" aria-label="Tutup"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button><div id="sheetContent"></div></div></section>
+<section id="result" class="sheet result" hidden role="dialog" aria-modal="true" aria-labelledby="resultTitle"><div class="panel" tabindex="-1"><div class="result-top"><div id="stars" class="stars" aria-label="Bintang"></div><h1 id="resultTitle">Rapi banget!</h1><p id="resultNote"></p><div id="scoreValue" class="score">0</div><small class="score-caption">SKOR KAMU</small><div class="best-track"><span id="bestNote"></span><div><i id="bestBar"></i></div></div><div class="stats"><div><b id="statMoves"></b><small>langkah</small></div><div><b id="statHints"></b><small>petunjuk</small></div><div><b id="statColors"></b><small>warna</small></div></div><p id="xpNote" class="xp"></p></div><div class="result-actions"><button id="rAgain" class="gold">MAIN LAGI</button><button id="rShare" class="secondary"><span data-icon="share"></span>Tantang teman</button><button id="rMenu" class="text-btn">Kembali ke menu</button></div></div></section>
+</main>
+<script src="/kit/v1/kit.js"></script>
+<script src="mesin.js"></script>
+<script src="tuang.js"></script>
+<script>window.SortirCairanSetelan=function(){DehayukKit.ui.openSettings();};</script>
+<script src="main.js"></script>
+</body></html>
