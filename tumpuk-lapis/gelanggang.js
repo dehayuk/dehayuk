@@ -79,7 +79,21 @@
       }, function (e) { var x = new Error(e && e.message || "jaringan"); x.kode = "jaringan"; throw x; });
     }
     this.baca = function (path) { return panggil("GET", path); };
-    this.tulis = function (u) { return panggil("PATCH", "", u).then(function () { return true; }); };
+    this.tulis = function (u) {
+      return panggil("PATCH", "", u).then(function () { return true; }, function (e) {
+        // Dua pemeriksa dapat membaca s1 kosong bersamaan. Coba s2 setelah server menolak benturan.
+        var keys = Object.keys(u || {}), p = keys.length === 1 && keys[0], v = p && u[p];
+        if (!e || e.kode !== "tolak" || !p || !/^v1\/cek\/tumpuk-lapis\/(raja|rebutan)\/[^/]+\/s1$/.test(p) || !v || v.u !== self.uid) throw e;
+        var base = p.slice(0, -3);
+        return panggil("GET", base).then(function (ada) {
+          ada = ada || {};
+          if ((ada.s1 && ada.s1.u === self.uid) || (ada.s2 && ada.s2.u === self.uid)) return true;
+          if (!ada.s1 || ada.s2) throw e;
+          var ulang = {}; ulang[base + "/s2"] = v;
+          return panggil("PATCH", "", ulang).then(function () { return true; });
+        });
+      });
+    };
     // Selisih jam HP dengan server: tulis cap waktu server, baca kembali (dokumen teknis 2.2).
     this.ukurJam = function () {
       var t0 = Date.now();
@@ -93,8 +107,8 @@
     };
     // Aliran (Server-Sent Events). Satu HP = satu aliran; tidak dicoba terus-menerus bila gagal (hemat kuota).
     this.alir = function (path, onData, onStatus) {
-      var tree = null, es = null, mati = false, gagal = 0, tmr = 0;
-      function tutup() { if (es) { try { es.close(); } catch (e) { } es = null; } }
+      var tree = null, es = null, mati = false, gagal = 0, tmr = 0, sesiAlir = 0;
+      function tutup() { sesiAlir++; if (es) { try { es.close(); } catch (e) { } es = null; } }
       function pasang(p, v) {
         var parts = String(p || "/").split("/").filter(Boolean);
         if (!parts.length) { tree = v; return; }
@@ -105,22 +119,30 @@
       }
       function buka() {
         if (mati) return;
+        if (navigator.onLine === false) { onStatus("offline"); return; }
+        var sesi = ++sesiAlir;
         akun().then(function (a) {
-          if (mati) return;
+          if (mati || sesi !== sesiAlir || navigator.onLine === false) return;
           es = new EventSource(db + "/" + path + ".json?auth=" + encodeURIComponent(a.id));
-          es.addEventListener("put", function (e) { var d = JSON.parse(e.data); pasang(d.path, d.data); gagal = 0; onStatus("ok"); onData(tree); });
-          es.addEventListener("patch", function (e) { var d = JSON.parse(e.data), base = d.path === "/" ? "" : d.path; for (var k in d.data) pasang(base + "/" + k, d.data[k]); onData(tree); });
-          es.addEventListener("cancel", function () { tutup(); onStatus("ditolak"); });
-          es.addEventListener("auth_revoked", function () { tutup(); akun(true).then(buka, function () { onStatus("putus"); }); });
+          es.addEventListener("put", function (e) { if (sesi !== sesiAlir) return; var d = JSON.parse(e.data); pasang(d.path, d.data); gagal = 0; onStatus("ok"); onData(tree); });
+          es.addEventListener("patch", function (e) { if (sesi !== sesiAlir) return; var d = JSON.parse(e.data), base = d.path === "/" ? "" : d.path; for (var k in d.data) pasang(base + "/" + k, d.data[k]); onData(tree); });
+          es.addEventListener("cancel", function () { if (sesi !== sesiAlir) return; tutup(); onStatus("ditolak"); });
+          es.addEventListener("auth_revoked", function () { if (sesi !== sesiAlir) return; tutup(); akun(true).then(buka, function () { onStatus("putus"); }); });
           es.onerror = function () {
+            if (sesi !== sesiAlir || mati) return;
+            if (navigator.onLine === false) { tutup(); clearTimeout(tmr); onStatus("offline"); return; }
             gagal++;
             onStatus(navigator.onLine === false ? "offline" : "putus");
             if (gagal >= 4) { tutup(); onStatus("penuh"); clearTimeout(tmr); tmr = setTimeout(buka, 15000 + Math.random() * 45000); }
           };
-        }, function () { onStatus("putus"); clearTimeout(tmr); tmr = setTimeout(buka, 20000); });
+        }, function () { if (mati || sesi !== sesiAlir) return; onStatus("putus"); clearTimeout(tmr); tmr = setTimeout(buka, 20000); });
       }
+      function kembaliOnline() { if (mati) return; gagal = 0; clearTimeout(tmr); tutup(); buka(); }
+      function menjadiOffline() { if (mati) return; clearTimeout(tmr); tutup(); onStatus("offline"); }
+      window.addEventListener("online", kembaliOnline);
+      window.addEventListener("offline", menjadiOffline);
       buka();
-      return function () { mati = true; clearTimeout(tmr); tutup(); };
+      return function () { mati = true; clearTimeout(tmr); tutup(); window.removeEventListener("online", kembaliOnline); window.removeEventListener("offline", menjadiOffline); };
     };
   }
 
@@ -822,15 +844,19 @@
       var ws = el("div", "gl-winskor");
       function sisi(K, s, p, kanan, menang, rek) { var d = el("div", "s" + (kanan ? " r" : "")); var q = el("div"); tambah(q, el("b", "gl-ols", String(s)), el("em", "", (K ? K.n : "") + " · " + p + " pas")); tambah(d, avatar({ sp: K && K.av, bingkai: rek ? "rekaman" : I.kelasBingkai(K && K.bk), ukuran: 40, ex: menang ? "sorak" : "biasa" }), q); return d; }
       var selisih = Math.abs(h.sa - h.sb);
-      tambah(ws, sisi(hf.a, h.sa, h.pa, false, h.p === "a"), el("div", "mid", h.p === "seri" ? "seri" : h.p === "batal" ? "—" : "menang\n+" + selisih + " " + (plug.satuanKecil || "skor")), sisi(hf.b, h.sb, h.pb, true, h.p === "b", hf.rek));
+      tambah(ws, sisi(hf.a, h.sa, h.pa, false, h.p === "a"), el("div", "mid", h.p === "seri" ? "seri" : h.p === "batal" ? "—" : h.al === "putus" ? "koneksi\nterputus" : h.al === "diam" ? "tidak\naktif" : h.al === "pas" ? "lebih\npas" : h.al === "raja" ? "Raja\nbertahan" : "unggul\n" + selisih + " " + (plug.satuanKecil || "skor")), sisi(hf.b, h.sb, h.pb, true, h.p === "b", hf.rek));
       ws.children[1].style.whiteSpace = "pre-line"; k.appendChild(ws);
       ref.rest = el("div", "gl-istirahat"); ref.rest.style.whiteSpace = "pre-line"; k.appendChild(ref.rest);
-      var aku = h.ua === uid || h.ub === uid, menangAku = (h.p === "a" && h.ua === uid) || (h.p === "b" && h.ub === uid);
+      var aku = h.ua === uid || (!hf.rek && h.ub === uid), menangAku = (h.p === "a" && h.ua === uid) || (h.p === "b" && h.ub === uid);
       var rest = "";
-      if (aku && !menangAku && h.p !== "seri" && h.p !== "batal") rest = hf.rek ? "Tidak apa-apa, kursimu tetap. Coba lagi kapan saja." : "Hampir! Kurang " + (selisih + (selisih === 0 ? 1 : 0)) + " " + (plug.satuanKecil || "skor") + ". Kamu bisa rebut lagi setelah satu babak.";
+      if (aku && !menangAku && h.p !== "seri" && h.p !== "batal") {
+        if (h.al === "putus" || h.al === "diam") rest = (h.al === "putus" ? "Koneksi kamu terputus terlalu lama. " : "Kamu tidak melakukan ketukan terlalu lama. ") + (hf.rek ? "Rekaman menang; kursimu tetap." : "Pertandingan ini dihitung kalah. Kamu bisa merebut kursi lagi setelah satu babak.");
+        else rest = hf.rek ? "Tidak apa-apa, kursimu tetap. Coba lagi kapan saja." : "Hampir! Kurang " + (selisih + (selisih === 0 ? 1 : 0)) + " " + (plug.satuanKecil || "skor") + ". Kamu bisa rebut lagi setelah satu babak.";
+      }
       else if (hf.rek) rest = wk === "a" ? hf.a.n + (S.bertahan ? " naik takhta dengan beruntun 0. Kalahkan manusia untuk menambah angka." : " menang melawan rekaman.") : hf.a.n + " tetap di kursi.";
       else if (S.bertahan && W) rest = (Ls ? Ls.n + " istirahat 1 pertandingan, lalu boleh merebut lagi.\n" : "") + W.n + " tetap di kursi Raja.";
       else if (!S.bertahan) rest = "Keduanya turun. Siapa pun boleh merebut kursi berikutnya.";
+      if (aku && menangAku && (h.al === "putus" || h.al === "diam")) rest = (h.al === "putus" ? "Menang karena koneksi lawan terputus terlalu lama.\n" : "Menang karena lawan tidak melakukan ketukan terlalu lama.\n") + rest;
       ref.rest.textContent = rest;
       var gg = el("div", "gl-gg"); ref.cekChip = el("span", "", "⏳ rekaman sedang diperiksa");
       gg.appendChild(ref.cekChip);
