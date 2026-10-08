@@ -234,9 +234,15 @@ for (const f of ["index.html", "privasi/index.html"].concat(games.map((g) => "ma
     const f = path.join(root, g.slug, "index.html"); if (!fs.existsSync(f)) continue;
     const html = fs.readFileSync(f, "utf8"); if (!/gelanggang\.pasang\(/.test(html)) continue;
     const i0 = html.indexOf("/kit/kit.js") >= 0 ? html.indexOf("/kit/kit.js") : html.indexOf("/kit/v1/kit.js");
-    const urut = ["/kit/gelanggang/v1/inti.js", "/kit/gelanggang/v1/dukungan.js", "/kit/gelanggang/v1/gelanggang.js"].map((s) => html.indexOf(s));
-    if (urut.some((x) => x < 0) || !(i0 < urut[0] && urut[0] < urut[1] && urut[1] < urut[2])) fail(g.slug + ": gelanggang harus memuat kit, inti.js, dukungan.js, gelanggang.js berurutan");
-    if (!/\/kit\/gelanggang\/v1\/gelanggang\.css/.test(html)) fail(g.slug + ": gelanggang.css belum dimuat");
+    const khususLapis = g.slug === "tumpuk-lapis";
+    const skrip = ["/kit/gelanggang/v1/inti.js", "/kit/gelanggang/v1/dukungan.js"].concat(khususLapis
+      ? ["/tumpuk-lapis/gelanggang-state.js", "/tumpuk-lapis/gelanggang.js"]
+      : ["/kit/gelanggang/v1/gelanggang.js"]);
+    const urut = skrip.map((s) => html.indexOf(s));
+    if (urut.some((x, i) => x < 0 || x <= (i ? urut[i - 1] : i0))) fail(g.slug + ": skrip gelanggang harus dimuat sesudah kit dan berurutan");
+    const gaya = khususLapis ? "/tumpuk-lapis/gelanggang.css" : "/kit/gelanggang/v1/gelanggang.css";
+    if (!html.includes(gaya)) fail(g.slug + ": gelanggang.css belum dimuat");
+    for (const aset of skrip.concat(gaya)) if (!fs.existsSync(path.join(root, aset.slice(1)))) fail(g.slug + ": aset gelanggang tidak ada: " + aset);
     const S = setelan && setelan[g.slug];
     if (!S || !S.arena) { fail(g.slug + ": ikut gelanggang tetapi tidak ada di scripts/gelanggang/setelan.json"); continue; }
     for (const a in S.arena) { const salah = Ig && Ig.cekSetelan(S.arena[a]); if (salah) fail(g.slug + "/" + a + ": setelan gelanggang tidak wajar: " + salah); }

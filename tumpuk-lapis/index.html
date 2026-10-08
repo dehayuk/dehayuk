@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/kit/kit.css">
-<link rel="stylesheet" href="/kit/gelanggang/v1/gelanggang.css">
+<link rel="stylesheet" href="/tumpuk-lapis/gelanggang.css">
 <style>
 :root{--dk-ink:#4a1d2e;--dk-lbl:#8a4a5a;--dk-p1:#fffaf2;--dk-p2:#ffe6ec;--dk-pe:#f5c9d4}
 html,body{background:#6fc8ff}
@@ -293,7 +293,8 @@ canvas{display:block}
 <script src="/kit/kit.js"></script>
 <script src="/kit/gelanggang/v1/inti.js"></script>
 <script src="/kit/gelanggang/v1/dukungan.js"></script>
-<script src="/kit/gelanggang/v1/gelanggang.js"></script>
+<script src="/tumpuk-lapis/gelanggang-state.js"></script>
+<script src="/tumpuk-lapis/gelanggang.js"></script>
 <script>
 "use strict";
 const KIT = window.DehayukKit, SLUG = "tumpuk-lapis", ST = KIT.store(SLUG), TAU = Math.PI * 2;
@@ -987,7 +988,7 @@ function camTarget(c) {
   // Gelanggang belah dua: menaraku di setengah kiri, sama besar dengan menara lawan di kanan (skala dibagikan lewat GL skala()).
   // Hanya kamera yang berubah; fisika, ketukan, dan rekaman tidak.
   if (kind === "arena" && (mode === "play" || mode === "count" || mode === "ending" || mode === "arenaTunggu")) {
-    const za = arenaZ(n), aa = 0.42, ba = 0.8; // lebar puncak menara ±36% layar: tetap di setengahnya sendiri
+    const za = arenaZ(n), aa = (arenaArea.top + Math.max(80, vh - arenaArea.top - arenaArea.bottom) * 0.3) / vh, ba = (vh - arenaArea.bottom - 12) / vh; // lebar puncak menara ±36% layar: tetap di setengahnya sendiri
     return { z: za, a: aa, c: Math.min(topV, -(ba - aa) * vh / (S0 * za)), x: 0.25 };
   }
   const topU = Math.min(topV, G && (mode === "over" || mode === "ending") ? -(G.g.n + 1) * LH * HK : Infinity) - 70, botU = 95;
@@ -1348,7 +1349,7 @@ function render(dt) {
   // Gelanggang belah dua: dunia game hanya di setengah kiri, dipotong rapi di garis tengah (hanya tampilan).
   const belah = kind === "arena" && (mode === "play" || mode === "count" || mode === "ending" || mode === "arenaTunggu");
   piringSkala = belah ? 0.8 : 1;
-  if (belah) { g.save(); g.beginPath(); g.rect(0, 0, vw / 2 - 2, vh); g.clip(); }
+  if (belah) { g.save(); g.beginPath(); g.rect(0, arenaArea.top, vw / 2 - 2, Math.max(0, vh - arenaArea.top - arenaArea.bottom)); g.clip(); }
   drawPlate(plateSel);
   drawFall(dt, true);
   if (G) drawGhost();
@@ -1492,7 +1493,7 @@ function drawGhostTag() {
 // Colokan ke /kit/gelanggang/v1/. Game tidak pernah menyentuh jaringan; mesin gelanggang yang mengurus.
 // Rekaman gelanggang = daftar waktu ketukan (md sejak lapis mulai bergerak). Dari benih + ketukan, menara bisa
 // dibangun ulang persis oleh penonton dan diperiksa oleh HP lain (lapis mustahil, skor, jumlah pas).
-let GL = null, arenaAngin = 90, glLaci = 0;
+let GL = null, arenaAngin = 90, glLaci = 0, arenaArea = {top:100,bottom:64};
 function arenaEks(res) {
   if (res.over) return 2;
   if (res.perfect && core.combo >= 5) return 1;
@@ -1597,7 +1598,8 @@ if (KIT.gelanggang && !COVER) GL = KIT.gelanggang.pasang({
   keluar() { if (kind === "arena" || mode === "arenaTunggu") toTitle(); },
   rekorPribadi() { return best(); },
   // skala kamera menaraku saat ini, agar menara lawan digambar sama besar di belah dua
-  skala() { return kind === "arena" ? { kz: S0 * camZ, a: 0.42, base: 0.8 } : null; }
+  viewport(area) { arenaArea = area; },
+  skala() { const space = Math.max(80, vh - arenaArea.top - arenaArea.bottom); return kind === "arena" ? { kz: S0 * camZ, a: (arenaArea.top + space * 0.3) / vh, base: (vh - arenaArea.bottom - 12) / vh } : null; }
 });
 
 /* ================= MULAI ================= */
