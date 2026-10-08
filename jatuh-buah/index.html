@@ -21,6 +21,7 @@ canvas{display:block}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:40}
 #col{position:fixed;top:0;bottom:0;pointer-events:none;z-index:10}
 #probe{position:fixed;left:0;top:0;width:0;height:0;padding:var(--st) var(--sr) var(--sb) var(--sl);visibility:hidden}
+button:focus-visible,a:focus-visible{outline:3px solid #287fa4;outline-offset:5px}
 button,a{font-family:var(--fd);-webkit-tap-highlight-color:transparent;touch-action:manipulation;cursor:pointer}
 .ol{color:#fff;text-shadow:0 2px 0 var(--ink),2px 0 0 var(--ink),-2px 0 0 var(--ink),0 -2px 0 var(--ink),1.5px 1.5px 0 var(--ink),-1.5px 1.5px 0 var(--ink),1.5px -1.5px 0 var(--ink),-1.5px -1.5px 0 var(--ink),0 4px 0 var(--ink)}
 .scr{position:absolute;inset:0;pointer-events:auto}
@@ -55,11 +56,11 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
 #bMain svg{width:34px;height:34px}
 #bMain.pr{animation:none}
 @keyframes pulse{50%{transform:scale(1.07)}}
-.icons{display:flex;gap:12px;justify-content:center}
-.ic{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:0}
-.ic .b{width:58px;height:58px;border-radius:50%;padding:0;font-size:19px}
+.icons{display:flex;gap:clamp(6px,1.6vw,12px);justify-content:center;width:100%;max-width:350px}
+.ic{display:flex;flex:1;min-width:0;max-width:62px;min-height:68px;flex-direction:column;align-items:center;gap:6px;background:none;border:0;padding:0}
+.ic .b{width:min(100%,54px);height:auto;aspect-ratio:1;min-width:44px;min-height:44px;border-radius:50%;padding:0;font-size:19px}
 .ic .b svg{width:28px;height:28px}
-.ic span{font:800 13px/1 var(--fd)}
+.ic>span:last-child{font:800 clamp(11px,2.9vw,13px)/1.1 var(--fd)}
 .dot{position:absolute;right:-3px;top:-3px;width:16px;height:16px;border-radius:50%;background:#ff3b5c;border:3px solid var(--ink);animation:pulse 1s infinite}
 .ent>*{animation:popin .5s cubic-bezier(.2,1.5,.4,1) backwards}
 .ent>:nth-child(2){animation-delay:.08s}.ent>:nth-child(3){animation-delay:.16s}.ent>:nth-child(4){animation-delay:.24s}
@@ -166,6 +167,8 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
   #sTantang .stage{width:70px!important;height:70px!important}
   #sKoleksi .pn{max-width:520px}.kg{grid-template-columns:repeat(6,1fr)}
 }
+#playHint{position:absolute;left:50%;transform:translateX(-50%);max-width:calc(100% - 42px);padding:9px 14px;border:2px solid rgba(108,72,25,.17);border-radius:15px;background:rgba(255,253,236,.93);box-shadow:0 3px 0 rgba(96,57,19,.12);font:800 13px/1.35 var(--fb);text-align:center;pointer-events:none;width:min(290px,calc(100% - 42px));white-space:normal}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 #uji{position:fixed;left:4px;top:4px;right:4px;z-index:99;background:rgba(0,0,0,.8);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px;pointer-events:none}
 </style>
 </head>
@@ -191,6 +194,7 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
     </div>
   </section>
 
+  <p id="playHint" hidden>Geser untuk membidik, lalu lepas. Buah sama akan bergabung.</p>
   <div id="hud" hidden>
     <button class="b o rd" id="bPause" aria-label="Jeda"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4.5" height="14" rx="1.5" fill="#fff" stroke="#3d1a0c" stroke-width="1.8"/><rect x="13.5" y="5" width="4.5" height="14" rx="1.5" fill="#fff" stroke="#3d1a0c" stroke-width="1.8"/></svg></button>
     <div class="sc"><b class="ol" id="hScore">0</b><small class="ol" id="hBestP"><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#3d1a0c" stroke-width="2" stroke-linejoin="round" d="M3 18h18l1-11-6 4-4-7-4 7-6-4z"/></svg><span id="hBest">0</span></small></div>
@@ -604,24 +608,24 @@ const ART = [
     c.strokeStyle = "#4f7a1f"; c.lineWidth = R * .15; c.lineCap = "round";
     c.beginPath(); c.moveTo(0, -R * .75); c.quadraticCurveTo(R * .05, -R * 1.25, R * .5, -R * 1.5); c.stroke();
     leaf(c, R * .45, -R * 1.45, R * .8, R * .32, -.25, "#72d23c");
-    c.fillStyle = rg(c, R, "#ff7d8c", "#e8203a", "#b30a24"); circ(c, 0, 0, R); c.fill();
+    c.fillStyle = rg(c, R, "#ffb0c1", "#ff365e", "#c70f3c"); circ(c, 0, 0, R); c.fill();
     c.fillStyle = "rgba(120,0,20,.35)"; c.beginPath(); c.ellipse(0, -R * .82, R * .16, R * .09, 0, 0, TAU); c.fill();
   },
   (c, R) => { // Rambutan
-    const n = 30; c.lineCap = "round";
+    const n = R < 28 ? 20 : 28; c.lineCap = "round";
     for (let k = 0; k < n; k++) {
       const a = k / n * TAU + .1, a2 = a + .32;
-      c.strokeStyle = "#d8202e"; c.lineWidth = R * .11;
+      c.strokeStyle = "#ed543e"; c.lineWidth = R * .11;
       c.beginPath(); c.moveTo(Math.cos(a) * R * .8, Math.sin(a) * R * .8);
       c.quadraticCurveTo(Math.cos(a + .12) * R * 1.08, Math.sin(a + .12) * R * 1.08, Math.cos(a2) * R * 1.17, Math.sin(a2) * R * 1.17); c.stroke();
       c.fillStyle = "#8fd13c"; circ(c, Math.cos(a2) * R * 1.17, Math.sin(a2) * R * 1.17, R * .065); c.fill();
     }
-    c.fillStyle = rg(c, R, "#ff7a6a", "#e2242e", "#a80f1f"); circ(c, 0, 0, R * .9); c.fill();
+    c.fillStyle = rg(c, R, "#ffb899", "#ff6843", "#c92438"); circ(c, 0, 0, R * .9); c.fill();
     c.strokeStyle = "rgba(255,160,150,.45)"; c.lineWidth = R * .05;
     for (let k = 0; k < 14; k++) { const a = k / 14 * TAU; c.beginPath(); c.moveTo(Math.cos(a) * R * .45, Math.sin(a) * R * .45); c.lineTo(Math.cos(a + .2) * R * .75, Math.sin(a + .2) * R * .75); c.stroke(); }
   },
   (c, R) => { // Duku
-    c.fillStyle = rg(c, R, "#fff4c4", "#f0cf76", "#c99a40"); circ(c, 0, 0, R); c.fill();
+    c.fillStyle = rg(c, R, "#fff9cf", "#ffe38a", "#dca442"); circ(c, 0, 0, R); c.fill();
     const rn = srand(7); c.fillStyle = "rgba(150,95,30,.35)";
     for (let k = 0; k < 16; k++) { const a = rn() * TAU, d = rn() * R * .85; circ(c, Math.cos(a) * d, Math.sin(a) * d, R * (.03 + rn() * .03)); c.fill(); }
     c.fillStyle = "#7a5020"; c.save(); c.translate(0, -R * .92);
@@ -632,19 +636,19 @@ const ART = [
     c.beginPath(); c.moveTo(0, -R * 1.25);
     c.bezierCurveTo(R * .55, -R * 1.08, R * 1.0, -R * .6, R, 0); c.arc(0, 0, R, 0, Math.PI);
     c.bezierCurveTo(-R, -R * .6, -R * .55, -R * 1.08, 0, -R * 1.25); c.closePath();
-    c.fillStyle = rg(c, R, "#b86a3a", "#7a3316", "#4a1a08"); c.fill();
+    c.fillStyle = rg(c, R, "#f3be7d", "#b76a35", "#743516"); c.fill();
     c.save(); c.clip();
     c.lineWidth = R * .045; c.lineJoin = "round";
-    for (let row = 0, y = -R * 1.15; y < R; row++, y += R * .22) {
-      for (let x = -R + (row % 2) * R * .13; x < R; x += R * .26) {
-        c.strokeStyle = "rgba(230,160,100,.55)"; c.beginPath(); c.moveTo(x - R * .1, y - R * .04); c.lineTo(x, y + R * .08); c.lineTo(x + R * .1, y - R * .04); c.stroke();
-        c.fillStyle = "#2a0d04"; circ(c, x, y + R * .08, R * .025); c.fill();
+    for (let row = 0, y = -R * 1.15; y < R; row++, y += R * .28) {
+      for (let x = -R + (row % 2) * R * .13; x < R; x += R * .32) {
+        c.strokeStyle = "rgba(255,225,165,.45)"; c.beginPath(); c.moveTo(x - R * .1, y - R * .04); c.lineTo(x, y + R * .08); c.lineTo(x + R * .1, y - R * .04); c.stroke();
+        c.fillStyle = "#6b3515"; circ(c, x, y + R * .08, R * .018); c.fill();
       }
     }
     c.restore();
   },
   (c, R) => { // Jeruk
-    c.fillStyle = rg(c, R, "#ffd070", "#ff9a1c", "#e0680a"); circ(c, 0, 0, R); c.fill();
+    c.fillStyle = rg(c, R, "#ffe98e", "#ffb323", "#ef6a10"); circ(c, 0, 0, R); c.fill();
     const rn = srand(11); c.fillStyle = "rgba(255,235,170,.45)";
     for (let k = 0; k < 30; k++) { const a = rn() * TAU, d = Math.sqrt(rn()) * R * .9; circ(c, Math.cos(a) * d, Math.sin(a) * d, R * .03); c.fill(); }
     c.fillStyle = "#4e8a22"; circ(c, 0, -R * .94, R * .09); c.fill();
@@ -659,7 +663,7 @@ const ART = [
     leaf(c, -R * .36, -R * 1.02, R * .75, R * .26, -.2, "#5fbf3a");
   },
   (c, R) => { // Manggis
-    c.fillStyle = rg(c, R, "#a5508f", "#5e1b54", "#34082d"); circ(c, 0, 0, R); c.fill();
+    c.fillStyle = rg(c, R, "#df8cfa", "#993cca", "#5b1b83"); circ(c, 0, 0, R); c.fill();
     c.fillStyle = "#4a7a22"; c.fillRect(-R * .06, -R * 1.2, R * .12, R * .3);
     const cols = ["#5a9a2e", "#6fb83c", "#7cc947", "#6fb83c", "#5a9a2e"];
     for (let k = -2; k <= 2; k++) { c.save(); c.translate(k * R * .17, -R * .82 + Math.abs(k) * R * .05); c.rotate(k * .35); c.fillStyle = cols[k + 2]; c.beginPath(); c.ellipse(0, 0, R * .15, R * .11, 0, 0, TAU); c.fill(); c.restore(); }
@@ -689,7 +693,7 @@ const ART = [
     c.restore();
   },
   (c, R) => { // Nangka
-    c.fillStyle = rg(c, R, "#f4ee86", "#c6c43a", "#8a9020"); c.beginPath(); c.ellipse(0, 0, R * .93, R, 0, 0, TAU); c.fill();
+    c.fillStyle = rg(c, R, "#e7ff99", "#a9df49", "#60a333"); c.beginPath(); c.ellipse(0, 0, R * .93, R, 0, 0, TAU); c.fill();
     c.save(); c.clip(); c.strokeStyle = "rgba(80,100,15,.55)"; c.lineWidth = R * .03; c.lineCap = "round";
     for (let row = -7; row <= 7; row++) for (let col = -7; col <= 7; col++) {
       const x = col * R * .16 + (row & 1) * R * .08, y = row * R * .14, s = R * .045;
@@ -704,7 +708,7 @@ const ART = [
       c.fillStyle = k & 1 ? "#6f8a1d" : "#83a024";
       c.beginPath(); c.moveTo(Math.cos(a - .12) * R * .88, Math.sin(a - .12) * R * .88); c.lineTo(Math.cos(a) * R * 1.17, Math.sin(a) * R * 1.17); c.lineTo(Math.cos(a + .12) * R * .88, Math.sin(a + .12) * R * .88); c.fill();
     }
-    c.fillStyle = rg(c, R, "#dfe46a", "#a4b832", "#6c8418"); circ(c, 0, 0, R * .95); c.fill();
+    c.fillStyle = rg(c, R, "#f1ff9a", "#bed94c", "#78992b"); circ(c, 0, 0, R * .95); c.fill();
     c.save(); c.clip();
     for (let row = -6; row <= 6; row++) for (let col = -6; col <= 6; col++) {
       const x = col * R * .21 + (row & 1) * R * .105, y = row * R * .19, s = R * .06;
@@ -783,15 +787,22 @@ function tmp(side) {
 }
 // buah dengan garis tepi tebal: seni -> siluet gelap dicap 16 arah -> seni di atasnya
 function makeFruit(lv, R, ex, lock) {
-  const t = Math.max(2.5, R * .085 + 1.2), side = Math.ceil(R * 3.3 + t * 2 + 4), h = side / 2;
+  const t = Math.max(2.2, R * .068 + 1.0), side = Math.ceil(R * 3.3 + t * 2 + 4), h = side / 2;
   const [a, b] = tmp(side);
   a.translate(h, h); ART[lv](a, R);
   if (!lock) {
-    a.save(); a.globalCompositeOperation = "source-atop"; a.globalAlpha = .3; a.fillStyle = OUTC[lv];
+    a.save(); a.globalCompositeOperation = "source-atop"; a.globalAlpha = .16; a.fillStyle = OUTC[lv];
     a.beginPath(); a.rect(-side, -R * .95, side * 2, side * 2); a.arc(-R * .28, -R * .28, R * 1.12, 0, TAU); a.fill("evenodd"); a.restore();
     a.save(); a.globalCompositeOperation = "source-atop"; a.fillStyle = "rgba(255,255,255,.88)";
     a.beginPath(); a.ellipse(-R * .42, -R * .42, R * .27, R * .15, -.78, 0, TAU); a.fill();
     circ(a, -R * .12, -R * .66, R * .065); a.fill(); a.restore();
+    // Cached soft light and rim: texture remains visible under the gloss.
+    a.save(); a.globalCompositeOperation = "source-atop";
+    const light = a.createRadialGradient(-R * .42, -R * .5, 0, -R * .3, -R * .3, R * .92);
+    light.addColorStop(0, "rgba(255,255,235,.2)"); light.addColorStop(1, "rgba(255,255,255,0)");
+    a.fillStyle = light; a.fillRect(-R * 1.2, -R * 1.25, R * 2.4, R * 2.5);
+    a.strokeStyle = "rgba(255,250,220,.28)"; a.lineWidth = Math.max(1, R * .04);
+    a.beginPath(); a.arc(0, 0, R * .91, -.24, 1.16); a.stroke(); a.restore();
     face(a, R, lv, ex);
   }
   b.drawImage(TMP1, 0, 0); b.globalCompositeOperation = "source-in"; b.fillStyle = lock ? "#24162e" : OUTC[lv]; b.fillRect(0, 0, side, side);
@@ -879,6 +890,7 @@ function layout() {
   IY = top0 + 14 * S + Math.max(0, Math.min(extra * .45, 80));
   GY = IY + (H + 22) * S;
   buildSprites(); buildBg(); buildJar(); buildTitle();
+  $("playHint").style.top = (IY + H * S * .58) + "px";
   document.documentElement.style.setProperty("--padb", Math.max(20, vh - PGY + PSC * 50 * 2.5 + 6) + "px");
   drawLogo();
 }
@@ -905,7 +917,7 @@ function cloud(w) {
 function buildBg() {
   BG = mk(cv.width, cv.height); const g = BG.getContext("2d"); g.scale(dpr, dpr);
   const sky = g.createLinearGradient(0, 0, 0, vh);
-  sky.addColorStop(0, "#ff8f7a"); sky.addColorStop(.4, "#ffb77a"); sky.addColorStop(.75, "#ffd98f"); sky.addColorStop(1, "#ffe9ad");
+  sky.addColorStop(0, "#ffad9a"); sky.addColorStop(.4, "#ffd0a0"); sky.addColorStop(.75, "#ffe9b0"); sky.addColorStop(1, "#fff3cb");
   g.fillStyle = sky; g.fillRect(0, 0, vw, vh);
   // sinar matahari
   const sx = vw / 2, sy = IY + H * S * .32;
@@ -987,13 +999,13 @@ function buildJar() {
   JX = IX - T - 10; JY = IY - up - 8;
   const ox = T + 10, oy = up + 8; // posisi interior di kanvas
   JB = mk(Math.ceil(bw * dpr), Math.ceil(bh * dpr)); let g = JB.getContext("2d"); g.scale(dpr, dpr);
-  const bg = g.createLinearGradient(0, oy - up, 0, oy + ih); bg.addColorStop(0, "#fff3d6"); bg.addColorStop(1, "#f7d9a0");
+  const bg = g.createLinearGradient(0, oy - up, 0, oy + ih); bg.addColorStop(0, "#fffdf1"); bg.addColorStop(.58, "#fff5df"); bg.addColorStop(1, "#f4dfb4");
   g.fillStyle = bg; g.fillRect(ox - 2, oy - up, iw + 4, ih + up);
-  g.strokeStyle = "rgba(170,105,40,.2)"; g.lineWidth = 2;
+  g.strokeStyle = "rgba(170,105,40,.075)"; g.lineWidth = 2;
   for (let k = 1; k < 6; k++) { const x = ox + iw * k / 6; g.beginPath(); g.moveTo(x, oy - up); g.lineTo(x, oy + ih); g.stroke(); }
-  g.fillStyle = "rgba(255,255,255,.35)"; for (let k = 0; k < 6; k++) g.fillRect(ox + iw * k / 6 + 3, oy - up, 3, ih + up);
+  g.fillStyle = "rgba(255,255,255,.18)"; for (let k = 0; k < 6; k++) g.fillRect(ox + iw * k / 6 + 3, oy - up, 3, ih + up);
   // anyaman halus
-  g.strokeStyle = "rgba(190,120,50,.1)"; g.lineWidth = 6 * S;
+  g.strokeStyle = "rgba(190,120,50,.045)"; g.lineWidth = 2 * S;
   for (let y = oy; y < oy + ih; y += 26 * S) { g.beginPath(); g.moveTo(ox, y); g.lineTo(ox + iw, y); g.stroke(); }
   const sh = (x0, y0, x1, y1, a) => { const q = g.createLinearGradient(x0, y0, x1, y1); q.addColorStop(0, "rgba(110,50,10," + a + ")"); q.addColorStop(1, "rgba(110,50,10,0)"); return q; };
   g.fillStyle = sh(ox, 0, ox + 26 * S, 0, .28); g.fillRect(ox, oy - up, 26 * S, ih + up);
@@ -1005,7 +1017,7 @@ function buildJar() {
   g.fillStyle = "#3d1a0c"; g.beginPath(); rrPath(g, ox + iw * .08, oy + ih + B, 30 * S, 12 * S, [0, 0, 6, 6]); rrPath(g, ox + iw * .92 - 30 * S, oy + ih + B, 30 * S, 12 * S, [0, 0, 6, 6]); g.fill();
   g.fillStyle = "rgba(255,210,150,.35)"; g.fillRect(8, oy + ih + 3, iw + T * 2 + 4, 4);
   for (const x of [ox - T, ox + iw]) {
-    woodRect(g, x, oy - up, T, ih + up + 4, [T * .5, T * .5, 2, 2], "#e9a45a", "#c97a36", "#a45a24", true);
+    woodRect(g, x, oy - up, T, ih + up + 4, [T * .5, T * .5, 2, 2], "#ffd28b", "#e19a50", "#b97034", true);
     g.fillStyle = "rgba(255,240,200,.45)"; g.fillRect(x + T * .22, oy - up + T * .6, T * .18, ih + up - T);
     for (const by of [.22, .72]) {
       const y = oy + ih * by; g.beginPath(); rrPath(g, x - 3, y, T + 6, 12 * S, 4); g.fillStyle = "#ffcf5a"; g.fill(); g.lineWidth = 2.6; g.strokeStyle = "#3d1a0c"; g.stroke();
@@ -1045,7 +1057,7 @@ function drawLogo() {
         if (pass === 0) { g.lineWidth = fs * .3; g.strokeStyle = "#3d1a0c"; g.strokeText(ch, 0, fs * .09); g.fillStyle = "#3d1a0c"; g.fillText(ch, 0, fs * .09); }
         if (pass === 1) { g.lineWidth = fs * .24; g.strokeStyle = "#3d1a0c"; g.strokeText(ch, 0, 0); }
         if (pass === 2) { const gr = g.createLinearGradient(0, -fs * .72, 0, 0); gr.addColorStop(0, "#fff"); gr.addColorStop(.28, cols[i]); gr.addColorStop(1, shade(cols[i])); g.fillStyle = gr; g.fillText(ch, 0, 0); }
-        if (pass === 9) { g.fillStyle = "rgba(255,255,255,.75)"; g.beginPath(); g.ellipse(-fs * .12, -fs * .55, fs * .07, fs * .035, -.6, 0, TAU); g.fill(); }
+        if (pass === 3) { g.fillStyle = "rgba(255,255,255,.75)"; g.beginPath(); g.ellipse(-fs * .12, -fs * .55, fs * .07, fs * .035, -.6, 0, TAU); g.fill(); }
         g.restore();
       });
     }
@@ -1067,8 +1079,27 @@ function juice(lv, x, y, n, sp) {
 function stars(x, y, n, sp) { for (let k = 0; k < n; k++) { const a = Math.random() * TAU, v = sp * (.4 + Math.random() * .7); part(x, y, Math.cos(a) * v, Math.sin(a) * v - sp * .3, .7 + Math.random() * .5, 7 + Math.random() * 8, k & 1 ? 11 : 12); } }
 const TN = 16, tX = new Float32Array(TN), tY = new Float32Array(TN), tL = new Float32Array(TN), tSz = new Float32Array(TN), tTx = new Array(TN).fill(""), tC = new Array(TN).fill("#fff");
 let tHead = 0;
-function ftext(x, y, s, size, col) { const i = tHead; tHead = (tHead + 1) % TN; tX[i] = x; tY[i] = y; tL[i] = 1; tSz[i] = size; tTx[i] = s; tC[i] = col; }
+function ftext(x, y, s, size, col) { ctx.save(); ctx.font = fontPx(size); const half = Math.min((colW - 20) / 2, ctx.measureText(s).width / 2 + 10); ctx.restore(); x = Math.max(colX + half + 4, Math.min(colX + colW - half - 4, x)); const i = tHead; tHead = (tHead + 1) % TN; tX[i] = x; tY[i] = y; tL[i] = 1; tSz[i] = size; tTx[i] = s; tC[i] = col; }
 let comboT = 0, comboS = "", shake = 0, flash = 0;
+const mergeRings = [];
+const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+function calmMotion() { return motionQuery.matches || document.documentElement.classList.contains("noanim"); }
+function ring(lv, x, y) {
+  if (calmMotion()) return;
+  if (mergeRings.length >= 18) mergeRings.shift();
+  mergeRings.push({ x, y, radius: FR[lv].r * S, color: FR[lv].j, age: 0 });
+}
+function drawMergeRings(c, dt) {
+  c.setTransform(1, 0, 0, 1, 0, 0);
+  for (let i = mergeRings.length - 1; i >= 0; i--) {
+    const r = mergeRings[i]; r.age += dt;
+    if (r.age >= .42 || calmMotion()) { mergeRings.splice(i, 1); continue; }
+    const f = r.age / .42; c.globalAlpha = (1 - f) * .7;
+    c.lineWidth = (2 + 4 * (1 - f)) * dpr; c.strokeStyle = r.color;
+    c.beginPath(); c.arc(r.x * dpr, r.y * dpr, r.radius * (.55 + f * .9) * dpr, 0, TAU); c.stroke();
+  }
+  c.globalAlpha = 1;
+}
 const CN = 160, cX = new Float32Array(CN), cY = new Float32Array(CN), cVX = new Float32Array(CN), cVY = new Float32Array(CN), cR = new Float32Array(CN), cW = new Float32Array(CN), cCol = new Int8Array(CN);
 let confT = 0; const CCOL = ["#ff5a5f", "#ffc53d", "#7ed957", "#35c6c9", "#c9a3ff", "#ff9fc3", "#fff"];
 function confetti() {
@@ -1079,7 +1110,7 @@ function confetti() {
 /* ================= STATUS PERMAINAN ================= */
 const core = new Core();
 let mode = "title", aimX = W / 2, aiming = false, heldT = 0, heldSc = 1, heldScV = 0, overT = 0, entry = 1, dispScore = 0, lastHud = -1;
-let kind = "normal", chal = null, chalLast = null, gameSeed = 1, time = 0, recPrev = 0, recHit = false, recT = 0, aimPid = -1;
+let kind = "normal", chal = null, chalLast = null, gameSeed = 1, runDate = "", titleTransition = false, titleTimer = 0, time = 0, recPrev = 0, recHit = false, recT = 0, aimPid = -1;
 const VS = new Float32Array(MAXB * 4); // squash, squashV, scale, scaleV
 const Q = new URLSearchParams(location.search), DEMO = Q.get("demo") === "1";
 function ymd(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
@@ -1088,8 +1119,11 @@ function hashStr(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h
 function dailyDone() { return SV.daily && SV.daily.d === ymd(new Date()); }
 
 function startGame(k, seed) {
-  kind = k; gameSeed = (seed >>> 0) || ((Math.random() * 4294967295) >>> 0) || 1; if (k === "daily") { SV.daily = { d: ymd(new Date()), score: 0, top: 0 }; save(); }
+  clearTimeout(titleTimer); titleTransition = false; clearInterval(countUp.id);
+  kind = k; runDate = ymd(new Date()); gameSeed = (seed >>> 0) || ((Math.random() * 4294967295) >>> 0) || 1; if (k === "daily") { SV.daily = { d: runDate, score: 0, top: 0 }; save(); }
   core.reset(gameSeed);
+  mergeRings.length = 0; pL.fill(0); tL.fill(0); happy.fill(0);
+  confT = 0; fctx.setTransform(1, 0, 0, 1, 0, 0); fctx.clearRect(0, 0, fx.width, fx.height);
   VS.fill(0); for (let i = 0; i < MAXB; i++) VS[i * 4 + 2] = 1;
   dispScore = 0; lastHud = -1; heldT = .3; heldSc = .2; heldScV = 0; aimX = W / 2; aiming = false; aimPid = -1; entry = 0; overT = 0; comboT = 0; shake = 0; flash = 0; recPrev = SV.best; recHit = false; recT = 0;
   mark(core.next[0]);
@@ -1097,13 +1131,15 @@ function startGame(k, seed) {
   updNext(); mode = "play";
 }
 function mark(lv) { if (!(SV.col & (1 << lv))) { SV.col |= 1 << lv; save(); } }
-function updNext() { $("hNext").src = UI[core.next[0]]; }
+function updNext() { $("hNext").src = UI[core.next[1]]; $("hNext").alt = "Buah berikutnya: " + FR[core.next[1]].n; }
 function endGame() {
+  if (mode !== "play" && mode !== "ending") return;
+  if (kind === "daily" && runDate !== ymd(new Date())) kind = "practice";
   mode = "over";
   const sc = core.score; const rec = sc > recPrev && sc > 0;
   if (sc > SV.best) SV.best = sc;
   SV.last = { seed: gameSeed, score: sc, top: core.top };
-  if (kind === "daily") SV.daily = { d: ymd(new Date()), score: sc, top: core.top };
+  if (kind === "daily") SV.daily = { d: runDate, score: sc, top: core.top };
   save();
   const pr = KIT.progress.record({ game: SLUG, score: sc, papan: kind === "daily" ? "harian" : kind === "practice" || kind === "chal" ? "" : "bebas" });
   $("hud").hidden = true;
@@ -1149,6 +1185,8 @@ function show(el) {
   const p = el.querySelector(".pn"); if (p) { p.tabIndex = -1; try { p.focus({ preventScroll: true }); } catch (e) { } }
 }
 function toTitle() {
+  clearTimeout(titleTimer); titleTransition = false; clearInterval(countUp.id);
+  aiming = false; aimPid = -1; mergeRings.length = 0; $("playHint").hidden = true;
   hideAll(); $("hud").hidden = true; mode = "title";
   $("tBest").querySelector("span").textContent = SV.best;
   const pg = KIT.progress.get();
@@ -1161,8 +1199,10 @@ function toTitle() {
   $("logo").classList.remove("leave");
 }
 function leaveTitle(fn) {
+  if (mode !== "title" || titleTransition) return;
+  titleTransition = true;
   $("tMid").classList.add("leave"); $("logo").classList.add("leave");
-  setTimeout(fn, 260);
+  titleTimer = setTimeout(() => { if (titleTransition && mode === "title") fn(); }, calmMotion() ? 0 : 260);
 }
 function openKoleksi() {
   const g = $("kGrid"); g.textContent = "";
@@ -1214,11 +1254,17 @@ function pressFx(e) {
   window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
 }
 document.addEventListener("pointerdown", pressFx, true);
-function on(id, fn) { $(id).addEventListener("click", (e) => { SFX.tap(); fn(e); }); }
+function on(id, fn) { $(id).addEventListener("click", (e) => {
+  const b = $(id), scr = b.closest(".scr");
+  if (scr && scr.hidden || b.disabled || titleTransition || scr === $("sTitle") && hasModal()) return;
+  if (id[0] === "r" && mode !== "over" || id[0] === "p" && mode !== "pause") return;
+  if (id === "bPause" && mode !== "play" || id === "bMain" && mode !== "title") return;
+  SFX.tap(); fn(e);
+}); }
 on("bMain", () => leaveTitle(() => chal ? startGame("chal", chal.seed) : startGame("normal")));
 on("bHarian", openHarian); on("bTantang", openTantang); on("bKoleksi", openKoleksi); on("bPeringkat", () => KIT.papan && KIT.papan.buka(SLUG)); on("bSetelan", openSetelan);
 on("bLapor", () => KIT.lapor && KIT.lapor.buka());
-on("dPlay", () => { const seed = hashStr("harian-" + ymd(new Date())); const k = dailyDone() ? "practice" : "daily"; $("sHarian").hidden = true; leaveTitle(() => startGame(k, seed)); });
+on("dPlay", () => { $("sHarian").hidden = true; leaveTitle(() => { const date = ymd(new Date()), seed = hashStr("harian-" + date), k = dailyDone() ? "practice" : "daily"; startGame(k, seed); }); });
 on("cSend", () => { if (SV.last) share(SV.last.seed, SV.last.score); else { $("sTantang").hidden = true; leaveTitle(() => startGame("normal")); } });
 on("bPause", () => { if (mode === "play") { mode = "pause"; show($("sPause")); } });
 on("pGo", () => { $("sPause").hidden = true; mode = "play"; });
@@ -1236,24 +1282,28 @@ for (const b of document.querySelectorAll(".sw")) b.addEventListener("click", ()
   if (k === "getar" && p.getar) vib(30); SFX.tap();
 });
 KIT.settings.onChange(() => { if (!$("sSetelan").hidden) paintSetelan(); });
-function toWorld(cx) { return (cx - IX) / S; }
-function canDrop() { return mode === "play" && heldT <= 0 && entry >= 1; }
+function clampAim(x) { const r = FR[core.next[0]].r; return Math.max(r, Math.min(W - r, x)); }
+function toWorld(cx) { return clampAim((cx - IX) / S); }
+function hasModal() { return !!document.querySelector(".scr.ov:not([hidden]),.dk-overlay:not([hidden])"); }
+function canDrop() { return mode === "play" && !hasModal() && heldT <= 0 && entry >= 1; }
 function doDrop() {
   if (!canDrop()) return;
   const r = FR[core.next[0]].r; const x = Math.max(r, Math.min(W - r, aimX));
   const k = core.drop(x);
   if (k >= 0) { VS[k * 4] = .16; VS[k * 4 + 1] = 0; VS[k * 4 + 2] = 1; VS[k * 4 + 3] = 0; core.born[k] = 3; }
   heldT = .42; heldSc = .2; heldScV = 0;
-  mark(core.next[0]); updNext();
+  aimX = clampAim(aimX); mark(core.next[0]); updNext();
 }
 // hanya jari/penunjuk pertama yang membidik; sentuhan jari lain diabaikan sampai jari itu terangkat
-cv.addEventListener("pointerdown", (e) => { if (mode !== "play" || aiming) return; aiming = true; aimPid = e.pointerId; aimX = toWorld(e.clientX); try { cv.setPointerCapture(e.pointerId); } catch (_) { } });
+cv.addEventListener("pointerdown", (e) => { if (mode !== "play" || hasModal() || aiming || e.isPrimary === false || e.pointerType === "mouse" && e.button !== 0) return; aiming = true; aimPid = e.pointerId; aimX = toWorld(e.clientX); try { cv.setPointerCapture(e.pointerId); } catch (_) { } });
 cv.addEventListener("pointermove", (e) => { if (mode !== "play") return; if (aiming ? e.pointerId === aimPid : e.pointerType === "mouse") aimX = toWorld(e.clientX); });
 cv.addEventListener("pointerup", (e) => { if (!aiming || e.pointerId !== aimPid) return; aiming = false; aimPid = -1; if (mode !== "play") return; aimX = toWorld(e.clientX); doDrop(); });
 cv.addEventListener("pointercancel", (e) => { if (e.pointerId === aimPid) { aiming = false; aimPid = -1; } });
 document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape" && e.target.closest && e.target.closest("button,a,input,textarea,select,[role=button],[role=switch]")) return;
+  if (hasModal() && mode !== "pause") return;
   if (mode === "play") {
-    if (e.key === "ArrowLeft") aimX -= 14; else if (e.key === "ArrowRight") aimX += 14;
+    if (e.key === "ArrowLeft") { e.preventDefault(); aimX = clampAim(aimX - 14); } else if (e.key === "ArrowRight") { e.preventDefault(); aimX = clampAim(aimX + 14); }
     else if (e.key === " " || e.key === "Enter" || e.key === "ArrowDown") { e.preventDefault(); doDrop(); }
     else if (e.key === "Escape" || e.key === "p") { mode = "pause"; show($("sPause")); }
   } else if (mode === "pause" && (e.key === "Escape" || e.key === "p")) { $("sPause").hidden = true; mode = "play"; }
@@ -1283,12 +1333,12 @@ function handleEvents() {
       ftext(x, y - 30 * S, "+" + pts, 46, "#ffd23a"); comboT = 1.6; comboS = "Raja Durian!";
       continue;
     }
-    mark(lv);
+    const discovered = !(SV.col & (1 << lv)); mark(lv); ring(lv, x, y);
     SFX.pop(lv); vib(lv >= 7 ? 35 : 15);
     juice(lv - 1, x, y, 10 + lv * 2, 170 + lv * 22);
     if (lv >= 5) stars(x, y, lv - 3, 200 + lv * 20);
     if (lv >= 6) shake = Math.max(shake, 3 + (lv - 5) * 1.6);
-    ftext(x, y - FR[lv].r * S * .6, "+" + pts, 22 + lv * 1.6, cmb > 1 ? "#ffd23a" : "#fff");
+    ftext(x, y - FR[lv].r * S * .6, (discovered ? FR[lv].n + "! " : "") + "+" + pts, discovered ? 24 : 22 + lv * 1.6, cmb > 1 || discovered ? "#ffd23a" : "#fff");
     if (cmb > 1) { comboT = 1.1; comboS = "Kombo x" + cmb + "!"; SFX.combo(cmb); }
   }
   core.evN = 0;
@@ -1301,6 +1351,7 @@ function frameCore(ts) {
   let dt = (ts - lastTs) / 1000; lastTs = ts;
   if (!(dt > 0)) dt = 0; if (dt > .1) dt = .1;
   time += dt;
+  $("playHint").hidden = mode !== "play" || core.drops >= 2 || hasModal();
   if (mode === "play") {
     if (entry < 1) entry = Math.min(1, entry + dt * 2.4);
     acc += dt; let n = 0;
@@ -1326,7 +1377,7 @@ function render(dt) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1;
   c.drawImage(BG, 0, 0);
   for (let ci = 0; ci < CLOUDS.length; ci++) { const cl = CLOUDS[ci];
-    cl.x += cl.v * dt; if (cl.x > vw + 20) cl.x = -cl.w - 20;
+    cl.x += calmMotion() ? 0 : cl.v * dt; if (cl.x > vw + 20) cl.x = -cl.w - 20;
     c.drawImage(cl, cl.x * dpr, cl.y * dpr);
   }
   if (mode === "title" || (mode !== "play" && mode !== "pause" && mode !== "ending" && mode !== "over")) { renderTitle(dt); return; }
@@ -1334,12 +1385,12 @@ function render(dt) {
   shake *= Math.pow(.02, dt); if (shake < .2) shake = 0;
   const ease = 1 - Math.pow(1 - entry, 3) * (1 + 2.2 * (1 - entry)) ;
   const oy = (1 - Math.min(1, entry * 1.0)) * 0 + (1 - ease) * (vh - IY + 40);
-  const sx = shake ? (Math.random() - .5) * shake : 0, sy = (shake ? (Math.random() - .5) * shake : 0) + oy;
+  const sx = shake && !calmMotion() ? (Math.random() - .5) * shake : 0, sy = (shake && !calmMotion() ? (Math.random() - .5) * shake : 0) + oy;
   const ox = IX + sx, oyy = IY + sy;
   c.drawImage(JB, (JX + sx) * dpr, (JY + sy) * dpr);
   // garis bahaya
   const dy = (oyy + DANGER * S) * dpr, danger = core.dangerT > 0, warn = core.warn;
-  const pulse = danger ? .55 + .45 * Math.sin(time * 18) : warn ? .5 + .2 * Math.sin(time * 6) : .28;
+  const pulse = danger ? calmMotion() ? .8 : .7 + .2 * Math.sin(time * 5) : warn ? .5 + .2 * Math.sin(time * 4) : .28;
   c.globalAlpha = pulse; c.strokeStyle = danger || warn ? "#ff2d4a" : "#b3542a"; c.lineWidth = (danger ? 5 : 3.5) * dpr; c.lineCap = "round";
   c.setLineDash(DASH2); c.beginPath(); c.moveTo((ox + 4) * dpr, dy); c.lineTo((ox + W * S - 4) * dpr, dy); c.stroke(); c.setLineDash(DASH);
   if (danger) {
@@ -1348,6 +1399,7 @@ function render(dt) {
     c.globalAlpha = 1; c.fillStyle = "#ff2d4a"; c.fillRect(ox * dpr, dy - 3 * dpr, W * S * k * dpr, 6 * dpr);
   }
   c.globalAlpha = 1;
+  drawMergeRings(c, dt);
   // bidikan & buah yang dipegang
   const K = S * dpr;
   if (mode === "play" || mode === "pause") {
@@ -1367,7 +1419,7 @@ function render(dt) {
         c.setLineDash(DASH2);
         c.globalAlpha = .35; c.fillStyle = "#fff"; c.beginPath(); c.ellipse(gx, (oyy + (land + r) * S) * dpr, r * K * .8, r * K * .22, 0, 0, TAU); c.fill(); c.globalAlpha = 1;
       }
-      const bob = Math.sin(time * 4) * 2 * S;
+      const bob = calmMotion() ? 0 : Math.sin(time * 4) * 2 * S;
       drawSpr(c, SPR[lv][0], gx, (oyy + SPAWN_Y * S + bob) * dpr, Math.sin(time * 3) * .08, heldSc, heldSc);
       c.setTransform(1, 0, 0, 1, 0, 0);
     }
@@ -1389,7 +1441,7 @@ function render(dt) {
     if (mode === "ending" || (core.dangerT > 0 && Y[i] - core.r[i] < DANGER + 90) || (warn && Y[i] - core.r[i] < DANGER + 40)) ex = 2;
     else if (happy[i] > 0) ex = 1;
     else if (((time * 1000 + i * 977) % 4200) < 130) ex = 1;
-    const q = VS[b], sc = VS[b + 2];
+    const q = calmMotion() ? 0 : VS[b], sc = calmMotion() ? 1 : VS[b + 2];
     drawSpr(c, SPR[lv][ex], (ox + X[i] * S) * dpr, (oyy + Y[i] * S) * dpr, a, sc * (1 - q * .7), sc * (1 + q));
   }
   c.setTransform(1, 0, 0, 1, 0, 0);
@@ -1430,7 +1482,7 @@ function render(dt) {
     c.fillStyle = recGr; c.fillText("Rekor baru!", 0, 0); c.restore();
   }
   c.globalAlpha = 1;
-  if (flash > 0) { flash -= dt; c.globalAlpha = Math.max(0, flash) * .8; c.fillStyle = "#fff8d0"; c.fillRect(0, 0, cv.width, cv.height); c.globalAlpha = 1; }
+  if (flash > 0) { flash -= dt; c.globalAlpha = calmMotion() ? 0 : Math.max(0, flash) * .25; c.fillStyle = "#fff8d0"; c.fillRect(0, 0, cv.width, cv.height); c.globalAlpha = 1; }
   if (mode === "ending") { c.globalAlpha = Math.min(.35, overT * .5); c.fillStyle = "#3d0a1a"; c.fillRect(0, 0, cv.width, cv.height); c.globalAlpha = 1; }
 }
 const happy = new Float32Array(MAXB); let comboGr = null, recGr = null;
@@ -1451,10 +1503,10 @@ function renderTitle(dt) {
   const c = ctx;
   for (let k = 0; k < TITLE.length; k++) {
     const f = TITLE[k], t = time * 2.2 + f.ph;
-    const hop = Math.pow(Math.max(0, Math.sin(time * 1.1 + f.ph * 1.3)), 12);
-    const sq = Math.sin(t * 1.4) * .035 + (hop > .02 ? -hop * .05 : 0);
+    const hop = calmMotion() ? 0 : Math.pow(Math.max(0, Math.sin(time * 1.1 + f.ph * 1.3)), 12);
+    const sq = calmMotion() ? 0 : Math.sin(t * 1.4) * .035 + (hop > .02 ? -hop * .05 : 0);
     const blink = ((time * 1000 + f.ph * 900) % 3600) < 140 || hop > .5 ? 1 : 0;
-    drawSpr(c, f.s[blink], f.x * dpr, (f.y - hop * 26) * dpr, Math.sin(t * .7) * .07, 1 - sq * .7, 1 + sq);
+    drawSpr(c, f.s[blink], f.x * dpr, (f.y - hop * 26) * dpr, calmMotion() ? 0 : Math.sin(t * .7) * .07, 1 - sq * .7, 1 + sq);
   }
   c.setTransform(1, 0, 0, 1, 0, 0);
   if (Math.random() < dt * 1.5) { const x = colX + Math.random() * colW; part(x, GY - Math.random() * 60, 0, -40, 1.2, 6 + Math.random() * 5, 11); }
