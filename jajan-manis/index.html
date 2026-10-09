@@ -11,9 +11,7 @@
 <meta property="og:description" content="Tukar, jejerkan tiga, ledakkan! Puzzle jajanan pasar paling manis.">
 <meta property="og:image" content="https://dehayuk.online/jajan-manis/sampul.jpg">
 <meta property="og:url" content="https://dehayuk.online/jajan-manis/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/font/font.css">
 <link rel="stylesheet" href="/kit/v1/kit.css">
 <style>
 :root{--dk-ink:#3b1740;--dk-lbl:#8a4a6a;--dk-p1:#fffaf4;--dk-p2:#ffe4f0;--dk-pe:#f6c4dc}
@@ -147,17 +145,36 @@ canvas{display:block}
 }
 #uji{position:fixed;left:4px;top:4px;right:4px;bottom:4px;overflow:auto;z-index:99;background:rgba(0,0,0,.86);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px}
 </style>
+<link rel="stylesheet" href="perjalanan.css">
+<link rel="stylesheet" href="penyajian.css">
 </head>
 <body>
 <canvas id="cv" role="img" aria-label="Papan jajanan pasar"></canvas>
 <div id="sr" class="vhid" aria-live="polite"></div>
 <div id="probe"></div>
+<aside id="hJourney" hidden aria-label="Perjalanan level">
+  <div class="journey-heading"><span id="journeyName"></span><span id="journeyProgress"></span></div>
+  <p id="journeyLesson"></p>
+  <button id="bRecipe" type="button">Resep istimewa <span aria-hidden="true">?</span></button>
+  <button id="bSkipBonus" type="button" hidden>Lihat hasil →</button>
+</aside>
+<section id="sRecipe" class="dk-overlay" hidden aria-label="Resep istimewa">
+ <div class="dk-panel recipe-panel" role="dialog" aria-modal="true" aria-labelledby="recipeTitle">
+  <div class="dk-ribbon dk-pink dk-ol" id="recipeTitle">Resep istimewa</div>
+  <button class="dk-btn dk-red dk-circle dk-close" id="recipeClose" aria-label="Tutup">×</button>
+  <p class="recipe-lead">Geser dua jajan yang berdampingan. Padukan bentuk yang sama untuk membuat istimewa.</p>
+  <div id="recipeRows"></div>
+  <p class="recipe-foot">Tukar dua istimewa untuk gabungan yang lebih kuat. Pertukaran biasa yang gagal tidak menghabiskan langkah.</p>
+  <button class="dk-btn dk-green dk-ol" id="recipeGo">Lanjut bermain</button>
+ </div>
+</section>
 <div id="col">
   <section id="sTitle" class="scr">
     <a href="/" class="dk-btn dk-yellow dk-circle home" aria-label="Beranda"><svg viewBox="0 0 24 24"><path fill="#3b1740" d="M12 3 2 11.5h3V21h5.5v-6h3v6H19v-9.5h3z"/></svg></a>
     <div class="pill chip dk-ol" id="tProg" aria-label="Pangkat koki dari XP"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#3b1740" stroke-width="2" stroke-linejoin="round" d="M7 14.5a4.2 4.2 0 0 1-.6-8.3 5 5 0 0 1 11.2 0 4.2 4.2 0 0 1-.6 8.3V20H7z"/><path d="M7 16.8h10" stroke="#3b1740" stroke-width="1.6"/></svg><span id="tLv">Pangkat 1</span><span class="strk" id="tStrk" hidden><svg viewBox="0 0 24 24"><path fill="#ff8a1a" stroke="#3b1740" stroke-width="2" stroke-linejoin="round" d="M12 2.5c1.2 3.6 5.5 5.6 5.5 11a5.5 5.5 0 0 1-11 0c0-2.8 1.4-4.4 2.8-5.4-.1 2.1.8 3.2 2 3.4-.7-3.2.2-6.4.7-9z"/><path fill="#ffe36a" d="M12 12.5c.9 1.5 2.3 2.3 2.3 4a2.3 2.3 0 0 1-4.6 0c0-1.2.9-2.1 2.3-4z"/></svg><span id="tStrkN">1 hari</span></span></div>
     <div class="pill best dk-ol" id="tBest" aria-label="Total bintang"><svg viewBox="0 0 24 24"><path fill="#ffd23a" stroke="#3b1740" stroke-width="2" stroke-linejoin="round" d="M12 2.8l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 16.7l-5.4 2.9 1.1-6.1-4.5-4.3 6.1-.8z"/></svg><span>0</span></div>
     <div id="logo"></div>
+    <div class="journey-kicker">JELAJAH NUSANTARA</div>
     <div class="tmid ent" id="tMid">
       <div class="chal dk-ol" id="tChal" hidden>Kalahkan skor temanmu!</div>
       <div class="mainw">
@@ -165,9 +182,9 @@ canvas{display:block}
         <button class="lvtag" id="bLv" aria-label="Pilih level">Level 1</button>
       </div>
       <div class="icons">
-        <button class="dk-round dk-purple" id="bHarian"><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><rect x="4" y="5.5" width="16" height="15" rx="3" fill="#fff" stroke="#3b1740" stroke-width="2"/><path d="M4.5 10h15" stroke="#8f5cf0" stroke-width="4"/><path d="M8.5 3.5v4M15.5 3.5v4" stroke="#3b1740" stroke-width="2.6"/><circle cx="12" cy="15.5" r="2.8" fill="#35d05a" stroke="#3b1740" stroke-width="1.4"/></svg><b class="dk-dot" id="dDaily" hidden></b><b class="dstar" id="dStarN" hidden></b></i><span>Harian</span></button>
+        <button class="dk-round dk-purple" id="bHarian"><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><rect x="4" y="5.5" width="16" height="15" rx="3" fill="#fff" stroke="#3b1740" stroke-width="2"/><path d="M4.5 10h15" stroke="#8f5cf0" stroke-width="4"/><path d="M8.5 3.5v4M15.5 3.5v4" stroke="#3b1740" stroke-width="2.6"/><circle cx="12" cy="15.5" r="2.8" fill="#47dc26" stroke="#3b1740" stroke-width="1.4"/></svg><b class="dk-dot" id="dDaily" hidden></b><b class="dstar" id="dStarN" hidden></b></i><span>Harian</span></button>
         <button class="dk-round dk-pink" id="bTantang" aria-label="Tantang"><i class="dk-ol" aria-hidden="true">VS</i><span>Tantang</span></button>
-        <button class="dk-round dk-blue" id="bKoleksi"><i><svg viewBox="0 0 24 24" stroke="#3b1740" stroke-width="1.6"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2.2" fill="#35d05a"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="3.75" fill="#ffb52e"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="3.75" fill="#ff5fa8"/><path d="M16.75 13.2l3.6 6.9h-7.2z" fill="#a35cff" stroke-linejoin="round"/></svg></i><span>Koleksi</span></button>
+        <button class="dk-round dk-blue" id="bKoleksi"><i><svg viewBox="0 0 24 24" stroke="#3b1740" stroke-width="1.6"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2.2" fill="#47dc26"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="3.75" fill="#ffb52e"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="3.75" fill="#ff46ae"/><path d="M16.75 13.2l3.6 6.9h-7.2z" fill="#ad62ff" stroke-linejoin="round"/></svg></i><span>Koleksi</span></button>
         <button class="dk-round dk-orange" id="bPeringkat"><i><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="#ffd23f" stroke="#3b1740" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 6H4.5a2.5 2.5 0 0 0 3 3.6M17 6h2.5a2.5 2.5 0 0 1-3 3.6" fill="none" stroke="#3b1740" stroke-width="1.8" stroke-linecap="round"/><path d="M12 14v3M8.5 20h7l-1-3h-5z" fill="#ffd23f" stroke="#3b1740" stroke-width="1.8" stroke-linejoin="round"/></svg></i><span>Peringkat</span></button>
         <button class="dk-round dk-yellow" id="bSetelan"><i><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.2" stroke="#3b1740" stroke-width="6.5" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="7.2" stroke="#fff" stroke-width="4" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="6" fill="#fff" stroke="#3b1740" stroke-width="2"/><circle cx="12" cy="12" r="2.4" fill="#ff5c93" stroke="#3b1740" stroke-width="1.6"/></svg></i><span>Setelan</span></button>
       </div>
@@ -247,7 +264,8 @@ canvas{display:block}
       <button class="dk-btn dk-red dk-circle dk-close" data-close aria-label="Tutup"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" stroke="#3b1740" stroke-width="6"/><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3"/></svg></button>
       <div class="dk-lbl" id="kInfo">Toples jajan</div>
       <div class="jars" id="kJars"></div>
-      <div class="dk-lbl" id="kLvI">Pilih level</div>
+      <button class="lvtag" id="kJourney">Buka peta perjalanan →</button>
+      <div class="dk-lbl" id="kLvI">Level terakhir</div>
       <div class="lvgrid" id="kLv"></div>
     </div>
   </section>
@@ -265,22 +283,23 @@ canvas{display:block}
 </div>
 <script src="/kit/v1/kit.js"></script>
 <script src="mesin.js"></script>
+<script src="perjalanan.js"></script>
 <script>
 "use strict";
 // mesin.js gagal dimuat (sinyal putus): tampilkan pesan dan tombol muat ulang, jangan biarkan layar judul macet
-if (typeof Core !== "function") { document.getElementById("col").innerHTML = '<section class="dk-overlay"><div class="dk-panel"><div class="dk-ribbon dk-ol">Jajan Manis</div><div class="dk-lbl">Gagal memuat permainan. Periksa sambungan, lalu coba lagi.</div><button class="dk-btn dk-green dk-ol" onclick="location.reload()">Muat ulang</button></div></section>'; throw new Error("jajan-manis: mesin.js tidak termuat"); }
+if (typeof Core !== "function" || !window.JajanJourney || !window.DehayukKit) { document.getElementById("col").innerHTML = '<section class="dk-overlay"><div class="dk-panel"><div class="dk-ribbon dk-ol">Jajan Manis</div><div class="dk-lbl">Gagal memuat permainan. Periksa sambungan, lalu coba lagi.</div><button class="dk-btn dk-green dk-ol" onclick="location.reload()">Muat ulang</button></div></section>'; throw new Error("jajan-manis: modul permainan tidak termuat"); }
 const KIT = window.DehayukKit, SLUG = "jajan-manis", ST = KIT.store(SLUG), TAU = Math.PI * 2;
 const Q = new URLSearchParams(location.search);
 const DEMO = Q.get("demo") === "1", COVER = Q.get("cover") === "1", UJI = Q.get("uji") === "1";
 /* ================= SENI ================= */
 const INK = "#3b1740";
 const KUE = [
-  { nama: "Klepon", c: ["#c8ffb8", "#35d05a", "#0b7a26", "#07501a"] },
-  { nama: "Onde-onde", c: ["#ffeaa0", "#f5a52a", "#b75a00", "#7a3a02"] },
-  { nama: "Dadar gulung", c: ["#cfe6ff", "#3d8bff", "#1440a8", "#0c2a78"] },
-  { nama: "Kue lapis", c: ["#ffd6ea", "#ff5fa8", "#c01f66", "#8a0f48"] },
-  { nama: "Cenil", c: ["#ecd8ff", "#a35cff", "#561cb8", "#3a0f86"] },
-  { nama: "Kue mangkok", c: ["#ffcfc4", "#ff4040", "#a80f18", "#700810"] }
+  { nama: "Klepon", c: ["#d1ff95", "#47dc26", "#139c32", "#12623c"] },
+  { nama: "Onde-onde", c: ["#fff391", "#ffb928", "#e87512", "#96501a"] },
+  { nama: "Dadar gulung", c: ["#a4faff", "#22c8f4", "#087cdc", "#145899"] },
+  { nama: "Kue lapis", c: ["#ffbded", "#ff46ae", "#d42283", "#952266"] },
+  { nama: "Cenil", c: ["#e6c7ff", "#ad62ff", "#733be6", "#502197"] },
+  { nama: "Kue mangkok", c: ["#ffcbbb", "#ff6056", "#da263d", "#982949"] }
 ];
 const KCOL = KUE.map((k) => k.c[1]);
 // persegi bersudut bulat; cadangan manual untuk WebView lama tanpa roundRect
@@ -357,7 +376,7 @@ function drawKue(g, t, R, noShadow) {
       const [x, y, r] = MANG[q], X = x * R, Y = y * R, P = r * R;
       g.beginPath(); g.arc(X, Y, P, 0, TAU); g.fillStyle = grad(g, 0, [X - P * 0.35, Y - P * 0.45, 1, X, Y, P * 1.1], [c[0], c[1], c[2]]); g.fill();
       g.save(); g.clip();
-      for (let k = 0; k < 16; k++) ell(g, X + (rn() - 0.5) * P * 1.6, Y + (rn() - 0.5) * P * 1.6, P * 0.06, P * 0.045, 0, "rgba(255,210,200,.45)");
+      for (let k = 0; k < 3; k++) ell(g, X + (rn() - 0.5) * P * 1.6, Y + (rn() - 0.5) * P * 1.6, P * 0.06, P * 0.045, 0, "rgba(255,210,200,.45)");
       ell(g, X + P * 0.2, Y + P * 0.75, P * 0.8, P * 0.35, 0, "rgba(90,0,10,.22)");
       ell(g, X - P * 0.3, Y - P * 0.38, P * 0.36, P * 0.2, -0.6, "rgba(255,255,255,.62)");
       g.restore(); g.strokeStyle = c[3]; g.lineWidth = R * 0.07; g.stroke();
@@ -370,18 +389,18 @@ function drawKue(g, t, R, noShadow) {
   g.fill();
   g.save(); shapePath(g, t, R); g.clip();
   if (t === 0) { // klepon: pori halus, parutan kelapa, gula merah merembes dari sobekan
-    for (let k = 0; k < 22; k++) ell(g, (rn() - 0.5) * R * 1.4, (rn() - 0.5) * R * 1.4, R * 0.035, R * 0.025, 0, "rgba(0,70,20,.2)");
-    shreds(g, rn, R, 100, R * 0.8, R * 1.3, -R * 0.86, "#fffdf3");
-    gula(g, R * 0.3, R * 0.22, R, 1.45);
+    for (let k = 0; k < 5; k++) ell(g, (rn() - 0.5) * R * 1.4, (rn() - 0.5) * R * 1.4, R * 0.035, R * 0.025, 0, "rgba(0,70,20,.2)");
+    shreds(g, rn, R, 16, R * 0.57, R * 0.48, -R * 0.62, "#fffdf3");
+    gula(g, R * 0.3, R * 0.22, R, 0.7);
   } else if (t === 1) { // onde-onde: wijen rapat mengikuti lengkung bola
-    for (let k = 0; k < 44; k++) {
-      const a = k * 2.39996, e = Math.sqrt((k + 0.5) / 44), d = R * 0.8 * e;
+    for (let k = 0; k < 14; k++) {
+      const a = k * 2.39996, e = Math.sqrt((k + 0.5) / 14), d = R * 0.8 * e;
       g.save(); g.translate(Math.cos(a) * d, Math.sin(a) * d); g.rotate(a + (rn() - 0.5) * 1.2); g.scale(1 - e * e * 0.5, 1);
       ell(g, 0, R * 0.012, R * 0.085, R * 0.05, 0, "rgba(110,50,0,.45)"); ell(g, 0, 0, R * 0.08, R * 0.042, 0, "#fff3cf"); ell(g, -R * 0.02, -R * 0.012, R * 0.03, R * 0.014, 0, "#fff");
       g.restore();
     }
   } else if (t === 2) { // dadar gulung telang: renda adonan, lipatan, ujung berisi unti
-    for (let k = 0; k < 30; k++) ell(g, (rn() - 0.6) * R * 1.6, (rn() - 0.5) * R, R * 0.04, R * 0.028, 0, "rgba(255,255,255,.22)");
+    for (let k = 0; k < 6; k++) ell(g, (rn() - 0.6) * R * 1.6, (rn() - 0.5) * R, R * 0.04, R * 0.028, 0, "rgba(255,255,255,.22)");
     g.strokeStyle = "rgba(10,30,110,.3)"; g.lineWidth = R * 0.06;
     for (const x of [-0.5, -0.12]) { g.beginPath(); g.moveTo(x * R, -R * 0.54); g.quadraticCurveTo(x * R + R * 0.16, 0, x * R, R * 0.54); g.stroke(); }
     const ex = R * 0.5;
@@ -393,21 +412,21 @@ function drawKue(g, t, R, noShadow) {
     g.strokeStyle = c[1]; g.lineWidth = R * 0.05; g.beginPath(); g.arc(ex, 0, R * 0.27, -2.4, 1.6); g.stroke(); g.lineCap = "butt";
   } else if (t === 3) { // kue lapis: lapisan legit bergradasi, garis antar lapis, kilap basah
     const h = R * 1.52 / 6;
-    for (let k = 0; k < 6; k++) { const y = -R * 0.76 + k * h; g.fillStyle = grad(g, 1, [0, y, 0, y + h], k % 2 ? ["#fffaf7", "#ffe3ee"] : [c[0], c[1], c[2]]); g.fillRect(-R, y, R * 2, h + 0.6); g.fillStyle = "rgba(150,0,60,.18)"; g.fillRect(-R, y + h - R * 0.02, R * 2, R * 0.03); }
+    for (let k = 0; k < 6; k++) { const y = -R * 0.76 + k * h; g.fillStyle = grad(g, 1, [0, y, 0, y + h], k % 2 ? ["#ffd6e9", "#ff94cd"] : [c[0], c[1], c[2]]); g.fillRect(-R, y, R * 2, h + 0.6); g.fillStyle = "rgba(150,0,60,.18)"; g.fillRect(-R, y + h - R * 0.02, R * 2, R * 0.03); }
     g.fillStyle = grad(g, 1, [-R, 0, R, 0], ["rgba(255,255,255,.4)", "rgba(255,255,255,0)", "rgba(255,255,255,0)", "rgba(110,0,40,.32)"]); g.fillRect(-R, -R, R * 2, R * 2);
     g.fillStyle = "rgba(255,255,255,.3)"; g.beginPath(); g.moveTo(-R * 0.2, -R); g.lineTo(R * 0.05, -R); g.lineTo(-R * 0.55, R); g.lineTo(-R * 0.8, R); g.fill();
   } else if (t === 4) { // cenil: kenyal tembus cahaya, siraman gula merah, taburan kelapa
     ell(g, 0, R * 0.15, R * 0.45, R * 0.35, 0, grad(g, 0, [0, R * 0.15, 0, 0, R * 0.15, R * 0.45], ["rgba(255,230,255,.55)", "rgba(255,230,255,0)"]));
     g.lineCap = "round"; g.strokeStyle = "#5a2208"; g.lineWidth = R * 0.12; g.beginPath(); g.moveTo(-R * 0.8, R * 0.18); g.bezierCurveTo(-R * 0.3, -R * 0.05, R * 0.1, R * 0.45, R * 0.8, R * 0.14); g.stroke();
     g.strokeStyle = "rgba(230,150,90,.8)"; g.lineWidth = R * 0.03; g.beginPath(); g.moveTo(-R * 0.55, R * 0.08); g.bezierCurveTo(-R * 0.3, 0, -R * 0.05, R * 0.2, R * 0.2, R * 0.25); g.stroke();
-    shreds(g, rn, R, 20, R * 0.6, R * 0.6, -R * 0.55, "#fffdf8");
+    shreds(g, rn, R, 6, R * 0.6, R * 0.6, -R * 0.55, "#fffdf8");
   }
   // bayang bawah, pantulan cahaya, kilap spekular
-  g.fillStyle = grad(g, 0, [-R * 0.3, -R * 0.45, R * 0.3, 0, 0, R * 1.15], ["rgba(40,0,40,0)", "rgba(40,0,40,0)", "rgba(40,0,40,.34)"]); g.fillRect(-R, -R, R * 2, R * 2);
+  g.fillStyle = grad(g, 0, [-R * 0.3, -R * 0.45, R * 0.3, 0, 0, R * 1.15], ["rgba(40,0,40,0)", "rgba(40,0,40,0)", "rgba(40,0,40,.12)"]); g.fillRect(-R, -R, R * 2, R * 2);
   ell(g, R * 0.05, R * 0.66, R * 0.42, R * 0.12, 0, "rgba(255,255,255,.2)");
   ell(g, -R * 0.3, -R * 0.4, R * 0.3, R * 0.17, -0.6, grad(g, 0, [-R * 0.3, -R * 0.42, 0, -R * 0.3, -R * 0.4, R * 0.3], ["rgba(255,255,255,.9)", "rgba(255,255,255,.4)", "rgba(255,255,255,0)"]));
   g.restore();
-  shapePath(g, t, R); g.lineWidth = R * 0.075; g.strokeStyle = c[3]; g.stroke();
+  shapePath(g, t, R); g.lineWidth = R * 0.06; g.strokeStyle = c[3]; g.stroke();
   ell(g, -R * 0.4, -R * 0.46, R * 0.065, R * 0.065, 0, "#fff");
 }
 // lebah madu; flap 0..1 = kepak sayap
@@ -478,7 +497,7 @@ function drawSpecial(g, t, s, R) {
     g.restore();
   }
   g.restore();
-  if (t < 5) { shapePath(g, t, R); g.lineWidth = R * 0.075; g.strokeStyle = dk; g.stroke(); }
+  if (t < 5) { shapePath(g, t, R); g.lineWidth = R * 0.06; g.strokeStyle = dk; g.stroke(); }
   for (const sg of [-1, 1]) {
     g.save(); if (s === SV) g.rotate(Math.PI / 2); g.translate(sg * R * 1.04, 0); g.scale(sg, 1);
     g.beginPath(); g.moveTo(R * 0.18, 0); g.lineTo(-R * 0.08, -R * 0.19); g.lineTo(-R * 0.08, R * 0.19); g.closePath();
@@ -577,44 +596,39 @@ let SKY = null, MAS = null, masJoy = 0, TITLE_Y = 0, PADB = 0, CELL = 40, BX = 0
 
 /* ================= TATA LETAK ================= */
 function layout() {
-  dpr = Math.min(2, window.devicePixelRatio || 1);
-  vw = window.innerWidth; vh = window.innerHeight;
+  dpr = Math.min(2, window.devicePixelRatio || 1); vw = innerWidth; vh = innerHeight;
   const ps = getComputedStyle($("probe"));
-  sT = parseFloat(ps.paddingTop) || 0; sB = parseFloat(ps.paddingBottom) || 0; sL = parseFloat(ps.paddingLeft) || 0; sR = parseFloat(ps.paddingRight) || 0;
-  cv.width = Math.round(vw * dpr); cv.height = Math.round(vh * dpr);
-  SIDE = vw / vh > 1.25 && vh < 520; // ponsel mendatar: papan di tengah, HUD di kiri dan kanan
-  colW = COVER ? vw : Math.min(vw, SIDE ? 560 : 500); colX = Math.round((vw - colW) / 2);
-  colEl.style.left = colX + "px"; colEl.style.width = colW + "px";
+  sT = parseFloat(ps.paddingTop)||0; sB = parseFloat(ps.paddingBottom)||0; sL = parseFloat(ps.paddingLeft)||0; sR = parseFloat(ps.paddingRight)||0;
+  cv.width = Math.round(vw*dpr); cv.height = Math.round(vh*dpr);
+  SIDE = vw/vh > 1.28;
+  colW = COVER ? vw : Math.min(vw, 500); colX = Math.round((vw-colW)/2);
+  colEl.style.left = colX+"px"; colEl.style.width = colW+"px";
+  const panel = $("hJourney");
   if (SIDE) {
-    const top = sT + 8, bot = vh - sB - 8, side = Math.max(130, vw * 0.22);
-    CELL = Math.floor(Math.min(bot - top, vw - 2 * side - sL - sR) / 8.6); // 8.6 = 8 sel + bingkai dua sisi + sela
-    BS = CELL * 8; BX = Math.round((vw - BS) / 2); BY = Math.round(top + (bot - top - BS) / 2);
-    const lw = BX - sL - 22, rx = BX + BS + 12, rw = vw - sR - rx - 10;
-    HG = { x: sL + 12, y: sT + 66, w: lw, h: 78 }; HM = { x: sL + 12, y: sT + 152, w: lw, h: 64 };
-    HS = { x: rx, y: sT + 12, w: rw, h: 88, side: true };
-    TR = 21; const ty = HS.y + HS.h + 34, st = Math.min(56, (bot - ty - 20) / 2); TP = [0, 1, 2].map((k) => ({ x: rx + rw / 2, y: ty + k * st }));
+    CELL = Math.max(16, Math.floor(Math.min(vh-sT-sB-32, vw*.57)/8.6));
+    BS = CELL*8; BX = Math.round((vw-BS)/2); BY = Math.round(sT+(vh-sT-sB-BS)/2);
+    const lw = Math.min(220,BX-sL-32), lx = BX-lw-22, rx = BX+BS+22, rw = Math.min(220,vw-sR-rx-10);
+    HG = {x:lx,y:Math.max(70,vh*.23),w:lw,h:78}; HM = {x:lx,y:HG.y+94,w:lw,h:64};
+    HS = {x:rx,y:Math.max(18,vh*.09),w:rw,h:88,side:true};
+    TR=23; TP=[0,1,2].map(k=>({x:lx+lw/2+(k-1)*Math.min(58,lw/3), y:Math.min(vh-sB-44,HM.y+116)}));
+    Object.assign(panel.style,{left:rx+"px",top:(HS.y+110)+"px",width:rw+"px"});
+    $("hud").style.left=(lx-colX)+"px";
   } else {
-    // papan agak ke tengah (terjangkau jempol); di bawahnya baris alat bantu, atau di samping bila layar lebar dan pendek
-    const top = sT + 8 + 58 + 6 + 28 + 10, bot = vh - sB - 12, TBH = 80;
-    CELL = Math.floor(Math.min(colW - 12, bot - top) / 8.6);
-    if (bot - top - CELL * 8.6 < TBH && (vw - CELL * 8) / 2 < 120) CELL = Math.floor(Math.min(colW - 12, bot - top - TBH) / 8.6);
-    const under = bot - top - CELL * 8.6 >= TBH;
-    // layar tinggi: papan sedikit naik, alat bantu lebih besar, maskot lebah mengisi langit
-    const big = under && bot - top - CELL * 8 - TBH > 150 + CELL * 0.6, tby = big ? 48 : 36, tgap = big ? 104 : 84;
-    BS = CELL * 8; BX = Math.round((vw - BS) / 2); BY = Math.round(top + Math.max(0, (bot - top - BS - (under ? TBH + (big ? 16 : 0) : 0)) * (under ? (big ? 0.44 : 0.5) : 0.18)));
-    const fw = Math.max(6, CELL * 0.26); TR = big ? 31 : 25;
-    TP = [0, 1, 2].map((k) => under ? { x: vw / 2 + (k - 1) * tgap, y: BY + BS + fw + tby } : { x: BX + BS + fw + 58, y: BY + BS / 2 + (k - 1) * 84 });
-    HG = { x: colX + 62, y: sT + 8, w: colW - 62 - 94, h: 58 }; HM = { x: colX + colW - 88, y: sT + 8, w: 78, h: 58 };
-    HS = { x: colX + 10, y: sT + 72, w: colW - 20, h: 28 };
+    const top=sT+128, space=vh-sB-top-168;
+    CELL=Math.max(16,Math.floor(Math.min(colW-28,space)/8)); BS=CELL*8; BX=Math.round((vw-BS)/2);
+    BY=Math.round(top+Math.max(0,space-BS)*.32);
+    HG={x:colX+62,y:sT+10,w:colW-160,h:58}; HM={x:colX+colW-88,y:sT+10,w:78,h:58}; HS={x:colX+14,y:sT+80,w:colW-28,h:28};
+    TR=25; TP=[0,1,2].map(k=>({x:vw/2+(k-1)*88,y:BY+BS+49}));
+    Object.assign(panel.style,{left:(colX+18)+"px",top:(BY+BS+100)+"px",width:(colW-36)+"px"});
+    $("hud").style.left=(sL+10)+"px";
   }
-  // ruang langit antara HUD dan papan: tempat pujian dan maskot bila cukup lega
-  { const fw = Math.max(6, CELL * 0.26), g0 = HS.y + HS.h + 6, g1 = BY - fw - 6; SKY = !SIDE && g1 - g0 >= 70 ? { y0: g0, y1: g1 } : null; MAS = SKY && g1 - g0 >= 96 ? { x: BX + CELL * 0.9, y: (g0 + g1) / 2 - 8, r: Math.min(40, (g1 - g0) * 0.34) } : null; }
-  TABLE_Y = SIDE ? vh * 0.72 : Math.min(vh - sB - 30, BY + BS * 0.62);
-  TITLE_Y = SIDE ? vh * 0.74 : vh * 0.7;
-  PADB = Math.round(vh * (SIDE || vw / vh > 1.3 ? 0.1 : vh > 760 ? 0.28 : 0.22) + sB);
-  document.documentElement.style.setProperty("--padb", PADB + "px");
-  buildSprites(CELL * dpr); BGK = ""; BLK = ""; CARDS.clear(); measureLogo();
+  SKY=null; MAS=null; TABLE_Y=vh*.78; TITLE_Y=vh*.78;
+  PADB=Math.round((SIDE?30:Math.min(180,vh*.19))+sB);
+  document.documentElement.style.setProperty("--padb",PADB+"px");
+  document.documentElement.classList.toggle("jm-landscape",SIDE);
+  buildSprites(CELL*dpr);BGK="";BLK="";CARDS.clear();measureLogo();
 }
+
 const cellX = (c) => BX + (c + 0.5) * CELL, cellY = (r) => BY + (r + 0.5) * CELL;
 function cellAt(x, y) {
   const c = Math.floor((x - BX) / CELL), r = Math.floor((y - BY) / CELL);
@@ -628,6 +642,19 @@ function buildBG() {
   if (key === BGK && BG) return; BGK = key;
   BG = mk(vw * dpr, vh * dpr); const g = BG.getContext("2d"), T = THEMES[themeNow], rn = KIT.rng(77);
   g.scale(dpr, dpr);
+  if (mode !== "title" && mode !== "leaving" && !COVER) {
+    const region = window.JajanJourney.region(def ? def.n || 1 : 1);
+    const colors = [["#e8faf2","#94d9cc"],["#fff3dd","#baded2"],["#e9efff","#b9cbea"]][region.index % 3];
+    g.fillStyle=grad(g,1,[0,0,0,vh],colors);g.fillRect(0,0,vw,vh);
+    const horizon=vh*.73;
+    for(let layer=0;layer<3;layer++) {
+      g.fillStyle=["#96c7bc","#72b3a4","#4c9c91"][layer];g.globalAlpha=.22;
+      g.beginPath();g.moveTo(0,vh);
+      for(let x=0;x<=vw+20;x+=20)g.lineTo(x,horizon+layer*36-Math.sin(x/vw*8+layer+region.index)* (38+layer*10));
+      g.lineTo(vw,vh);g.closePath();g.fill();
+    }
+    g.globalAlpha=1; LAMPS=[];return;
+  }
   const sk = g.createLinearGradient(0, 0, 0, vh); sk.addColorStop(0, T.sky[0]); sk.addColorStop(0.55, T.sky[1]); sk.addColorStop(1, T.sky[2]);
   g.fillStyle = sk; g.fillRect(0, 0, vw, vh);
   if (T.night) for (let k = 0; k < 60; k++) { g.globalAlpha = 0.4 + rn() * 0.6; g.fillStyle = "#fff"; g.beginPath(); g.arc(rn() * vw, rn() * vh * 0.6, 0.6 + rn() * 1.4, 0, TAU); g.fill(); }
@@ -701,7 +728,7 @@ function drawBackdrop() {
     g.globalAlpha = 1; g.fillStyle = c; g.beginPath(); g.arc(x, y, 5.5, 0, TAU); g.fill(); g.strokeStyle = INK; g.lineWidth = 1.5; g.stroke();
     g.fillStyle = "rgba(255,255,255," + (0.4 + 0.5 * on).toFixed(2) + ")"; g.beginPath(); g.arc(x - 1.5, y - 1.5, 1.8, 0, TAU); g.fill();
   }
-  for (let k = 0; k < 14; k++) { // gelembung cahaya melayang
+  for (let k = 0; k < (mode === "title" && !RM ? 8 : 0); k++) { // gelembung cahaya melayang
     const x = ((k * 0.137 + time * 0.01 * (1 + k % 3)) % 1) * vw, y = vh - ((k * 0.29 + time * 0.018 * (1 + k % 4)) % 1) * vh, r = 6 + (k % 5) * 5;
     g.globalAlpha = night ? 0.16 : 0.2; g.fillStyle = k % 2 ? "#fff" : "#ffe0f0"; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
   }
@@ -712,7 +739,7 @@ function drawBackdrop() {
 // satu sel (latar kotak + agar-agar); w = goyangan agar
 function drawCell(g, i, x, y, w) {
   const r = i >> 3, c = i & 7;
-  g.fillStyle = (r + c) & 1 ? "#ffe9d6" : "#fff6ec"; rr(g, x + 1.5, y + 1.5, CELL - 3, CELL - 3, CELL * 0.18); g.fill();
+  g.fillStyle = (r + c) & 1 ? "#266b74" : "#2a727b"; rr(g, x + 1.5, y + 1.5, CELL - 3, CELL - 3, CELL * 0.18); g.fill();
   const L = core.J[i];
   if (L) {
     const k = w > 0 ? Math.sin(w * 40) * w * 0.25 : 0, p = CELL * (0.06 - k * 0.1);
@@ -731,13 +758,13 @@ function boardLayer() {
   BL = mk((BS + 2 * m) * dpr, (BS + 2 * m) * dpr); const g = BL.getContext("2d"); g.scale(dpr, dpr); g.translate(m - BX, m - BY);
   const x0 = BX - fw, y0 = BY - fw, S = BS + fw * 2;
   g.fillStyle = "rgba(40,10,30,.3)"; rr(g, x0 + 5, y0 + 9, S, S, fw * 1.6); g.fill();
-  const fg = g.createLinearGradient(0, y0, 0, y0 + S); fg.addColorStop(0, "#f0c07a"); fg.addColorStop(1, "#c98a4b");
+  const fg = g.createLinearGradient(0, y0, 0, y0 + S); fg.addColorStop(0, "#ffedbd"); fg.addColorStop(1, "#eac887");
   rr(g, x0, y0, S, S, fw * 1.6); g.fillStyle = fg; g.fill(); g.lineWidth = 3; g.strokeStyle = INK; g.stroke();
   g.save(); rr(g, x0, y0, S, S, fw * 1.6); g.clip(); // anyaman bambu di bingkai
-  g.strokeStyle = "rgba(140,80,25,.45)"; g.lineWidth = 2; g.beginPath();
+  g.strokeStyle = "rgba(140,80,25,.10)"; g.lineWidth = 2; g.beginPath();
   for (let k = -S; k < S; k += 8) { g.moveTo(x0 + k, y0); g.lineTo(x0 + k + S, y0 + S); }
   g.stroke(); g.restore();
-  g.fillStyle = "#9b6431"; rr(g, BX - 2, BY - 2, BS + 4, BS + 4, CELL * 0.22); g.fill(); g.strokeStyle = INK; g.lineWidth = 2.5; g.stroke();
+  g.fillStyle = "#19535f"; rr(g, BX - 2, BY - 2, BS + 4, BS + 4, CELL * 0.22); g.fill(); g.strokeStyle = INK; g.lineWidth = 2.5; g.stroke();
   for (let i = 0; i < NN; i++) if (core.M[i]) drawCell(g, i, BX + (i & 7) * CELL, BY + (i >> 3) * CELL, 0);
 }
 function drawBoard() {
@@ -753,21 +780,21 @@ function drawPieces(dt) {
   const g = ctx, D = SPR_S / dpr, Rp = SPR_R / dpr, top = [];
   g.save(); g.beginPath(); g.rect(BX - CELL * 0.3, BY - CELL * 0.15, BS + CELL * 0.6, BS + CELL * 0.55); g.clip();
   const hOn = hint && (guide || idleT > hintDelay()), hA = hOn ? hint.a : -1, hB = hOn ? hint.b : -1;
-  if (mode === "play" && (glintT -= dt) <= 0) { // sesekali satu jajan berkilau atau bergoyang
-    glintT = 0.3 + Math.random() * 0.45; const arr = [...VIS.values()], p = arr[(Math.random() * arr.length) | 0];
+  if (!RM && mode === "play" && (glintT -= dt) <= 0) { // sesekali satu jajan berkilau atau bergoyang
+    glintT = 1.3 + Math.random() * 1.1; const arr = [...VIS.values()], p = arr[(Math.random() * arr.length) | 0];
     if (p) { if (Math.random() < 0.3) p.jig = 0.7; else GLINT.push({ id: p.id, t: 0 }); }
   }
   const one = (sp) => {
     let x = BX + (sp.x + 0.5) * CELL, y = BY + (sp.y + 0.5) * CELL, sx = 1, sy = 1, rot = 0;
     const falling = !sp.mv && sp.wait <= 0 && sp.y < sp.ty - 1e-3;
-    if (!sp.mv && sp.wait <= 0 && !falling) { const b = Math.sin(time * 2.3 + sp.id * 1.7) * 0.025; sx = 1 + b; sy = 1 - b; y += CELL * 0.38 * b; }
+    if (!sp.mv && sp.wait <= 0 && !falling) { const b = RM ? 0 : Math.sin(time * 2.3 + sp.id * 1.7) * 0.009; sx = 1 + b; sy = 1 - b; y += CELL * 0.38 * b; }
     else if (falling) { const q = Math.min(0.16, sp.vy * 0.009); sy = 1 + q; sx = 1 - q * 0.6; }
     if (sp.sq > 0) { const k = 1 - sp.sq / 0.34, q = Math.sin(k * Math.PI * 2.4) * 0.22 * (1 - k); sx = 1 + q; sy = 1 - q; y += CELL * 0.4 * q; }
     if (sp.mv && !sp.mv.arc) { const q = Math.sin(Math.min(1, sp.mv.t / sp.mv.d) * Math.PI) * 0.16; sx *= 1 + q; sy *= 1 + q; }
-    if (sp.jig > 0) rot = Math.sin(sp.jig * 28) * 0.13 * sp.jig;
+    if (!RM && sp.jig > 0) rot = Math.sin(sp.jig * 28) * 0.13 * sp.jig;
     if (sp.grow > 0) { const k = sp.grow / 0.4; sx *= 1 + Math.sin(k * Math.PI) * 0.35; sy = sx; }
-    if (sp.cell === sel && mode === "play") { sx *= 1.1; sy *= 1.1; y -= Math.abs(Math.sin(time * 6)) * CELL * 0.06; }
-    if (sp.cell === hA || sp.cell === hB) { const o = Math.sin(time * 9) * CELL * 0.08, d = sp.cell === hA ? hB - hA : hA - hB; x += (d === 1 || d === -1 ? Math.sign(d) : 0) * o; y += (d === 8 || d === -8 ? Math.sign(d) : 0) * o; }
+    if (sp.cell === sel && mode === "play") { sx *= 1.1; sy *= 1.1; y -= RM ? 0 : Math.abs(Math.sin(time * 6)) * CELL * 0.04; }
+    if (sp.cell === hA || sp.cell === hB) { const o = RM ? 0 : Math.sin(time * 9) * CELL * 0.055, d = sp.cell === hA ? hB - hA : hA - hB; x += (d === 1 || d === -1 ? Math.sign(d) : 0) * o; y += (d === 8 || d === -8 ? Math.sign(d) : 0) * o; }
     if (sp.s) { // cahaya istimewa berdenyut
       const p = 0.5 + 0.5 * Math.sin(time * 5 + sp.id);
       const bee = sp.s === BEE;
@@ -831,12 +858,12 @@ function sparkle(x, y, n, col, sp) {
 }
 let DYING = [], FXL = [], TXT = [], TL = [], AGW = new Float32Array(NN), shake = 0, flash = 0, flashC = "#fff", flashTurn = 0;
 // kilatan layar paling banyak sekali per giliran; guncang dan kilat mati bila pemain memilih kurangi gerak
-const RM = (() => { try { return matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; } })();
+const RM = Q.get("noanim") === "1" || (() => { try { return matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; } })();
 function doShake(v) { if (!RM) shake = Math.max(shake, v); }
 function doFlash(v, c, force) { if (RM || (flashTurn && !force)) return; flashTurn = 1; flash = Math.max(flash, v); flashC = c || "#fff"; }
 function later(t, fn) { if (t <= 0) fn(); else TL.push({ t, fn }); }
 // serpihan tiap jajanan: [warna, jenis partikel] (0 bulatan, 2 keping, 3 serat/biji)
-const DEB = [["#35d05a", "#fffdf3", "#5a2106"], ["#f5a52a", "#fff3cf", "#b75a00"], ["#3d8bff", "#cfe6ff", "#7a3a12"], ["#ff5fa8", "#fff3f8", "#c01f66"], ["#a35cff", "#fffdf8", "#5a2208"], ["#ff4040", "#fff4ee", "#ffcfc4"]], DBK = ["030", "300", "220", "222", "030", "020"];
+const DEB = [["#47dc26", "#fffdf3", "#5a2106"], ["#ffb928", "#fff3cf", "#e87512"], ["#22c8f4", "#a4faff", "#7a3a12"], ["#ff46ae", "#fff3f8", "#d42283"], ["#ad62ff", "#fffdf8", "#5a2208"], ["#ff6056", "#fff4ee", "#ffcbbb"]], DBK = ["030", "300", "220", "222", "030", "020"];
 function popPiece(t, s, x, y, casc, lite) {
   DYING.push({ t, s, x, y, age: 0 });
   const px = cellX(x), py = cellY(y);
@@ -1054,8 +1081,8 @@ function drawHUD() {
   for (let k = 0; k < 3; k++) xs.push(bx + R0 * 1.5 + 2 + (bw - 3 * R0 - 4) * Math.min(1, (def.stars[k] || 0) / s3)); // ruang untuk bintang yang membesar
   for (let k = 1; k >= 0; k--) if (def.stars[k]) xs[k] = Math.min(xs[k], xs[k + 1] - 2.4 * R0);
   for (let k = 0; k < 3; k++) {
-    const v = def.stars[k]; if (!v) continue;
-    const x = Math.max(bx + R0, xs[k]), on = sc >= v;
+    const v = def.stars[k];
+    const x = Math.max(bx + R0, xs[k]), on = k === 0 ? core.goalDone() : sc >= v;
     g.save(); g.translate(x, by + bh / 2); const R = R0 * (on ? 1 + Math.max(0, starPop[k]) * 0.6 : 1);
     g.beginPath(); starPath(g, R, R * 0.46); g.fillStyle = on ? "#ffd23a" : "#e6d6dc"; g.fill(); g.lineWidth = 2; g.strokeStyle = INK; g.lineJoin = "round"; g.stroke(); g.restore();
   }
@@ -1101,7 +1128,7 @@ function toolIcon(g, k, r) {
   g.lineJoin = g.lineCap = "round"; g.lineWidth = r * 0.12; g.strokeStyle = INK;
   if (k === 0) { g.save(); g.rotate(-0.6); rr(g, -r * 0.12, -r * 0.1, r * 0.24, r * 0.95, r * 0.1); g.fillStyle = "#c98a4b"; g.fill(); g.stroke(); ell(g, 0, -r * 0.42, r * 0.38, r * 0.46, 0, "#f0c07a"); g.stroke(); ell(g, -r * 0.1, -r * 0.58, r * 0.12, r * 0.07, -0.4, "rgba(255,255,255,.7)"); g.restore(); }
   else if (k === 1) { g.save(); g.rotate(0.6); rr(g, -r * 0.09, -r * 0.05, r * 0.18, r * 0.95, r * 0.08); g.fillStyle = "#b8c4d6"; g.fill(); g.stroke(); ell(g, 0, -r * 0.42, r * 0.3, r * 0.42, 0, "#e6edf6"); g.stroke(); ell(g, -r * 0.08, -r * 0.55, r * 0.1, r * 0.06, -0.4, "#fff"); g.restore(); g.strokeStyle = "#ff5c93"; g.beginPath(); g.arc(0, 0, r * 0.82, 3.6, 4.4); g.stroke(); g.beginPath(); g.arc(0, 0, r * 0.82, 0.5, 1.3); g.stroke(); }
-  else { ell(g, 0, r * 0.1, r * 0.78, r * 0.5, 0, "#e7b267"); g.stroke(); ell(g, 0, r * 0.06, r * 0.56, r * 0.33, 0, "#5cc45a"); [[-0.25, "#ff5fa8"], [0.05, "#ffb52e"], [0.3, "#3d8bff"]].forEach(([x, c]) => ell(g, x * r, 0, r * 0.14, r * 0.12, 0, c)); g.lineWidth = r * 0.1; g.beginPath(); g.arc(0, -r * 0.1, r * 0.95, 3.5, 5.9); g.stroke(); }
+  else { ell(g, 0, r * 0.1, r * 0.78, r * 0.5, 0, "#e7b267"); g.stroke(); ell(g, 0, r * 0.06, r * 0.56, r * 0.33, 0, "#5cc45a"); [[-0.25, "#ff46ae"], [0.05, "#ffb52e"], [0.3, "#22c8f4"]].forEach(([x, c]) => ell(g, x * r, 0, r * 0.14, r * 0.12, 0, c)); g.lineWidth = r * 0.1; g.beginPath(); g.arc(0, -r * 0.1, r * 0.95, 3.5, 5.9); g.stroke(); }
   g.lineCap = "butt";
 }
 function drawTools() {
@@ -1127,7 +1154,7 @@ function useTool(k) {
   sel = -1;
   if (k < 2) { toolSel = k; showTip(TTIP[k], 60); return; }
   toolSel = -1; spend(2); SFX.shuffle(); showTip("Tampah: diacak ulang!", 1.4);
-  for (const m of core.shuffle()) { const sp = VIS.get(m.id); if (sp) { sp.mv = { x0: sp.x, y0: sp.y, x1: m.to & 7, y1: m.to >> 3, t: 0, d: 0.55, arc: 1 }; sp.ty = m.to >> 3; } }
+  for (const m of core.shuffle()) { const sp = VIS.get(m.id); if (sp) { sp.mv = { x0: sp.x, y0: sp.y, x1: m.to & 7, y1: m.to >> 3, t: 0, d: 0.55, arc: 1 }; sp.ty = m.to >> 3; sp.t = m.t; } }
   ph = "fall"; phT = 0.6; idleT = 0; hint = null;
 }
 function spend(k) { const a = alat(); a[k] = Math.max(0, a[k] - 1); ST.set("alat", a); vib(15); }
@@ -1172,10 +1199,10 @@ const MUSIC = { step: 0.17, root: 53, scale: [0, 2, 4, 7, 9, 12, 14, 16, 19, 21]
 const core = new Core();
 let def = null, mode = "title", kind = "normal", seedNow = 1, dailyKey = "", chal = null, chalLast = null;
 let ph = "idle", phT = 0, sel = -1, hint = null, idleT = 0, drag = null, swp = null, bonusMode = false, firedAll = false, winning = false, won = false;
-let guide = 0, queued = null, kbd = false;
+let guide = 0, queued = null, kbd = false, bonusAge = 0;
 let VIS = new Map(), introT = 0, scoreShow = 0, starPop = [0, 0, 0], extraMoves = 0, recPrev = 0, onWait = null, lastSpawnTip = 0;
-const INTRO_D = 1.9;
-const lvMax = () => Math.max(1, ST.get("lv", 1) | 0);
+const INTRO_D = 1.55;
+const lvMax = () => Math.max(1, Math.min(LV_MAX, ST.get("lv", 1) | 0));
 function starsStr() { const s = ST.get("bin", ""); return typeof s === "string" ? s : ""; }
 function starsOf(n) { return +(starsStr()[n - 1] || 0); }
 function totalStars() { let t = 0; for (const ch of starsStr()) t += +ch || 0; return t; }
@@ -1185,9 +1212,41 @@ function toples() { const a = ST.get("toples", null); return Array.isArray(a) &&
 // benih sah: nomor level, atau Harian hari ini sampai 30 hari lalu
 function seedOk(sd) { if (sd > LV_BASE && sd <= LV_BASE + LV_MAX) return true; const d = new Date(); for (let k = 0; k <= 30; k++) { if ((KIT.hash(SLUG + "|" + KIT.dateKey(d)) || 1) === sd) return true; d.setDate(d.getDate() - 1); } return false; }
 // versi aturan papan di tautan: v=2 sejak kotak 2x2/lebah/besek/tali. Tautan tanpa versi berasal dari aturan lama (papan dan sasaran berbeda)
-const RULES_V = 2;
-function readChal() { const c = KIT.readChallenge(); if (!c || c.score > SC_CAP || !seedOk(c.seed >>> 0)) return null; const m = /[#&]v=(\d+)/.exec(location.hash || ""); c.old = !m || +m[1] !== RULES_V; return c; }
-function defOfSeed(seed) { return seed > LV_BASE && seed <= LV_BASE + LV_MAX ? levelDef(seed - LV_BASE) : levelDef(0, seed); }
+const RULES_V = 3;
+let runVersion = RULES_V, runId = 0, leaveTimer = 0;
+function readChal() {
+  const c = KIT.readChallenge(); if (!c || c.score > SC_CAP || !seedOk(c.seed >>> 0)) return null;
+  const m = /[#&]v=(\d+)/.exec(location.hash || "");
+  if (m && +m[1] > RULES_V) return null;
+  c.version = m && +m[1] === 3 ? 3 : 2; c.old = !m || +m[1] < 2; return c;
+}
+function defOfSeed(seed, version = RULES_V) { return seed > LV_BASE && seed <= LV_BASE + LV_MAX ? levelDef(seed - LV_BASE, undefined, version) : levelDef(0, seed, 2); }
+const canPlayInput = () => mode === "play" && !document.querySelector('.dk-overlay:not([hidden])');
+function afterRun(ms, fn) { const id = runId; return setTimeout(() => { if (runId === id) fn(); }, ms); }
+function openJourney() {
+  if (mode !== "title") return;
+  window.JajanJourney.open({level: lvMax(), starsOf, totalStars: totalStars(), onPlay: (n) => { window.JajanJourney.close(); leaveTitle(() => startGame("normal", n)); }});
+}
+let journeyHudKey = "";
+function updateJourneyHUD() {
+  const panel = $("hJourney"), active = mode === "play" && !!def;
+  const key = active ? kind + ":" + seedNow + ":" + runVersion + ":" + bonusMode : "hidden";
+  if (key === journeyHudKey) return; journeyHudKey = key;
+  panel.hidden = !active; if (!active) return;
+  const place = window.JajanJourney.region(def.n || lvMax());
+  $("journeyName").textContent = def.daily ? "Pasar Malam" : place.name;
+  $("journeyProgress").textContent = def.daily ? "Harian" : (1 + (def.n - 1) % 10) + " / 10";
+  $("journeyLesson").textContent = bonusMode ? "Sasaran selesai! Sisa langkah menjadi bonus." : def.lesson ? def.lesson.text : goalText();
+  $("bSkipBonus").hidden = !bonusMode; $("bRecipe").hidden = bonusMode;
+}
+function openRecipe() {
+  if (mode !== "play" || bonusMode) return;
+  pause(); $("sPause").hidden = true;
+  $("recipeRows").innerHTML = [[0,SH,"4 sebaris","Garis menyapu satu baris atau kolom."],[3,BEE,"Kotak 2 × 2","Lebah terbang ke sasaran."],[1,BOMB,"Bentuk T atau L","Bungkus meledakkan area sekitar."],[RBT,0,"5 sebaris","Bintang membersihkan satu warna."]].map(([t,sp,h,txt]) => '<div class="recipe-row"><img alt="" src="'+iconURL(t,sp)+'"><div><b>'+h+'</b><span>'+txt+'</span></div></div>').join("");
+  KIT.ui.show($("sRecipe")); $("recipeClose").focus();
+}
+function closeRecipe() { if ($("sRecipe").hidden) return; $("sRecipe").hidden = true; resume(); updateJourneyHUD(); $("bRecipe").focus(); }
+
 
 const vib = (p) => { if (DEMO || UJI) return; try { const ua = navigator.userActivation; if (ua && !ua.hasBeenActive) return; } catch (e) { } KIT.vibrate(p); };
 /* ---------- bidak tampilan ---------- */
@@ -1271,27 +1330,28 @@ function drawTip(dt) {
 
 /* ================= ALUR ================= */
 function startGame(k, arg) {
-  kind = k; clearFx();
+  clearTimeout(leaveTimer); runId++; kind = k; clearFx();
   if (k === "daily" || k === "practice") { seedNow = KIT.dailySeed(SLUG); def = levelDef(0, seedNow); }
-  else if (k === "chal") { seedNow = arg >>> 0; def = defOfSeed(seedNow); }
+  else if (k === "chal") { seedNow = arg >>> 0; def = defOfSeed(seedNow, (chal || chalLast || {}).version || 2); }
   else { const n = Math.max(1, Math.min(lvMax(), arg | 0 || lvMax())); def = levelDef(n); seedNow = LV_BASE + n; }
+  runVersion = def.daily ? 2 : k === "chal" ? (chal || chalLast || {}).version || 2 : RULES_V;
   dailyKey = KIT.dateKey();
   if (k === "daily") ST.set("harian", { d: dailyKey, score: 0, stars: 0, done: false });
   extraMoves = 0; contUsed = false;
   if (k === "normal") { const f = ST.get("gagal", null); if (f && f.n === def.n) extraMoves = pityOf(def.n, f.k | 0); }
   def = Object.assign({}, def, { moves: def.moves + extraMoves });
-  themeNow = def.daily ? 3 : Math.floor((def.n - 1) / 5) % 3; BGK = "";
+  themeNow = def.daily ? 3 : Math.floor((def.n - 1) / 10) % 3; BGK = "";
   core.load(def); toolSel = -1; runN = 0;
   if (k === "normal" && !DEMO) { runN = Math.min(3, ST.get("runtun", 0) | 0); if (runN) core.boost(runN); }
   syncAll();
   for (const sp of VIS.values()) { sp.y = sp.ty - 8.6 - (7 - sp.ty) * 0.12; sp.wait = 0.2 + sp.x * 0.045 + (7 - sp.ty) * 0.025; }
   recPrev = k === "normal" || k === "chal" ? topOf(def.n || 0) : k === "daily" ? 0 : 0;
   ph = "idle"; sel = -1; hint = null; idleT = 0; drag = null; swp = null; guide = 0; queued = null; bonusMode = false; firedAll = false; winning = false; won = false;
-  scoreShow = 0; starPop = [0, 0, 0];
+  scoreShow = 0; starPop = [0, 0, 0]; bonusAge = 0;
   hideAll(); $("hud").hidden = false; mode = "play"; introT = DEMO && Q.get("fast") ? 0.3 : INTRO_D;
   $("sr").textContent = levelLabel() + ". " + goalText();
-  if (extraMoves && !DEMO) setTimeout(() => KIT.ui.toast("Bantuan: +" + extraMoves + " langkah"), 400);
-  if (k === "normal" && !DEMO && def.n >= 6 && !alat()) { ST.set("alat", [1, 1, 1]); setTimeout(() => KIT.ui.toast("Hadiah: Centong, Sendok, Tampah!"), 700); }
+  if (extraMoves && !DEMO) afterRun(400, () => KIT.ui.toast("Bantuan: +" + extraMoves + " langkah"));
+  if (k === "normal" && !DEMO && def.n >= 6 && !alat()) { ST.set("alat", [1, 1, 1]); afterRun(700, () => KIT.ui.toast("Hadiah: Centong, Sendok, Tampah!")); }
   try { document.activeElement && document.activeElement.blur(); } catch (e) { }
   if (document.hidden) pause();
 }
@@ -1310,7 +1370,7 @@ function clearFx() { GLINT = []; hitStop = 0; DYING = []; FXL = []; TXT = []; TL
 // bantuan langkah untuk percobaan berikutnya: level 1-10 sejak kalah pertama, lainnya sejak kalah kedua
 function pityOf(n, k) { return n <= 10 ? Math.min(9, 3 * k) : k >= 2 ? Math.min(9, 3 * (k - 1)) : 0; }
 function doSwap(a, b) {
-  if (mode !== "play" || ph !== "idle" || introT > 0 || !core.canSwap(a, b)) return false;
+  if (!canPlayInput() || ph !== "idle" || introT > 0 || !core.canSwap(a, b)) return false;
   if (guide === 2 && toolSel < 0 && hint && !((a === hint.a && b === hint.b) || (a === hint.b && b === hint.a))) { SFX.bad(); idleT = 0; return false; }
   const free = toolSel === 1, ia = core.ID[a], ib = core.ID[b], A1 = VIS.get(ia), B1 = VIS.get(ib), res = core.swap(a, b, free);
   if (!res) return false;
@@ -1342,7 +1402,7 @@ function settle() {
   if (!core.findMoves(true).length) {
     banner("Acak ulang!", 1.2, 44); SFX.shuffle();
     const mv = core.shuffle();
-    for (const m of mv) { const sp = VIS.get(m.id); if (sp) { sp.mv = { x0: sp.x, y0: sp.y, x1: m.to & 7, y1: m.to >> 3, t: 0, d: 0.55, arc: 1 }; sp.ty = m.to >> 3; } }
+    for (const m of mv) { const sp = VIS.get(m.id); if (sp) { sp.mv = { x0: sp.x, y0: sp.y, x1: m.to & 7, y1: m.to >> 3, t: 0, d: 0.55, arc: 1 }; sp.ty = m.to >> 3; sp.t = m.t; } }
     ph = "fall"; phT = 0.6; return;
   }
   ph = "idle"; idleT = 0; hint = null;
@@ -1352,12 +1412,25 @@ function settle() {
 function runQueued() { const q = queued; queued = null; if (q && mode === "play" && core.canSwap(q.a, q.b)) doSwap(q.a, q.b); }
 // langkah yang memakai bidak istimewa (untuk tangan penunjuk saat istimewa pertama muncul)
 function specialMove() { const mv = core.findMoves(false).filter((m) => core.S[m.a] || core.S[m.b]); return mv.length ? mv.reduce((p, q) => q.v > p.v ? q : p) : null; }
+﻿// Mengikuti urutan settle()/update(): selesaikan runtuhan dahulu, baru bonus.
 function skipBonus() {
-  if (!bonusMode) return;
-  while (core.bonus()) for (let k = 0; k < 60 && core.step(); k++);
-  if (!firedAll) { firedAll = true; if (core.fireAll()) for (let k = 0; k < 60 && core.step(); k++); }
-  clearFx(); syncAll(); ph = "wait"; phT = 0.2; onWait = () => endGame(true);
+  if (!bonusMode || mode !== "play") return;
+  let complete = false;
+  for (let work = 0; work < 400; work++) {
+    if (core.step()) continue;
+    if (core.bonus()) continue;
+    if (!firedAll) {
+      firedAll = true;
+      if (core.fireAll()) continue;
+    }
+    complete = true;
+    break;
+  }
+  clearFx(); syncAll(); onWait = null;
+  ph = complete ? "wait" : "fall"; phT = complete ? 0.2 : 0;
+  if (complete) onWait = () => endGame(true);
 }
+
 // nyaris menang: sekali per percobaan, tukar satu alat bantu dengan +3 langkah (tanpa iklan, hanya di level biasa)
 let contUsed = false, offerTool = -1;
 function offerOrEnd() {
@@ -1371,13 +1444,14 @@ function offerOrEnd() {
 const TURL = [];
 function toolURL(k) { if (!TURL[k]) { const c = mk(68, 68), g = c.getContext("2d"); g.translate(34, 34); toolIcon(g, k, 26); try { TURL[k] = c.toDataURL(); } catch (e) { TURL[k] = ""; } } return TURL[k]; }
 function moreMoves() {
-  const a = alat(); if (!a || !a[offerTool]) { endGame(false); return; }
+  const a = alat(); if (!a || !a[offerTool]) { $("sOffer").hidden = true; mode = "play"; endGame(false); return; }
   spend(offerTool); contUsed = true; core.moves += 3; $("sOffer").hidden = true; $("hud").hidden = false;
-  mode = "play"; ph = "idle"; idleT = 0; hint = null; showTip("+3 langkah, ayo!", 1.8); SFX.made(BOMB);
+  mode = "play"; ph = "idle"; idleT = 0; hint = null; showTip("+3 langkah, ayo!", 1.8); SFX.made(BOMB); settle();
 }
 const TIPK = { agar: "lebah madu mengincar agar-agar", collect: "tukar dua istimewa sekaligus", besek: "jejerkan di sebelah besek", score: "tukar dua istimewa sekaligus" };
 function endGame(win) {
   if (mode !== "play") return;
+  const resultRun = runId;
   mode = "over"; ph = "idle"; won = win; $("hud").hidden = true; scoreShow = core.score;
   const sc = core.score, st = core.stars(win), n = def.n, today = dailyKey || KIT.dateKey();
   let rec = false;
@@ -1393,18 +1467,18 @@ function endGame(win) {
   }
   if (kind === "daily") {
     ST.set("harian", { d: today, score: sc, stars: st, done: true });
-    if (ST.get("hariD", "") !== today) { ST.set("hariD", today); ST.set("hariN", (ST.get("hariN", 0) | 0) + 1); if (alat()) { const t = KIT.dayNumber() % 3; addAlat(t, 1); setTimeout(() => KIT.ui.toast("Hadiah Harian: +1 " + TN3[t]), 2200); } }
+    if (ST.get("hariD", "") !== today) { ST.set("hariD", today); ST.set("hariN", (ST.get("hariN", 0) | 0) + 1); if (alat()) { const t = KIT.dayNumber() % 3; addAlat(t, 1); afterRun(2200, () => KIT.ui.toast("Hadiah Harian: +1 " + TN3[t])); } }
   }
   const tp0 = toples(), tp = tp0.slice(); core.got.forEach((v, t) => { tp[t] = Math.min(99999999, tp[t] + v); }); ST.set("toples", tp);
   const upT = []; tp.forEach((v, t) => { if (tierOf(v) > tierOf(tp0[t])) upT.push(t); });
   if (alat()) upT.forEach((t) => addAlat(t % 3, 1));
-  ST.set("last", { seed: seedNow, score: sc, n, d: def.daily ? 1 : 0 });
+  ST.set("last", { seed: seedNow, score: sc, n, d: def.daily ? 1 : 0, v: runVersion });
   const pr = KIT.progress.record({ game: SLUG, score: sc, mutu: win ? 0.25 + st * 0.25 : 0.25 * core.goalFrac(), papan: DEMO ? "" : kind === "daily" ? "harian" : kind === "practice" || kind === "chal" ? "" : "bebas" });
   // layar hasil
   $("rRib").textContent = kind === "daily" ? "Harian" : kind === "practice" ? "Latihan" : kind === "chal" ? "Tantangan" : "Level " + n;
   $("rRib").className = "dk-ribbon dk-ol " + (win ? "dk-green" : "dk-red");
   const stars = $("rStars"); stars.hidden = !win; stars.innerHTML = starSVG(false) + starSVG(false) + starSVG(false);
-  $("rMode").textContent = "Skor";
+  $("rMode").textContent = def.daily ? "Pasar Malam · Skor" : window.JajanJourney.region(n).name + " · Skor";
   $("rCas").textContent = "x" + Math.max(1, core.bestCascade); $("rSp").textContent = core.made; $("rSpI").src = iconURL(6);
   // statistik remeh disembunyikan; gantinya jajan terkumpul
   $("rCasW").hidden = core.bestCascade < 3; $("rSpW").hidden = !core.made; $("rGotW").hidden = core.bestCascade >= 3 && core.made > 0; $("rGot").textContent = fmt(core.got.reduce((p, q) => p + q, 0)); $("rGotI").src = iconURL(0);
@@ -1430,7 +1504,7 @@ function endGame(win) {
   }
   const done = $("rDone"); done.hidden = !(kind === "daily" || kind === "practice"); done.textContent = kind === "practice" ? "Latihan · tidak dihitung" : "Sudah main hari ini";
   $("rNormal").hidden = kind !== "chal";
-  const nx = win && kind === "normal"; $("rAgainT").textContent = nx ? "Lanjut" : "Main lagi"; $("rAgain").querySelector("svg").innerHTML = nx ? PLAY_SVG : AGAIN_SVG;
+  const nx = win && kind === "normal"; $("rAgainT").textContent = nx ? "Main level " + Math.min(LV_MAX, n + 1) : "Coba lagi"; $("rAgain").querySelector("svg").innerHTML = nx ? PLAY_SVG : AGAIN_SVG;
   let rt, full, pink = false;
   if (!win) { rt = "Sasaran " + Math.round(core.goalFrac() * 100) + "% · kurang " + remainText() + (kind === "chal" ? "" : "\nTip: " + TIPK[def.goal.kind]); full = sc / Math.max(0.01, core.goalFrac()); }
   else {
@@ -1444,44 +1518,45 @@ function endGame(win) {
   $("rRek").hidden = true;
   KIT.ui.show($("sOver"));
   const starEls = stars.querySelectorAll("svg");
-  if (win) for (let k = 0; k < st; k++) setTimeout(() => { if (mode !== "over") return; starEls[k].outerHTML = starSVG(true, "on"); SFX.star(k); vib(15); }, 350 + k * 330);
+  if (win) for (let k = 0; k < st; k++) setTimeout(() => { if (mode !== "over" || runId !== resultRun) return; starEls[k].outerHTML = starSVG(true, "on"); SFX.star(k); vib(15); }, 350 + k * 330);
   let lastTick = 0;
-  KIT.ui.countUp($("rScore"), sc, Math.min(1500, 500 + sc / 60), (v) => {
+  KIT.ui.countUp(document.createElement("span"), sc, Math.min(1500, 500 + sc / 60), (v) => {
+    if (mode !== "over" || runId !== resultRun) return;
     $("rScore").textContent = fmt(v); bar.style.width = Math.min(100, v / full * 100) + "%";
     if (v - lastTick >= Math.max(1, sc / 30)) { lastTick = v; SFX.tick(); }
   }).then(() => {
-    if (mode !== "over") return;
+    if (mode !== "over" || runId !== resultRun) return;
     if (rec) { const e = $("rRek"); e.hidden = false; e.classList.remove("go"); void e.offsetWidth; e.classList.add("go"); KIT.ui.confetti(160); SFX.rec(); vib([30, 40, 30]); }
     else if (win && st === 3) KIT.ui.confetti(90);
     if (upT.length) { const t = upT[0]; KIT.ui.toast("Toples " + KUE[t].nama + ": " + TN[tierOf(tp[t])] + "!" + (alat() ? " +1 " + TN3[t % 3] : "")); if (!rec) KIT.ui.confetti(120); }
-    else if (win && kind === "normal" && n === lvMax() - 1) KIT.ui.toast("Level " + (n + 1) + " terbuka!");
+    else if (win && kind === "normal" && n % 10 === 0) KIT.ui.toast("Tujuan berikut: " + window.JajanJourney.region(n + 1).name);
   });
 }
 
 /* ================= LAYAR ================= */
 const AGAIN_SVG = $("rAgain").querySelector("svg").innerHTML, PLAY_SVG = '<path fill="#fff" stroke="#3b1740" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/>';
 const SCR = ["sTitle", "sPause", "sOver", "sOffer", "sHarian", "sTantang", "sKoleksi"];
-function hideAll() { for (const id of SCR) $(id).hidden = true; }
+function hideAll() { for (const id of SCR) $(id).hidden = true; $("sRecipe").hidden = true; window.JajanJourney.close(); }
 function toTitle() {
-  hideAll(); $("hud").hidden = true; mode = "title"; clearFx(); def = null; themeNow = 0; BGK = "";
+  clearTimeout(leaveTimer); runId++; hideAll(); $("hud").hidden = true; mode = "title"; clearFx(); def = null; themeNow = 0; BGK = "";
   $("tBest").querySelector("span").textContent = totalStars();
   const ru = ST.get("runtun", 0) | 0, rb = $("bRun"); rb.hidden = !ru || !!chal; rb.lastChild.textContent = "x" + ru; $("rRunI").src = iconURL(0, BEE);
   $("bRunL").innerHTML = [0, 1, 2].map((k) => '<img alt="" src="' + iconURL(0, BEE) + '"' + (k < ru ? "" : ' class="off"') + ">").join("");
   rb.setAttribute("aria-label", "Menang beruntun x" + ru + ": level berikut mulai dengan " + ru + " istimewa");
   if (ru && !chal && ru !== runTold && !UJI && !DEMO) { runTold = ru; setTimeout(() => { if (mode === "title") KIT.ui.toast("Beruntun x" + ru + " = " + ru + " istimewa gratis!"); }, 900); }
-  $("bLv").innerHTML = "Level " + lvMax() + '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="#ff5c93" stroke="#3b1740" stroke-width="2"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></g></svg>';
+  $("bLv").innerHTML = window.JajanJourney.region(lvMax()).name + " · Level " + lvMax() + '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="#ff5c93" stroke="#3b1740" stroke-width="2"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></g></svg>';
   const p = KIT.progress.get();
   $("tLv").textContent = "Pangkat " + p.level;
   $("tStrk").hidden = p.streak <= 0; $("tStrkN").textContent = p.streak + " hari";
   const dd = daily(); $("dDaily").hidden = !!dd;
   const ds = $("dStarN"); ds.hidden = !(dd && dd.done);
   if (dd && dd.done) ds.innerHTML = starSVG(true) + (dd.stars | 0);
-  const c = $("tChal"); c.hidden = !chal; if (chal) { const d = defOfSeed(chal.seed); c.textContent = "Temanmu dapat " + fmt(chal.score) + (d.daily ? "" : " di Level " + d.n) + ". Kalahkan!" + (chal.old ? "\n(level sudah diperbarui sejak tautan ini dibuat)" : ""); c.style.whiteSpace = "pre-line"; }
+  const c = $("tChal"); c.hidden = !chal; if (chal) { const d = defOfSeed(chal.seed, chal.version); c.textContent = "Temanmu dapat " + fmt(chal.score) + (d.daily ? "" : " di Level " + d.n) + ". Kalahkan!" + (chal.old ? "\n(level sudah diperbarui sejak tautan ini dibuat)" : ""); c.style.whiteSpace = "pre-line"; }
   $("sTitle").hidden = false;
   const m = $("tMid"); m.classList.remove("ent", "leave"); void m.offsetWidth; m.classList.add("ent");
   measureLogo();
 }
-function leaveTitle(fn) { $("tMid").classList.add("leave"); mode = "leaving"; setTimeout(fn, 260); }
+function leaveTitle(fn) { if (mode !== "title") return; clearTimeout(leaveTimer); $("tMid").classList.add("leave"); mode = "leaving"; leaveTimer = setTimeout(() => { if (mode === "leaving") fn(); }, 260); }
 function goalHTML(d) {
   const g = d.goal;
   if (g.kind === "score") return '<div class="goal"><span>' + starSVG(true) + "</span><b>" + fmt(g.n) + "</b><i>poin</i></div>";
@@ -1513,18 +1588,18 @@ const TIERS = [0, 100, 500, 2000, 10000], TN = ["", "Perunggu", "Perak", "Emas",
 function tierOf(v) { let k = 0; TIERS.forEach((q, i) => { if (v >= q) k = i; }); return k; }
 function openKoleksi(onlyLv) {
   $("kJars").hidden = !!onlyLv;
-  const tp = toples(), lid = ["#35d05a", "#ffb52e", "#3d8bff", "#ff5fa8", "#a35cff", "#ff4040"];
+  const tp = toples(), lid = ["#47dc26", "#ffb52e", "#22c8f4", "#ff46ae", "#ad62ff", "#ff6056"];
   $("kJars").innerHTML = tp.map((v, t) => { let tier = -1; TIERS.forEach((q, k) => { if (v >= q) tier = k; }); return '<div class="jar"><div style="--lid:' + lid[t] + '"><img src="' + iconURL(t) + '" alt="">' + (tier >= 1 ? '<b class="tier">' + TN[tier] + "</b>" : "") + "</div><b>" + KUE[t].nama + "</b><span>" + fmt(v) + "</span></div>"; }).join("");
   $("kInfo").textContent = "Toples jajan · " + totalStars() + " bintang";
   const mx = lvMax(); let h = "";
-  for (let n = 1; n <= mx; n++) { const s = starsOf(n); h += '<button class="lvb' + (n === mx ? " cur" : "") + '" data-lv="' + n + '" aria-label="Level ' + n + ", " + s + ' bintang">' + n + "<i>" + [0, 1, 2].map((k) => starSVG(s > k)).join("") + "</i></button>"; }
+  for (let n = Math.max(1, mx - 9); n <= mx; n++) { const s = starsOf(n); h += '<button class="lvb' + (n === mx ? " cur" : "") + '" data-lv="' + n + '" aria-label="Level ' + n + ", " + s + ' bintang">' + n + "<i>" + [0, 1, 2].map((k) => starSVG(s > k)).join("") + "</i></button>"; }
   $("kLv").innerHTML = h;
   KIT.ui.show($("sKoleksi"));
   const cur = $("kLv").querySelector(".cur"); if (cur) try { $("kLv").scrollTop = cur.offsetTop - 80; } catch (e) { }
 }
 $("kLv").addEventListener("click", (e) => { const b = e.target.closest("[data-lv]"); if (!b || mode !== "title") return; SFX.tap(); $("sKoleksi").hidden = true; const n = +b.dataset.lv; leaveTitle(() => startGame("normal", n)); });
-function shareScore(seed, score, n, isDaily) {
-  KIT.share({ title: "Jajan Manis", text: "Aku dapat " + fmt(score) + " poin di Jajan Manis" + (isDaily ? " (Harian)" : " Level " + n) + "! Bisa kalahkan?", url: KIT.challengeLink(SLUG, seed, score) + "&v=" + RULES_V });
+function shareScore(seed, score, n, isDaily, version = runVersion) {
+  KIT.share({ title: "Jajan Manis", text: "Aku dapat " + fmt(score) + " poin di Jajan Manis" + (isDaily ? " (Harian)" : " Level " + n) + "! Bisa kalahkan?", url: KIT.challengeLink(SLUG, seed, score) + "&v=" + version });
 }
 function pause() {
   if (mode !== "play") return;
@@ -1537,10 +1612,14 @@ function resume() { if (mode !== "pause") return; $("sPause").hidden = true; mod
 function on(id, fn, ok) { $(id).addEventListener("click", (e) => { if (ok && !ok()) return; SFX.tap(); fn(e); }); }
 const atTitle = () => mode === "title", atOver = () => mode === "over", atPause = () => mode === "pause";
 on("bMain", () => leaveTitle(() => chal ? startGame("chal", chal.seed) : startGame("normal")), atTitle);
-on("bLv", () => openKoleksi(true), atTitle);
+on("bLv", openJourney, atTitle);
+on("kJourney", () => { $("sKoleksi").hidden = true; openJourney(); }, atTitle);
+on("bRecipe", openRecipe, () => mode === "play");
+on("recipeClose", closeRecipe); on("recipeGo", closeRecipe);
+on("bSkipBonus", skipBonus, () => mode === "play" && bonusMode);
 on("bHarian", openHarian, atTitle); on("bTantang", openTantang, atTitle); on("bKoleksi", () => openKoleksi(), atTitle); on("bPeringkat", () => KIT.papan && KIT.papan.buka(SLUG)); on("bSetelan", () => KIT.ui.openSettings());
 on("dPlay", () => { const k = daily() ? "practice" : "daily"; $("sHarian").hidden = true; leaveTitle(() => startGame(k)); }, atTitle);
-on("cSend", () => { const L = ST.get("last", null); if (L && L.score) shareScore(L.seed, L.score, L.n, L.d); else { $("sTantang").hidden = true; leaveTitle(() => startGame("normal")); } }, atTitle);
+on("cSend", () => { const L = ST.get("last", null); if (L && L.score) shareScore(L.seed, L.score, L.n, L.d, L.v || 2); else { $("sTantang").hidden = true; leaveTitle(() => startGame("normal")); } }, atTitle);
 on("bPause", pause, () => mode === "play");
 on("pGo", resume, atPause);
 on("pRe", () => startGame(kind === "daily" ? "practice" : kind, kind === "chal" ? seedNow : def.n), atPause);
@@ -1559,7 +1638,7 @@ on("oNo", () => { $("sOffer").hidden = true; mode = "play"; endGame(false); }, (
 for (const b of document.querySelectorAll("[data-close]")) b.addEventListener("click", () => { SFX.tap(); b.closest(".dk-overlay").hidden = true; });
 function localXY(e) { return [e.clientX, e.clientY]; }
 cv.addEventListener("pointerdown", (e) => {
-  if (mode !== "play") return;
+  if (!canPlayInput() || e.isPrimary === false || (e.pointerType === "mouse" && e.button !== 0)) return;
   e.preventDefault();
   if (introT > 0) { introT = Math.min(introT, 0.25); return; }
   if (bonusMode) { skipBonus(); return; }
@@ -1575,24 +1654,30 @@ cv.addEventListener("pointerdown", (e) => {
   try { cv.setPointerCapture(e.pointerId); } catch (er) { }
 });
 cv.addEventListener("pointermove", (e) => {
-  if (!drag || drag.id !== e.pointerId || mode !== "play") return;
+  if (!drag || drag.id !== e.pointerId || !canPlayInput()) return;
   const [x, y] = localXY(e), dx = x - drag.x, dy = y - drag.y, th = CELL * 0.32;
   if (Math.max(Math.abs(dx), Math.abs(dy)) < th) return;
   const a = drag.a, b = Math.abs(dx) > Math.abs(dy) ? (dx > 0 && (a & 7) < 7 ? a + 1 : dx < 0 && (a & 7) > 0 ? a - 1 : -1) : (dy > 0 ? a + 8 : a - 8);
   drag = null;
   if (b >= 0 && b < NN && core.M[b]) { if (ph !== "idle") queued = { a, b }; else doSwap(a, b); } // saat runtuhan: disimpan satu
 });
-const endDrag = (e) => { if (drag && drag.id === e.pointerId) drag = null; };
+const endDrag = (e) => { if (drag && drag.id === e.pointerId) { drag = null; if (e.type === "pointercancel") { sel = -1; queued = null; } } };
 cv.addEventListener("pointerup", endDrag); cv.addEventListener("pointercancel", endDrag);
 // papan ketik: panah pindah, Spasi/Enter pilih
 let kc = 27;
 document.addEventListener("keydown", (e) => {
+  if (!$("sRecipe").hidden) {
+    if (e.key === "Escape") { e.preventDefault(); closeRecipe(); }
+    if (e.key === "Tab") { e.preventDefault(); ($(document.activeElement.id === "recipeClose" ? "recipeGo" : "recipeClose")).focus(); }
+    return;
+  }
+  if (e.key !== "Escape" && e.target.closest && e.target.closest('button,a,input,select,textarea,[contenteditable]')) return;
   if (e.key === "Escape" || e.key === "p") {
     if (mode === "play") pause(); else if (mode === "pause") resume();
     else if (e.key === "Escape") { const ov = [...document.querySelectorAll(".dk-overlay")].filter((o) => !o.hidden && o.id !== "sOver" && o.id !== "sPause" && o.id !== "sOffer").pop(); if (ov) { const x = ov.querySelector("[data-close],[data-x]"); if (x) x.click(); else ov.hidden = true; } }
     return;
   }
-  if (mode !== "play") return;
+  if (!canPlayInput()) return;
   const mv = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -8, ArrowDown: 8 }[e.key];
   if (mv) {
     e.preventDefault(); if (introT > 0) return; kbd = true;
@@ -1669,7 +1754,7 @@ let lastTs = 0, sizeChk = 0;
 let skipN = 0;
 // hemat baterai: papan tenang dan layar judul ~30 fps; di balik panel (jeda, hasil, tawaran, Koleksi/Harian/Tantang) ~10 fps
 const calm = () => mode === "play" && ph === "idle" && introT <= 0 && !FXL.length && !TXT.length && BN.t <= 0 && !FLY.length && !DYING.length && shake <= 0 && flash <= 0 && !drag && sel < 0 && toolSel < 0;
-const covered = () => mode === "pause" || mode === "over" || mode === "offer" || (mode === "title" && !($("sHarian").hidden && $("sKoleksi").hidden && $("sTantang").hidden));
+const covered = () => mode === "pause" || mode === "over" || mode === "offer" || (mode === "title" && !!document.querySelector(".dk-overlay:not([hidden])"));
 const frameDiv = () => covered() ? 6 : mode === "play" && !calm() ? 1 : 2;
 function frame(ts) { requestAnimationFrame(frame); const k = frameDiv(); if (k > 1 && (skipN = (skipN + 1) % k)) return; frameCore(ts); }
 function frameCore(ts) {
@@ -1683,7 +1768,8 @@ function frameCore(ts) {
   render(dt);
 }
 function update(dt) {
-  if (introT > 0) { introT -= dt; if (introT <= 0) { introT = 0; if (!DEMO && !UJI && kind === "normal" && def.n === 1 && !core.used && !starsOf(1)) { const mv = core.findMoves(false); hint = mv.length ? mv.reduce((p, q) => q.v > p.v ? q : p) : null; if (hint) { guide = 2; showTip("Geser jajan: jejerkan 3!", 4); } } else if (!DEMO && !UJI) obstacleTip(); } }
+  if (bonusMode && mode === "play") { bonusAge += dt; if (bonusAge > 5 && core.moves > 0) { skipBonus(); bonusAge = -100; } }
+  if (introT > 0) { introT -= dt; if (introT <= 0) { introT = 0; if (!DEMO && !UJI && kind === "normal" && def.lesson && !core.used && !starsOf(def.n)) { hint = core.lessonMove ? core.lessonMove() : null; if (hint) { guide = 1; } } else if (!DEMO && !UJI) obstacleTip(); } }
   for (let j = 0; j < TL.length; j++) { const e = TL[j]; e.t -= dt; if (e.t <= 0) { TL.splice(j--, 1); e.fn(); } }
   for (let i = 0; i < NN; i++) if (AGW[i] > 0) AGW[i] = Math.max(0, AGW[i] - dt);
   for (let j = DYING.length - 1; j >= 0; j--) { DYING[j].age += dt; if (DYING[j].age > 0.24) DYING.splice(j, 1); }
@@ -1718,6 +1804,7 @@ function update(dt) {
 const demoRn = KIT.rng(4242);
 function render(dt) {
   const g = ctx;
+  updateJourneyHUD();
   g.setTransform(dpr, 0, 0, dpr, 0, 0); g.globalAlpha = 1;
   drawBackdrop();
   shake *= Math.pow(0.02, dt); if (shake < 0.3) shake = 0;
@@ -1731,7 +1818,7 @@ function render(dt) {
   drawHUD(); drawTools(); drawFly(dt);
   drawTexts(dt); drawTip(dt);
   drawIntro();
-  if (flash > 0) { flash -= dt; g.globalAlpha = Math.max(0, flash) * 0.9; g.fillStyle = flashC; g.fillRect(0, 0, vw, vh); g.globalAlpha = 1; }
+  if (flash > 0) { flash -= dt; g.globalAlpha = Math.max(0, flash) * 0.22; g.fillStyle = flashC; g.fillRect(0, 0, vw, vh); g.globalAlpha = 1; }
 }
 
 /* ================= MULAI ================= */

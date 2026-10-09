@@ -131,6 +131,48 @@ function runUji() {
     let initOk = true, moveOk = true;
     for (let n = 1; n <= 300; n++) { const q = new Core(); q.load(levelDef(n)); if (q.groups().length) initOk = false; if (!q.findMoves(true).length) moveOk = false; }
     chk(initOk && moveOk, "q) 300 level: papan awal tanpa deret dan selalu ada langkah");
+    // Kurva perjalanan baru tetap menyimpan definisi dan urutan acak versi 2.
+    const oldLevels = [[1,1759007703,3094521054],[3,2594222385,2228408786],[21,146364829,383757486],[37,4249844439,1717497731],[100,644009070,227613740],[300,329822340,1855855136],[999999,4062034207,2142493700]];
+    let legacyOK = true;
+    for (const [n, definitionHash, boardHash] of oldLevels) {
+      const d = levelDef(n, undefined, 2), q = new Core(); q.load(d);
+      if (KIT.hash(JSON.stringify(d)) !== definitionHash || KIT.hash(Array.from(q.T).join(",")) !== boardHash) legacyOK = false;
+    }
+    chk(legacyOK, "v3a) tautan versi 2: definisi dan papan awal lama tetap identik, termasuk level tinggi");
+    let dailyOK = true;
+    for (const [seed, definitionHash, replayHash] of [[1000,1913476446,2817862169],[1001,1589422157,2316992567],[987654,318687567,2002030554]]) {
+      const d = levelDef(0, seed), q = new Core(); q.load(d);
+      for (let k = 0; k < 12; k++) { const m = q.findMoves(false)[0]; if (m) q.act(m.a, m.b); }
+      const hash = KIT.hash(JSON.stringify([Array.from(q.T), Array.from(q.S), Array.from(q.J), q.score, q.moves, q.got]));
+      if (KIT.hash(JSON.stringify(d)) !== definitionHash || hash !== replayHash) dailyOK = false;
+    }
+    chk(dailyOK, "v3b) Harian tetap identik: sasaran, 12 langkah, runtuhan, skor, dan isi papan");
+    let goalsOK = true, lessonsOK = true;
+    for (let n = 1; n <= 400; n++) {
+      const d = levelDef(n), q = new Core(); q.load(d);
+      if (d.goal.kind === "collect" && (!d.goal.items.length || d.goal.items.some((it) => it.t < 0 || it.t >= d.colors || it.n <= 0))) goalsOK = false;
+      if (d.goal.kind === "agar" && (d.goal.n <= 0 || d.goal.n !== q.agarLeft())) goalsOK = false;
+      if (d.goal.kind === "besek" && (d.goal.n <= 0 || d.goal.n !== q.bskLeft())) goalsOK = false;
+      if (n <= 30 && d.agar.some((layers) => layers > 1) || n <= 50 && d.colors > 5) goalsOK = false;
+    }
+    for (const n of [1, 5, 6, 9, 11]) {
+      const q = new Core(); q.load(levelDef(n));
+      const before = Array.from(q.T).join(","), m = q.lessonMove(), target = q.def.lesson.special;
+      if (!m || Array.from(q.T).join(",") !== before) { lessonsOK = false; continue; }
+      q.swap(m.a, m.b); const event = q.step();
+      if (!event || (target === 0 ? event.made.length !== 0 : !event.made.some((made) => target === SH ? made.s === SH || made.s === SV : made.s === target))) lessonsOK = false;
+    }
+    chk(goalsOK, "v3c) 400 level: semua warna pesanan tersedia dan lapisan sasaran tepat; mekanik baru bertahap");
+    chk(lessonsOK, "v3d) pelajaran 3/4/5 sejajar, kotak, dan L/T punya langkah pembuka yang benar tanpa mengubah papan saat memberi petunjuk");
+    let boostedLessonsOK = true;
+    for (const n of [1, 5, 6, 9, 11]) for (let streak = 1; streak <= 3; streak++) for (let seed = 1; seed <= 12; seed++) {
+      const q = new Core(); q.load(levelDef(n)); q.rng = KIT.rng(seed);
+      const before = Array.from(q.T).join(","), boosted = q.boost(streak), m = q.lessonMove(), target = q.def.lesson.special;
+      if (boosted.length !== streak || Array.from(q.T).join(",") !== before || !m) { boostedLessonsOK = false; continue; }
+      q.swap(m.a, m.b); const event = q.step();
+      if (!event || event.fx.length || (target === 0 ? event.made.length !== 0 : !event.made.some((made) => target === SH ? made.s === SH || made.s === SV : made.s === target))) boostedLessonsOK = false;
+    }
+    chk(boostedLessonsOK, "v3e) 180 bonus beruntun: 1-3 hadiah tetap lengkap, contoh resep pembuka tetap ada tanpa meledakkan hadiah");
     // r) benih sama = level sama
     const d1 = levelDef(37), d2 = levelDef(37), c1 = new Core(), c2 = new Core(); c1.load(d1); c2.load(d2);
     chk(JSON.stringify(d1) === JSON.stringify(d2) && Array.from(c1.T).join() === Array.from(c2.T).join() && Array.from(c1.T).join() !== (() => { const c3 = new Core(); c3.load(levelDef(38)); return Array.from(c3.T).join(); })(), "r) level 37 selalu sama untuk semua; level 38 berbeda");
@@ -189,11 +231,11 @@ function runUji() {
     $("rAgain").click(); $("rMenu").click(); $("rShare").click();
     chk(mode === "play" && def.n === 1, "ui2) Main lagi/Menu/Bagikan saat bermain diabaikan (klik ulang dari iklan app)");
     finish(true);
-    chk(mode === "over" && ST.get("lv", 1) === 2 && starsOf(1) >= 1 && $("rAgainT").textContent === "Lanjut" && recs.pop().papan === "bebas", "ui3) menang: level 2 terbuka, bintang tersimpan, tombol Lanjut, skor ke papan bebas");
+    chk(mode === "over" && ST.get("lv", 1) === 2 && starsOf(1) >= 1 && $("rAgainT").textContent === "Main level 2" && recs.pop().papan === "bebas", "ui3) menang: level 2 terbuka, bintang tersimpan, tombol Main level 2, skor ke papan bebas");
     $("rAgain").click();
     chk(mode === "play" && def.n === 2, "ui4) Lanjut memulai level 2");
     finish(false); finish(false);
-    chk(mode === "over" && $("rAgainT").textContent === "Main lagi" && ST.get("gagal", {}).k === 1, "ui5) kalah: Main lagi, gagal tercatat");
+    chk(mode === "over" && $("rAgainT").textContent === "Coba lagi" && ST.get("gagal", {}).k === 1, "ui5) kalah: Coba lagi, gagal tercatat");
     chk(!$("rGift").hidden && $("rGiftN").textContent.indexOf("+3") === 0 && $("rVerd").textContent.indexOf("Hampir") < 0 && $("rAgain").classList.contains("pul"), "ui5b) kalah jauh: bukan Hampir, bantuan +3 ditampilkan, tombol berdenyut");
     $("rAgain").click(); chk(extraMoves === 3, "ui5c) level awal: bantuan +3 sejak kalah pertama"); finish(false); $("rAgain").click();
     chk(extraMoves === 6 && core.moves === levelDef(2).moves + 6, "ui6) gagal 2 kali: bantuan +6 langkah");

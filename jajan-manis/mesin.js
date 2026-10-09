@@ -49,7 +49,13 @@ Core.prototype.fill = function () {
       if (B[i]) { t = BSK; this.K[i] = B[i]; } else this.L[i] = Q[i] | 0;
       T[i] = t; this.ID[i] = this.idc++;
     }
-    if (!this.groups().length && this.findMoves(true).length) return;
+    if (!this.groups().length && this.findMoves(true).length) {
+      if (this.def.rulesVersion >= 3 && this.def.n <= 11 && tries < 299) {
+        if (this.findMoves(false).length < 3) continue;
+        if (this.def.lesson && this.def.lesson.special != null && !this.lessonMove()) continue;
+      }
+      return;
+    }
   }
 };
 // deret 3+ sejenis, mendatar (h) dan menurun
@@ -352,8 +358,16 @@ Core.prototype.hammer = function (i) {
 };
 // hadiah menang beruntun: 1-3 istimewa siap pakai di awal level (lebah, garis, bungkus)
 Core.prototype.boost = function (r) {
-  const out = [];
-  for (let k = 0; k < r; k++) { const p = this.plain(), i = p[(this.rng() * p.length) | 0]; if (i == null) break; this.S[i] = [BEE, this.rng() < 0.5 ? SH : SV, BOMB][k]; out.push(i); }
+  const out = [], keep = new Set();
+  // Hadiah tidak menimpa contoh resep pembuka, termasuk jajanan yang akan berjejer.
+  const lesson = this.def.rulesVersion >= 3 && !this.used ? this.lessonMove() : null;
+  if (lesson) {
+    keep.add(lesson.a); keep.add(lesson.b);
+    this.xchg(lesson.a, lesson.b);
+    this.groups().forEach((g) => g.cells.forEach((i) => keep.add(i)));
+    this.xchg(lesson.a, lesson.b);
+  }
+  for (let k = 0; k < r; k++) { const p = this.plain().filter((i) => !keep.has(i)), i = p[(this.rng() * p.length) | 0]; if (i == null) break; this.S[i] = [BEE, this.rng() < 0.5 ? SH : SV, BOMB][k]; out.push(i); }
   return out;
 };
 // terapkan satu langkah sampai papan tenang; keadaan = benih level + daftar langkah (untuk gelanggang bergiliran kelak)
@@ -406,7 +420,7 @@ function diffOf(n) {
 }
 const EASY = (n) => n <= 1 ? 0.5 : n <= 3 ? 0.65 : n <= 6 ? 0.85 : 1; // level awal: pengenalan
 const r5 = (x) => Math.round(x / 5) * 5, r500 = (x) => Math.round(x / 500) * 500;
-function levelDef(n, dailySeed) {
+function levelDefV2(n, dailySeed) {
   const daily = dailySeed != null, seed = daily ? dailySeed >>> 0 : DK.hash("jajan-manis|lv|" + n);
   const rn = DK.rng(seed ^ 0x2545f491), d = daily ? 0.45 + rn() * 0.15 : diffOf(n), slack = 1.6 - 0.6 * d;
   const ci0 = !daily && n > 20 && rn() < Math.min(0.55, (n - 20) / 60) ? 1 : 0, ci = !daily && n <= 2 ? 0 : ci0 + 1, colors = 4 + ci;
@@ -458,6 +472,101 @@ function levelDef(n, dailySeed) {
   stars[2] = Math.max(stars[2], stars[1] + 500);
   return { n, seed, daily, d, colors, kind, mask, agar, bsk, tie, moves, goal, stars, mk };
 }
+
+
+// Versi 3: perjalanan mengajarkan satu hal baru setiap kali. Versi 2 dipertahankan
+// utuh untuk Harian dan tautan Tantang lama; nomor level serta simpanan tetap sama.
+const JOURNEY_START = [
+  { moves: 10, colors: 4, collect: [[0, 18]], lesson: { key: "swap", special: 0, text: "Geser jajan: jejerkan 3 yang sama!" } },
+  { moves: 10, colors: 4, collect: [[1, 28]], lesson: { key: "collect", text: "Cari onde-onde untuk mengisi pesanan!" } },
+  { moves: 10, colors: 4, agar: [26, 27, 28, 29, 34, 35, 36, 37], lesson: { key: "agar", text: "Jejerkan di atas agar-agar untuk membersihkannya!" } },
+  { moves: 15, colors: 5, collect: [[4, 20]], lesson: { key: "color", text: "Cenil ikut bermain. Perhatikan warna pesanan!" } },
+  { moves: 19, colors: 5, collect: [[2, 25]], lesson: { key: "line", special: SH, text: "Jejerkan 4: buat garis gula penyapu baris!" } },
+  { moves: 12, colors: 5, score: 3500, lesson: { key: "bee", special: BEE, text: "Kotak 2 x 2 membuat lebah pembantu sasaran!" } },
+  { moves: 16, colors: 5, agar: [18, 19, 20, 21, 26, 27, 28, 29, 34, 35, 36, 37, 42, 43, 44, 45], lesson: { key: "agar-practice", text: "Bersihkan agar-agar. Lebah bisa membantumu!" } },
+  { moves: 22, colors: 5, mk: 1, collect: [[0, 18], [3, 18]], lesson: { key: "two-orders", text: "Dua pesanan: kumpulkan keduanya!" } },
+  { moves: 22, colors: 5, mk: 1, score: 5500, lesson: { key: "wrapped", special: BOMB, text: "Bentuk L atau T membuat bungkus daun!" } },
+  { moves: 22, colors: 5, agar: Array.from({ length: 24 }, (_, k) => 40 + k), lesson: { key: "finale", text: "Pesanan terakhir di pasar ini. Ayo tuntaskan!" } }
+];
+function journeyStars(d) {
+  const basis = d.moves * SPM[d.colors - 4][d.mk], score = d.goal.kind === "score" ? d.goal.n : 0;
+  const second = Math.max(score + 500, r500(basis * 0.78));
+  return [score, second, Math.max(second + 500, r500(basis * 1.25))];
+}
+function levelDef(n, dailySeed, version) {
+  if (dailySeed != null || version != null && version <= 2) return levelDefV2(n, dailySeed);
+  n = Math.max(1, Math.min(LV_MAX, Number.isFinite(+n) ? Math.floor(+n) : 1));
+  const d = levelDefV2(n);
+  d.rulesVersion = 3;
+  if (n <= JOURNEY_START.length) {
+    const a = JOURNEY_START[n - 1];
+    d.colors = a.colors; d.moves = a.moves; d.mk = a.mk || 0;
+    d.mask = Array.from({ length: NN }, (_, i) => (MASKS[d.mk][i >> 3] >> (7 - (i & 7))) & 1);
+    d.agar = Array(NN).fill(0); d.bsk = []; d.tie = [];
+    if (a.agar) { for (const i of a.agar) d.agar[i] = 1; d.goal = { kind: "agar", n: a.agar.length }; }
+    else if (a.collect) d.goal = { kind: "collect", items: a.collect.map(([t, count]) => ({ t, n: count })) };
+    else d.goal = { kind: "score", n: a.score };
+    d.kind = d.goal.kind; d.lesson = Object.assign({}, a.lesson); d.stars = journeyStars(d);
+    return d;
+  }
+  if (n <= 20) {
+    // Sudut membulat dahulu; lubang di tengah datang setelah dasar permainan akrab.
+    d.mk = n <= 15 ? 0 : 1;
+    d.mask = Array.from({ length: NN }, (_, i) => (MASKS[d.mk][i >> 3] >> (7 - (i & 7))) & 1);
+    d.moves = Math.min(34, d.moves + 1);
+  }
+  if (n < 31 && d.goal.kind === "agar") {
+    d.agar = d.agar.map((layers, i) => d.mask[i] && layers ? 1 : 0);
+    d.goal = { kind: "agar", n: d.agar.reduce((sum, layers) => sum + layers, 0) };
+  }
+  if (n < 31 && d.goal.kind !== "besek") d.bsk = [];
+  if (n <= 50) {
+    d.colors = Math.min(5, d.colors);
+    if (d.goal.kind === "collect") d.goal.items = d.goal.items.map((it) => ({ t: it.t % d.colors, n: it.n }));
+  }
+  if (n === 11) d.lesson = { key: "rainbow", special: RB, text: "Jejerkan 5 untuk membuat bintang pelangi!" };
+  if (n === 21) {
+    d.mk = 0; d.mask = Array(NN).fill(1); d.agar = Array(NN).fill(0); d.bsk = Array(NN).fill(0); d.tie = [];
+    for (const i of [26, 29, 34, 37, 42, 45, 50, 53]) d.bsk[i] = 1;
+    d.moves = 24; d.kind = "besek"; d.goal = { kind: "besek", n: 8 };
+    d.lesson = { key: "besek", text: "Besek terbuka saat kamu berjejer di sebelahnya!" };
+    d.stars = journeyStars(d);
+  }
+  if (n === 31) {
+    d.mk = 0; d.mask = Array(NN).fill(1); d.bsk = []; d.tie = []; d.agar = Array(NN).fill(0);
+    for (const i of [26, 27, 28, 29, 34, 35, 36, 37]) d.agar[i] = 2;
+    d.moves = 24; d.kind = "agar"; d.goal = { kind: "agar", n: 16 };
+    d.lesson = { key: "double-agar", text: "Agar tebal perlu dibersihkan dua kali!" };
+    d.stars = journeyStars(d);
+  }
+  if (n === 41) {
+    d.mk = 0; d.mask = Array(NN).fill(1); d.agar = Array(NN).fill(0); d.bsk = []; d.tie = Array(NN).fill(0);
+    for (const i of [26, 29, 34, 37]) d.tie[i] = 1;
+    d.moves = 24; d.kind = "collect"; d.goal = { kind: "collect", items: [{ t: 0, n: 30 }] };
+    d.lesson = { key: "tie", text: "Jajan terikat: jejerkan untuk melepas tali!" };
+    d.stars = journeyStars(d);
+  }
+  return d;
+}
+// Petunjuk resep melihat bentuk setelah tukar, tanpa mengundi ulang papan.
+Core.prototype.lessonMove = function () {
+  const lesson = this.def.lesson;
+  if (!lesson || lesson.special == null) return null;
+  let best = null;
+  for (const m of this.findMoves(false)) {
+    if (this.S[m.a] || this.S[m.b]) continue;
+    this.xchg(m.a, m.b);
+    const groups = this.groups();
+    const fits = (lesson.special !== 0 || groups.length === 1 && groups[0].cells.length === 3 && (this.def.goal.kind !== "collect" || this.def.goal.items.some((it) => it.t === groups[0].t))) && groups.some((g) => {
+      if (g.cells.indexOf(m.a) < 0 && g.cells.indexOf(m.b) < 0) return false;
+      const s = groupSpecial(g);
+      return lesson.special === SH ? s === SH || s === SV : s === lesson.special;
+    });
+    this.xchg(m.a, m.b);
+    if (fits && (!best || m.v > best.v)) best = m;
+  }
+  return best;
+};
 
 /* ---------- pemain otomatis: demo, judul, dan uji ---------- */
 function botValue(a, b) {

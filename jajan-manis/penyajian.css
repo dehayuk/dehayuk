@@ -1,0 +1,81 @@
+/* Jajan Manis: presentation is isolated from the portal and other games. */
+:root{--dk-ink:#3a2446;--dk-lbl:#74536e}
+.journey-kicker{font:900 11px/1.2 var(--dk-fd);letter-spacing:2.5px;color:#56405a;text-align:center;margin:5px 0 0;pointer-events:none}
+#sTitle{padding-top:calc(var(--dk-st) + 62px)}
+#logo{width:min(89%,370px,32vh * 1.6)}
+.tmid{gap:18px;padding-top:14px}
+#bMain{animation:none;min-width:224px;font-size:34px;padding:10px 40px 13px}
+.lvtag{margin-top:10px;min-height:44px;padding:8px 16px;border-width:2px;box-shadow:0 3px 0 #3a244628;font-size:15px;background:#fff9ed;gap:9px}
+#bLv{max-width:100%;white-space:nowrap}
+.icons{gap:clamp(9px,3vw,17px)}
+.icons .dk-round{min-width:48px;min-height:64px}
+.icons .dk-round>i{width:48px;height:48px}
+.icons .dk-round>span{font-size:12px}
+.runb{font-size:13px;top:-14px;right:-14px;border-width:2px}
+.chip,.best{border-width:2px;font-size:13px;background:#59375ded}
+.home{width:44px!important;height:44px!important}
+#hJourney{position:fixed;z-index:9;box-sizing:border-box;padding:10px 14px;color:#3a2446;background:#fffdf4ed;border:1px solid #fff;border-radius:18px;box-shadow:0 4px 16px #14484414;font-family:var(--dk-fd)}
+.journey-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:16px;font-weight:800;line-height:1.15}
+#journeyProgress{font-size:11px;color:#45726b;background:#e0eee5;border-radius:10px;padding:4px 7px;white-space:nowrap}
+#journeyLesson{font-size:12px;line-height:1.3;color:#6b5c70;margin:6px 0 0;max-width:42ch}
+#bRecipe,#bSkipBonus{border:0;border-radius:11px;background:#f5e7ef;color:#674266;min-height:44px;padding:8px 12px;font:800 13px/1.15 var(--dk-fd);cursor:pointer;margin-top:8px}
+#bRecipe span{display:inline-grid;place-items:center;width:18px;height:18px;border:1.5px solid currentColor;border-radius:50%;margin-left:4px}
+#bSkipBonus{background:#ffdf78;color:#614223;width:100%}
+.jm-landscape #hJourney{padding:15px}
+.jm-landscape #journeyLesson{font-size:13px;line-height:1.4}
+.jm-landscape .journey-heading{flex-wrap:wrap;font-size:19px}
+.jm-landscape #bRecipe{width:100%}
+#sOver .stats,#sOver #rJar{display:none!important}
+#sOver .dk-panel{gap:12px;border-width:3px;background:linear-gradient(160deg,#fffef9,#fff0ef);box-shadow:0 12px 40px #3a244636}
+#sOver .big{-webkit-text-stroke:0;text-shadow:none;color:#57325e;font-size:52px}
+#sOver .rrec{line-height:1.45;white-space:pre-line;max-width:300px}
+#sOver .rbar{height:9px;border-width:1px;background:#eee0e7}
+#sOver .gift{animation:none;font-size:11px;border:0;background:#f0e4ed;line-height:1.4;padding:5px 10px}
+#sOver .xp{font-size:12px;background:none;color:#795376;padding:3px}
+#sOver .rmisc{gap:4px}
+#sOver .verd{font-size:21px;border-width:2px;box-shadow:none;transform:none}
+#rAgain{animation:none!important;min-height:52px;font-size:23px}
+#rRek{display:none!important}
+.recipe-panel{max-width:380px!important}
+.recipe-lead,.recipe-foot{font:800 13px/1.5 var(--dk-fd);color:#765874;margin:0;text-align:center}
+.recipe-foot{font-size:12px}
+#recipeRows{width:100%;display:grid;gap:8px}
+.recipe-row{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e6cfde;padding:7px 12px;border-radius:14px;text-align:left}
+.recipe-row img{width:44px;height:44px;object-fit:contain}
+.recipe-row b{display:block;font:800 16px/1.3 var(--dk-fd)}
+.recipe-row span{display:block;font:800 12px/1.35 var(--dk-fd);color:#765874}
+#recipeGo{width:100%;min-height:44px;font-size:20px}
+#recipeClose{font-size:28px}
+button:focus-visible{outline:3px solid #1273a0;outline-offset:4px}
+.cover .journey-kicker{display:none}
+@media(max-aspect-ratio:1.28){
+ #hJourney{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:8px;align-items:center;padding:10px 12px}
+ #journeyLesson{grid-column:1;margin-top:4px;font-size:11px}
+ #bRecipe,#bSkipBonus{grid-column:2;grid-row:1/3;margin:0;font-size:11px;padding:7px 10px;max-width:96px}
+ #bRecipe span{display:none}
+ .journey-heading{font-size:14px}
+ #journeyProgress{font-size:10px}
+}
+@media(max-height:580px){
+ #logo{width:min(67%,32vh * 1.6)}
+ .journey-kicker{font-size:10px;margin:0}
+ #bMain{font-size:28px;min-width:184px;padding:7px 30px 9px;min-height:48px}
+ .tmid{gap:11px;padding-top:6px}
+ .lvtag{font-size:12px;margin-top:7px;min-height:44px;padding:5px 12px}
+ .icons .dk-round>i{width:44px;height:44px}
+ .icons .dk-round{min-height:58px}
+ #sOver .dk-panel{max-width:640px;display:grid;grid-template-columns:1fr 1fr;column-gap:20px;row-gap:8px}
+ #sOver .rstars{grid-column:1;grid-row:1;justify-content:center}
+ #sOver .rsub{grid-column:1;grid-row:2}
+ #sOver .rbar{grid-column:1;grid-row:3}
+ #sOver .rmisc{grid-column:2;grid-row:1}
+ #sOver .dk-stack{grid-column:2;grid-row:2/4}
+ #sOver .big{font-size:38px}
+ #sOver .rrec{font-size:11px}
+ #sOver .rstars svg{width:38px;height:38px}
+ #sOver .rstars svg:nth-child(2){width:48px;height:48px}
+ .recipe-panel{max-width:640px!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important}
+ #recipeRows{grid-column:2;grid-row:1/4}
+ .recipe-row{padding:3px 8px;gap:8px}.recipe-row img{width:34px;height:34px}
+}
+@media(prefers-reduced-motion:reduce){.ent>*,.rstars .on,.leave,.runb,.chal{animation:none!important}}
