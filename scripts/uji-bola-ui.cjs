@@ -35,6 +35,22 @@ try{
   await p.evaluate(()=>{core.hooks=null;core.fire(Math.PI*.09);volT=4;document.getElementById('bRecall').hidden=false;document.getElementById('bSpeed').hidden=false;});await p.waitForTimeout(100);await layout(p,width+'-flying');
   await p.locator('#bPause').click({force:true});await layout(p,width+'-pause');check(await p.evaluate(()=>mode==='pause'),'Pause works');
  }finally{await p.context().close();}});
+ await scenario('fruit render, triangle geometry and motion',async()=>{
+  const p=await pageAt();try{await start(p);await p.evaluate(()=>{frameCore=()=>{};time=0;clearFx();core.hooks=null;core.G.fill(null);core.lvl=17;shiftT=0;BZ.snap=true;
+   const items=[[0,0,0,1],[0,1,0,99],[0,2,0,1234],[0,3,0,9999],[0,4,0,17],[0,5,0,18],[1,0,2,16,0],[1,2,2,999,1],[1,4,2,9999,2],[1,6,2,13,3],[2,1,4,0],[3,3,4,0]];
+   for(const a of items){const b=mkItem(...a);core.G[b.i]=b;}core.balls=18;core.lx=350;document.getElementById("hint").hidden=true;render(0);render(0);
+  });
+  const colors=await p.evaluate(()=>PAL.map((_,i)=>{const c=blockSprite(0,0,i,false),g=c.getContext('2d'),s=(CELL-2*INSET)*K;return [...g.getImageData(Math.round((SP+s*.35)*dpr),Math.round((SP+s*.52)*dpr),1,1).data];}));
+  check(colors.every(c=>Math.max(...c.slice(0,3))-Math.min(...c.slice(0,3))>80),'Jelly faces keep saturated colors');
+  check(colors.every((c,i)=>colors.slice(i+1).every(d=>Math.hypot(c[0]-d[0],c[1]-d[1],c[2]-d[2])>55)),'Six jelly faces distinguishable in actual rendered pixels');
+  const masks=await p.evaluate(()=>[0,1,2,3].map(o=>{const c=blockSprite(1,o,0,false),g=c.getContext('2d'),d=(CELL-2*INSET)*K;const outsideX=SP+d*([.15,.85,.85,.15][o]),outsideY=SP+d*([.15,.15,.85,.85][o]),insideX=SP+d*([2/3,1/3,1/3,2/3][o]),insideY=SP+d*([2/3,2/3,1/3,1/3][o]);return [g.getImageData(Math.round(outsideX*dpr),Math.round(outsideY*dpr),1,1).data[3],g.getImageData(Math.round(insideX*dpr),Math.round(insideY*dpr),1,1).data[3]];}));
+  check(masks.every(row=>row[0]<15&&row[1]>230),'Fruit slices preserve all four collision silhouettes');
+  if(process.env.BOLA_SCREENSHOTS)await p.screenshot({path:path.join(process.env.BOLA_SCREENSHOTS,'fruit-all-orientations.png')});
+  const a=await p.evaluate(()=>{time=0;render(0);return cv.toDataURL();}),b=await p.evaluate(()=>{time=17;render(0);return cv.toDataURL();});check(a===b,'Reduced-motion pickups and scenery stay still');
+  await p.emulateMedia({reducedMotion:'no-preference'});const animated=await p.evaluate(()=>{time=0;render(0);const a=cv.toDataURL();time=17;render(0);return a!==cv.toDataURL();});check(animated,'Decorative animation active without reduced motion');
+  await p.evaluate(()=>{const b=core.G[2*COLS];HOOKS.hit(b,b.cx,b.cy);HOOKS.brk(b);time=0;render(.05);});if(process.env.BOLA_SCREENSHOTS)await p.screenshot({path:path.join(process.env.BOLA_SCREENSHOTS,'fruit-impact.png')});
+ }finally{await p.context().close();}
+ });
  await scenario('input and lifecycle',async()=>{const p=await pageAt();try{await start(p);
   await p.locator('#bPause').focus();await p.keyboard.press('Space');check(await p.evaluate(()=>mode==='pause'&&core.turns===0),'Space activates focused Pause, no shot');
   await p.locator('#pGo').focus();await p.keyboard.press('Enter');await p.waitForFunction(()=>mode==='play');check(await p.evaluate(()=>core.turns===0),'Enter resumes without firing');
