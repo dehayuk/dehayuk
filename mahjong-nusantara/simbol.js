@@ -11,7 +11,14 @@ const symbols=[
 ['Gamelan','#ffc05e','<path fill="#f2ae39" d="M13 12h38v42H13z"/><circle cx="32" cy="32" r="15" fill="#ffe287"/><circle cx="32" cy="32" r="5" fill="#db8d32"/><path d="M10 56h44M17 54v6m30-6v6"/>'],
 ['Kopi','#b88d76','<path fill="#b78059" d="M13 25h31v21q-15 12-31 0Z"/><path d="M44 28h7q10 15-7 15M9 55h42m-30-36q-6-5 0-11m11 11q-6-5 0-11"/>'],
 ['Batik','#af8bff','<path fill="#ae88ee" d="M10 10h44v44H10z"/><g fill="#ffe1a0"><path d="M32 16q-16 0-8 12l8 4 8-4q8-12-8-12Zm0 32q16 0 8-12l-8-4-8 4q-8 12 8 12Z"/></g><circle cx="32" cy="32" r="4" fill="#fff"/>'],
-['Kelapa','#57d6bc','<path stroke="#98653f" stroke-width="7" d="M26 57q12-24 7-35"/><path fill="#51cea0" d="M32 23Q8 2 6 28q11-9 26-5Q27 0 52 8q-8 3-20 15Q62 5 57 34q-12-11-25-11Z"/><circle cx="33" cy="26" r="5" fill="#bd874d"/>']
+['Kelapa','#57d6bc','<path stroke="#98653f" stroke-width="7" d="M26 57q12-24 7-35"/><path fill="#51cea0" d="M32 23Q8 2 6 28q11-9 26-5Q27 0 52 8q-8 3-20 15Q62 5 57 34q-12-11-25-11Z"/><circle cx="33" cy="26" r="5" fill="#bd874d"/>'],
+['Tumpeng','#ffc638','<path fill="#ffdc55" d="M32 8 13 46h38Z"/><ellipse cx="32" cy="49" rx="25" ry="8" fill="#56ce7d"/><circle cx="14" cy="46" r="5" fill="#ff7973"/><circle cx="48" cy="47" r="5" fill="#ff9670"/>'],
+['Durian','#91d24a','<path fill="#9ed451" d="m32 6 7 6 9 1 2 9 7 8-5 9-2 10-10 1-8 7-8-7-11-1-1-10-6-9 6-8 2-9 10-1Z"/><path stroke="#5b8b26" d="m23 21 4 6m13-6-4 6m-13 7 4 6m13-6-4 6M32 6V2"/>'],
+['Becak','#ff6b83','<circle cx="16" cy="48" r="10" fill="#8bccff"/><circle cx="49" cy="48" r="10" fill="#8bccff"/><path fill="#ff788c" d="M8 23h23v18H8z"/><path d="M7 21q11-18 25 0M31 41h13l5-21h7M16 48l16-7 17 7"/>'],
+['Candi','#ab9bfd','<path fill="#bba9ff" d="M9 48h46v8H9zm5-10h36v10H14zm5-10h26v10H19zm6-10h14v10H25zm7-12 7 12H25Z"/><path d="M28 43h8v13"/>'],
+['Sasando','#ffb36c','<path fill="#ffd79a" d="M32 10Q6 9 7 48q25 18 50 0Q58 9 32 10Z"/><path fill="#c98550" d="M28 6h8v49h-8z"/><path stroke="#e19740" d="m14 21 14 9m-14 1 14 7m-12 4 12 5m22-26-14 9m14 1-14 7m12 4-12 5"/>'],
+['Perisai','#52c8ff','<path fill="#65cfff" d="M32 6 50 15v24L32 59 14 39V15Z"/><path stroke="#ffd966" stroke-width="4" d="M32 14v36M23 19l18 22m0-22L23 41"/>']
+
 ];
 function svg(i){const s=symbols[i];return '<svg viewBox="0 0 64 64" aria-hidden="true"><g stroke="#493837" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" fill="none">'+s[2]+'</g></svg>';}
 window.NusantaraSymbols={symbols,svg};

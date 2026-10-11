@@ -1,13 +1,14 @@
 {
   "deskripsi": [
-    "Mahjong pasangan bertema Nusantara dengan 12 ilustrasi khas Indonesia. Level awal sederhana, lalu susunan bertambah bertingkat. Tidak ada batas waktu. Susunan baru memiliki jalan penyelesaian; pilihan pemain dapat membuat papan buntu, dengan bantuan batal langkah dan acak ubin tersedia."
+    "Mahjong Nusantara memiliki 18 ilustrasi khas Indonesia dan dua mode bermain. Dalam Lima Slot, ambil ubin terbuka ke penampungan: dua gambar sama langsung hilang, sedangkan lima gambar berbeda membuat permainan berakhir.",
+    "Mode Klasik tetap tersedia dengan progres tersendiri. Susunan baru memiliki jalan penyelesaian, tingkat kesulitan bertahap, tanpa batas waktu, dengan petunjuk, batal langkah, dan acak ubin. Tantangan harian tersedia untuk setiap mode."
   ],
   "caraMain": [
-    "Pilih dua ubin dengan gambar sama.",
-    "Ubin harus bebas di atas dan memiliki sisi kiri atau kanan terbuka.",
-    "Kosongkan papan untuk membuka level berikutnya.",
-    "Gunakan petunjuk, batal langkah, atau acak ubin jika perlu. Bantuan mengurangi bintang, tetapi level tetap terbuka.",
-    "Tantangan harian memakai susunan yang sama sepanjang hari."
+    "Pilih mode Lima Slot atau Klasik sebelum memulai.",
+    "Lima Slot: ketuk ubin yang tidak tertutup ubin lain. Dua gambar sama dalam penampungan otomatis hilang, meskipun tidak berdampingan.",
+    "Ubin kelima yang membentuk pasangan tetap aman. Pemain kalah jika kelima slot terisi gambar berbeda.",
+    "Kosongkan papan dan penampungan untuk menang. Gunakan batal langkah, petunjuk, atau acak ubin bila perlu; bantuan mengurangi bintang.",
+    "Klasik: pilih dua gambar sama yang bebas di atas dan salah satu sisinya. Progres kedua mode disimpan terpisah."
   ],
   "kontrol": "Ketuk atau klik dua ubin. Keyboard: Tab dan Enter untuk memilih tombol, Escape untuk menutup petunjuk.",
   "orientasi": "tegak dan mendatar",
