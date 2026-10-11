@@ -1,0 +1,15 @@
+{
+  "deskripsi": [
+    "Mahjong pasangan bertema Nusantara dengan 12 ilustrasi khas Indonesia. Level awal sederhana, lalu susunan bertambah bertingkat. Tidak ada batas waktu. Susunan baru memiliki jalan penyelesaian; pilihan pemain dapat membuat papan buntu, dengan bantuan batal langkah dan acak ubin tersedia."
+  ],
+  "caraMain": [
+    "Pilih dua ubin dengan gambar sama.",
+    "Ubin harus bebas di atas dan memiliki sisi kiri atau kanan terbuka.",
+    "Kosongkan papan untuk membuka level berikutnya.",
+    "Gunakan petunjuk, batal langkah, atau acak ubin jika perlu. Bantuan mengurangi bintang, tetapi level tetap terbuka.",
+    "Tantangan harian memakai susunan yang sama sepanjang hari."
+  ],
+  "kontrol": "Ketuk atau klik dua ubin. Keyboard: Tab dan Enter untuk memilih tombol, Escape untuk menutup petunjuk.",
+  "orientasi": "tegak dan mendatar",
+  "diperbarui": "2026-10-11"
+}

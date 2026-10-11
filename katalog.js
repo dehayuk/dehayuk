@@ -30,6 +30,7 @@ window.DEHAYUK = {
     { slug: "jajan-manis", nama: "Jajan Manis", genre: "Cocok tiga", ajakan: "Tukar jajanan pasar, jejerkan tiga, lalu ledakkan!", kategori: ["otak","santai"], warna: "#FF7EB6", sampul: "/jajan-manis/sampul.jpg", ditambahkan: "2026-09-28", unggulan: true },
     { slug: "bola-pantul", nama: "Bola Pantul", genre: "Tembak pantul", ajakan: "Bidik, lepas, dan pantulkan puluhan bola untuk memecah balok berangka!", kategori: ["refleks","santai"], warna: "#8F5CF0", sampul: "/bola-pantul/sampul.jpg", ditambahkan: "2026-09-28", unggulan: true },
     { slug: "catur", nama: "Catur", genre: "Papan strategi", ajakan: "Kalahkan komputer dari Pemula sampai Master, lalu pecahkan skakmat harian!", kategori: ["otak","bareng"], warna: "#43318F", sampul: "/catur/sampul.jpg", ditambahkan: "2026-10-01", unggulan: true, tag: ["catur","chess","papan","strategi","skakmat","teka-teki","berdua","rating"] },
+    { slug: "mahjong-nusantara", nama: "Mahjong Nusantara", genre: "Pasangan ubin", ajakan: "Cocokkan gambar Nusantara, buka tumpukan, tuntaskan susunannya!", kategori: ["otak","santai"], warna: "#287E71", sampul: "/mahjong-nusantara/sampul.jpg", ditambahkan: "2026-10-11", unggulan: true },
     { slug: "sortir-cairan", nama: "Sortir Cairan", genre: "Puzzle warna", ajakan: "Tuang, satukan warna, dan rapikan semua botol!", kategori: ["otak","santai"], warna: "#A574EE", sampul: "/sortir-cairan/sampul.jpg", ikon: "/sortir-cairan/ikon.png", ditambahkan: "2026-10-08", unggulan: true, tag: ["warna","cairan","sortir"] }
   ]
 };
