@@ -1,0 +1,16 @@
+{
+  "deskripsi": [
+    "Ludo Nusantara menghadirkan papan empat warna, dadu dan bidak beranimasi. Bermain melawan komputer atau bergantian dengan teman pada satu perangkat, dengan pilihan dua atau empat pemain.",
+    "Mode Cepat memakai dua bidak dengan satu bidak sudah keluar markas. Mode Klasik memakai empat bidak dari markas. Posisi dan hasil dadu disimpan otomatis; Harian dan tautan tantangan memakai benih dadu yang tetap."
+  ],
+  "caraMain": [
+    "Pilih lawan komputer atau satu perangkat, jumlah pemain, dan mode permainan.",
+    "Ketuk dadu. Angka 6 bisa mengeluarkan bidak dari markas dan memberi lemparan tambahan.",
+    "Pilih bidak yang bersinar atau tombol nomor bidak di bawah papan.",
+    "Tangkap lawan di kotak biasa; kotak bintang aman. Pulangkan bidak dengan angka tepat.",
+    "Pulangkan semua bidak untuk menang. Jeda atau kembali ke menu untuk melanjutkan nanti."
+  ],
+  "kontrol": "Ketuk dadu dan bidak, atau gunakan tombol nomor bidak. Tab dan Enter untuk tombol. Escape untuk jeda. Bermain bersama memakai satu perangkat, bukan duel online.",
+  "orientasi": "tegak dan mendatar",
+  "diperbarui": "2026-10-12"
+}
