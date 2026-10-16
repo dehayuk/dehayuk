@@ -21,6 +21,7 @@ window.DEHAYUK = {
     { id: "bareng", nama: "Main Bareng", ajakan: "Seru bersama teman dan keluarga.", warna: "#2E9A5C", ikon: "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20a6.5 6.5 0 0 1 13 0zM16 11a3 3 0 1 0 0-6M17 14a5 5 0 0 1 4.5 6" }
   ],
   game: [
+    { slug: "nusa-properti", nama: "Nusa Properti", genre: "Papan properti", ajakan: "Jelajahi kota, bangun usaha, jadi juara Nusantara!", kategori: ["bareng","otak"], warna: "#26AEA5", sampul: "/nusa-properti/sampul.jpg", ditambahkan: "2026-10-12", unggulan: true, tag: ["properti","monopoli","papan","kota","strategi","keluarga"] },
     { slug: "ludo", nama: "Ludo Nusantara", genre: "Papan strategi", ajakan: "Lempar dadu, pilih langkah, pulang jadi juara!", kategori: ["bareng","otak"], warna: "#58C4F2", sampul: "/ludo/sampul.jpg", ditambahkan: "2026-10-12", unggulan: true, tag: ["ludo","dadu","papan","keluarga","komputer","berempat"] },
     { slug: "jatuh-buah", nama: "Jatuh Buah", genre: "Gabung buah", ajakan: "Satukan buah kembar sampai jadi Durian sang raja buah!", kategori: ["santai","otak"], warna: "#F28A4B", sampul: "/jatuh-buah/sampul.jpg", ditambahkan: "2026-09-27", unggulan: true },
     { slug: "blok-ledak", nama: "Blok Ledak", genre: "Puzzle balok", ajakan: "Susun balok, penuhi baris, ledakkan!", kategori: ["otak","santai"], warna: "#7440D6", sampul: "/blok-ledak/sampul.jpg", ditambahkan: "2026-09-27", unggulan: true },

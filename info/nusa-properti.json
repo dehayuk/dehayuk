@@ -1,0 +1,17 @@
+{
+  "deskripsi": [
+    "Nusa Properti adalah permainan papan bertema kota Indonesia. Jelajahi 24 kotak, beli kota, kumpulkan pasangan wilayah, dan bangun usaha untuk meningkatkan sewa. Pilih lawan komputer atau bermain bergantian dengan dua sampai empat pemain pada satu perangkat.",
+    "Setiap pemain mulai dengan 1.200 koin permainan. Pilihan 12 atau 20 ronde memberi akhir pertandingan yang jelas; aset bersih tertinggi menjadi juara. Gadai, penebusan, pembayaran utang, dadu kembar, dan kabar kota membuat keputusan keuangan berarti. Hasil aset sama menghasilkan seri.",
+    "Dua dadu dan perjalanan bidak memiliki animasi dan suara. Pertandingan disimpan otomatis. Harian memakai benih tetap, sementara tantangan teman membandingkan aset akhir pada pertandingan 12 ronde melawan satu komputer."
+  ],
+  "caraMain": [
+    "Pilih komputer atau satu perangkat, jumlah pemain, dan 12 atau 20 ronde.",
+    "Lempar dua dadu. Beli kota kosong atau lewati; bayar sewa ketika berhenti di kota lawan.",
+    "Miliki dua kota satu warna, lalu bangun usaha secara merata melalui Aset.",
+    "Saat koin kurang, jual tingkat usaha atau gadai kota untuk membayar tagihan.",
+    "Aset bersih tertinggi di akhir ronde menjadi juara. Pemain terakhir yang bertahan juga menang."
+  ],
+  "kontrol": "Ketuk dadu, kartu keputusan, atau Aset. Ketuk kotak papan untuk melihat informasi kota. Spasi melempar dadu; Escape membuka jeda. Bermain bersama dilakukan bergantian pada satu perangkat.",
+  "orientasi": "tegak dan mendatar",
+  "diperbarui": "2026-10-16"
+}
