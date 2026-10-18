@@ -147,6 +147,7 @@ canvas{display:block}
 </style>
 <link rel="stylesheet" href="perjalanan.css">
 <link rel="stylesheet" href="penyajian.css">
+<link rel="stylesheet" href="/kit/v1/menu-game.css">
 </head>
 <body>
 <canvas id="cv" role="img" aria-label="Papan jajanan pasar"></canvas>
@@ -178,15 +179,15 @@ canvas{display:block}
     <div class="tmid ent" id="tMid">
       <div class="chal dk-ol" id="tChal" hidden>Kalahkan skor temanmu!</div>
       <div class="mainw">
-        <button class="dk-btn dk-green dk-ol" id="bMain"><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#3b1740" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></svg>MAIN<b class="runb" id="bRun" hidden><i id="bRunL"></i>x1</b></button>
+        <button class="dk-btn dk-green dk-ol" id="bMain" data-dh-main><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#3b1740" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></svg>MAIN<b class="runb" id="bRun" hidden><i id="bRunL"></i>x1</b></button>
         <button class="lvtag" id="bLv" aria-label="Pilih level">Level 1</button>
       </div>
-      <div class="icons">
-        <button class="dk-round dk-purple" id="bHarian"><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><rect x="4" y="5.5" width="16" height="15" rx="3" fill="#fff" stroke="#3b1740" stroke-width="2"/><path d="M4.5 10h15" stroke="#8f5cf0" stroke-width="4"/><path d="M8.5 3.5v4M15.5 3.5v4" stroke="#3b1740" stroke-width="2.6"/><circle cx="12" cy="15.5" r="2.8" fill="#47dc26" stroke="#3b1740" stroke-width="1.4"/></svg><b class="dk-dot" id="dDaily" hidden></b><b class="dstar" id="dStarN" hidden></b></i><span>Harian</span></button>
-        <button class="dk-round dk-pink" id="bTantang" aria-label="Tantang"><i class="dk-ol" aria-hidden="true">VS</i><span>Tantang</span></button>
-        <button class="dk-round dk-blue" id="bKoleksi"><i><svg viewBox="0 0 24 24" stroke="#3b1740" stroke-width="1.6"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2.2" fill="#47dc26"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="3.75" fill="#ffb52e"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="3.75" fill="#ff46ae"/><path d="M16.75 13.2l3.6 6.9h-7.2z" fill="#ad62ff" stroke-linejoin="round"/></svg></i><span>Koleksi</span></button>
-        <button class="dk-round dk-orange" id="bPeringkat"><i><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="#ffd23f" stroke="#3b1740" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 6H4.5a2.5 2.5 0 0 0 3 3.6M17 6h2.5a2.5 2.5 0 0 1-3 3.6" fill="none" stroke="#3b1740" stroke-width="1.8" stroke-linecap="round"/><path d="M12 14v3M8.5 20h7l-1-3h-5z" fill="#ffd23f" stroke="#3b1740" stroke-width="1.8" stroke-linejoin="round"/></svg></i><span>Peringkat</span></button>
-        <button class="dk-round dk-yellow" id="bSetelan"><i><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.2" stroke="#3b1740" stroke-width="6.5" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="7.2" stroke="#fff" stroke-width="4" stroke-dasharray="2.9 2.75"/><circle cx="12" cy="12" r="6" fill="#fff" stroke="#3b1740" stroke-width="2"/><circle cx="12" cy="12" r="2.4" fill="#ff5c93" stroke="#3b1740" stroke-width="1.6"/></svg></i><span>Setelan</span></button>
+      <div class="icons" data-dh-menu role="navigation" aria-label="Menu permainan">
+        <button class="dk-round dk-purple" id="bHarian" data-dh-action="daily" aria-label="Harian"><i class="dh-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="3" fill="#fff" stroke="#30203f" stroke-width="2"/><path d="M5 10h14" stroke="#fa5683" stroke-width="4"/><path d="M8 3v4m8-4v4" stroke="#30203f" stroke-width="2.6" stroke-linecap="round"/><rect x="9" y="13" width="6" height="5" rx="1" fill="#f44c87"/></svg><b class="dk-dot" id="dDaily" hidden></b><b class="dstar" id="dStarN" hidden></b></i><span class="dh-menu-label">Harian</span></button>
+        <button class="dk-round dk-pink" id="bTantang" data-dh-action="challenge" aria-label="Tantang"><i class="dh-menu-icon" aria-hidden="true">VS</i><span class="dh-menu-label">Tantang</span></button>
+        <button class="dk-round dk-blue" id="bKoleksi" data-dh-action="collection" aria-label="Koleksi"><i class="dh-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="#30203f" stroke-width="1.8"><circle cx="7.5" cy="7.5" r="4" fill="#ff638d"/><circle cx="16.5" cy="7.5" r="4" fill="#ffdc49"/><circle cx="7.5" cy="16.5" r="4" fill="#8deb61"/><circle cx="16.5" cy="16.5" r="4" fill="#c29bff"/></g></svg></i><span class="dh-menu-label">Koleksi</span></button>
+        <button class="dk-round dk-orange" id="bPeringkat" data-dh-action="ranking" aria-label="Peringkat"><i class="dh-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="#ffdb4e" stroke="#30203f" stroke-width="2"/><path d="M7 6H4a3 3 0 0 0 4 4m9-4h3a3 3 0 0 1-4 4M12 14v4m-4 3h8l-1-3H9z" fill="none" stroke="#30203f" stroke-width="2" stroke-linejoin="round"/></svg></i><span class="dh-menu-label">Peringkat</span></button>
+        <button class="dk-round dk-yellow" id="bSetelan" data-dh-action="settings" aria-label="Setelan"><i class="dh-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5" stroke="#30203f" stroke-width="7" stroke-dasharray="3 3"/><circle cx="12" cy="12" r="7.5" stroke="#fff" stroke-width="4.5" stroke-dasharray="3 3"/><circle cx="12" cy="12" r="6" fill="#fff" stroke="#30203f" stroke-width="2"/><circle cx="12" cy="12" r="2.5" fill="#ae79ed" stroke="#30203f" stroke-width="1.6"/></svg></i><span class="dh-menu-label">Setelan</span></button>
       </div>
     </div>
   </section>

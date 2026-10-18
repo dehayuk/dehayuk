@@ -77,3 +77,11 @@ Portal, halaman informasi game, daftar isi app, dan aturan iklan semuanya membac
 5. **Lihat sendiri** potret di HP dan komputer.
 6. **Pemilik mencoba** dan menyetujui.
 7. **Tayangkan sekali:** gabungkan semua perubahan dalam satu kiriman, karena setiap penayangan Netlify memakan kredit.
+
+
+## 7. Konsistensi menu utama
+
+- Ikuti [kontrak dan matriks fitur menu](MENU-GAME-CATATAN.md). Gunakan `/kit/v1/menu-game.css` setelah gaya game, `data-dh-menu` pada container dan `data-dh-main` pada tombol utama.
+- Urutan fungsi: Harian, Tantang, Koleksi, Peringkat, Cara main, Setelan. Tampilkan hanya fitur yang berfungsi; jumlah tombol mengikuti kemampuan game, bukan tombol tiruan untuk menyamakan jumlah.
+- Gunakan ikon, warna, label, dan ukuran sentuh bersama. Tema dan ilustrasi boleh berbeda; jangan membuat gaya navigasi baru untuk game berikutnya.
+- Jalankan `node scripts/uji-menu-game.cjs <slug>` saat mengubah halaman awal. Perubahan stylesheet menu bersama wajib diperiksa pada semua game yang memakainya.

@@ -1,0 +1,57 @@
+/* Opt-in home navigation. Gameplay, dialogs and kit v1 are unaffected. */
+html body [data-dh-menu] {
+  --dh-ink:#30203f;
+  display:flex!important;flex-wrap:nowrap!important;align-items:flex-start!important;justify-content:center!important;
+  gap:clamp(4px,1.5vw,10px)!important;width:100%!important;max-width:360px!important;
+  margin-left:auto!important;margin-right:auto!important;padding:6px 0 9px!important;
+  background:none!important;border:0!important;box-shadow:none!important;flex-shrink:0;
+}
+html body [data-dh-menu] > button[data-dh-action] {
+  --dh-top:#ffe789;--dh-bottom:#ffb52e;--dh-shade:#b96c16;
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;
+  flex:0 1 62px!important;gap:8px!important;min-width:48px!important;max-width:64px!important;min-height:70px!important;
+  width:auto!important;height:auto!important;margin:0!important;padding:0 1px!important;border:0!important;border-radius:10px!important;
+  background:none!important;box-shadow:none!important;color:#fff!important;font-style:normal;touch-action:manipulation;
+}
+html body [data-dh-menu] > button[data-dh-action="challenge"] {--dh-top:#ffbbd3;--dh-bottom:#f95798;--dh-shade:#b12861}
+html body [data-dh-menu] > button[data-dh-action="collection"],html body [data-dh-menu] > button[data-dh-action="help"] {--dh-top:#a0eaff;--dh-bottom:#3caeee;--dh-shade:#236eae}
+html body [data-dh-menu] > button[data-dh-action="ranking"] {--dh-top:#ffd098;--dh-bottom:#ff9146;--dh-shade:#b85a21}
+html body [data-dh-menu] > button[data-dh-action="settings"] {--dh-top:#dfb9ff;--dh-bottom:#a36ae8;--dh-shade:#653caa}
+html body [data-dh-menu] > button > .dh-menu-icon {
+  position:relative;display:grid!important;place-items:center!important;flex:none!important;
+  width:clamp(44px,12vw,54px)!important;height:clamp(44px,12vw,54px)!important;
+  margin:0!important;padding:0!important;border:2px solid var(--dh-ink)!important;border-radius:50%!important;
+  background:linear-gradient(var(--dh-top),var(--dh-bottom))!important;
+  box-shadow:0 4px 0 var(--dh-ink),inset 0 3px 0 #ffffffb0,inset 0 -4px 0 var(--dh-shade)!important;
+  color:#fff!important;font:900 22px/1 'Baloo 2',sans-serif!important;font-style:normal!important;
+  text-shadow:0 2px var(--dh-ink),2px 0 var(--dh-ink),-2px 0 var(--dh-ink),0 -2px var(--dh-ink)!important;
+  transition:transform .12s;transform:none!important;
+}
+html body [data-dh-menu] .dh-menu-icon > svg {display:block;width:26px!important;height:26px!important;margin:0!important;fill:none;stroke:none;filter:none!important}
+html body [data-dh-menu] > button > .dh-menu-label {
+  display:block!important;width:auto!important;height:auto!important;min-height:14px;margin:0!important;padding:0!important;
+  border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;
+  font:800 12px/1.2 'Nunito',Arial,sans-serif!important;color:#fff!important;white-space:nowrap!important;
+  text-shadow:0 2px 1px var(--dh-ink),1px 0 var(--dh-ink),-1px 0 var(--dh-ink),0 -1px var(--dh-ink)!important;
+}
+html body [data-dh-menu] > button:active > .dh-menu-icon {transform:translateY(3px) scale(.97)!important}
+html body [data-dh-menu] > button:focus-visible {outline:3px solid #fff!important;outline-offset:4px!important}
+html body [data-dh-main] {
+  min-height:54px!important;max-width:100%!important;border:3px solid #30432b!important;border-radius:24px!important;
+  padding:10px 24px 13px!important;background:linear-gradient(#93ef68,#43c62b)!important;
+  box-shadow:0 5px 0 #294226,inset 0 3px 0 #d5ffb9,inset 0 -4px 0 #2c9820!important;
+  color:#fff!important;font-family:'Baloo 2',Arial,sans-serif!important;font-weight:900!important;
+  font-size:clamp(26px,7vw,34px)!important;line-height:1.15!important;
+  text-shadow:0 2px 0 #30203f,2px 0 #30203f,-2px 0 #30203f,0 -2px #30203f!important;
+  animation:none!important;touch-action:manipulation;
+}
+html body [data-dh-main]:active {transform:translateY(3px)}
+html body [data-dh-main]:focus-visible {outline:3px solid #fff;outline-offset:5px}
+@media(max-height:600px) {
+  html body [data-dh-menu] {padding-top:3px!important;padding-bottom:6px!important}
+  html body [data-dh-menu] > button > .dh-menu-icon {width:44px!important;height:44px!important}
+  html body [data-dh-menu] > button[data-dh-action] {gap:7px!important;min-height:65px!important}
+  html body [data-dh-main] {font-size:26px!important;min-height:50px!important;padding:8px 20px 11px!important}
+}
+@media(prefers-reduced-motion:reduce) {html body [data-dh-menu] .dh-menu-icon {transition:none}}
+html body.cover [data-dh-menu],html body.cover [data-dh-main],html body.icon [data-dh-menu] {display:none!important}
