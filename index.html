@@ -373,6 +373,14 @@
     .rail { scroll-behavior: auto; }
     .skel i { animation: none; }
   }
+/* A forty-space board needs its own reading area; recommendations follow below. */
+@media(min-width:960px){
+ .play-layout.property-table.has-next{grid-template-columns:minmax(0,1fr)}
+ .play-layout.property-table.has-next .upnext{display:none}
+ .play-layout.property-table.has-next ~ #moreSec{display:block}
+ .stage[data-game="nusa-properti"]{height:680px;min-height:680px}
+ .stage[data-game="nusa-properti"]:fullscreen{height:100vh;min-height:0}
+}
 </style>
 
 <a class="skip" href="#konten">Langsung ke konten</a>
@@ -823,6 +831,8 @@
   var stage = document.getElementById("stage"), current = null;
   var wide = window.matchMedia ? window.matchMedia("(min-width: 960px)") : { matches: false };
   function renderPlayer(g) {
+    stage.dataset.game = g ? g.slug : "";
+    document.getElementById("playLayout").classList.toggle("property-table", !!g && g.slug === "nusa-properti");
     if (!g) { stage.innerHTML = ""; current = null; document.title = "Dehayuk"; return; }
     document.title = g.nama + " · Dehayuk";
     if (current === g.slug && (!wide.matches || stage.querySelector("iframe"))) return;

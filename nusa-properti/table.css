@@ -1,0 +1,121 @@
+/* Board and decisions have separate spaces. The portal grants this game a
+   larger reading area; rules, saved state and other games are unchanged. */
+#play{padding:0 10px 10px;max-width:1280px;margin:auto}
+#play>.top{height:44px;padding:3px 0;max-width:none}
+#play .game-heading{font-size:13px}
+#play .game-heading small{font-size:11px}
+#play .header-tools{display:flex;gap:6px}
+#play .icon-button{width:36px;min-height:36px;font-size:22px}
+#play .game-layout{display:grid;grid-template-columns:minmax(0,1fr) 312px;grid-template-rows:auto minmax(0,1fr) auto;max-width:1200px;height:min(calc(100dvh - 58px),720px);padding:0;margin:0 auto;gap:12px 18px;align-items:start}
+#play .board-wrap{grid-column:1;grid-row:1/4;display:flex;align-items:center;justify-content:center;min-width:0;width:100%;height:calc(100dvh - 58px);max-height:720px}
+#play #board{width:min(100%,calc(100dvh - 58px),720px);flex:none;border-width:5px;border-radius:10px;box-shadow:0 4px 0 #806c45,0 10px 24px #0018224a}
+#play #players{grid-column:2;grid-row:1;display:grid;grid-template-columns:1fr;gap:6px;order:initial}
+#play .player-card{grid-template-columns:30px minmax(0,1fr) auto;padding:10px 12px;gap:9px;border-radius:10px}
+#play .player-number{width:30px;height:30px;font-size:14px;border-radius:9px}
+#play .player-name{font-size:14px}
+#play .player-small{display:block;font-size:11px;margin-top:2px}
+#play .cash{font-size:21px;line-height:1.1}
+#play .cash small{display:none}
+#play .rail{display:flex;flex-direction:column;gap:12px;grid-column:2;grid-row:2;min-width:0;min-height:0;max-height:100%;overflow:auto;order:initial;align-self:start}
+#play #centerContent{margin:0;width:100%;text-align:left;background:#fff9eb;color:#27474b;border:1px solid #e3c386;border-radius:13px;box-shadow:0 4px 14px #001b2929;padding:16px}
+#play #turnLabel{font-size:12px;color:#47605b;line-height:1.4;margin:0 0 12px;text-align:left}
+#play #turnLabel .pip{width:10px;height:10px}
+#play .deed-inline{padding:14px 0 0;margin:0;border-radius:0;background:none;box-shadow:none;border-top-width:6px}
+#play .deed-inline .eyebrow{font-size:10px;color:#7b6746}
+#play .deed-inline h2{font-size:29px;line-height:1.05;margin:8px 0 16px}
+#play .deed-inline .deed-numbers{font-size:12px;gap:15px;line-height:1.3}
+#play .deed-inline b{font-size:24px;margin-top:4px}
+#play .group-note{font-size:12px;line-height:1.45;margin:12px 0;color:#617469}
+#play #actions{min-height:48px;gap:8px;margin:12px 0 0;flex-wrap:nowrap}
+#play #actions button{min-height:48px;font-size:14px;flex:1;max-width:none;padding:10px;border-radius:9px}
+#play #actions .primary{min-width:0;flex:2;font-size:16px}
+#play #actions .secondary{min-height:48px;background:#f8efda;font-size:13px;box-shadow:none}
+#play #status{font-size:12px;color:#5a6d62;text-align:left;line-height:1.5;margin:12px 0 0;min-height:18px;max-width:none}
+#play .turn-prompt h2{font-family:Georgia,serif;font-size:27px;line-height:1.1;letter-spacing:-.025em;margin:0 0 10px}
+#play .turn-prompt p{font-size:13px;line-height:1.5;color:#647269;margin:0 0 4px}
+#play .table-summary{border:0;padding:0 4px;display:block}
+#play .table-summary>.eyebrow,#play #turnTitle,#play #turnDetail{display:none}
+#play #portfolio{display:none}
+#play .recent{display:block;padding:12px;border:1px solid #ffffff1b;background:#092e3655;border-radius:10px}
+#play .recent .eyebrow{font-size:10px}
+#play #recentLog{margin:6px 0 0}
+#play #recentLog li{font-size:12px;line-height:1.4;padding:6px 0;display:block}
+#play #recentLog li:nth-child(n+3){display:none}
+#play:has(#board.is-offer) .recent{display:none}
+#play .toolbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-column:2;grid-row:3;gap:5px;margin:0;align-self:end}
+#play .toolbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:54px;font-size:19px;padding:7px 2px;border-radius:9px}
+#play .toolbar span{font-size:10px;display:block;margin:0;white-space:nowrap}
+#play .toolbar svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+#play #boardCenter{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4%;gap:0}
+#play .center-brand{position:absolute;top:7%;left:7%;right:7%;width:auto;font-size:clamp(8px,2.2cqw,15px);letter-spacing:.035em}
+#play .crest{width:clamp(20px,4.5cqw,31px);height:clamp(20px,4.5cqw,31px);font-size:clamp(17px,3.6cqw,25px)}
+#play #mapArt{inset:10% 0;opacity:.16}
+#play .card-decks{position:absolute;bottom:10%;left:7%;right:7%;width:auto;margin:0;opacity:.85;display:flex}
+#play .deck{width:24%;height:clamp(29px,8cqw,54px);font-size:clamp(14px,3cqw,22px)}
+#play .deck small{font-size:clamp(5px,1.1cqw,8px)}
+#play #boardLocation{position:relative;text-align:center;color:#43625a;margin:3% 0 0}
+#play .location-art{display:none}
+#play #boardLocation>span{font-size:clamp(9px,1.9cqw,13px);display:block;margin-bottom:7px}
+#play #boardLocation>strong{font:700 clamp(21px,4.3cqw,32px) Georgia,serif;line-height:1.15;display:block;color:#264c50}
+#play #diceRow,#play #board.is-offer #diceRow{position:relative;right:auto;top:auto;transform:none;height:clamp(65px,15cqw,100px);padding-top:12px;display:flex;align-items:center;gap:14px;margin:4px 0 9%;flex:none}
+#play #dieA,#play #dieB{--edge:clamp(28px,7cqw,43px);width:54px;height:54px}
+#play #diceSum,#play #board.is-offer #diceSum{display:block;font-size:clamp(12px,2.5cqw,17px);color:#647362}
+#play .center-foot{position:absolute;bottom:4%;font-size:clamp(6px,1.25cqw,9px);padding:0;display:block}
+#play .center-foot small{display:none}
+#play #board.is-offer .card-decks{display:flex}
+#play #boardEvent:empty{display:none}
+#play #boardEvent{position:absolute;inset:21% 5% 15%;z-index:15;display:grid;place-items:center}
+#play .card-event{padding:18px;border-width:2px;box-shadow:0 8px 25px #58451830}
+#play .card-event h3{font-size:clamp(18px,4cqw,28px)}
+#play .card-event p{font-size:clamp(11px,2.7cqw,16px)}
+#play #board.is-card #boardLocation,#play #board.is-card #diceRow,#play #board.is-card .card-decks{visibility:hidden}
+#play .tile-name{font-family:'Nunito',system-ui,sans-serif;font-size:clamp(7px,1.65cqw,12px);font-weight:850;line-height:1.12;overflow-wrap:anywhere;-webkit-line-clamp:2;max-width:98%}
+#play .tile-price{font-size:clamp(7px,1.4cqw,10px);line-height:1.15}
+#play .tile.corner .tile-name{font-size:clamp(8px,1.85cqw,13px)}
+#play .tile.side-left .tile-name,#play .tile.side-right .tile-name{font-size:clamp(7px,1.6cqw,11.5px)}
+#play .tile.current-tile{background:#fff0ad;box-shadow:inset 0 0 0 2px #bc852e}
+#play .tile-owner{width:clamp(10px,1.8cqw,14px);height:clamp(10px,1.8cqw,14px);font-size:clamp(7px,1.25cqw,10px);left:2px;bottom:2px}
+#play .house{width:clamp(5px,1.1cqw,8px);height:clamp(5px,1.1cqw,8px)}
+.zoom-hint{font-size:12px;margin:0 0 12px}.zoom-scroll{overflow:auto;max-height:65dvh;border:2px solid #d3b772;border-radius:8px;overscroll-behavior:contain;background:#efe1b8;touch-action:pan-x pan-y}
+.zoom-surface{position:relative;width:760px;height:760px;container-type:inline-size}.zoom-tiles{position:absolute;inset:0;display:grid;grid-template-columns:1.55fr repeat(9,1fr) 1.55fr;grid-template-rows:1.55fr repeat(9,1fr) 1.55fr}
+.zoom-center{position:absolute;inset:12.81%;display:grid;place-items:center;background:#f5e7c0;border:1px solid #baaa82;pointer-events:none}.zoom-center svg{width:90%;opacity:.12}.zoom-center b{position:absolute;top:48%;font-size:22px;color:#587768}
+.zoom-tiles .tile-name,.zoom-tiles .tile.corner .tile-name{font-size:13px;line-height:1.2}.zoom-tiles .tile-price{font-size:11px}.zoom-tiles .tile-icon{width:25px;height:25px}.zoom-tiles .tile-owner{width:16px;height:16px;font-size:10px}
+dialog:has(.zoom-scroll){width:min(96vw,850px);max-height:96dvh}
+@media(max-width:959px) and (orientation:portrait), (max-width:599px){
+ #play{padding:0 6px 8px}#play>.top{height:38px}#play .icon-button{min-height:32px;width:32px;font-size:20px}#play .game-heading{font-size:11px}#play .game-heading small{font-size:9px}
+ #play .game-layout{display:flex;flex-direction:column;gap:7px;max-width:600px;height:auto;padding:0}
+ #play #players{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:4px}
+ #play .player-card{padding:6px 7px;grid-template-columns:22px minmax(0,1fr) auto;gap:6px;border-radius:8px}
+ #play .player-number{width:22px;height:22px;font-size:11px;border-radius:6px}#play .player-name{font-size:11px}#play .player-small{font-size:9px}#play .cash{font-size:15px}
+ #play .board-wrap{height:auto;width:100%;display:block;max-height:none}#play #board{width:100%;border-width:4px}
+ #play .rail{width:100%;display:block;max-height:none;overflow:visible}#play #centerContent{border-radius:10px;padding:10px 12px}
+ #play #turnLabel{font-size:10px;margin:0 0 5px}
+ #play .deed-inline{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;border-top-width:3px;padding-top:7px;margin:0}
+ #play .deed-inline>.eyebrow,#play .group-note{display:none}#play .deed-inline h2{font-size:20px;margin:0;align-self:center}
+ #play .deed-inline .deed-numbers{font-size:9px;gap:12px}#play .deed-inline b{font-size:17px;margin-top:1px}
+ #play #actions{min-height:44px;margin-top:8px;gap:7px}#play #actions button,#play #actions .primary,#play #actions .secondary{min-height:44px;padding:8px;font-size:14px}
+ #play #status{font-size:10px;line-height:1.3;min-height:0;margin:7px 0 0}#play .turn-prompt h2{font-size:20px;margin:0}#play .turn-prompt p{display:none}
+ #play .table-summary,#play .recent{display:none}#play .toolbar{width:100%;gap:5px}#play .toolbar button{min-height:40px;flex-direction:row;gap:5px;font-size:15px;padding:7px 2px}#play .toolbar svg{width:16px;height:16px}#play .toolbar span{font-size:9px}
+ #play #boardLocation>span{margin-bottom:5px}#play #dieA,#play #dieB{width:36px;height:40px}#play #diceRow{gap:10px;margin-top:0;padding-top:6px}#play .token{width:4.7%;height:5.7%}
+ #play .center-foot{font-size:6px}
+}
+@media(min-width:600px) and (orientation:landscape) and (max-height:500px){
+ #play{padding:0 7px 7px}#play>.top{height:34px}#play .game-layout{grid-template-columns:minmax(0,1fr) 285px;gap:7px 12px}#play .board-wrap{height:calc(100dvh - 47px)}#play #board{width:min(100%,calc(100dvh - 47px))}
+ #play .icon-button{min-height:30px;width:32px}#play .player-card{padding:6px 9px;grid-template-columns:24px 1fr auto}#play .player-number{width:24px;height:24px;font-size:12px}#play .player-name{font-size:12px}#play .player-small{display:none}#play .cash{font-size:17px}#play #players{grid-template-columns:repeat(2,minmax(0,1fr))}#play .player-card{grid-template-columns:19px 1fr;gap:3px 6px}#play .player-number{width:19px;height:19px;font-size:10px;grid-row:1/3}#play .cash{grid-column:2;font-size:14px;text-align:left}
+ #play #centerContent{padding:11px 13px}#play #turnLabel{font-size:11px;margin-bottom:6px}#play .deed-inline{padding-top:7px;border-top-width:4px}#play .deed-inline h2{font-size:23px;margin:5px 0 7px}#play .deed-inline .eyebrow{font-size:8px}#play .deed-inline .deed-numbers{font-size:10px}#play .deed-inline b{font-size:20px}#play .group-note{display:none}#play #actions{margin-top:10px;min-height:44px}#play #actions button,#play #actions .primary,#play #actions .secondary{min-height:44px;font-size:14px;padding:7px}#play #status{font-size:10px;margin-top:7px}#play .turn-prompt h2{font-size:23px}#play .turn-prompt p{font-size:12px}
+ #play .recent,#play .table-summary{display:none}#play .toolbar button{min-height:40px;font-size:16px;padding:4px 2px;gap:3px}#play .toolbar span{font-size:9px}#play .toolbar svg{height:16px}#play #boardLocation>span{font-size:9px}#play #boardLocation>strong{font-size:21px}#play .card-decks,#play .center-foot{display:none}
+}
+.cover #play .game-layout{display:block;height:auto}.cover #play .board-wrap{height:auto}.cover #play #board{width:100%}.cover #play .rail,.cover #play .toolbar,.cover #play #players{display:none}
+@media(min-width:760px){#play #players[data-count="4"],#play #players[data-count="3"]{grid-template-columns:repeat(2,minmax(0,1fr))}#play #players:is([data-count="4"],[data-count="3"]) .player-card{grid-template-columns:24px minmax(0,1fr);gap:2px 7px;padding:8px 10px}#play #players:is([data-count="4"],[data-count="3"]) .player-number{width:24px;height:24px;grid-row:1/3;font-size:12px}#play #players:is([data-count="4"],[data-count="3"]) .player-name{font-size:12px}#play #players:is([data-count="4"],[data-count="3"]) .player-small{display:none}#play #players:is([data-count="4"],[data-count="3"]) .cash{font-size:18px;grid-column:2;text-align:left}}
+#play .tile-name{overflow-wrap:normal;font-size:clamp(6px,1.5cqw,11px);max-width:100%}
+#play .tile.side-left .tile-name,#play .tile.side-right .tile-name{font-size:clamp(6px,1.55cqw,11.5px)}
+@media(min-width:600px) and (orientation:landscape) and (max-height:500px){
+ #play .game-layout{height:calc(100dvh - 44px)}
+ #play #players .player-card{padding:4px 7px;gap:1px 5px}#play #players .cash{font-size:14px}#play #players .player-name{font-size:11px}
+ #play .rail{min-height:0;max-height:100%;overflow:auto;overscroll-behavior:contain}
+ #play #centerContent{padding:8px 11px}#play #turnLabel{font-size:10px;margin-bottom:5px}
+ #play .deed-inline{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 10px;border-top-width:3px;padding-top:7px}
+ #play .deed-inline>.eyebrow{display:none}#play .deed-inline h2{font-size:20px;align-self:center;margin:0}
+ #play .deed-inline .deed-numbers{font-size:9px;gap:8px}#play .deed-inline b{font-size:16px;margin-top:1px}
+ #play #actions{margin-top:8px}#play #status{font-size:10px;line-height:1.3;margin-top:7px;min-height:0}
+}

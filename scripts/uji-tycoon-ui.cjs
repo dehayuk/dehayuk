@@ -19,9 +19,27 @@ await page.evaluate(()=>{let s=NusantaraTycoon.create({mode:'local'});s.players[
 assert.equal(await page.evaluate(()=>localStorage.getItem('dehayuk.nusa-properti.run')),'{"legacy":"unchanged"}');assert.equal(await page.evaluate(()=>localStorage.getItem('dehayuk.ludo.run')),'untouched');
 // Genuine settings overlay suspends AI and resumes safely.
 await page.click('.toolbar [data-do="settings"]');assert(await page.evaluate(()=>TycoonUji.isPaused()));await page.locator('.dk-overlay:not([hidden]) [data-x]').click();assert(!(await page.evaluate(()=>TycoonUji.isPaused())));console.log('PASS shared settings, unrelated saves preserved');
-// Four players on narrow screens: every primary control remains inside center.
-for(const [w,h] of [[360,640],[390,844],[768,1024],[1280,800],[910,480],[824,588],[740,360]]){await page.setViewportSize({width:w,height:h});await page.evaluate(()=>TycoonUji.setState(NusantaraTycoon.create({mode:'local',count:4})));const fit=await page.evaluate(()=>{const b=document.getElementById('board').getBoundingClientRect(),c=document.getElementById('boardCenter').getBoundingClientRect(),a=document.getElementById('actions').getBoundingClientRect();return {overflow:document.documentElement.scrollWidth>innerWidth,boardInside:b.x>=0&&b.right<=innerWidth+1&&(!(innerWidth>innerHeight&&innerWidth>=620)||(b.bottom<=innerHeight+1&&document.querySelector('.toolbar').getBoundingClientRect().bottom<=innerHeight+1)),actionInside:a.top>=c.top&&a.bottom<=c.bottom};});assert.equal(await page.locator('#tiles .tile:visible').count(),40);assert(!fit.overflow&&fit.boardInside&&fit.actionInside,JSON.stringify({w,h,fit}));await page.screenshot({path:dir+'/final-board-'+w+'.png',fullPage:true});}
-console.log('PASS layouts 360/390/768/1280/910/824/740, including board and controls within landscape viewport');
+// Decisions and toolbar must remain reachable, independent of board height.
+for(const [w,h] of [[360,640],[390,844],[768,1024],[1280,800],[1017,680],[910,480],[824,588],[740,360]]){
+ await page.setViewportSize({width:w,height:h});
+ for(const phase of ['roll','buy','jail']){
+  await page.evaluate(phase=>{let s=NusantaraTycoon.create({mode:'local',count:4});if(phase==='buy'){s.players[0].pos=12;s=NusantaraTycoon.roll(s,[1,2]);}if(phase==='jail'){s.players[0].jail=true;s.players[0].pos=10;}TycoonUji.setState(s);},phase);
+  const fit=await page.evaluate(()=>{const rect=id=>document.getElementById(id).getBoundingClientRect(),b=rect('board'),c=rect('centerContent'),a=rect('actions'),r=document.querySelector('.rail').getBoundingClientRect(),f=document.querySelector('.toolbar').getBoundingClientRect();const landscape=innerWidth>innerHeight&&innerWidth>=600;return {overflow:document.documentElement.scrollWidth>innerWidth,boardInside:b.x>=0&&b.right<=innerWidth+1,actionInside:a.top>=c.top&&a.bottom<=c.bottom&&a.top>=r.top&&a.bottom<=r.bottom,controlsInside:!landscape||(a.bottom<=innerHeight+1&&f.bottom<=innerHeight+1),notOnBoard:a.left>=b.right||a.top>=b.bottom,toolbarAfter:f.top>=Math.min(r.bottom,a.bottom)-1};});
+  assert.equal(await page.locator('#tiles .tile:visible').count(),40);
+  assert(!fit.overflow&&fit.boardInside&&fit.actionInside&&fit.controlsInside&&fit.notOnBoard&&fit.toolbarAfter,JSON.stringify({w,h,phase,fit}));
+ }
+ await page.screenshot({path:dir+'/final-board-'+w+'.png',fullPage:true});
+}
+console.log('PASS all 24 layout cases: roll, buy, jail; no board/decision overlap, actions and toolbar reachable');
+// Zoom pauses play and never changes the game. Tiles still open correct details.
+await page.setViewportSize({width:390,height:844});await page.evaluate(()=>TycoonUji.setState(NusantaraTycoon.create({mode:'local'})));
+const beforeZoom=await page.evaluate(()=>TycoonUji.getState());await page.click('#zoomBoard');assert(await page.evaluate(()=>TycoonUji.isPaused()));assert.equal(await page.locator('[data-zoom-index]').count(),40);await page.click('[data-zoom-index="15"]');assert.match(await page.locator('#dialogTitle').textContent(),/Stasiun/);await page.click('#close');assert(!await page.evaluate(()=>TycoonUji.isPaused()));assert.deepEqual(await page.evaluate(()=>TycoonUji.getState()),beforeZoom);console.log('PASS board zoom + tile details + unchanged state');
+// Test the actual portal frame, not just the game in a large standalone tab.
+await page.setViewportSize({width:1280,height:800});await page.goto(url.replace('/nusa-properti/','/')+'#main/nusa-properti');
+const game=page.frameLocator('#stage iframe');await game.locator('#continue').click();
+assert.equal(await page.locator('#stage').evaluate(e=>e.clientHeight),680);assert(await game.locator('#board').evaluate(e=>e.clientWidth>=600));assert(!await page.locator('#upNext').isVisible());
+await page.screenshot({path:dir+'/portal-tycoon.png'});
+await page.goto(url.replace('/nusa-properti/','/')+'#main/blok-ledak');await page.waitForFunction(()=>document.querySelector('#stage').dataset.game==='blok-ledak');assert(!await page.locator('#playLayout').evaluate(e=>e.classList.contains('property-table')));assert(await page.locator('#upNext').isVisible());console.log('PASS enlarged Tycoon portal; other games keep their layout');
 // Settings that block browser storage cannot stop gameplay.
 const denied=await browser.newContext({viewport:{width:360,height:640}});await denied.addInitScript(()=>{Object.defineProperty(window,'localStorage',{get(){throw new Error('Storage blocked');}});});const dp=await denied.newPage();dp.on('pageerror',e=>errors.push(e.message));await dp.goto(url+'?uji=ui');await dp.click('#bMain');assert(await dp.locator('#saveNote').isVisible());await dp.click('[data-action="roll"]');await dp.waitForFunction(()=>!TycoonUji.getBusy());await denied.close();
 // Standalone has no storage, no remote dependencies and is playable offline.
