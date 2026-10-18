@@ -1,17 +1,18 @@
 {
   "deskripsi": [
-    "Nusa Properti adalah permainan papan bertema kota Indonesia. Jelajahi 24 kotak, beli kota, kumpulkan pasangan wilayah, dan bangun usaha untuk meningkatkan sewa. Pilih lawan komputer atau bermain bergantian dengan dua sampai empat pemain pada satu perangkat.",
-    "Setiap pemain mulai dengan 1.200 koin permainan. Pilihan 12 atau 20 ronde memberi akhir pertandingan yang jelas; aset bersih tertinggi menjadi juara. Gadai, penebusan, pembayaran utang, dadu kembar, dan kabar kota membuat keputusan keuangan berarti. Hasil aset sama menghasilkan seri.",
-    "Dua dadu dan perjalanan bidak memiliki animasi dan suara. Pertandingan disimpan otomatis. Harian memakai benih tetap, sementara tantangan teman membandingkan aset akhir pada pertandingan 12 ronde melawan satu komputer."
+    "Nusantara Tycoon adalah revisi web Nusa Properti dengan papan 40 petak, 22 kota, delapan grup warna, empat transportasi, dan dua utilitas. Mainkan strategi properti melawan komputer atau bersama dua sampai empat pemain bergantian pada satu perangkat.",
+    "Setiap pemain mulai dengan 1.500 koin permainan. Lengkapi grup warna, bangun sampai empat rumah secara merata, dan kumpulkan sewa. Mode Klasik mencari pemain terakhir yang bertahan; mode 20 ronde membandingkan total koin dan aset. Dadu kembar, dua tumpukan kartu, pajak, dan penjara mengubah perjalanan.",
+    "Dua dadu bergulir di papan, bidak melangkah dengan suara, dan progres web tersimpan otomatis. Simpanan Nusa Properti lama tetap dapat dibuka terpisah. Harian dan tantangan teman menggunakan dua pemain dengan batas 20 ronde. Edisi ini tidak memakai gadai, lelang, tukar properti, atau hotel."
   ],
   "caraMain": [
-    "Pilih komputer atau satu perangkat, jumlah pemain, dan 12 atau 20 ronde.",
-    "Lempar dua dadu. Beli kota kosong atau lewati; bayar sewa ketika berhenti di kota lawan.",
-    "Miliki dua kota satu warna, lalu bangun usaha secara merata melalui Aset.",
-    "Saat koin kurang, jual tingkat usaha atau gadai kota untuk membayar tagihan.",
-    "Aset bersih tertinggi di akhir ronde menjadi juara. Pemain terakhir yang bertahan juga menang."
+    "Pilih komputer atau teman pada satu perangkat, 2–4 pemain, dan Klasik atau 20 ronde.",
+    "Lempar dua dadu. Beli properti kosong atau lewati. Bayar sewa ketika berhenti di properti lawan.",
+    "Miliki seluruh kota dalam satu grup warna untuk menggandakan sewa tanpa rumah. Bangun rumah merata melalui Aset & rumah.",
+    "Simpan koin untuk pajak dan sewa. Jika tidak mampu membayar, pemain bangkrut dan semua propertinya kembali ke bank.",
+    "Di penjara, bayar 50, gunakan surat bebas, atau coba dadu kembar. Percobaan ketiga yang gagal tetap membayar 50 sebelum bergerak.",
+    "Klasik berakhir ketika satu pemain bertahan. Dalam 20 ronde, total koin, harga beli properti, dan biaya rumah menentukan juara; nilai sama menghasilkan seri."
   ],
-  "kontrol": "Ketuk dadu, kartu keputusan, atau Aset. Ketuk kotak papan untuk melihat informasi kota. Spasi melempar dadu; Escape membuka jeda. Bermain bersama dilakukan bergantian pada satu perangkat.",
+  "kontrol": "Ketuk Lempar dadu, keputusan beli, atau Aset & rumah. Ketuk petak untuk rincian harga dan sewa. Spasi melempar dadu; Escape membuka jeda. Menu Setelan mengatur suara dan musik.",
   "orientasi": "tegak dan mendatar",
-  "diperbarui": "2026-10-16"
+  "diperbarui": "2026-10-19"
 }
