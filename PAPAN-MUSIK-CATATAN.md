@@ -21,7 +21,7 @@ Musik mulai setelah interaksi pertama sesuai perilaku browser. Setelan Musik tet
 
 - `node scripts/uji-ludo-ui.cjs`: aturan, simpan-lanjut, kontrol sentuh dan sembilan ukuran layar. Termasuk pemeriksaan papan, kursi pemain, dan panel kontrol tidak beririsan.
 - `node scripts/uji-ludo-papan-dadu.cjs`: dadu bergerak di atas papan dan hasilnya konsisten dengan mesin.
-- `node scripts/uji-nusa-properti.cjs`: ekonomi, giliran, transaksi, simpan-lanjut dan enam ukuran layar. Termasuk lebar papan HP serta 16 ilustrasi kota tetap terlihat.
+- `node scripts/uji-nusa-properti.cjs`: ekonomi, giliran, transaksi, simpan-lanjut dan tujuh ukuran layar (termasuk bingkai laptop pendek). Termasuk lebar papan HP serta 16 ilustrasi kota tetap terlihat.
 - `node scripts/uji-menu-game.cjs ludo nusa-properti`: menu dan tombol pada lima ukuran layar.
 - `node scripts/uji-musik-game.cjs`: 13 game publik; mengukur keluaran audio dengan efek dimatikan, mute, pemulihan setelah reload, dan suspend/resume tab. `--live` memeriksa versi web; nama slug dapat membatasi game yang diperiksa. Permintaan ke layanan luar diblokir agar tes tidak mengirim skor.
 - `npm run cek`: jalankan pada salinan rilis yang hanya memuat perubahan terpilih, karena checkout kerja juga berisi draf game dan metadata di luar tugas ini.
