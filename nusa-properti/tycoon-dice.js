@@ -73,7 +73,7 @@ function create({hud,stage,audio,vibrate,reduced=false,audible=()=>true}){
   container.innerHTML='<span class="dice-shadow"></span><span class="dice-flight"><canvas class="dice-cube" aria-hidden="true"></canvas></span>';
   const cube=container.querySelector('.dice-cube');return {root:container,flight:container.querySelector('.dice-flight'),cube,ctx:cube.getContext('2d'),shadow:container.querySelector('.dice-shadow'),board,edge:32,dpr:1,scale:1,p:null};
  }
- const h=mount(hud,false),a=mount(stage,true);let frame=0,active=null,last=1,sequence=0,paused=false,tick=null,lastTime=null;
+ const h=mount(hud,false),a=mount(stage,true);hud.insertAdjacentHTML('beforeend','<span class="dice-face" aria-hidden="true"></span>');const face=hud.querySelector('.dice-face');let frame=0,active=null,last=1,sequence=0,paused=false,tick=null,lastTime=null;
  function resize(actor){
   const width=actor.root.clientWidth||360;
   actor.scale=actor.board?width/360:1;
@@ -90,7 +90,7 @@ function create({hud,stage,audio,vibrate,reduced=false,audible=()=>true}){
   actor.shadow.style.transform='translate('+x+'px,'+groundY+'px) scale('+p.shadowScale+')';
   actor.shadow.style.opacity=p.shadowOpacity;actor.shadow.style.filter='blur('+(1.2+p.height*scale*.045)+'px)';draw(actor,p);
  }
- function show(n){if(!ROTATIONS[n])return;last=n;hud.dataset.result=n;hud.setAttribute('aria-label','Hasil dadu '+n);paint(h,pose(SETTLE,n));}
+ function show(n){if(!ROTATIONS[n])return;last=n;hud.dataset.result=n;hud.setAttribute('aria-label','Hasil dadu '+n);face.innerHTML=PIPS[n].map(([x,y])=>'<i style="left:'+(50+x*100)+'%;top:'+(50+y*100)+'%"></i>').join('');paint(h,pose(SETTLE,n));}
  function stop(){cancelAnimationFrame(frame);frame=0;sequence++;paused=false;tick=null;lastTime=null;if(active){const done=active;active=null;done(false);}stage.hidden=true;stage.classList.remove('settled');hud.classList.remove('rolling');show(last);}
  function impact(strength){if(!audible())return;audio.noise({dur:.027,filter:2900,q:.65,vol:.14*strength});audio.tone({freq:360,dur:.04,type:'triangle',slideTo:155,vol:.075*strength});if(strength>.9)vibrate(9);}
  function roll(n,variant=0){
@@ -98,7 +98,7 @@ function create({hud,stage,audio,vibrate,reduced=false,audible=()=>true}){
   stage.hidden=false;stage.dataset.result=n;resize(a);const token=sequence;let hit=0,elapsed=0;paint(a,pose(0,n,variant));
   if(audible())audio.noise({dur:.045,filter:1900,vol:.018});
   return new Promise(resolve=>{active=resolve;tick=function(now){
-   if(token!==sequence||paused)return;const delta=lastTime===null?0:Math.min(50,Math.max(0,now-lastTime));lastTime=now;elapsed+=delta*2.1;paint(a,pose(elapsed,n,variant));
+   if(token!==sequence||paused)return;const delta=lastTime===null?0:Math.min(50,Math.max(0,now-lastTime));lastTime=now;elapsed+=delta*1.45;paint(a,pose(elapsed,n,variant));
    while(hit<CONTACTS.length&&elapsed>=CONTACTS[hit]){impact([1,.48,.2][hit]);hit++;}
    if(elapsed>=SETTLE)stage.classList.add('settled');
    if(elapsed<DURATION)frame=requestAnimationFrame(tick);else{active=null;frame=0;tick=null;lastTime=null;stage.hidden=true;hud.classList.remove('rolling');show(n);resolve(true);}
@@ -110,5 +110,5 @@ function create({hud,stage,audio,vibrate,reduced=false,audible=()=>true}){
  if(observer){observer.observe(hud);observer.observe(stage);}stage.hidden=true;show(1);
  return {show,roll,cancel:stop,pause,resume,get active(){return !!active;}};
 }
-const api={create,pose,normal,faces:FACES,rotations:ROTATIONS,contacts:CONTACTS,duration:DURATION/2.1};if(typeof module==='object')module.exports=api;else root.TycoonDadu=api;
+const api={create,pose,normal,faces:FACES,rotations:ROTATIONS,contacts:CONTACTS,duration:DURATION/1.45};if(typeof module==='object')module.exports=api;else root.TycoonDadu=api;
 })(typeof window==='object'?window:globalThis);

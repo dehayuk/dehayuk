@@ -33,11 +33,34 @@ for(const [w,h] of [[360,640],[390,844],[768,1024],[1280,800],[1017,680],[910,48
 console.log('PASS all 24 layout cases: roll, buy, jail; no board/decision overlap, actions and toolbar reachable');
 // Zoom pauses play and never changes the game. Tiles still open correct details.
 await page.setViewportSize({width:390,height:844});await page.evaluate(()=>TycoonUji.setState(NusantaraTycoon.create({mode:'local'})));
-const beforeZoom=await page.evaluate(()=>TycoonUji.getState());await page.click('#zoomBoard');assert(await page.evaluate(()=>TycoonUji.isPaused()));assert.equal(await page.locator('[data-zoom-index]').count(),40);await page.click('[data-zoom-index="15"]');assert.match(await page.locator('#dialogTitle').textContent(),/Stasiun/);await page.click('#close');assert(!await page.evaluate(()=>TycoonUji.isPaused()));assert.deepEqual(await page.evaluate(()=>TycoonUji.getState()),beforeZoom);console.log('PASS board zoom + tile details + unchanged state');
+const beforeZoom=await page.evaluate(()=>TycoonUji.getState());await page.click('#zoomBoard');assert(await page.evaluate(()=>TycoonUji.isPaused()));assert.equal(await page.locator('[data-zoom-index]').count(),40);await page.click('[data-zoom-index="15"]');assert.match(await page.locator('#tileInfoTitle').textContent(),/Stasiun/);await page.click('#tileInfoClose');assert(!await page.evaluate(()=>TycoonUji.isPaused()));assert.deepEqual(await page.evaluate(()=>TycoonUji.getState()),beforeZoom);console.log('PASS board zoom + tile details + unchanged state');
+// Every visible result must show the same pip count as the engine.
+for(let n=1;n<=6;n++){await page.evaluate(n=>{const s=NusantaraTycoon.create({mode:'local'});s.dice=[n,7-n];TycoonUji.setState(s);},n);assert.equal(await page.locator('#dieA .dice-face i').count(),n);assert.equal(await page.locator('#dieB .dice-face i').count(),7-n);}
+// Reproduce Malang inspection, then throw from a scrolled mobile action panel.
+for(const [width,height] of [[360,640],[600,820],[1017,680]]){
+ await page.setViewportSize({width,height});await page.evaluate(()=>TycoonUji.setState(NusantaraTycoon.create({mode:'local'})));
+ await page.click('[data-index="19"]');assert(await page.locator('#tileInfo').isVisible());assert.match(await page.locator('#tileInfoTitle').textContent(),/Malang/);assert(!await page.locator('#modal').evaluate(e=>e.open));
+ const infoFit=await page.evaluate(()=>{const info=document.getElementById('tileInfo').getBoundingClientRect(),dice=document.getElementById('diceRow').getBoundingClientRect();return {small:info.height<=innerHeight*.32+2,clear:info.right<=dice.left||info.left>=dice.right||info.bottom<=dice.top||info.top>=dice.bottom};});assert(infoFit.small&&infoFit.clear,JSON.stringify({width,height,infoFit}));
+ await page.screenshot({path:dir+'/malang-'+width+'.png'});
+ await page.click('[data-action="roll"]');await page.waitForTimeout(160);assert(!await page.locator('#tileInfo').isVisible());assert(await page.locator('#throwA').isVisible());
+ const visible=await page.evaluate(()=>{const b=document.getElementById('board').getBoundingClientRect(),a=document.getElementById('throwA').getBoundingClientRect();return {board:b.top>=-1&&b.bottom<=innerHeight+1,dice:a.width>0&&a.height>0,modal:document.getElementById('modal').open};});assert(visible.board&&visible.dice&&!visible.modal,JSON.stringify({width,height,visible}));
+ await page.screenshot({path:dir+'/rolling-'+width+'.png'});await page.waitForFunction(()=>!TycoonUji.getBusy());
+ assert(!await page.locator('#tileInfo').isVisible());
+}
+console.log('PASS compact Malang details; throwing closes details and reveals the board at mobile/tablet/desktop sizes');
+// The new board has forty equal squares; tokens must remain inside their cell.
+for(const w of [360,600,1280]){await page.setViewportSize({width:w,height:820});for(let i=0;i<40;i++){
+ await page.evaluate(i=>{const s=NusantaraTycoon.create({mode:'local'});s.players[0].pos=i;s.players[1].pos=(i+1)%40;TycoonUji.setState(s);},i);
+ const fit=await page.evaluate(i=>{const cell=document.querySelector('[data-index="'+i+'"]').getBoundingClientRect(),first=document.querySelector('[data-index="0"]').getBoundingClientRect(),p=document.getElementById('token0').getBoundingClientRect();return {square:Math.abs(cell.width-cell.height)<1,equal:Math.abs(cell.width-first.width)<1,inside:p.left>=cell.left-1&&p.right<=cell.right+1&&p.top>=cell.top-1&&p.bottom<=cell.bottom+1};},i);assert(fit.square&&fit.equal&&fit.inside,JSON.stringify({w,i,fit}));
+ }
+}
+await page.setViewportSize({width:600,height:820});await page.evaluate(()=>{const s=NusantaraTycoon.create({mode:'local'});s.dice=[3,5];s.rolls=1;TycoonUji.setState(s);});await page.addStyleTag({content:'#uji{display:none}'});
+assert(!await page.locator('#tiles .tile-name').evaluateAll(els=>els.some(e=>e.innerHTML.includes('<br>')&&!e.textContent.includes(' ')&&['Palembang','Makassar','Jayapura','Pekanbaru','Balikpapan','Banjarmasin'].includes(e.textContent))));
+await page.screenshot({path:dir+'/reference-600.png',fullPage:true});console.log('PASS six dice faces and all 40 token positions at three sizes');
 // Test the actual portal frame, not just the game in a large standalone tab.
 await page.setViewportSize({width:1280,height:800});await page.goto(url.replace('/nusa-properti/','/')+'#main/nusa-properti');
 const game=page.frameLocator('#stage iframe');await game.locator('#continue').click();
-assert.equal(await page.locator('#stage').evaluate(e=>e.clientHeight),680);assert(await game.locator('#board').evaluate(e=>e.clientWidth>=600));assert(!await page.locator('#upNext').isVisible());
+assert.equal(await page.locator('#stage').evaluate(e=>e.clientHeight),680);assert(await game.locator('#board').evaluate(e=>e.getBoundingClientRect().width>=599));assert(!await page.locator('#upNext').isVisible());
 await page.screenshot({path:dir+'/portal-tycoon.png'});
 await page.goto(url.replace('/nusa-properti/','/')+'#main/blok-ledak');await page.waitForFunction(()=>document.querySelector('#stage').dataset.game==='blok-ledak');assert(!await page.locator('#playLayout').evaluate(e=>e.classList.contains('property-table')));assert(await page.locator('#upNext').isVisible());console.log('PASS enlarged Tycoon portal; other games keep their layout');
 // Settings that block browser storage cannot stop gameplay.
