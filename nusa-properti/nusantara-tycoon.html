@@ -163,8 +163,8 @@ html body.cover [data-dh-menu],html body.cover [data-dh-main],html body.icon [da
 #play .token.active:after{inset:auto -2px -1px;height:5px;border-radius:50%;border:1px solid var(--player);background:#fff6;z-index:-1}
 #play .token.walking{transition:left .32s linear,top .32s linear}
 #play .travel-cell{background:#fff0ac;outline:2px solid #bc8026;outline-offset:-2px}
-#play #diceRow,#play #board.is-offer #diceRow{margin-bottom:42px}
-#play #diceSum,#play #board.is-offer #diceSum{display:block!important;position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);width:240px;max-width:60cqw;text-align:center;font:700 clamp(10px,2.2cqw,14px)/1.2 Arial,sans-serif;color:#6e4c1d}
+#play #diceRow,#play #board.is-offer #diceRow{position:static;margin-bottom:42px}
+#play #diceSum,#play #board.is-offer #diceSum{display:block!important;position:absolute;top:auto;bottom:clamp(4px,1.2cqw,8px);left:50%;transform:translateX(-50%);width:240px;max-width:60cqw;text-align:center;font:700 clamp(10px,2.2cqw,14px)/1.2 Arial,sans-serif;color:#6e4c1d}
 #play #board.is-throwing .center-brand{visibility:hidden}
 #play #board.is-throwing #diceSum,#play #board.is-throwing #boardLocation{visibility:hidden}
 #play .toolbar span{font-size:11px}
@@ -228,7 +228,7 @@ html body.cover [data-dh-menu],html body.cover [data-dh-main],html body.icon [da
 .physical-face i{position:absolute;width:17%;height:17%;border-radius:50%;background:#20232b;box-shadow:inset 1px 1px 1px #000a,0 1px 0 #fff;transform:translate(-50%,-50%)}
 .physical-shadow{display:block;position:absolute;inset:20% -10%;border-radius:50%;background:#20312c;filter:blur(3px);z-index:-1}
 </style></head>
-<body data-release="physics-20261020"><main id="app">
+<body data-release="physics-20261020-r2"><main id="app">
 <section id="home"><header class="top"><a class="icon-button" href="#" aria-label="Beranda">‹</a><span class="eyebrow">NUSANTARA TYCOON</span><button class="icon-button" data-do="settings" aria-label="Setelan">⚙</button></header>
 <div class="welcome"><div class="hero"><div class="hero-badge">N</div><p class="eyebrow">DARI KOTA PERTAMA KE KERAJAAN USAHA</p><h1>NUSANTARA<br><em>TYCOON</em></h1><p class="hero-copy">Jelajahi. Miliki. Kembangkan.</p><div id="heroCities" aria-hidden="true"></div><div class="hero-stats"><span><b>40</b> petak perjalanan</span><span><b>22</b> kota Nusantara</span><span><b>2–4</b> pemain</span></div></div>
 <div class="setup-card"><p class="eyebrow">MEJA PERMAINANMU</p><h2>Mulai perjalanan</h2><div id="setup"><fieldset><legend>Bermain dengan</legend><div class="choices"><button data-mode="bot" aria-pressed="true">Komputer</button><button data-mode="local" aria-pressed="false">Teman · satu HP</button></div></fieldset><fieldset><legend>Jumlah pemain</legend><div class="choices"><button data-count="2" aria-pressed="true">2 pemain</button><button data-count="3" aria-pressed="false">3 pemain</button><button data-count="4" aria-pressed="false">4 pemain</button></div></fieldset><details id="nameSettings"><summary>Nama pemain</summary><div id="names"></div></details><fieldset><legend>Tujuan pertandingan</legend><div class="choices"><button data-limit="0" aria-pressed="true">Klasik</button><button data-limit="20" aria-pressed="false">20 ronde</button></div><small id="modeNote">Bertahan sampai lawan bangkrut. Bisa disimpan dan dilanjutkan.</small></fieldset></div><button id="bMain" class="primary" data-dh-main>Mulai bermain <span>→</span></button><button id="continue" hidden>Lanjutkan pertandingan tersimpan</button><p id="homeNote" class="muted">1.500 koin per pemain · Tanpa uang asli</p><a id="legacy" href="versi-sebelumnya.html" hidden>Lanjutkan simpanan papan lama</a>

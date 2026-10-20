@@ -88,8 +88,8 @@
 #play .token.active:after{inset:auto -2px -1px;height:5px;border-radius:50%;border:1px solid var(--player);background:#fff6;z-index:-1}
 #play .token.walking{transition:left .32s linear,top .32s linear}
 #play .travel-cell{background:#fff0ac;outline:2px solid #bc8026;outline-offset:-2px}
-#play #diceRow,#play #board.is-offer #diceRow{margin-bottom:42px}
-#play #diceSum,#play #board.is-offer #diceSum{display:block!important;position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);width:240px;max-width:60cqw;text-align:center;font:700 clamp(10px,2.2cqw,14px)/1.2 Arial,sans-serif;color:#6e4c1d}
+#play #diceRow,#play #board.is-offer #diceRow{position:static;margin-bottom:42px}
+#play #diceSum,#play #board.is-offer #diceSum{display:block!important;position:absolute;top:auto;bottom:clamp(4px,1.2cqw,8px);left:50%;transform:translateX(-50%);width:240px;max-width:60cqw;text-align:center;font:700 clamp(10px,2.2cqw,14px)/1.2 Arial,sans-serif;color:#6e4c1d}
 #play #board.is-throwing .center-brand{visibility:hidden}
 #play #board.is-throwing #diceSum,#play #board.is-throwing #boardLocation{visibility:hidden}
 #play .toolbar span{font-size:11px}
