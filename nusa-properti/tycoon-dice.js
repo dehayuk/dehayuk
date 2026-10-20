@@ -2,23 +2,22 @@
 // Results belong to the game engine. This module only presents the committed throw.
 const ROTATIONS={1:[90,0],2:[0,0],3:[90,-90],4:[90,90],5:[180,0],6:[90,180]};
 const FACES=[{n:1,axis:'Y',angle:0,normal:[0,0,1]},{n:6,axis:'Y',angle:180,normal:[0,0,-1]},{n:3,axis:'Y',angle:90,normal:[1,0,0]},{n:4,axis:'Y',angle:-90,normal:[-1,0,0]},{n:2,axis:'X',angle:90,normal:[0,-1,0]},{n:5,axis:'X',angle:-90,normal:[0,1,0]}];
-const CONTACTS=[520,760,930],SETTLE=1200,DURATION=1680,rad=d=>d*Math.PI/180;
+const CONTACTS=[620,960,1220],SETTLE=1400,DURATION=1800,rad=d=>d*Math.PI/180;
 const PIPS={1:[[0,0]],2:[[-.23,-.23],[.23,.23]],3:[[-.23,-.23],[0,0],[.23,.23]],4:[[-.23,-.23],[.23,-.23],[-.23,.23],[.23,.23]],5:[[-.23,-.23],[.23,-.23],[0,0],[-.23,.23],[.23,.23]],6:[[-.23,-.25],[.23,-.25],[-.23,0],[.23,0],[-.23,.25],[.23,.25]]};
 function rotate(v,axis,d){const c=Math.cos(rad(d)),s=Math.sin(rad(d)),[x,y,z]=v;return axis==='X'?[x,y*c-z*s,y*s+z*c]:axis==='Y'?[x*c+z*s,y,-x*s+z*c]:[x*c-y*s,x*s+y*c,z];}
 function body(v,x,y,z){return rotate(rotate(rotate(v,'Z',z),'Y',y),'X',x);}
 function camera(v){return rotate(rotate(v,'Y',-25),'X',-55);}
 function normal(face,x,y,z=0){return camera(body(face.normal,x,y,z));}
 function pose(ms,result,variant=0){
- const [tx,ty]=ROTATIONS[result],t=Math.min(SETTLE,Math.max(0,ms)),direction=variant%2?-1:1,remaining=Math.pow(1-t/SETTLE,2.15);
+ const [tx,ty]=ROTATIONS[result],t=Math.min(SETTLE,Math.max(0,ms)),direction=variant%2?-1:1,remaining=Math.pow(1-t/SETTLE,2);
  let height=0;
- if(t<520){const u=t/520;height=24*(1-u)+48*4*u*(1-u);}
- else if(t<760){const u=(t-520)/240;height=15*4*u*(1-u);}
- else if(t<930){const u=(t-760)/170;height=4.5*4*u*(1-u);}
- // Travel is measured against a 360px board, independently of the die's size.
- const x=-124*remaining*direction,groundY=94*remaining;
- let rx=tx+690*remaining,ry=ty-450*remaining*direction,rz=36*Math.sin(t/195)*remaining;
- if(t>=930){const u=(t-930)/(SETTLE-930),decay=(1-u)*(1-u);rx=tx+690*Math.pow(1-930/SETTLE,2.15)*decay;ry=ty-450*Math.pow(1-930/SETTLE,2.15)*decay*direction;rz=3.5*Math.sin(u*Math.PI*3)*decay;}
- return {x,y:groundY-height,groundY,height,rx,ry,rz,shadowScale:1+height/110,shadowOpacity:.3-height/290};
+ if(t<620){const u=t/620;height=10*(1-u)+20*4*u*(1-u);}
+ else if(t<960){const u=(t-620)/340;height=8*4*u*(1-u);}
+ else if(t<1220){const u=(t-960)/260;height=2.6*4*u*(1-u);}
+ const x=-120*remaining*direction,groundY=75*remaining;
+ let rx=tx+1000*remaining,ry=ty-600*remaining*direction,rz=22*Math.sin(t/180)*remaining;
+ if(t>=1220){const u=(t-1220)/(SETTLE-1220),decay=(1-u)*(1-u);rx=tx+1000*Math.pow(1-1220/SETTLE,2)*decay;ry=ty-600*Math.pow(1-1220/SETTLE,2)*decay*direction;rz=2.5*Math.sin(u*Math.PI*3)*decay;}
+ return {x,y:groundY-height,groundY,height,rx,ry,rz,shadowScale:1+height/160,shadowOpacity:.3-height/230};
 }
 
 // A solid rounded cube: flat faces, curved edge strips and spherical corners.
@@ -27,7 +26,7 @@ function pose(ms,result,variant=0){
 const MESH=[];
 function facet(points,n){MESH.push({points,n});}
 for(const f of FACES){facet([[-.4,-.4,.5],[.4,-.4,.5],[.4,.4,.5],[-.4,.4,.5]].map(v=>rotate(v,f.axis,f.angle)),f.normal);}
-const steps=6,radius=.1,core=.4;
+const steps=4,radius=.1,core=.4;
 for(let axis=0;axis<3;axis++)for(const a of [-1,1])for(const b of [-1,1])for(let j=0;j<steps;j++){
  const u=(axis+1)%3,v=(axis+2)%3,start=j*Math.PI/(2*steps),end=(j+1)*Math.PI/(2*steps);
  function edge(t,l){const p=[0,0,0];p[axis]=l;p[u]=a*(core+radius*Math.cos(t));p[v]=b*(core+radius*Math.sin(t));return p;}
@@ -77,7 +76,7 @@ function create({hud,stage,audio,vibrate,reduced=false,audible=()=>true}){
  function resize(actor){
   const width=actor.root.clientWidth||360;
   actor.scale=actor.board?width/360:1;
-  actor.edge=actor.board?Math.max(22,Math.min(43,width*.082)):(parseFloat(getComputedStyle(actor.root).getPropertyValue('--edge'))||34);
+  actor.edge=actor.board?Math.max(28,Math.min(52,width*.10)):(parseFloat(getComputedStyle(actor.root).getPropertyValue('--edge'))||34);
   actor.dpr=Math.min(2,root.devicePixelRatio||1);if(actor.board)actor.root.style.setProperty('--edge',actor.edge+'px');
   actor.cube.width=Math.ceil(actor.edge*2*actor.dpr);actor.cube.height=Math.ceil(actor.edge*2*actor.dpr);
   if(actor.p)paint(actor,actor.p);
@@ -98,7 +97,7 @@ function create({hud,stage,audio,vibrate,reduced=false,audible=()=>true}){
   stage.hidden=false;stage.dataset.result=n;resize(a);const token=sequence;let hit=0,elapsed=0;paint(a,pose(0,n,variant));
   if(audible())audio.noise({dur:.045,filter:1900,vol:.018});
   return new Promise(resolve=>{active=resolve;tick=function(now){
-   if(token!==sequence||paused)return;const delta=lastTime===null?0:Math.min(50,Math.max(0,now-lastTime));lastTime=now;elapsed+=delta*1.45;paint(a,pose(elapsed,n,variant));
+   if(token!==sequence||paused)return;const delta=lastTime===null?0:Math.min(50,Math.max(0,now-lastTime));lastTime=now;elapsed+=delta*.9;paint(a,pose(elapsed,n,variant));
    while(hit<CONTACTS.length&&elapsed>=CONTACTS[hit]){impact([1,.48,.2][hit]);hit++;}
    if(elapsed>=SETTLE)stage.classList.add('settled');
    if(elapsed<DURATION)frame=requestAnimationFrame(tick);else{active=null;frame=0;tick=null;lastTime=null;stage.hidden=true;hud.classList.remove('rolling');show(n);resolve(true);}
@@ -110,5 +109,5 @@ function create({hud,stage,audio,vibrate,reduced=false,audible=()=>true}){
  if(observer){observer.observe(hud);observer.observe(stage);}stage.hidden=true;show(1);
  return {show,roll,cancel:stop,pause,resume,get active(){return !!active;}};
 }
-const api={create,pose,normal,faces:FACES,rotations:ROTATIONS,contacts:CONTACTS,duration:DURATION/1.45};if(typeof module==='object')module.exports=api;else root.TycoonDadu=api;
+const api={create,pose,normal,faces:FACES,rotations:ROTATIONS,contacts:CONTACTS,duration:DURATION/.9};if(typeof module==='object')module.exports=api;else root.TycoonDadu=api;
 })(typeof window==='object'?window:globalThis);

@@ -154,15 +154,77 @@ html body.cover [data-dh-menu],html body.cover [data-dh-main],html body.icon [da
 #play .rail>*{flex-shrink:0}
 #tileInfo[hidden]{display:none}#tileInfo>header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 7px}#tileInfo h2{font:700 19px/1.15 Arial,sans-serif;margin:0}#tileInfoClose{border:0;background:transparent;color:#36595c;min-width:36px;min-height:36px;padding:2px;font-size:24px;box-shadow:none}#tileInfo .deed-banner{height:5px}#tileInfo p{font-size:11px;line-height:1.4;margin:8px 0}#tileInfo .tile-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:10px;margin:9px 0}#tileInfo .tile-facts b{display:block;font-size:19px;margin-top:2px}#tileInfo details{font-size:11px;padding:3px 0;border:0}#tileInfo summary{min-height:26px}#tileInfo .deed-table{margin:5px 0;font-size:11px}#tileInfo .deed-table td{padding:5px}
 @media(max-width:599px){#tileInfo{margin-top:8px;padding:8px 12px}#tileInfo>header{margin-bottom:4px}#tileInfo h2{font-size:18px}#tileInfo .tile-facts{margin:7px 0}#tileInfo .tile-facts b{font-size:18px}}
+
+/* Keep the board, actions and menu within the available mobile viewport. */
+#play .token{width:clamp(13px,3.3cqw,22px);height:clamp(19px,4.9cqw,32px);border:0;border-radius:0;background:none;box-shadow:none;filter:drop-shadow(0 1px 1px #001e3380);transform:translate(-50%,-65%)}
+#play .token svg{display:block;width:100%;height:100%;overflow:visible}
+#play .token.stacked{width:clamp(11px,2.8cqw,18px);height:clamp(16px,4cqw,25px)}
+#play .token.crowded{width:clamp(10px,2.4cqw,15px);height:clamp(12px,3.2cqw,20px);transform:translate(-50%,-50%)}
+#play .token.active:after{inset:auto -2px -1px;height:5px;border-radius:50%;border:1px solid var(--player);background:#fff6;z-index:-1}
+#play .token.walking{transition:left .32s linear,top .32s linear}
+#play .travel-cell{background:#fff0ac;outline:2px solid #bc8026;outline-offset:-2px}
+#play #diceRow,#play #board.is-offer #diceRow{margin-bottom:42px}
+#play #diceSum,#play #board.is-offer #diceSum{display:block!important;position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);width:240px;max-width:60cqw;text-align:center;font:700 clamp(10px,2.2cqw,14px)/1.2 Arial,sans-serif;color:#6e4c1d}
+#play #board.is-throwing .center-brand{visibility:hidden}
+#play #board.is-throwing #diceSum,#play #board.is-throwing #boardLocation{visibility:hidden}
+#play .toolbar span{font-size:11px}
+#play #actions .primary:not(:disabled){background:linear-gradient(180deg,#ffe27c,#f3bc40);border-color:#d5aa43;color:#342714;box-shadow:0 4px 0 #a77525}
+#play #actions .primary:not(:disabled):hover{background:linear-gradient(180deg,#ffeaa0,#f8c956)}
+#play #actions .primary:not(:disabled):active{transform:translateY(2px);box-shadow:0 2px 0 #a77525}
+#play #actions [data-action="waiting"]{opacity:1;cursor:progress;background:#efe6cc;color:#617064;box-shadow:none;border-color:#d0c3a3}
+@media(max-width:959px) and (orientation:portrait),(max-width:599px){
+ #play{height:100dvh;max-height:100dvh;overflow:hidden;display:flex;flex-direction:column;padding:0 8px 8px}
+ #play>.top{height:44px;min-height:44px;flex:none;width:100%;padding:0}
+ #play .icon-button{width:40px;min-height:40px;font-size:23px}
+ #play .game-heading{font-size:13px}#play .game-heading small{font-size:10px}
+ #play .game-layout{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto;gap:6px;width:100%;height:auto;flex:1;min-height:0;padding:0;max-width:600px}
+ #play #players{grid-column:1;grid-row:1;order:initial;align-self:start;width:100%}
+ #play .player-card{padding:6px 8px}#play .player-name{font-size:12px}#play .cash{font-size:17px}
+ #play #players:is([data-count="3"],[data-count="4"]) .player-small{display:none}
+ #play #players:is([data-count="3"],[data-count="4"]) .player-card{padding:5px 7px}
+ #play #players:is([data-count="3"],[data-count="4"]) .cash{font-size:15px}
+ #play .board-wrap{grid-column:1;grid-row:2;order:initial;display:grid;place-items:center;min-height:0;height:100%;width:100%;container-type:size}
+ #play #board{width:min(100cqw,100cqh);max-width:600px;max-height:100%;height:auto}
+ #play .rail{grid-column:1;grid-row:3;order:initial;display:flex;gap:5px;min-height:0;max-height:40dvh;overflow:auto;width:100%;align-self:stretch}
+ #play #centerContent{padding:8px 10px;flex:none}
+ #play #turnLabel,#play #decision:has(.turn-prompt){display:none}
+ #play .deed-inline{grid-template-columns:minmax(0,1fr) auto;padding-top:5px;column-gap:10px}
+ #play .deed-inline h2{font-size:18px}#play .deed-inline .deed-numbers{font-size:10px}#play .deed-inline b{font-size:18px}
+ #play #actions{min-height:48px;margin-top:0;gap:6px}#play:has(.deed-inline) #actions{margin-top:6px}
+ #play #actions button,#play #actions .primary,#play #actions .secondary{min-height:48px;padding:8px;font-size:15px}
+ #play #status{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:14px;font-size:11px;min-height:14px;margin-top:6px}
+ #play .toolbar{grid-column:1;grid-row:4;order:initial;align-self:stretch;gap:5px;width:100%;margin:0}
+ #play .toolbar button{min-height:44px;flex-direction:column;gap:2px;padding:4px 2px;font-size:16px}
+ #play .toolbar svg{width:16px;height:16px}#play .toolbar span{font-size:11px;line-height:13px}
+ #tileInfo{max-height:23dvh;margin-top:0}#tileInfo>header{position:sticky;top:-8px;background:#fff8e7;z-index:1}
+ #play #saveNote{position:fixed;bottom:0;right:0;max-width:100%;font-size:9px;margin:0;padding:2px 5px;pointer-events:none;background:#123c45}
+ #play:has(#saveNote:not([hidden])){padding-bottom:22px}
+}
+/* A short setup page keeps its main controls visible before play starts. */
+@media(max-width:620px){
+ #home>.top{height:44px;padding:4px 12px}#home>.top .eyebrow{font-size:14px;font-weight:900;color:#f2c660;letter-spacing:.04em}
+ #home .welcome{display:block;max-width:480px;padding:4px 12px 12px;margin:0 auto}
+ #home .hero{display:none}#home .setup-card{padding:15px;width:100%}
+ #home .setup-card>.eyebrow{font-size:9px;margin:0 0 5px}#home .setup-card h2{font-size:23px;margin:0 0 9px}
+ #home .setup-card fieldset{margin-bottom:7px}#home .setup-card legend{font-size:12px;margin-bottom:5px}
+ #home .choices button{min-height:42px;padding:8px 5px;font-size:12px}
+ #home #bMain{min-height:48px;font-size:17px;margin-top:4px}#home #continue{min-height:42px;margin-top:7px;padding:8px;font-size:12px}
+ #home #homeNote{font-size:10px;margin:6px 0}#home #legacy{font-size:10px;margin:7px 0}
+ #home [data-dh-menu]{gap:14px!important;margin-top:10px!important}#home .dh-menu-icon{width:34px!important;height:34px!important;font-size:17px!important}#home .dh-menu-label{font-size:10px!important}
+}
+@media(max-width:500px) and (min-height:760px) and (orientation:portrait){
+ #play .recent{display:block;min-height:72px;max-height:96px;padding:9px 11px;overflow:hidden}
+ #play #recentLog li{font-size:11px;padding:4px 0}
+}
 </style></head>
-<body><main id="app">
-<section id="home"><header class="top"><a class="icon-button" href="#" aria-label="Beranda">‹</a><span class="eyebrow">DEHAYUK · PERMAINAN PAPAN</span><button class="icon-button" data-do="settings" aria-label="Setelan">⚙</button></header>
+<body data-release="controls-20261020"><main id="app">
+<section id="home"><header class="top"><a class="icon-button" href="#" aria-label="Beranda">‹</a><span class="eyebrow">NUSANTARA TYCOON</span><button class="icon-button" data-do="settings" aria-label="Setelan">⚙</button></header>
 <div class="welcome"><div class="hero"><div class="hero-badge">N</div><p class="eyebrow">DARI KOTA PERTAMA KE KERAJAAN USAHA</p><h1>NUSANTARA<br><em>TYCOON</em></h1><p class="hero-copy">Jelajahi. Miliki. Kembangkan.</p><div id="heroCities" aria-hidden="true"></div><div class="hero-stats"><span><b>40</b> petak perjalanan</span><span><b>22</b> kota Nusantara</span><span><b>2–4</b> pemain</span></div></div>
 <div class="setup-card"><p class="eyebrow">MEJA PERMAINANMU</p><h2>Mulai perjalanan</h2><div id="setup"><fieldset><legend>Bermain dengan</legend><div class="choices"><button data-mode="bot" aria-pressed="true">Komputer</button><button data-mode="local" aria-pressed="false">Teman · satu HP</button></div></fieldset><fieldset><legend>Jumlah pemain</legend><div class="choices"><button data-count="2" aria-pressed="true">2 pemain</button><button data-count="3" aria-pressed="false">3 pemain</button><button data-count="4" aria-pressed="false">4 pemain</button></div></fieldset><details id="nameSettings"><summary>Nama pemain</summary><div id="names"></div></details><fieldset><legend>Tujuan pertandingan</legend><div class="choices"><button data-limit="0" aria-pressed="true">Klasik</button><button data-limit="20" aria-pressed="false">20 ronde</button></div><small id="modeNote">Bertahan sampai lawan bangkrut. Bisa disimpan dan dilanjutkan.</small></fieldset></div><button id="bMain" class="primary" data-dh-main>Mulai bermain <span>→</span></button><button id="continue" hidden>Lanjutkan pertandingan tersimpan</button><p id="homeNote" class="muted">1.500 koin per pemain · Tanpa uang asli</p><a id="legacy" href="versi-sebelumnya.html" hidden>Lanjutkan simpanan papan lama</a>
 <nav data-dh-menu aria-label="Menu permainan"><button id="daily" data-dh-action="daily"><i class="dh-menu-icon" aria-hidden="true">▦</i><span class="dh-menu-label">Harian</span></button><button id="challenge" data-dh-action="challenge"><i class="dh-menu-icon" aria-hidden="true">VS</i><span class="dh-menu-label">Tantang</span></button><button data-do="rules" data-dh-action="help"><i class="dh-menu-icon" aria-hidden="true">?</i><span class="dh-menu-label">Cara main</span></button><button data-do="settings" data-dh-action="settings"><i class="dh-menu-icon" aria-hidden="true">⚙</i><span class="dh-menu-label">Setelan</span></button></nav></div></div></section>
 <section id="play" hidden><header class="top"><button id="pause" class="icon-button" aria-label="Jeda permainan">Ⅱ</button><div class="game-heading"><strong>NUSANTARA <em>TYCOON</em></strong><small id="roundLabel"></small></div><div class="header-tools"><button id="fullBoard" class="icon-button" aria-label="Layar penuh" title="Layar penuh">⛶</button><button class="icon-button" data-do="rules" aria-label="Cara main">?</button></div></header>
 <div class="game-layout"><div id="players" aria-label="Pemain dan saldo"></div><div class="board-wrap"><div id="board"><div id="tiles"></div><div id="boardCenter"><div id="mapArt" aria-hidden="true"></div><div class="center-brand"><span class="crest">N</span><b>NUSANTARA TYCOON</b><span class="center-rule"></span></div><div class="card-decks" aria-hidden="true"><span class="deck deck-kes">✦<small>KESEMPATAN</small></span><span class="deck deck-news">▤<small>KABAR KOTA</small></span></div><div id="boardLocation"></div><div id="diceRow"><div id="dieA"></div><div id="dieB"></div><span id="diceSum"></span></div><div id="boardEvent"></div><div class="center-foot"><span>◆ JELAJAH NUSANTARA ◆</span><small>Ketuk petak untuk membuka kartu</small></div></div><div id="tokens" aria-label="Bidak pemain"></div><div id="throwA" hidden aria-hidden="true"></div><div id="throwB" hidden aria-hidden="true"></div></div></div>
-<aside class="rail"><div id="centerContent"><div id="turnLabel"></div><div id="decision"></div><div id="actions"></div><p id="status" role="status" aria-live="polite"></p></div><aside id="tileInfo" hidden role="region" aria-labelledby="tileInfoTitle"><header><h2 id="tileInfoTitle"></h2><button id="tileInfoClose" aria-label="Tutup rincian petak">×</button></header><div id="tileInfoBody"></div></aside><div class="table-summary"><span class="eyebrow">PERJALANAN SAAT INI</span><h2 id="turnTitle"></h2><p id="turnDetail"></p><div id="portfolio"></div></div><div class="recent"><span class="eyebrow">KABAR MEJA</span><ol id="recentLog"></ol></div></aside><footer class="toolbar"><button id="zoomBoard" aria-label="Perbesar papan"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6M7 10h6m-3-3v6"/></svg><span>Perbesar</span></button><button id="assets">▦ <span>Aset & rumah</span></button><button id="logButton">≡ <span>Riwayat</span></button><button data-do="settings">⚙ <span>Setelan</span></button></footer></div><p id="saveNote" hidden>Peramban ini tidak bisa menyimpan. Jangan tutup halaman jika ingin melanjutkan.</p></section>
+<aside class="rail"><div id="centerContent"><div id="turnLabel"></div><div id="decision"></div><div id="actions"></div><p id="status" role="status" aria-live="polite"></p></div><aside id="tileInfo" hidden role="region" aria-labelledby="tileInfoTitle"><header><h2 id="tileInfoTitle"></h2><button id="tileInfoClose" aria-label="Tutup rincian petak">×</button></header><div id="tileInfoBody"></div></aside><div class="table-summary"><span class="eyebrow">PERJALANAN SAAT INI</span><h2 id="turnTitle"></h2><p id="turnDetail"></p><div id="portfolio"></div></div><div class="recent"><span class="eyebrow">KABAR MEJA</span><ol id="recentLog"></ol></div></aside><footer class="toolbar"><button id="zoomBoard" aria-label="Perbesar papan"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6M7 10h6m-3-3v6"/></svg><span>Perbesar</span></button><button id="assets">▦ <span>Aset</span></button><button id="logButton">≡ <span>Riwayat</span></button><button data-do="settings">⚙ <span>Setelan</span></button></footer></div><p id="saveNote" hidden>Peramban ini tidak bisa menyimpan. Jangan tutup halaman jika ingin melanjutkan.</p></section>
 <dialog id="modal"><button id="dialogX" class="icon-button" aria-label="Tutup">×</button><p id="dialogEyebrow" class="eyebrow">NUSANTARA TYCOON</p><h2 id="dialogTitle"></h2><div id="dialogBody"></div><div id="dialogActions"></div><button id="rAgain" class="primary" hidden>Main lagi</button><button id="share" hidden>Bagikan tantangan</button><button id="menu" hidden>Menu utama</button><button id="close">Kembali bermain</button></dialog><div id="toast" role="status" hidden></div>
 </main><script>(function(root){'use strict';
 const GROUPS=[['cokelat','#8b5a2b'],['biru muda','#56ccf2'],['pink','#e05fa0'],['oranye','#f2994a'],['merah','#c0392b'],['kuning','#f2c94c'],['hijau','#219653'],['navy','#1c3f94']];
@@ -328,23 +390,22 @@ root.PropertiKota={scene,pawn,pawnNames,house,label:name=>(art[name]||art.Jakart
 // Results belong to the game engine. This module only presents the committed throw.
 const ROTATIONS={1:[90,0],2:[0,0],3:[90,-90],4:[90,90],5:[180,0],6:[90,180]};
 const FACES=[{n:1,axis:'Y',angle:0,normal:[0,0,1]},{n:6,axis:'Y',angle:180,normal:[0,0,-1]},{n:3,axis:'Y',angle:90,normal:[1,0,0]},{n:4,axis:'Y',angle:-90,normal:[-1,0,0]},{n:2,axis:'X',angle:90,normal:[0,-1,0]},{n:5,axis:'X',angle:-90,normal:[0,1,0]}];
-const CONTACTS=[520,760,930],SETTLE=1200,DURATION=1680,rad=d=>d*Math.PI/180;
+const CONTACTS=[620,960,1220],SETTLE=1400,DURATION=1800,rad=d=>d*Math.PI/180;
 const PIPS={1:[[0,0]],2:[[-.23,-.23],[.23,.23]],3:[[-.23,-.23],[0,0],[.23,.23]],4:[[-.23,-.23],[.23,-.23],[-.23,.23],[.23,.23]],5:[[-.23,-.23],[.23,-.23],[0,0],[-.23,.23],[.23,.23]],6:[[-.23,-.25],[.23,-.25],[-.23,0],[.23,0],[-.23,.25],[.23,.25]]};
 function rotate(v,axis,d){const c=Math.cos(rad(d)),s=Math.sin(rad(d)),[x,y,z]=v;return axis==='X'?[x,y*c-z*s,y*s+z*c]:axis==='Y'?[x*c+z*s,y,-x*s+z*c]:[x*c-y*s,x*s+y*c,z];}
 function body(v,x,y,z){return rotate(rotate(rotate(v,'Z',z),'Y',y),'X',x);}
 function camera(v){return rotate(rotate(v,'Y',-25),'X',-55);}
 function normal(face,x,y,z=0){return camera(body(face.normal,x,y,z));}
 function pose(ms,result,variant=0){
- const [tx,ty]=ROTATIONS[result],t=Math.min(SETTLE,Math.max(0,ms)),direction=variant%2?-1:1,remaining=Math.pow(1-t/SETTLE,2.15);
+ const [tx,ty]=ROTATIONS[result],t=Math.min(SETTLE,Math.max(0,ms)),direction=variant%2?-1:1,remaining=Math.pow(1-t/SETTLE,2);
  let height=0;
- if(t<520){const u=t/520;height=24*(1-u)+48*4*u*(1-u);}
- else if(t<760){const u=(t-520)/240;height=15*4*u*(1-u);}
- else if(t<930){const u=(t-760)/170;height=4.5*4*u*(1-u);}
- // Travel is measured against a 360px board, independently of the die's size.
- const x=-124*remaining*direction,groundY=94*remaining;
- let rx=tx+690*remaining,ry=ty-450*remaining*direction,rz=36*Math.sin(t/195)*remaining;
- if(t>=930){const u=(t-930)/(SETTLE-930),decay=(1-u)*(1-u);rx=tx+690*Math.pow(1-930/SETTLE,2.15)*decay;ry=ty-450*Math.pow(1-930/SETTLE,2.15)*decay*direction;rz=3.5*Math.sin(u*Math.PI*3)*decay;}
- return {x,y:groundY-height,groundY,height,rx,ry,rz,shadowScale:1+height/110,shadowOpacity:.3-height/290};
+ if(t<620){const u=t/620;height=10*(1-u)+20*4*u*(1-u);}
+ else if(t<960){const u=(t-620)/340;height=8*4*u*(1-u);}
+ else if(t<1220){const u=(t-960)/260;height=2.6*4*u*(1-u);}
+ const x=-120*remaining*direction,groundY=75*remaining;
+ let rx=tx+1000*remaining,ry=ty-600*remaining*direction,rz=22*Math.sin(t/180)*remaining;
+ if(t>=1220){const u=(t-1220)/(SETTLE-1220),decay=(1-u)*(1-u);rx=tx+1000*Math.pow(1-1220/SETTLE,2)*decay;ry=ty-600*Math.pow(1-1220/SETTLE,2)*decay*direction;rz=2.5*Math.sin(u*Math.PI*3)*decay;}
+ return {x,y:groundY-height,groundY,height,rx,ry,rz,shadowScale:1+height/160,shadowOpacity:.3-height/230};
 }
 
 // A solid rounded cube: flat faces, curved edge strips and spherical corners.
@@ -353,7 +414,7 @@ function pose(ms,result,variant=0){
 const MESH=[];
 function facet(points,n){MESH.push({points,n});}
 for(const f of FACES){facet([[-.4,-.4,.5],[.4,-.4,.5],[.4,.4,.5],[-.4,.4,.5]].map(v=>rotate(v,f.axis,f.angle)),f.normal);}
-const steps=6,radius=.1,core=.4;
+const steps=4,radius=.1,core=.4;
 for(let axis=0;axis<3;axis++)for(const a of [-1,1])for(const b of [-1,1])for(let j=0;j<steps;j++){
  const u=(axis+1)%3,v=(axis+2)%3,start=j*Math.PI/(2*steps),end=(j+1)*Math.PI/(2*steps);
  function edge(t,l){const p=[0,0,0];p[axis]=l;p[u]=a*(core+radius*Math.cos(t));p[v]=b*(core+radius*Math.sin(t));return p;}
@@ -403,7 +464,7 @@ function create({hud,stage,audio,vibrate,reduced=false,audible=()=>true}){
  function resize(actor){
   const width=actor.root.clientWidth||360;
   actor.scale=actor.board?width/360:1;
-  actor.edge=actor.board?Math.max(22,Math.min(43,width*.082)):(parseFloat(getComputedStyle(actor.root).getPropertyValue('--edge'))||34);
+  actor.edge=actor.board?Math.max(28,Math.min(52,width*.10)):(parseFloat(getComputedStyle(actor.root).getPropertyValue('--edge'))||34);
   actor.dpr=Math.min(2,root.devicePixelRatio||1);if(actor.board)actor.root.style.setProperty('--edge',actor.edge+'px');
   actor.cube.width=Math.ceil(actor.edge*2*actor.dpr);actor.cube.height=Math.ceil(actor.edge*2*actor.dpr);
   if(actor.p)paint(actor,actor.p);
@@ -424,7 +485,7 @@ function create({hud,stage,audio,vibrate,reduced=false,audible=()=>true}){
   stage.hidden=false;stage.dataset.result=n;resize(a);const token=sequence;let hit=0,elapsed=0;paint(a,pose(0,n,variant));
   if(audible())audio.noise({dur:.045,filter:1900,vol:.018});
   return new Promise(resolve=>{active=resolve;tick=function(now){
-   if(token!==sequence||paused)return;const delta=lastTime===null?0:Math.min(50,Math.max(0,now-lastTime));lastTime=now;elapsed+=delta*1.45;paint(a,pose(elapsed,n,variant));
+   if(token!==sequence||paused)return;const delta=lastTime===null?0:Math.min(50,Math.max(0,now-lastTime));lastTime=now;elapsed+=delta*.9;paint(a,pose(elapsed,n,variant));
    while(hit<CONTACTS.length&&elapsed>=CONTACTS[hit]){impact([1,.48,.2][hit]);hit++;}
    if(elapsed>=SETTLE)stage.classList.add('settled');
    if(elapsed<DURATION)frame=requestAnimationFrame(tick);else{active=null;frame=0;tick=null;lastTime=null;stage.hidden=true;hud.classList.remove('rolling');show(n);resolve(true);}
@@ -436,7 +497,7 @@ function create({hud,stage,audio,vibrate,reduced=false,audible=()=>true}){
  if(observer){observer.observe(hud);observer.observe(stage);}stage.hidden=true;show(1);
  return {show,roll,cancel:stop,pause,resume,get active(){return !!active;}};
 }
-const api={create,pose,normal,faces:FACES,rotations:ROTATIONS,contacts:CONTACTS,duration:DURATION/1.45};if(typeof module==='object')module.exports=api;else root.TycoonDadu=api;
+const api={create,pose,normal,faces:FACES,rotations:ROTATIONS,contacts:CONTACTS,duration:DURATION/.9};if(typeof module==='object')module.exports=api;else root.TycoonDadu=api;
 })(typeof window==='object'?window:globalThis);
 </script><script>window.TycoonKitSettings=function(){return window.DehayukKit.ui.openSettings();};</script><script>(function(){'use strict';
 const E=NusantaraTycoon,C=PropertiKota,$=id=>document.getElementById(id),Q=new URLSearchParams(location.search),colors=['#e8473f','#2f80ed','#27ae60','#e4b333'],money=n=>Math.round(n).toLocaleString('id-ID'),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -450,7 +511,7 @@ const challenge=K?.readChallenge?.(),challengeV2=challenge&&new URLSearchParams(
 const dice=[['dieA','throwA'],['dieB','throwB']].map(([h,t])=>TycoonDadu.create({hud:$(h),stage:$(t),audio,vibrate:n=>K?.vibrate(n),reduced,audible:()=>screen==='play'&&!paused&&!document.hidden}));
 const icons={go:'<path d="M4 12h15m-6-6 6 6-6 6"/>',free:'<path d="M5 19V5h8a5 5 0 0 1 0 10H5m6-7h2a2 2 0 0 1 0 4h-2"/>',jail:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 5v15m8-15v15M3 10h18"/>',goj:'<path d="M5 10V7a7 7 0 0 1 14 0v3"/><rect x="3" y="10" width="18" height="12" rx="3"/><path d="M12 14v4"/>',card:'<rect x="4" y="3" width="16" height="19" rx="2"/><path d="M8 8h8m-8 4h8m-8 4h5"/>',kes:'<path d="m12 2 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z"/>',tax:'<path d="M5 9h14M3 21h18M6 10v7m6-7v7m6-7v7M3 7l9-5 9 5Z"/>',rail:'<rect x="5" y="3" width="14" height="15" rx="3"/><path d="M5 10h14M8 18l-3 4m11-4 3 4M9 5v5m6-5v5"/><circle cx="8" cy="14" r="1"/><circle cx="16" cy="14" r="1"/>',boat:'<path d="M3 15h18l-4 6H7Zm9-2V2L4 13h8m3-8 5 8h-5"/>',plane:'<path d="m12 2 2 8 8 4-1 3-7-2v5l3 2H7l3-2v-5l-7 2-1-3 8-4Z"/>',util:'<path d="m14 2-9 12h7l-2 8 9-12h-7Z"/>',water:'<path d="M12 2C10 7 4 11 4 16a8 8 0 0 0 16 0C20 11 14 7 12 2Z"/>',p:'<path d="m2 11 10-8 10 8M5 10v11h14V10M10 21v-7h4v7"/>'};
 function icon(t){let name=t.type;if(t.i===10)name='jail';if(t.type==='card'&&t.group==='kes')name='kes';if(t.i===5)name='boat';if(t.i===25)name='plane';if(t.i===28)name='water';return '<svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">'+(icons[name]||icons.p)+'</svg>';}
-function pawn(p){return '<span class="pawn-number">'+(p.id+1)+'</span>';}
+function pawn(p){return '<svg viewBox="0 0 40 54" aria-hidden="true"><ellipse cx="20" cy="49" rx="16" ry="4" fill="#112e3633"/><path d="M9 45Q6 42 11 34L15 24H25L29 34Q34 42 31 45Z" fill="'+colors[p.id]+'" stroke="#fff9e8" stroke-width="2.2"/><ellipse cx="20" cy="43" rx="12" ry="3" fill="#0002"/><circle cx="20" cy="16" r="12" fill="'+colors[p.id]+'" stroke="#fff9e8" stroke-width="2.2"/><ellipse cx="16" cy="11" rx="4" ry="3" fill="#fff7"/><text x="20" y="21" text-anchor="middle" fill="white" stroke="#18313a" stroke-width=".4" paint-order="stroke" font-family="Arial,sans-serif" font-size="16" font-weight="900">'+(p.id+1)+'</text></svg>';}
 const map='<svg viewBox="0 0 540 300" fill="#527d6b"><path d="m41 64 23 9 23 23 11 28 23 22 11 32-16 3-17-23-13-9-17-31-18-17-15-23Z M136 193l27 3 27 9 33 2 29 16-19 6-24-12-35-5-25-7Z M169 61l30 9 29-6 23 20 12 24-12 23-5 35-27 19-34-16-20-28 2-29-12-27Z M286 97l16 10-9 20 14 13 26-11 10 7-20 19-20 1 8 29-13 5-16-31 6-19-12-17Z M276 228l17 1 14 7-13 8-20-8Z M315 237l23-1 21 10-17 9-26-7Z M362 229l19-6 9 8-24 8Z M378 121l10 16-5 27-12-3 3-22Z M425 111l24-12 19 16 27-2 30 19-4 57-24-8-24-24-29-5-23-24Z"/><circle cx="352" cy="179" r="5"/><circle cx="390" cy="184" r="7"/><path d="m69 236 350-148" fill="none" stroke="#527d6b" stroke-dasharray="4 7" stroke-width="2"/></svg>';
 $('mapArt').innerHTML=map;$('heroCities').innerHTML=['Aceh','Bandung','Jayapura'].map(C.scene).join('');
 function stored(){const r=ST.get('tycoon.run',null);return r&&E.valid(r.state)&&r.meta&&['normal','daily','practice','challenge'].includes(r.meta.kind)&&typeof r.meta.date==='string'&&typeof r.meta.awarded==='boolean'&&(r.meta.target===null||Number.isSafeInteger(r.meta.target)&&r.meta.target>=0)?r:null;}
@@ -467,11 +528,11 @@ function use(state,details){cancel();closeDialog(false);s=state;meta={...details
 function makeBoard(){const names={'Kunjungan Penjara':'Kunjungan','Masuk Penjara':'Masuk<br>penjara','Pajak Pendapatan':'Pajak','Pajak Kekayaan':'Pajak','Pelabuhan Utara':'Pelabuhan<br>Utara','Stasiun Pusat':'Stasiun<br>Pusat','Labuan Bajo':'Labuan<br>Bajo','Raja Ampat':'Raja<br>Ampat','Bebas Parkir':'Bebas<br>parkir','Kabar Kota':'Kabar<br>Kota','Air PDAM':'Air PDAM','Listrik PLN':'Listrik<br>PLN'};
  $('tiles').innerHTML=E.tiles.map(t=>{const [r,c]=E.coord(t.i),side=t.i%10===0?'corner':r===0?'side-top':r===10?'side-bottom':c===0?'side-left':'side-right';return '<button class="tile '+side+' type-'+t.type+'" data-index="'+t.i+'" style="grid-row:'+(r+1)+';grid-column:'+(c+1)+';--tile-color:'+t.color+'" aria-label="'+esc(t.name)+'"><span class="band"></span><span class="houses"></span><span class="tile-name '+(t.name.split(' ').some(w=>w.length>=9)?'long-name':'')+'">'+(names[t.name]||t.name)+'</span>'+icon(t)+'<span class="tile-price">'+(t.price?money(t.price):t.i===0?'+200':t.type==='card'?'◆':'')+'</span><span class="tile-owner" hidden></span></button>';}).join('');$('tokens').innerHTML=s.players.map(p=>'<div id="token'+p.id+'" class="token" style="--player:'+colors[p.id]+'" aria-label="'+esc(p.name)+'">'+pawn(p)+'</div>').join('');}
 function center(index){return (index+.5)*100/11;}
-function position(p,index,walking=false){const [r,c]=E.coord(index),el=$('token'+p.id);if(!el)return;const peers=s.players.filter(q=>q.alive&&(q.id===p.id||q.pos===index)),slot=Math.max(0,peers.findIndex(q=>q.id===p.id)),many=peers.length>1;el.style.left=(center(c)+(many?(slot%2?1:-1)*1.35:0))+'%';el.style.top=(center(r)+(peers.length>2?(slot<2?1.1:3.45):2.7))+'%';el.hidden=!p.alive;el.classList.toggle('active',p.id===s.turn);el.classList.toggle('walking',walking);el.setAttribute('aria-label',p.name+' · '+E.tiles[index].name);}
-function render(){if(!s)return;$('board').classList.remove('is-card');$('boardEvent').innerHTML='';$('players').dataset.count=s.players.length;const p=s.players[s.turn];$('roundLabel').textContent=(meta.kind==='daily'?'Harian · ':meta.kind==='practice'?'Latihan harian · ':meta.kind==='challenge'?'Tantangan · ':'')+'Ronde '+Math.min(s.round,s.limit||s.round)+(s.limit?' / '+s.limit:' · Klasik');
+function position(p,index,walking=false){const [r,c]=E.coord(index),el=$('token'+p.id);if(!el)return;const peers=s.players.filter(q=>q.alive&&(q.id===p.id||q.pos===index)),slot=Math.max(0,peers.findIndex(q=>q.id===p.id)),many=peers.length>1,crowded=peers.length>2;el.style.left=(center(c)+(many?(slot%2?1:-1)*(crowded?1.6:1.9):0))+'%';el.style.top=(center(r)+(crowded?(slot<2?-1:1)*1.8:1.65))+'%';el.hidden=!p.alive;el.classList.toggle('active',p.id===s.turn);el.classList.toggle('stacked',many);el.classList.toggle('crowded',crowded);el.classList.toggle('walking',walking);el.setAttribute('aria-label',p.name+' · '+E.tiles[index].name);}
+function render(){if(!s)return;$('board').classList.remove('is-card','is-throwing');document.querySelectorAll('.travel-cell').forEach(e=>e.classList.remove('travel-cell'));$('boardEvent').innerHTML='';$('players').dataset.count=s.players.length;const p=s.players[s.turn];$('roundLabel').textContent=(meta.kind==='daily'?'Harian · ':meta.kind==='practice'?'Latihan harian · ':meta.kind==='challenge'?'Tantangan · ':'')+'Ronde '+Math.min(s.round,s.limit||s.round)+(s.limit?' / '+s.limit:' · Klasik');
  $('players').innerHTML=s.players.map(v=>'<div class="player-card '+(v.id===s.turn?'current ':'')+(!v.alive?'out':'')+'" style="--player:'+colors[v.id]+'"><span class="player-number">'+(v.id+1)+'</span><div class="player-name">'+esc(v.name)+'<small class="player-small">'+(!v.alive?'Bangkrut':v.jail?'Dalam penjara':(v.bot?'Komputer':'Pemain')+' · '+E.tiles.filter(t=>s.owners[t.i]===v.id).length+' aset')+'</small></div><div class="cash">'+money(v.cash)+'<small>KOIN TERSEDIA</small></div></div>').join('');
  for(const t of E.tiles){const el=$('tiles').children[t.i],owner=s.owners[t.i];el.classList.toggle('owner',owner>=0);el.classList.toggle('current-tile',t.i===p.pos);el.style.setProperty('--owner',colors[owner]||'transparent');el.querySelector('.tile-owner').hidden=owner<0;el.querySelector('.tile-owner').textContent=owner+1;el.querySelector('.houses').innerHTML='<i class="house"></i>'.repeat(s.houses[t.i]);el.setAttribute('aria-label',t.name+(owner>=0?' · milik '+s.players[owner].name:'')+(s.houses[t.i]?' · '+s.houses[t.i]+' rumah':''));}
- s.players.forEach(v=>position(v,v.pos));dice.forEach((d,i)=>d.show(s.dice[i]));$('diceSum').textContent=s.rolls?'= '+s.dice.reduce((a,b)=>a+b):'';$('turnLabel').innerHTML='<span class="pip" style="--player:'+colors[p.id]+'"></span>'+esc(p.name)+(p.bot?' · komputer':' · giliranmu');$('turnTitle').textContent=p.name;$('boardLocation').textContent='Giliran: '+p.name+(p.bot?' · komputer':'');$('turnDetail').textContent=!p.alive?'Perjalanan telah selesai.':p.jail?'Tertahan di penjara. Gunakan surat, bayar 50, atau coba dadu kembar.':s.phase==='buy'?'Tentukan apakah kota ini cocok untuk rencana usahamu.':'Kumpulkan satu grup warna untuk menaikkan sewa dan membangun rumah.';$('portfolio').innerHTML=E.GROUPS.map((g,i)=>{const list=E.tiles.filter(t=>t.type==='p'&&t.group===i),n=list.filter(t=>s.owners[t.i]===s.turn).length;return '<span style="--set:'+g[1]+'" class="'+(n===list.length?'complete':n?'partial':'')+'" title="Grup '+g[0]+': '+n+'/'+list.length+'"></span>';}).join('');$('recentLog').innerHTML=s.log.slice(0,5).map(t=>'<li>'+esc(t)+'</li>').join('');
+ s.players.forEach(v=>position(v,v.pos));dice.forEach((d,i)=>d.show(s.dice[i]));$('diceSum').textContent=s.rolls?s.dice.join(' + ')+' = '+s.dice.reduce((a,b)=>a+b):'Dua dadu · 2–12 langkah';$('turnLabel').innerHTML='<span class="pip" style="--player:'+colors[p.id]+'"></span>'+esc(p.name)+(p.bot?' · komputer':' · giliranmu');$('turnTitle').textContent=p.name;$('boardLocation').textContent='Giliran: '+p.name+(p.bot?' · komputer':'');$('turnDetail').textContent=!p.alive?'Perjalanan telah selesai.':p.jail?'Tertahan di penjara. Gunakan surat, bayar 50, atau coba dadu kembar.':s.phase==='buy'?'Tentukan apakah kota ini cocok untuk rencana usahamu.':'Kumpulkan satu grup warna untuk menaikkan sewa dan membangun rumah.';$('portfolio').innerHTML=E.GROUPS.map((g,i)=>{const list=E.tiles.filter(t=>t.type==='p'&&t.group===i),n=list.filter(t=>s.owners[t.i]===s.turn).length;return '<span style="--set:'+g[1]+'" class="'+(n===list.length?'complete':n?'partial':'')+'" title="Grup '+g[0]+': '+n+'/'+list.length+'"></span>';}).join('');$('recentLog').innerHTML=s.log.slice(0,5).map(t=>'<li>'+esc(t)+'</li>').join('');
  $('board').classList.toggle('is-offer',s.phase==='buy');$('board').classList.toggle('is-moving',busy);$('decision').innerHTML='';$('actions').innerHTML='';$('status').textContent=s.message;
  if(s.phase==='buy'){const t=E.tiles[s.offer],owned=E.group(t.i).filter(i=>s.owners[i]===s.turn).length,affordable=p.cash>=t.price;$('decision').innerHTML='<div class="deed-inline" style="--tile-color:'+t.color+'"><span class="eyebrow">PROPERTI TERSEDIA</span><h2>'+t.name+'</h2><div class="deed-numbers"><span>Harga beli<b>'+money(t.price)+' ◉</b></span><span>'+(t.type==='util'?'Sewa awal':'Sewa dasar')+'<b>'+(t.type==='p'?money(t.price*.1)+' ◉':t.type==='rail'?'25 ◉':'4× dadu')+'</b></span></div><p class="group-note">'+(t.type==='p'?'Grup '+E.GROUPS[t.group][0]+' · '+owned+'/'+E.group(t.i).length+' kota milikmu':t.type==='rail'?'Sewa naik jika kamu punya lebih banyak transportasi.':'Dua utilitas menaikkan sewa menjadi 10× dadu.')+'</p></div>';if(!p.bot&&!busy)$('actions').innerHTML=button('buy','Beli · '+money(t.price),'primary',!affordable,t.i)+button('skip','Lewati','secondary');$('status').textContent=p.bot?p.name+' mempertimbangkan pembelian.':affordable?'Sisa koin setelah beli: '+money(p.cash-t.price):'Koin belum cukup. Lewati pembelian.';}
  else if(s.phase==='roll'&&!p.bot&&!busy){$('actions').innerHTML=button('roll',p.jail?'Coba dadu kembar':'Lempar dadu','primary');if(p.jail)$('actions').innerHTML+=button('bail','Bayar 50','secondary',p.cash<50)+(p.free.length?button('free','Pakai surat','secondary'):'');}
@@ -481,10 +542,10 @@ function render(){if(!s)return;$('board').classList.remove('is-card');$('boardEv
 function button(action,label,cls='',disabled=false,i){return '<button data-action="'+action+'"'+(i===undefined?'':' data-i="'+i+'"')+' class="'+cls+'"'+(disabled?' disabled':'')+'>'+label+'</button>';}
 function schedule(){clearTimeout(timer);if(screen!=='play'||busy||paused||$('modal').open||!s?.players[s.turn].bot||s.phase==='ended')return;const token=epoch;timer=setTimeout(()=>{if(token!==epoch||paused||busy||screen!=='play')return;const a=E.ai(s);if(a)perform(a.action,a.i,true);},650);}
 async function delay(ms,token){let left=ms;while(left>0&&token===epoch){await sleep(Math.min(40,left));if(!paused)left-=40;}return token===epoch;}
-async function perform(action,i,bot=false){if(!$('tileInfo').hidden)closeTileInfo();if(screen!=='play'||paused||busy||$('modal').open||s.players[s.turn].bot!==bot)return;audio.unlock?.();if(action==='roll')$('board').scrollIntoView({block:'nearest',inline:'nearest',behavior:'auto'});const before=s,out=action==='roll'?E.roll(s):E.act(s,action,i);if(!out)return;s=out;busy=true;save();const token=epoch,committed=s;s=before;render();s=committed;before.players.forEach(p=>position(p,p.pos));$('actions').innerHTML='';$('status').textContent=action==='roll'?before.players[before.turn].name+' melempar dadu…':'Menyelesaikan keputusan…';
+async function perform(action,i,bot=false){if(!$('tileInfo').hidden)closeTileInfo();if(screen!=='play'||paused||busy||$('modal').open||s.players[s.turn].bot!==bot)return;audio.unlock?.();if(action==='roll')$('board').scrollIntoView({block:'nearest',inline:'nearest',behavior:'auto'});const before=s,out=action==='roll'?E.roll(s):E.act(s,action,i);if(!out)return;s=out;busy=true;save();const token=epoch,committed=s;s=before;render();s=committed;before.players.forEach(p=>position(p,p.pos));$('actions').innerHTML=button('waiting',action==='roll'?'Dadu bergulir…':'Menjalankan…','primary',true);$('status').textContent=action==='roll'?before.players[before.turn].name+' melempar dadu…':'Menyelesaikan keputusan…';
  for(const ev of s.events){if(token!==epoch)return;while(paused&&token===epoch)await sleep(40);if(token!==epoch)return;
-  if(ev.kind==='dice'){await Promise.all(dice.map((d,j)=>d.roll(ev.values[j],s.rolls+j)));if(token!==epoch)return;}
-  if(ev.kind==='move'){const p=before.players[ev.player];$('status').textContent=p.name+' menuju '+E.tiles[ev.to].name;for(const index of ev.path){position(p,index,true);if(!reduced())$('token'+p.id)?.animate([{translate:'0 0'},{translate:'0 -4px'},{translate:'0 0'}],{duration:150});if(!paused&&!document.hidden){audio.tone({freq:index%2?520:580,slideTo:240,dur:.035,vol:.055});audio.noise({dur:.016,filter:1500,vol:.018});}if(!await delay(reduced()?35:160,token))return;}}
+  if(ev.kind==='dice'){$('board').classList.add('is-throwing');$('diceSum').textContent='Melempar…';await Promise.all(dice.map((d,j)=>d.roll(ev.values[j],s.rolls+j)));if(token!==epoch)return;$('board').classList.remove('is-throwing');$('diceSum').textContent=ev.values.join(' + ')+' = '+ev.values.reduce((a,b)=>a+b);$('status').textContent='Hasil dadu: '+ev.values.join(' + ')+'. Bidak akan maju '+ev.values.reduce((a,b)=>a+b)+' petak.';if(!await delay(650,token))return;}
+  if(ev.kind==='move'){const p=before.players[ev.player];$('status').textContent=p.name+' menuju '+E.tiles[ev.to].name;let step=0;for(const index of ev.path){step++;document.querySelectorAll('.travel-cell,.current-tile').forEach(e=>e.classList.remove('travel-cell','current-tile'));document.querySelector('[data-index="'+index+'"]').classList.add('travel-cell');$('boardLocation').textContent=p.name+' · langkah '+step+'/'+ev.path.length+' · '+E.tiles[index].name;const progress=$('actions').querySelector('[data-action="waiting"]');if(progress)progress.textContent='Bidak · langkah '+step+' / '+ev.path.length;position(p,index,true);if(!reduced())$('token'+p.id)?.animate([{translate:'0 0'},{translate:'0 -3px'},{translate:'0 0'}],{duration:300});if(!paused&&!document.hidden){audio.tone({freq:index%2?520:580,slideTo:240,dur:.035,vol:.055});audio.noise({dur:.016,filter:1500,vol:.018});}if(!await delay(reduced()?200:340,token))return;}}
   if(ev.kind==='teleport'){position(before.players[ev.player],ev.to);if(!await delay(250,token))return;}
   if(ev.kind==='card'){$('boardEvent').innerHTML='<div class="card-event"><span class="event-symbol">'+(ev.type==='kes'?'✦':'▤')+'</span><h3>'+esc(ev.title)+'</h3><p>'+esc(ev.text)+'</p></div>';$('board').classList.add('is-card');if(!await delay(1700,token))return;$('board').classList.remove('is-card');$('boardEvent').innerHTML='';}
   if(['buy','build','money'].includes(ev.kind)&&!paused&&!document.hidden)audio.chord([523,659,784],{dur:.07,vol:.04,stagger:.025});
