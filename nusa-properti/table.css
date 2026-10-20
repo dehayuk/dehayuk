@@ -141,3 +141,14 @@
  #play .recent{display:block;min-height:72px;max-height:96px;padding:9px 11px;overflow:hidden}
  #play #recentLog li{font-size:11px;padding:4px 0}
 }
+
+/* Shared Three.js scene: actual recessed geometry, rigid bodies and shadows. */
+#diceLayer{position:absolute;inset:0;z-index:12;pointer-events:none;overflow:hidden;isolation:isolate}
+#diceLayer canvas{display:block;width:100%;height:100%;pointer-events:none}
+#board.is-card #diceLayer{visibility:hidden}
+.dice-accessible{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.physical-die{--die-edge:40px;position:absolute;width:var(--die-edge);height:var(--die-edge);margin:calc(var(--die-edge)/-2);perspective:700px}
+.physical-cube{display:block;position:absolute;inset:0;transform-style:preserve-3d}
+.physical-face{position:absolute;inset:0;display:block;border:1px solid #ded8cb;border-radius:8%;background:linear-gradient(140deg,#fffefa,#ece7dd);backface-visibility:hidden;box-shadow:inset 0 0 5px #fff8}
+.physical-face i{position:absolute;width:17%;height:17%;border-radius:50%;background:#20232b;box-shadow:inset 1px 1px 1px #000a,0 1px 0 #fff;transform:translate(-50%,-50%)}
+.physical-shadow{display:block;position:absolute;inset:20% -10%;border-radius:50%;background:#20312c;filter:blur(3px);z-index:-1}

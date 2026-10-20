@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "cannon-es": "0.20.0",
+    "esbuild": "0.25.0",
+    "three": "0.160.1"
+  },
+  "name": "dehayuk-tycoon-dice-source",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node physics-test.mjs"
+  }
+}
