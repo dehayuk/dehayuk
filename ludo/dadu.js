@@ -45,7 +45,7 @@ function draw(actor,p){
  const edge=actor.edge,dpr=actor.dpr,transform=v=>camera(body(v,p.rx,p.ry,p.rz));
  ctx.setTransform(dpr,0,0,dpr,edge*dpr,edge*dpr);ctx.clearRect(-edge,-edge,edge*2,edge*2);
  const basis=[[1,0,0],[0,1,0],[0,0,1]].map(transform),project=v=>basis[0].map((_,k)=>v[0]*basis[0][k]+v[1]*basis[1][k]+v[2]*basis[2][k]);
- const faces=MESH.map(f=>({n:project(f.n),points:f.points.map(project)})).filter(f=>f.n[2]>.001);
+ const faces=MESH.map((f,i)=>({n:project(f.n),points:f.points.map(project),flat:i<6})).filter(f=>f.n[2]>.001);
  faces.sort((a,b)=>a.points.reduce((s,v)=>s+v[2],0)/a.points.length-b.points.reduce((s,v)=>s+v[2],0)/b.points.length);
  function path(points){ctx.beginPath();points.forEach((v,i)=>{if(i)ctx.lineTo(v[0]*edge,v[1]*edge);else ctx.moveTo(v[0]*edge,v[1]*edge);});ctx.closePath();}
  for(const f of faces){

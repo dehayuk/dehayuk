@@ -1,48 +1,31 @@
-(function(){
-'use strict';
-const colors=[['#ff506b','#c82248','Merah'],['#2ed494','#078b64','Hijau'],['#32baff','#1766d4','Biru'],['#ffd448','#ce8912','Kuning']];
-let drawing=0;
-const star='M0-9 2.8-3.1 9.3-2.7 4.5 1.7 5.8 8.2 0 4.8-5.8 8.2-4.5 1.7-9.3-2.7-2.8-3.1Z';
-const arrow='M-7-3H1V-7L8 0 1 7V3H-7Z';
+(function(){'use strict';
+const colors=[['#ff435c','#b81032','Merah'],['#21d58c','#00724e','Hijau'],['#22b9ff','#0755be','Biru'],['#ffce25','#ba7000','Kuning']];let drawing=0;
+const star='M0-9 2.8-3.1 9.3-2.7 4.5 1.7 5.8 8.2 0 4.8-5.8 8.2-4.5 1.7-9.3-2.7-2.8-3.1Z',arrow='M-7-3H1V-7L8 0 1 7V3H-7Z';
 function board(prefix='main'){
- const E=LudoMesin,key='ludo-'+String(prefix).replace(/[^a-zA-Z0-9_-]/g,'')+'-'+(++drawing),url=id=>'url(#'+key+'-'+id+')';
- let s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 450" role="img" aria-label="Papan Ludo. Empat markas berwarna, jalur putih, bintang kotak aman, dan tujuan di tengah."><defs>';
- colors.forEach((c,p)=>{s+='<linearGradient id="'+key+'-base'+p+'" x1="0%" y1="0%" x2="80%" y2="100%"><stop stop-color="'+c[0]+'"/><stop offset="1" stop-color="'+c[1]+'"/></linearGradient><linearGradient id="'+key+'-well'+p+'" x1="0%" y1="0%" x2="0%" y2="100%"><stop stop-color="'+c[1]+'"/><stop offset="1" stop-color="'+c[0]+'"/></linearGradient>';});
- s+='<linearGradient id="'+key+'-ivory" x1="0%" y1="0%" x2="0%" y2="100%"><stop stop-color="#fffef8"/><stop offset="1" stop-color="#efeee2"/></linearGradient><linearGradient id="'+key+'-gold" x1="0%" y1="0%" x2="90%" y2="100%"><stop stop-color="#fff1a0"/><stop offset=".5" stop-color="#ffcd42"/><stop offset="1" stop-color="#d89418"/></linearGradient><g id="'+key+'-ornament"><ellipse cy="-5" rx="3.1" ry="5"/><ellipse cy="5" rx="3.1" ry="5"/><ellipse cx="-5" rx="5" ry="3.1"/><ellipse cx="5" rx="5" ry="3.1"/></g></defs>';
- s+='<rect x=".8" y=".8" width="448.4" height="448.4" rx="13" fill="#dae3df" stroke="#29475a" stroke-width="1.6"/>';
+ const E=LudoMesin,key='ludo-'+String(prefix).replace(/[^a-zA-Z0-9_-]/g,'')+'-'+(++drawing),u=id=>'url(#'+key+'-'+id+')';
+ let s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 450" role="img" aria-label="Papan Ludo: empat markas, jalur putih, bintang aman, dan rumah di tengah."><defs>';
+ function grad(id,stops,radial=false){s+='<'+(radial?'radialGradient':'linearGradient')+' id="'+key+'-'+id+'" '+(radial?'cx="30%" cy="12%" r="95%"':'x1="0%" y1="0%" x2="65%" y2="100%"')+'>'+stops.map(([o,c])=>'<stop offset="'+o+'" stop-color="'+c+'"/>').join('')+'</'+(radial?'radialGradient':'linearGradient')+'>';}
+ colors.forEach((c,p)=>{grad('base'+p,[[0,'#ffffff'],[.08,c[0]],[.72,c[1]],[1,c[0]]]);grad('well'+p,[[0,c[1]],[.65,c[0]],[1,'#ffffff']],true);grad('glass'+p,[[0,'#ffffff'],[.14,c[0]],[1,c[1]]],true);});
+ grad('ivory',[[0,'#ffffff'],[.55,'#fffbee'],[1,'#e9d9b6']]);grad('gold',[[0,'#fff7ba'],[.2,'#ffdf72'],[.48,'#b27617'],[.62,'#fff0a4'],[1,'#cb8d22']]);
+ s+='<linearGradient id="'+key+'-shine" x2="0" y2="1"><stop stop-color="#fff" stop-opacity=".32"/><stop offset=".5" stop-color="#fff" stop-opacity=".02"/><stop offset="1" stop-color="#fff" stop-opacity=".09"/></linearGradient><g id="'+key+'-flourish" fill="none" stroke="'+u('gold')+'" stroke-width="1.5" stroke-linecap="round"><path d="M-10 9Q-14-6 0-10Q14-6 10 9M0-10V11M-10 0Q0 10 10 0M-6-7Q0 1 6-7"/><circle cy="12" r="2"/></g></defs><rect width="450" height="450" rx="9" fill="#85613b"/>';
  for(let p=0;p<4;p++){
-  const x=p===0||p===3?0:270,y=p<2?0:270;
-  s+='<rect x="'+(x+2)+'" y="'+(y+2)+'" width="176" height="176" rx="11" fill="'+url('base'+p)+'" stroke="'+colors[p][1]+'" stroke-width="2"/><path d="M'+(x+16)+' '+(y+7)+'h148" stroke="#ffffff" stroke-opacity=".48" stroke-width="2" stroke-linecap="round"/>';
-  // Kawung-inspired geometry stays inside the coloured home bases, away from playable cells.
-  for(const [dx,dy] of [[18,18],[162,18],[18,162],[162,162]])s+='<use href="#'+key+'-ornament" transform="translate('+(x+dx)+' '+(y+dy)+')" fill="#fff3c4" opacity=".38"/>';
-  s+='<rect x="'+(x+30)+'" y="'+(y+34)+'" width="120" height="120" rx="23" fill="'+colors[p][1]+'" opacity=".7"/><rect x="'+(x+30)+'" y="'+(y+29)+'" width="120" height="120" rx="23" fill="'+url('ivory')+'" stroke="#fffaf0" stroke-width="2"/>';
-  for(let k=0;k<4;k++){
-   const [r,c]=E.coord(p,-1,k),cx=c*30+15,cy=r*30+15;
-   s+='<circle cx="'+cx+'" cy="'+cy+'" r="20" fill="'+url('well'+p)+'" stroke="'+colors[p][1]+'" stroke-width="1.5"/><circle cx="'+cx+'" cy="'+(cy+1)+'" r="15" fill="#ffffff" fill-opacity=".88"/><path d="M'+(cx-14)+' '+(cy+10)+'q14 14 28 0" fill="none" stroke="#ffffff" stroke-opacity=".8" stroke-width="1.5"/>';
-  }
+  const x=p===0||p===3?0:270,y=p<2?0:270,c=colors[p];
+  s+='<g class="home-base" data-player="'+p+'"><rect x="'+(x+1)+'" y="'+(y+1)+'" width="178" height="178" rx="10" fill="'+u('base'+p)+'" stroke="'+c[1]+'" stroke-width="2"/><rect x="'+(x+5)+'" y="'+(y+5)+'" width="170" height="170" rx="8" fill="none" stroke="#fff4b4" stroke-opacity=".8"/><rect x="'+(x+9)+'" y="'+(y+9)+'" width="162" height="162" rx="7" fill="none" stroke="'+c[1]+'" stroke-opacity=".6"/>';
+  for(const[dx,dy,a]of[[18,18,-45],[162,18,45],[18,162,-135],[162,162,135]])s+='<use href="#'+key+'-flourish" transform="translate('+(x+dx)+' '+(y+dy)+') rotate('+a+') scale(.7)"/>';
+  s+='<rect x="'+(x+29)+'" y="'+(y+34)+'" width="122" height="122" rx="26" fill="#132b38" opacity=".35"/><rect x="'+(x+28)+'" y="'+(y+27)+'" width="124" height="124" rx="26" fill="'+u('gold')+'"/><rect x="'+(x+31)+'" y="'+(y+30)+'" width="118" height="118" rx="23" fill="'+u('ivory')+'" stroke="#fff9e6" stroke-width="1.5"/>';
+  for(let k=0;k<4;k++){const[r,cc]=E.coord(p,-1,k),xx=cc*30+15,yy=r*30+15;s+='<circle cx="'+xx+'" cy="'+(yy+1)+'" r="21" fill="#fff"/><circle cx="'+xx+'" cy="'+yy+'" r="19.5" fill="'+u('well'+p)+'" stroke="'+c[1]+'" stroke-width="1.2"/><path d="M'+(xx-15)+' '+(yy+10)+'q15 15 30 0" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.4"/><ellipse cx="'+(xx-5)+'" cy="'+(yy-7)+'" rx="9" ry="4" fill="#fff" opacity=".15"/>';}
+  s+='<path d="M'+(x+7)+' '+(y+7)+'H'+(x+173)+'V'+(y+72)+'Q'+(x+80)+' '+(y+44)+' '+(x+7)+' '+(y+118)+'Z" fill="'+u('shine')+'" pointer-events="none"/><rect class="home-light" x="'+(x+5)+'" y="'+(y+5)+'" width="170" height="170" rx="8" fill="none" stroke="#fff8c4" stroke-width="3" opacity="0"/></g>';
  }
- E.TRACK.forEach(([r,c],i)=>{
-  const p=E.START.indexOf(i),safe=E.SAFE.has(i),x=c*30,y=r*30,cx=x+15,cy=y+15;
-  s+='<rect x="'+(x+.65)+'" y="'+(y+.65)+'" width="28.7" height="28.7" rx="3.1" fill="'+(p>=0?url('base'+p):'#fffcf1')+'" stroke="'+(p>=0?colors[p][1]:'#819590')+'" stroke-width="1.1"/><path d="M'+(x+4)+' '+(y+3.5)+'h22" stroke="#ffffff" stroke-opacity=".8" stroke-linecap="round"/>';
-  if(p>=0)s+='<path d="'+arrow+'" transform="translate('+cx+' '+cy+') rotate('+(p*90)+')" fill="#fffdf0" stroke="'+colors[p][1]+'" stroke-width=".7"/>';
-  else if(safe)s+='<circle cx="'+cx+'" cy="'+cy+'" r="11.5" fill="#d9e8e3"/><path d="'+star+'" transform="translate('+cx+' '+cy+') scale(.87)" fill="#32615d"/>';
- });
- E.LANES.forEach((lane,p)=>lane.slice(0,5).forEach(([r,c])=>{
-  const x=c*30,y=r*30;
-  s+='<rect x="'+(x+.65)+'" y="'+(y+.65)+'" width="28.7" height="28.7" rx="3.1" fill="'+url('base'+p)+'" stroke="'+colors[p][1]+'" stroke-width="1.1"/><path d="M-3-5 2 0-3 5" transform="translate('+(x+15)+' '+(y+15)+') rotate('+(p*90)+')" stroke="'+(p===3?'#875811':'#ffffff')+'" stroke-opacity=".78" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
- }));
- const triangles=['180,180 225,225 180,270','180,180 270,180 225,225','270,180 270,270 225,225','180,270 225,225 270,270'];
- triangles.forEach((points,p)=>s+='<polygon points="'+points+'" fill="'+url('base'+p)+'" stroke="#fff8dc" stroke-width="1.6"/>');
- s+='<circle cx="225" cy="227" r="18" fill="#133a4c" fill-opacity=".24"/><circle cx="225" cy="225" r="17" fill="'+url('gold')+'" stroke="#fff9d9" stroke-width="2"/><circle cx="225" cy="225" r="12.5" fill="none" stroke="#bd7919" stroke-width="1"/><path d="'+star+'" transform="translate(225 225)" fill="#946118"/><path d="M212 216a17 17 0 0 1 26 0" fill="none" stroke="#fff9cd" stroke-width="2" stroke-linecap="round"/></svg>';
- return s;
+ function tile(r,c,p=-1){const x=c*30,y=r*30;return '<rect x="'+(x+.55)+'" y="'+(y+1.7)+'" width="28.9" height="28" rx="2.4" fill="'+(p<0?'#af9470':colors[p][1])+'"/><rect x="'+(x+.7)+'" y="'+(y+.6)+'" width="28.6" height="26.7" rx="2.3" fill="'+u(p<0?'ivory':'glass'+p)+'" stroke="'+(p<0?'#d4c7aa':colors[p][1])+'" stroke-width=".7"/><path d="M'+(x+3)+' '+(y+2)+'h24" stroke="#fff" stroke-opacity=".8" stroke-width="1.1"/>';}
+ E.TRACK.forEach(([r,c],i)=>{const p=E.START.indexOf(i),cx=c*30+15,cy=r*30+14;s+=tile(r,c,p);if(p>=0)s+='<path d="'+arrow+'" transform="translate('+cx+' '+cy+') rotate('+(p*90)+')" fill="#fff8d5" stroke="'+colors[p][1]+'" stroke-width=".8"/>';else if(E.SAFE.has(i))s+='<circle cx="'+cx+'" cy="'+cy+'" r="11" fill="#ddede9" stroke="#bdcfcb" stroke-width=".7"/><path d="'+star+'" transform="translate('+cx+' '+cy+') scale(.82)" fill="#397679" stroke="#fff" stroke-width=".6"/>';});
+ E.LANES.forEach((lane,p)=>lane.slice(0,5).forEach(([r,c])=>{s+=tile(r,c,p)+'<path d="M-3-5 2 0-3 5" transform="translate('+(c*30+15)+' '+(r*30+14)+') rotate('+(p*90)+')" stroke="'+(p===3?'#805000':'#fff5cd')+'" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>';}));
+ ['180,180 225,225 180,270','180,180 270,180 225,225','270,180 270,270 225,225','180,270 225,225 270,270'].forEach((points,p)=>s+='<polygon points="'+points+'" fill="'+u('base'+p)+'" stroke="#fff0b5" stroke-width="1.3"/>');
+ return s+'<circle cx="225" cy="228" r="19" fill="#1c2435" opacity=".3"/><circle cx="225" cy="225" r="18" fill="'+u('gold')+'" stroke="#fff5b5" stroke-width="1.5"/><circle cx="225" cy="225" r="13" fill="none" stroke="#a36a12"/><path d="'+star+'" transform="translate(225 225)" fill="#a46913" stroke="#fff2a8" stroke-width=".7"/></svg>';
 }
 function pawn(p,id){
- const c=colors[p],key='ludo-pawn-'+p+'-'+id+'-'+(++drawing);
- return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 54" aria-hidden="true"><defs><linearGradient id="'+key+'" x1="10%" y1="0%" x2="90%" y2="100%"><stop stop-color="'+c[0]+'"/><stop offset=".4" stop-color="'+c[0]+'"/><stop offset="1" stop-color="'+c[1]+'"/></linearGradient></defs><ellipse cx="22" cy="48" rx="17" ry="4" fill="#0a243b" fill-opacity=".35"/><path d="M14 23C14 32 10 34 6 42c-3 8 35 8 32 0-4-8-8-10-8-19Z" fill="url(#'+key+')" stroke="#fffdf1" stroke-width="2.3" stroke-linejoin="round"/><ellipse cx="22" cy="42" rx="13.5" ry="3.6" fill="'+c[1]+'"/><path d="M10 42q12 5 24 0" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-width="1.4"/><path d="M16 28 12 37" stroke="#ffffff" stroke-opacity=".45" stroke-width="2.8" stroke-linecap="round"/><circle cx="22" cy="18.5" r="15.7" fill="url(#'+key+')" stroke="#14324a" stroke-width="1.3"/><circle cx="22" cy="18.5" r="13.5" fill="none" stroke="#fffdf1" stroke-width="1.7"/><circle cx="22" cy="19.5" r="10.1" fill="#142f47"/><path d="M11 12q5-7 12-5" fill="none" stroke="#ffffff" stroke-opacity=".8" stroke-width="2.1" stroke-linecap="round"/><text x="22" y="25" text-anchor="middle" font-family="Nunito,Arial,sans-serif" font-weight="900" font-size="16" fill="#fffef1">'+(id+1)+'</text></svg>';
+ const c=colors[p],key='ludo-pawn-'+p+'-'+id+'-'+(++drawing),u=s=>'url(#'+key+s+')';
+ return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 54" aria-hidden="true"><defs><linearGradient id="'+key+'body"><stop stop-color="'+c[1]+'"/><stop offset=".25" stop-color="'+c[0]+'"/><stop offset=".38" stop-color="#fff"/><stop offset=".48" stop-color="'+c[0]+'"/><stop offset=".8" stop-color="'+c[1]+'"/><stop offset="1" stop-color="'+c[0]+'"/></linearGradient><radialGradient id="'+key+'head" cx="30%" cy="22%" r="78%"><stop stop-color="#fff"/><stop offset=".15" stop-color="'+c[0]+'"/><stop offset=".5" stop-color="'+c[0]+'"/><stop offset=".9" stop-color="'+c[1]+'"/><stop offset="1" stop-color="#152b39"/></radialGradient></defs><ellipse cx="23" cy="49.5" rx="17.5" ry="3.4" fill="#112b39" opacity=".28"/><path d="M5 43v3c0 7 34 7 34 0v-3Z" fill="'+c[1]+'" stroke="#162739" stroke-opacity=".25" stroke-width=".8"/><ellipse cx="22" cy="43" rx="17" ry="5.3" fill="'+u('body')+'"/><path d="M16 20C17 29 12 34 9 39c-3 6 29 6 26 0-3-5-8-10-7-19Z" fill="'+u('body')+'" stroke="'+c[1]+'" stroke-width=".7"/><path d="M11 39q11 5 22 0M7 46q15 5 30 0" fill="none" stroke="#fff6cc" stroke-opacity=".55" stroke-width=".9"/><ellipse cx="22" cy="24" rx="7.5" ry="2.3" fill="'+c[1]+'"/><circle cx="22" cy="13.5" r="11.6" fill="'+u('head')+'" stroke="'+c[1]+'" stroke-width=".7"/><ellipse cx="17.7" cy="7.8" rx="3.4" ry="2.1" transform="rotate(-35 17.7 7.8)" fill="#fff" opacity=".9"/><path d="M28 20q4-3 4-7" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="1.2" stroke-linecap="round"/><circle cx="22" cy="40.5" r="6.4" fill="'+c[1]+'" stroke="#fff2bd" stroke-width=".8"/><text x="22" y="43.9" text-anchor="middle" font-family="Nunito,Arial,sans-serif" font-weight="900" font-size="9.5" fill="#fff9de">'+(id+1)+'</text></svg>';
 }
-function dice(n){
- const positions={1:[[50,50]],2:[[27,27],[73,73]],3:[[27,27],[50,50],[73,73]],4:[[27,27],[73,27],[27,73],[73,73]],5:[[27,27],[73,27],[50,50],[27,73],[73,73]],6:[[27,24],[73,24],[27,50],[73,50],[27,76],[73,76]]};
- return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true">'+(positions[n]||positions[1]).map(([x,y])=>'<circle cx="'+x+'" cy="'+y+'" r="8.1" fill="#132f49"/><ellipse cx="'+(x-1)+'" cy="'+(y-2)+'" rx="4.5" ry="2.2" fill="#3d586b"/>').join('')+'</svg>';
-}
+function dice(n){const ps={1:[[50,50]],2:[[27,27],[73,73]],3:[[27,27],[50,50],[73,73]],4:[[27,27],[73,27],[27,73],[73,73]],5:[[27,27],[73,27],[50,50],[27,73],[73,73]],6:[[27,24],[73,24],[27,50],[73,50],[27,76],[73,76]]};return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true">'+(ps[n]||ps[1]).map(([x,y])=>'<circle cx="'+x+'" cy="'+y+'" r="8.1" fill="#132f49"/>').join('')+'</svg>';}
 window.LudoPapan={colors,board,pawn,dice};
 })();
