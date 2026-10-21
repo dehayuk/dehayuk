@@ -5,7 +5,7 @@ const context=await browser.newContext({viewport:{width:390,height:844},reducedM
 await p.goto(base+'/warung-rasa/');await p.click('#bMain');
 async function choose(values){for(let i=0;i<3;i++){await p.click('[data-step="'+i+'"]');await p.click('[data-value="'+values[i]+'"]');}}
 async function serve(){await p.click('#action');await p.waitForFunction(()=>document.getElementById('action').textContent==='Sajikan pesanan');await p.click('#action');}
-async function next(){await p.waitForTimeout(470);await p.click('#action');}
+async function next(){await p.waitForTimeout(470);if(await p.locator('#result').isVisible())return;const label=await p.locator('#action').innerText();if(/berikutnya|Lihat hasil|Perbaiki/.test(label))await p.click('#action');}
 async function order(){return p.locator('.order-part').evaluateAll(es=>es.map(e=>+e.dataset.wanted));}
 await choose([1,1,1]);await serve();assert.equal(await p.locator('#score').innerText(),'0');assert.match(await p.locator('#messageTitle').innerText(),/±0/);await next();
 await p.click('#hint');assert(await p.locator('#hint').isDisabled());assert.equal(await p.locator('.option[data-hint="true"]').count(),1);

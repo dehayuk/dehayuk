@@ -41,3 +41,10 @@ Pengujian ukuran layar memakai browser desktop dengan viewport tersebut, bukan p
 - `info/warung-rasa.json`, `main/warung-rasa/index.html`, `sitemap.xml`: deskripsi dan tanggal pembaruan yang selaras.
 - `scripts/uji-warung-core.js`, `scripts/uji-warung-v2.cjs`: pengujian terpisah.
 - Dokumen ini: penilaian dan checklist brief.
+
+
+## Antrean pelanggan — revisi lanjutan 22 Oktober 2026
+
+Pelanggan datang memakai waktu bermain aktif, berjejer sesuai urutan, menerima hidangan, lalu pergi. Antrean maju otomatis setelah pesanan benar; tombol lanjut tetap dapat dipakai. Kapasitas menunggu naik 2 → 3 → 4 seiring jumlah pesanan selesai, dan tidak lebih dari 10 pelanggan per sesi. Delapan variasi pelanggan menjaga agar orang yang sama tidak muncul dua kali bersamaan. Tidak ada batas kesabaran, hukuman antrean penuh, atau pengunjung yang meninggalkan warung karena pemain lambat.
+
+Jeda, setelan, halaman tersembunyi, serta keluar halaman menghentikan jam kedatangan dan perpindahan pelanggan. Salah racik mempertahankan pelanggan dan urutan antrean. Mengulang permainan mengosongkan antrean lama. Uji baru: `node scripts/uji-warung-antrean.cjs` memeriksa FIFO, batas kapasitas, tepat 10 pengunjung, kedatangan nyata dalam browser, jeda, perpindahan otomatis dan tata letak HP. Uji sesi v2 tetap dijalankan. Aplikasi Android dan game lain tidak diubah.

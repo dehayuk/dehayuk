@@ -1,13 +1,13 @@
 {
   "deskripsi": [
-    "Kelola dapur kecil yang hangat tanpa dikejar waktu. Pelanggan memesan nasi goreng, mi goreng, atau tumis sayur dengan lauk dan bumbu pilihannya. Baca pesanan, masukkan bahan, masak di wajan, lalu sajikan hidangan yang sesuai.",
+    "Kelola warung yang makin ramai tanpa dikejar waktu. Pelanggan datang, berjejer dalam antrean, memesan nasi goreng, mi goreng, atau tumis sayur, lalu pergi setelah menerima hidangannya. Layani sesuai urutan kedatangan; antrean maju otomatis dan pengunjung berikutnya datang selama kamu memasak.",
     "Layani 10 pesanan dalam satu sesi tanpa batas waktu. Pesanan benar memberi 20 poin; beruntun benar menaikkan hadiah hingga 40 poin. Racikan keliru mengurangi maksimal 5 poin, dengan skor minimal 0, dan pelanggan tetap menunggu untuk diperbaiki. Petunjuk bahan tersedia sekali per pesanan. Lihat bintang akurasi dan simpan rekor terbaik di perangkatmu, tanpa akun, toko, atau pembelian."
   ],
   "caraMain": [
     "Baca bahan dasar, lauk, dan bumbu pada kartu pesanan.",
     "Pilih tiga bahan yang sesuai. Ketuk langkahnya untuk mengganti pilihan sebelum memasak.",
     "Ketuk Masak dan tunggu sebentar hingga hidangan matang.",
-    "Ketuk Sajikan pesanan. Perbaiki bila belum sesuai, atau layani pelanggan berikutnya.",
+    "Ketuk Sajikan pesanan. Jika benar, pelanggan menerima makanan dan pergi; antrean maju otomatis. Jika salah, perbaiki pesanan pelanggan yang sama.",
     "Selesaikan 10 pesanan untuk melihat hasil dan bintang akurasi. Gunakan Petunjuk bila perlu; bantuan menghentikan bonus beruntun."
   ],
   "kontrol": "HP: ketuk bahan dan tombol tindakan. Komputer: klik atau gunakan Tab dan Enter. Tombol panah pada pilihan langkah memindahkan fokus; Escape membuka jeda. Tidak ada batas waktu.",
