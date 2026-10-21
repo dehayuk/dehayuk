@@ -582,15 +582,23 @@
     side: "300px"
   };
   window.dkImgErr = function (img) { img.onerror = null; img.removeAttribute("srcset"); img.src = img.getAttribute("data-full"); };
+  function gameMedia(g) {
+    var v = /^[a-z0-9-]+$/.test(g.media || "") ? g.media : "";
+    return {cover: v ? "/" + g.slug + "/sampul-" + v + ".jpg" : g.sampul,
+      card: "/kartu/" + g.slug + (v ? "-" + v : "") + ".webp",
+      icon: g.ikon || "/" + g.slug + "/ikon-" + (v || "20261022") + ".png"};
+  }
+  window.dehayukGameMedia = gameMedia;
   function imgTag(g, sizes, eager, square) {
-    if (square) return '<img src="' + esc(g.ikon || '/' + g.slug + '/ikon-20261022.png') + '" width="512" height="512" alt="" loading="lazy" decoding="async">';
-    var small = "/kartu/" + g.slug + ".webp";
-    return '<img src="' + small + '" srcset="' + small + " 480w, " + g.sampul + ' 1024w" sizes="' + (SIZES[sizes] || SIZES.grid) + '" width="480" height="300" alt="" data-full="' + g.sampul + '" ' +
+    var media = gameMedia(g);
+    if (square) return '<img src="' + esc(media.icon) + '" width="512" height="512" alt="" loading="lazy" decoding="async">';
+    var small = media.card;
+    return '<img src="' + small + '" srcset="' + small + " 480w, " + media.cover + ' 1024w" sizes="' + (SIZES[sizes] || SIZES.grid) + '" width="480" height="300" alt="" data-full="' + media.cover + '" ' +
       (eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"') + ' decoding="async" onerror="dkImgErr(this)">';
   }
   function iconTile(g, cls) {
     return '<span class="ltile ' + (cls || "") + '" style="--c:' + g.warna + '" aria-hidden="true">' +
-      '<img src="' + esc(g.ikon || '/' + g.slug + '/ikon-20261022.png') + '" alt="" width="256" height="256"></span>';
+      '<img src="' + esc(gameMedia(g).icon) + '" alt="" width="256" height="256"></span>';
   }
   function thumb(g, shape, opts) {
     opts = opts || {};
@@ -753,7 +761,7 @@
   document.getElementById("cats").innerHTML = CATS.map(function (c) {
     var peek = SORTS.populer[1](inCat(c.id)).slice(0, 3);
     return '<a class="cat" href="#k-' + c.id + '" style="--t:' + c.warna + '"><span class="cat-thumbs" aria-hidden="true">' +
-      peek.map(function (g) { return '<img src="/kartu/' + g.slug + '.webp" alt="" width="46" height="29" loading="lazy" data-full="' + g.sampul + '" onerror="dkImgErr(this)">'; }).join("") + "</span>" +
+      peek.map(function (g) { return '<img src="' + gameMedia(g).card + '" alt="" width="46" height="29" loading="lazy" data-full="' + gameMedia(g).cover + '" onerror="dkImgErr(this)">'; }).join("") + "</span>" +
       svgPath(c.ikon) + "<b>" + esc(c.nama) + "</b><small>" + inCat(c.id).length + " game</small></a>";
   }).join("");
 
@@ -1070,7 +1078,7 @@
     t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function () { t.hidden = true; }, 3200);
   }
   // Semua berkas satu game yang perlu disimpan agar bisa dimainkan tanpa internet.
-  function filesOf(g) { return ["/" + g.slug + "/", g.sampul, "/kartu/" + g.slug + ".webp", "/info/" + g.slug + ".json"]; }
+  function filesOf(g) { var m = window.dehayukGameMedia(g); return ["/" + g.slug + "/", m.cover, m.card, m.icon, "/info/" + g.slug + ".json"]; }
   var saved = {};
   function refreshSaved() {
     if (!hasSW) return Promise.resolve();
@@ -1113,7 +1121,7 @@
     if (!list) return;
     list.innerHTML = GAMES.map(function (g) {
       var ok = saved[g.slug];
-      return '<li><img src="/kartu/' + g.slug + '.webp" alt="" loading="lazy">' + g.nama.replace(/</g, "&lt;") + '<em class="' + (ok ? "ok" : "") + '">' + (ok ? "✓ Tersimpan" : "Belum tersimpan") + "</em></li>";
+      return '<li><img src="' + window.dehayukGameMedia(g).card + '" alt="" loading="lazy">' + g.nama.replace(/</g, "&lt;") + '<em class="' + (ok ? "ok" : "") + '">' + (ok ? "✓ Tersimpan" : "Belum tersimpan") + "</em></li>";
     }).join("");
     var all = GAMES.every(function (g) { return saved[g.slug]; });
     if (btn) { btn.textContent = all ? "Semua game sudah tersimpan ✓" : "Simpan semua game"; btn.disabled = all; }

@@ -1,0 +1,16 @@
+{
+  "deskripsi": [
+    "Balok Jatuh menghidupkan permainan susun balok klasik: tujuh bentuk empat kotak turun ke papan 10 × 20. Geser dan putar untuk melengkapi baris tanpa celah. Baris penuh terhapus dan semua balok di atasnya turun. Tidak ada power-up atau bentuk tambahan.",
+    "Mulai dari level 1 dan naik satu level setiap 10 baris. Satu hingga empat baris sekaligus memberi 40, 100, 300, atau 1.200 poin dikalikan level saat itu. Pilih mode klasik, satu percobaan harian per perangkat, atau bagikan tantangan dengan urutan balok yang sama. Rekor tersimpan di perangkat, tanpa akun."
+  ],
+  "caraMain": [
+    "Geser dan putar balok yang jatuh, sambil melihat bentuk berikutnya.",
+    "Isi satu baris mendatar tanpa celah agar terhapus.",
+    "Gunakan Turun untuk bergerak lebih cepat atau Jatuhkan untuk langsung mengunci balok. Garis tipis menunjukkan tempat jatuhnya.",
+    "Hapus beberapa baris sekaligus untuk mendapat skor lebih tinggi. Kecepatan naik setiap 10 baris.",
+    "Jangan sampai tumpukan menutup bagian atas papan. Gunakan Jeda bila ingin berhenti sejenak."
+  ],
+  "kontrol": "HP: tombol kiri/kanan, putar, turun dan jatuhkan. Tahan kiri/kanan/turun untuk mengulang. Bisa juga menggeser pada papan, atau mengetuk papan untuk berputar. Komputer: ← → geser, ↑ atau X putar, ↓ turun, Spasi jatuhkan, P/Escape jeda.",
+  "orientasi": "Tegak atau mendatar",
+  "diperbarui": "2026-10-22"
+}

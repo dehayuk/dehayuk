@@ -48,12 +48,23 @@ function fullGames(K) {
     const f = rel("info/" + g.slug + ".json");
     if (fs.existsSync(f)) { try { info = JSON.parse(fs.readFileSync(f, "utf8")); } catch (e) { info = { _rusak: e.message }; } }
     const full = Object.assign({}, info, g);
-    full.ikon = "/" + g.slug + "/ikon-20261022.png";
+    full.ikon = g.ikon || mediaPaths(full).icon;
     return full;
   });
 }
 
 function lit(v) { return JSON.stringify(v); }
+// Edisi artwork memakai alamat baru agar cache pemain tidak menampilkan sampul lama.
+// Alamat sampul.jpg dan kartu/<slug>.webp tetap tersedia untuk kompatibilitas.
+function mediaPaths(g) {
+  const version = /^[a-z0-9-]+$/.test(g.media || "") ? g.media : "";
+  return {
+    cover: version ? "/" + g.slug + "/sampul-" + version + ".jpg" : g.sampul,
+    card: "/kartu/" + g.slug + (version ? "-" + version : "") + ".webp",
+    icon: "/" + g.slug + "/ikon-" + (version || "20261022") + ".png",
+    share: "/" + g.slug + "/bagikan-" + (version || "20261022") + ".jpg"
+  };
+}
 function objLine(o, order) {
   const keys = order.filter((k) => o[k] !== undefined).concat(Object.keys(o).filter((k) => !order.includes(k) && !DETAIL.includes(k) && o[k] !== undefined));
   return "{ " + keys.map((k) => (/^[a-zA-Z_$][\w$]*$/.test(k) ? k : lit(k)) + ": " + lit(o[k])).join(", ") + " }";
@@ -94,7 +105,7 @@ function gameMedia(html,g) {
   head=head.replace(/<!-- dehayuk:media:start -->[\s\S]*?<!-- dehayuk:media:end -->\s*/g,'');
   head=head.replace(/<meta\b[^>]*>/gi,tag=>/\b(?:property|name)=["'](?:og:[^"']+|twitter:[^"']+|description)["']/i.test(tag)?'':tag);
   head=head.replace(/<link\b[^>]*>/gi,tag=>/\brel=["'](?:canonical|icon|shortcut icon|apple-touch-icon)["']/i.test(tag)?'':tag);
-  const image=SITE+'/'+g.slug+'/bagikan-20261022.jpg',url=SITE+'/'+g.slug+'/';
+  const image=SITE+mediaPaths(g).share,url=SITE+'/'+g.slug+'/';
   const tags='<!-- dehayuk:media:start -->\n'+[
    '<meta name="description" content="'+esc(g.ajakan)+'">',
    '<link rel="canonical" href="'+url+'">',
@@ -117,7 +128,7 @@ function seoPage(g, K, all) {
   const catById = Object.fromEntries(K.kategori.map((c) => [c.id, c]));
   const cats = g.kategori.map((id) => catById[id]).filter(Boolean);
   const url = SITE + "/main/" + g.slug + "/";
-  const img = SITE + "/" + g.slug + "/bagikan-20261022.jpg";
+  const img = SITE + mediaPaths(g).share;
   const title = g.nama + " — main gratis di Dehayuk";
   const desc = g.ajakan + " " + (g.genre ? g.genre + ", " : "") + "langsung main di browser HP atau komputer, tanpa unduh.";
   const ld = {
@@ -200,7 +211,7 @@ function seoPage(g, K, all) {
 <a class="top" href="/" aria-label="Dehayuk, beranda"><span class="mark" aria-hidden="true">D</span><span class="word">Deha<span>yuk</span></span></a>
 <main>
   <nav class="crumbs" aria-label="Lokasi"><a href="/">Beranda</a>»${cats[0] ? '<a href="/#k-' + cats[0].id + '">' + esc(cats[0].nama) + "</a>»" : ""}<span>${esc(g.nama)}</span></nav>
-  <a class="cover" href="/${g.slug}/"><img src="${g.sampul}" width="1024" height="640" alt="Sampul ${esc(g.nama)}" fetchpriority="high"></a>
+  <a class="cover" href="/${g.slug}/"><img src="${mediaPaths(g).cover}" width="1024" height="640" alt="Sampul ${esc(g.nama)}" fetchpriority="high"></a>
   <h1>${esc(g.nama)}</h1>
   <p class="lead">${esc(g.ajakan)}</p>
   <div class="cta"><a class="play" href="/${g.slug}/">Main sekarang</a><a class="alt" href="/#main/${g.slug}">Buka di Dehayuk</a></div>
@@ -210,7 +221,7 @@ function seoPage(g, K, all) {
     ${g.caraMain && g.caraMain.length ? "<h2>Cara main</h2><ol>" + g.caraMain.map((s) => "<li>" + esc(s) + "</li>").join("") + "</ol>" : ""}
     ${g.kontrol ? "<h2>Kontrol</h2><p>" + esc(g.kontrol) + "</p>" : ""}
   </section>
-${others.length ? '  <h2>Game lainnya</h2>\n  <div class="more">' + others.map((x) => '<a href="/main/' + x.slug + '/"><img src="/kartu/' + x.slug + '.webp" width="480" height="300" alt="" loading="lazy">' + esc(x.nama) + "</a>").join("") + "</div>\n" : ""}</main>
+${others.length ? '  <h2>Game lainnya</h2>\n  <div class="more">' + others.map((x) => '<a href="/main/' + x.slug + '/"><img src="' + mediaPaths(x).card + '" width="480" height="300" alt="" loading="lazy">' + esc(x.nama) + "</a>").join("") + "</div>\n" : ""}</main>
 <footer>© 2026 Dehayuk · Game ringan buatan Indonesia · <a href="/privasi/">Kebijakan Privasi</a></footer>
 `;
 }
@@ -328,9 +339,10 @@ function run(opts) {
 
   // Berkas buatan untuk game yang sudah dihapus dari katalog.
   const extra = [];
+  const versionedCards = new Set(games.filter(g => g.media).map(g => path.basename(mediaPaths(g).card)));
   for (const dir of ["info", "kartu"]) if (fs.existsSync(rel(dir))) for (const n of fs.readdirSync(rel(dir))) {
     const s = n.replace(/\.(json|webp)$/, "");
-    if (n !== "sidik.json" && !slugs.has(s)) extra.push(dir + "/" + n);
+    if (n !== "sidik.json" && !slugs.has(s) && !(dir === "kartu" && versionedCards.has(n))) extra.push(dir + "/" + n);
   }
   if (fs.existsSync(rel("main"))) for (const n of fs.readdirSync(rel("main"))) if (!slugs.has(n)) extra.push("main/" + n);
   for (const p of extra) { if (write) { fs.rmSync(rel(p), { recursive: true, force: true }); console.log("hapus  " + p); } else stale.push(p + " (game sudah tidak di katalog)"); }
@@ -366,6 +378,22 @@ function run(opts) {
   const haveSidik = fs.existsSync(sidikFile) ? nl(fs.readFileSync(sidikFile, "utf8")) : null;
   if (write && haveSidik !== sidikText) { fs.mkdirSync(rel("kartu"), { recursive: true }); fs.writeFileSync(sidikFile, sidikText); }
 
+  // Alias berversi mengikuti berkas final; tidak merender ulang artwork kurasi.
+  for (const g of games.filter(g => g.media)) {
+    const p = mediaPaths(g);
+    for (const [source, target] of [
+      [g.sampul, p.cover], ["/kartu/" + g.slug + ".webp", p.card],
+      ["/" + g.slug + "/ikon-20261022.png", p.icon],
+      ["/" + g.slug + "/bagikan-20261022.jpg", p.share]
+    ]) {
+      const from = rel(source.replace(/^\//,"")), to = rel(target.replace(/^\//,""));
+      if (!fs.existsSync(from)) { stale.push(source + " (sumber media tidak ada)"); continue; }
+      if (fs.existsSync(to) && sha1(fs.readFileSync(from)) === sha1(fs.readFileSync(to))) continue;
+      if (write) { fs.copyFileSync(from, to); console.log("tulis  " + target); }
+      else stale.push(target);
+    }
+  }
+
   if (!fs.existsSync(rel("og.png"))) {
     if (!write) stale.push("og.png");
     else { const b = findBrowser(); if (!b) throw new Error("og.png perlu Microsoft Edge atau Chrome"); makeOg(b); console.log("tulis  og.png"); }
@@ -373,7 +401,7 @@ function run(opts) {
   return { stale, games, K };
 }
 
-module.exports = { run, webpSize, DETAIL, SITE_FOLDERS, CARD_W, CARD_H };
+module.exports = { run, webpSize, mediaPaths, DETAIL, SITE_FOLDERS, CARD_W, CARD_H };
 
 if (require.main === module) {
   try {

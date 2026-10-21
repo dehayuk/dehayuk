@@ -9,6 +9,10 @@ window.drawGameIcon=function(c,slug,color){
  function pawn(x,y,fill){c.save();c.translate(x,y);c.fillStyle='#0003';c.beginPath();c.ellipse(0,68,49,17,0,0,Math.PI*2);c.fill();c.fillStyle=fill;c.strokeStyle='#fff8';c.lineWidth=5;c.beginPath();c.moveTo(-40,48);c.quadraticCurveTo(-24,12,-21,-20);c.lineTo(21,-20);c.quadraticCurveTo(24,12,40,48);c.quadraticCurveTo(0,75,-40,48);c.fill();c.stroke();ball(0,-33,31,fill);c.restore();}
  function board(){round(87,87,338,338,26,'#fff4d2');const colors=['#ff6585','#4ad3a2','#ffd65a','#48bafa'];for(let i=0;i<4;i++){const x=107+i%2*173,y=107+Math.floor(i/2)*173;round(x,y,125,125,19,colors[i]);for(let j=0;j<4;j++)ball(x+35+j%2*54,y+35+Math.floor(j/2)*54,14,'#fff7dd');}}
  switch(slug){
+ case 'balok-jatuh':
+  for(const [x,y,k] of [[0,0,0],[0,1,0],[0,2,0],[0,3,0],[1,2,1],[1,3,1],[2,3,1],[2,2,2],[3,2,2],[3,3,2],[2,1,3],[3,1,3],[4,1,3],[3,0,3],[4,3,4],[4,2,4],[5,2,4]]){
+   const xx=43+x*71,yy=153+y*70,cl=['#38d9ee','#5487ff','#ffe259','#bc83ff','#64e299'][k];round(xx,yy,67,67,9,cl,'#10223d');round(xx+8,yy+7,51,7,3,'#ffffff77',null);
+  }text('BALOK JATUH',256,79,43);break;
  case 'iris-buah':case 'jatuh-buah':
   window.IrisBuah.draw(c,slug==='iris-buah'?2:4,246,275,113,-.18);window.IrisBuah.draw(c,0,345,353,65,.3);window.IrisBuah.draw(c,1,134,350,67,-.25);
   if(slug==='iris-buah'){c.strokeStyle='#d6ffff';c.lineWidth=12;c.lineCap='round';c.beginPath();c.moveTo(110,340);c.bezierCurveTo(210,325,310,170,407,131);c.stroke();}else{c.fillStyle='#ffd24b';c.strokeStyle='#775024';c.lineWidth=5;c.beginPath();c.moveTo(182,155);c.lineTo(166,100);c.lineTo(218,130);c.lineTo(248,77);c.lineTo(282,129);c.lineTo(331,103);c.lineTo(315,155);c.closePath();c.fill();c.stroke();}break;

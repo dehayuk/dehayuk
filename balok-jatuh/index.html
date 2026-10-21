@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<!-- dehayuk:media:start -->
+<meta name="description" content="Geser, putar, lengkapi baris. Nostalgia klasik dengan warna baru!">
+<link rel="canonical" href="https://dehayuk.online/balok-jatuh/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Dehayuk">
+<meta property="og:title" content="Balok Jatuh">
+<meta property="og:description" content="Geser, putar, lengkapi baris. Nostalgia klasik dengan warna baru!">
+<meta property="og:url" content="https://dehayuk.online/balok-jatuh/">
+<meta property="og:image" content="https://dehayuk.online/balok-jatuh/bagikan-20261022.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:alt" content="Balok Jatuh — Dehayuk">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://dehayuk.online/balok-jatuh/bagikan-20261022.jpg">
+<link rel="icon" type="image/png" href="/balok-jatuh/ikon-20261022.png">
+<link rel="apple-touch-icon" href="/balok-jatuh/ikon-20261022.png">
+<!-- dehayuk:media:end -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1b32"><title>Balok Jatuh · Dehayuk</title>
+<link rel="stylesheet" href="/kit/v1/kit.css"><link rel="stylesheet" href="gaya.css"><link rel="stylesheet" href="/kit/v1/menu-game.css">
+</head><body>
+<section id="home" class="screen" aria-label="Balok Jatuh">
+ <header class="topbar"><a href="/" class="home-link" aria-label="Kembali ke Dehayuk">‹</a><span class="brand">Dehayuk · arcade klasik</span><span class="badge" id="progress">Level 1 · 0 hari</span></header>
+ <div class="home-layout">
+  <div class="intro"><div class="eyebrow">Klasik yang bikin balik lagi</div><h1>BALOK<span>JATUH</span></h1><p class="tagline">Tujuh bentuk. Satu papan.<br>Selalu ada tempat untuk satu baris lagi.</p><div id="challengeNote" hidden></div><div class="record">★ Rekor <b id="homeBest">0</b></div><button id="start" data-dh-main>▶ MAIN</button>
+   <nav data-dh-menu aria-label="Menu permainan">
+    <button id="daily" data-dh-action="daily"><span class="dh-menu-icon">▦</span><span class="dh-menu-label">Harian</span></button>
+    <button id="challenge" data-dh-action="challenge"><span class="dh-menu-icon">VS</span><span class="dh-menu-label">Tantang</span></button>
+    <button id="how" data-dh-action="help"><span class="dh-menu-icon">?</span><span class="dh-menu-label">Cara main</span></button>
+    <button id="settings" data-dh-action="settings"><span class="dh-menu-icon">⚙</span><span class="dh-menu-label">Setelan</span></button>
+   </nav><p class="home-foot">10 × 20 · Tanpa power-up · Main dengan caramu</p>
+  </div><div class="home-art"><canvas id="art" width="420" height="480" aria-hidden="true"></canvas></div><canvas id="iconArt" width="512" height="512" aria-hidden="true"></canvas>
+ </div>
+</section>
+<section id="play" class="screen play" aria-label="Permainan Balok Jatuh" hidden>
+ <header class="hud"><div class="hud-title">BALOK JATUH<small id="modeLabel">KLASIK</small></div><span class="badge">★ Rekor <b id="best">0</b></span><button id="pause" class="icon-btn" aria-label="Jeda permainan">Ⅱ</button></header>
+ <div class="arena"><div class="board-box"><canvas id="board" width="400" height="800" tabindex="0" aria-label="Papan 10 kolom 20 baris. Gunakan tombol arah untuk menggerakkan balok."></canvas><div id="toast" aria-hidden="true"></div></div>
+  <aside class="stats" aria-label="Statistik permainan"><div class="stat next-stat"><small>BERIKUTNYA</small><canvas id="next" width="160" height="100" aria-label="Balok berikutnya"></canvas></div><div class="stat"><small>SKOR</small><strong id="score">0</strong></div><div class="stat"><small>LEVEL</small><strong id="level">1</strong></div><div class="stat lines-stat"><small>BARIS</small><strong id="lines">0</strong><div class="meter"><i id="levelMeter" style="width:0%"></i></div></div><p class="keys-note">← → Geser<br>↑ Putar · ↓ Turun<br>Spasi Jatuhkan<br>P / Esc Jeda</p></aside>
+  <div class="controls" aria-label="Kontrol balok"><button data-control="left" aria-label="Geser kiri">◀<small>KIRI</small></button><button data-control="turn" aria-label="Putar searah jarum jam">↻<small>PUTAR</small></button><button data-control="right" aria-label="Geser kanan">▶<small>KANAN</small></button><button data-control="down" aria-label="Turun perlahan">▼<small>TURUN</small></button><button data-control="drop" aria-label="Jatuhkan langsung">⇓<small>JATUHKAN</small></button></div>
+ </div>
+</section>
+<dialog id="paused" aria-labelledby="pauseTitle"><h2 id="pauseTitle">Ambil napas dulu</h2><p>Balok menunggu. Lanjutkan kapan saja.</p><button id="resume" class="primary" autofocus>Lanjut bermain</button><div class="row"><button id="pauseHelp">Cara main</button><button id="pauseSettings">Setelan</button></div><button id="finish">Akhiri & lihat hasil</button></dialog>
+<dialog id="result" aria-labelledby="resultTitle"><div class="eyebrow">PERMAINAN SELESAI</div><h2 id="resultTitle">Satu baris lagi?</h2><div id="resultScore">0</div><p id="resultMeta"></p><div id="resultProgress"><i></i></div><p id="xp"></p><button id="rAgain" class="primary">Main lagi</button><div class="row"><button id="share">Bagikan</button><button id="toHome">Menu</button></div></dialog>
+<dialog id="help" aria-labelledby="helpTitle"><h2 id="helpTitle">Rapi dari bawah</h2><p>Geser dan putar balok untuk mengisi satu baris tanpa celah. Baris penuh hilang, balok di atasnya turun.</p><ul><li>Tujuh bentuk klasik, masing-masing empat kotak. Bentuk berikutnya terlihat di samping papan.</li><li>Balok tidak bisa melewati dinding atau tumpukan. Putaran yang terhalang tidak dijalankan.</li><li>Hapus 1 / 2 / 3 / 4 baris sekaligus: 40 / 100 / 300 / 1.200 poin × level.</li><li>Turun manual: 1 poin per kotak. Jatuh langsung: 2 poin per kotak. Kecepatan naik setiap 10 baris.</li><li>Permainan berakhir saat balok tidak bisa masuk atau terkunci melewati bagian atas papan.</li></ul><p><kbd>← →</kbd> geser · <kbd>↑</kbd> putar · <kbd>↓</kbd> turun<br><kbd>Spasi</kbd> jatuhkan · <kbd>P / Esc</kbd> jeda</p><button id="closeHelp" class="primary">Mengerti</button></dialog>
+<dialog id="dailyDialog" aria-labelledby="dailyTitle"><h2 id="dailyTitle">Balok harian</h2><p id="dailyText"></p><button id="startDaily" class="primary">Mulai harian</button><button id="closeDaily">Kembali</button></dialog>
+<div id="live" role="status" aria-live="polite"></div>
+<script src="/kit/v1/kit.js"></script><script src="mesin.js"></script>
+<script>
+(() => {
+ 'use strict';
+ const K=window.DehayukKit,B=window.Balok,$=id=>document.getElementById(id),slug='balok-jatuh',store=K.store(slug);
+ const query=new URLSearchParams(location.search),cover=query.has('cover'),icon=query.has('icon'),reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ const colors={I:'#38d9ee',J:'#5487ff',L:'#ffac46',O:'#ffe259',S:'#64e299',T:'#bc83ff',Z:'#ff6d9a'};
+ const canvas=$('board'),ctx=canvas.getContext('2d'),next=$('next'),nctx=next.getContext('2d');
+ let game=null,state='home',mode='classic',seed=0,best=Number(store.get('best',0))||0,target=null;
+ let last=0,gravity=0,freeze=0,clock=0,particles=[],flashes=[],toastUntil=0,resultFrom=0,resultStart=0,resultFinal=0,settingsOverlay=null,settingsObserver=null;
+ const held=new Map(),dialogs=['paused','result','help','dailyDialog'];
+ const challenge=K.readChallenge();
+ function closeDialogs(){for(const id of dialogs)if($(id).open)$(id).close();}
+ function sound(kind){
+  if(kind==='clear'){K.audio.chord([523,659,784,1047],{dur:.14,vol:.12,stagger:.045});K.vibrate(30);}
+  else if(kind==='drop'){K.audio.tone({freq:160,slideTo:70,dur:.10,type:'triangle',vol:.15});K.vibrate(12);}
+  else if(kind==='turn')K.audio.tone({freq:520,slideTo:740,dur:.04,vol:.07});
+  else if(kind==='move')K.audio.tone({freq:240,dur:.025,vol:.035,type:'triangle'});
+  else if(kind==='over')K.audio.chord([330,262,196],{dur:.3,vol:.1,stagger:.12});
+ }
+ function music(){K.music.start({step:.21,root:45,chords:[0,5,3,7],scale:[0,2,3,7,10,12,14,15],melody:[2,-1,4,-1,5,4,2,-1,1,-1,2,4,3,-1,1,-1],lead:'triangle'});}
+ function updateHome(){const p=K.progress.get();$('progress').textContent='Lv '+p.level+' · '+p.streak+' hari';$('homeBest').textContent=fmt(best);}
+ function fmt(n){return Math.floor(n).toLocaleString('id-ID');}
+ function hud(){if(!game)return;$('score').textContent=fmt(game.score);$('level').textContent=game.level;$('lines').textContent=game.lines;$('best').textContent=fmt(Math.max(best,game.score));$('levelMeter').style.width=(game.lines%10)*10+'%';next.setAttribute('aria-label','Balok berikutnya: '+game.next);drawNext();}
+ function start(which='classic'){
+  clearHeld();closeDialogs();K.audio.unlock();mode=which;
+  seed=which==='daily'?K.dailySeed(slug):which==='challenge'?challenge.seed:((crypto.getRandomValues(new Uint32Array(1))[0]>>>0)||1);
+  if(which==='daily')store.set('daily',{date:K.dateKey(),started:true,score:null});
+  target=which==='challenge'?challenge.score:null;game=new B.Game(seed);state='playing';gravity=0;freeze=0;last=0;clock=0;particles=[];flashes=[];
+  $('home').hidden=true;$('play').hidden=false;$('modeLabel').textContent=which==='daily'?'HARIAN · '+K.dateKey():target!==null?'TANTANGAN · Target '+fmt(target):'KLASIK';
+  hud();music();canvas.focus({preventScroll:true});announce('Permainan dimulai. Level 1.');
+ }
+ function announce(text){$('live').textContent=text;}
+ function clearHeld(){held.clear();swipe=null;}
+ function pause(){if(state!=='playing')return;state='paused';clearHeld();K.music.stop();$('paused').showModal();$('resume').focus();}
+ function resume(){if(state!=='paused'||document.hidden)return;closeDialogs();state='playing';last=0;music();canvas.focus({preventScroll:true});}
+ function home(){clearHeld();closeDialogs();state='home';K.music.stop();$('home').hidden=false;$('play').hidden=true;updateHome();$('start').focus();}
+ function done(){
+  if(!game||!['playing','paused'].includes(state))return;
+  clearHeld();closeDialogs();state='result';K.music.stop();sound('over');
+  const oldBest=best;best=Math.max(best,game.score);store.set('best',best);
+  if(mode==='daily')store.set('daily',{date:K.dateKey(),started:true,score:game.score});
+  const p=K.progress.record({game:slug,score:game.score,mutu:Math.min(1,game.lines/40)});
+  $('resultTitle').textContent=game.score>oldBest?'Rekor baru!':target!==null?(game.score>target?'Target terlewati!':game.score===target?'Skor seimbang!':'Coba kejar lagi!'):'Satu baris lagi?';
+  $('resultMeta').textContent=game.lines+' baris · Level '+game.level+' · Rekor '+fmt(best);
+  $('resultProgress').firstElementChild.style.width=(best?100*game.score/best:0)+'%';$('xp').textContent='+'+p.gain+' XP · Level Dehayuk '+p.level;
+  resultFrom=0;resultFinal=game.score;resultStart=performance.now();$('resultScore').textContent=reduced.matches?fmt(resultFinal):'0';$('rAgain').textContent=mode==='daily'?'Main klasik':'Main lagi';
+  $('result').showModal();$('rAgain').focus();announce('Selesai. Skor '+game.score+', '+game.lines+' baris.');
+ }
+ function toast(text){$('toast').textContent=text;$('toast').classList.remove('show');void $('toast').offsetWidth;$('toast').classList.add('show');toastUntil=clock+1000;announce(text);}
+ function locked(event){
+  if(!event)return;gravity=0;clearHeld();sound('drop');
+  if(event.rows.length){
+   freeze=reduced.matches?80:260;flashes=event.rows.map(y=>({y,until:clock+freeze}));
+   const words=['','BARIS BERSIH!','DUA SEKALIGUS!','TRIPLE!','EMPAT BARIS!'];toast(words[event.rows.length]+'\n+'+fmt(event.points));sound('clear');
+   if(!reduced.matches)for(const y of event.rows)for(let i=0;i<16;i++)particles.push({x:Math.random()*400,y:y*40+20,vx:(Math.random()-.5)*180,vy:-80-Math.random()*180,life:650,color:colors[B.TYPES[i%7]]});
+  }
+  hud();if(event.over)done();
+ }
+ function act(action){
+  if(state!=='playing'||freeze>0)return;
+  if(action==='left'||action==='right'){if(game.move(action==='left'?-1:1))sound('move');}
+  else if(action==='turn'){if(game.turn())sound('turn');}
+  else if(action==='down'){locked(game.down(true));gravity=0;}
+  else if(action==='drop')locked(game.drop());hud();
+ }
+ function press(key,action){if(state!=='playing'||held.has(key))return;act(action);if(['left','right','down'].includes(action)&&state==='playing')held.set(key,{action,next:clock+(action==='down'?70:170)});}
+ const keyActions={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'turn',ArrowDown:'down',Space:'drop',KeyX:'turn'};
+ document.addEventListener('keydown',e=>{
+  if(e.code==='Escape'||e.code==='KeyP'){
+   if($('help').open||$('dailyDialog').open||settingsOverlay&&!settingsOverlay.hidden)return;
+   if(state==='playing'){e.preventDefault();pause();}else if(state==='paused'){e.preventDefault();resume();}return;
+  }
+  if(state!=='playing'||!keyActions[e.code])return;e.preventDefault();if(!e.repeat)press(e.code,keyActions[e.code]);
+ });
+ document.addEventListener('keyup',e=>held.delete(e.code));
+ for(const button of document.querySelectorAll('[data-control]')){
+  button.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();K.audio.unlock();button.setPointerCapture(e.pointerId);press('p'+e.pointerId,button.dataset.control);});
+  for(const type of ['pointerup','pointercancel','lostpointercapture'])button.addEventListener(type,e=>held.delete('p'+e.pointerId));
+  button.addEventListener('click',e=>{if(e.detail===0)act(button.dataset.control);});
+ }
+ var swipe=null;
+ canvas.addEventListener('pointerdown',e=>{if(state!=='playing'||swipe)return;e.preventDefault();canvas.setPointerCapture(e.pointerId);swipe={id:e.pointerId,x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY,moved:false};});
+ canvas.addEventListener('pointermove',e=>{if(!swipe||swipe.id!==e.pointerId)return;const cell=canvas.getBoundingClientRect().width/10,dx=e.clientX-swipe.x,dy=e.clientY-swipe.y;
+  if(Math.abs(dx)>cell*.7){const count=Math.min(10,Math.floor(Math.abs(dx)/(cell*.7)));for(let i=0;i<count;i++)act(dx<0?'left':'right');swipe.x=e.clientX;swipe.moved=true;}
+  if(dy>cell*.8){act('down');swipe.y=e.clientY;swipe.moved=true;}
+ });
+ canvas.addEventListener('pointerup',e=>{if(!swipe||swipe.id!==e.pointerId)return;if(!swipe.moved&&Math.hypot(e.clientX-swipe.startX,e.clientY-swipe.startY)<12)act('turn');swipe=null;});
+ for(const type of ['pointercancel','lostpointercapture'])canvas.addEventListener(type,()=>{swipe=null;});
+ addEventListener('blur',()=>{swipe=null;clearHeld();pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();last=0;});addEventListener('pagehide',()=>{pause();K.music.stop();});
+ $('start').onclick=()=>start(challenge?'challenge':'classic');$('pause').onclick=pause;$('resume').onclick=resume;$('finish').onclick=()=>{if(state==='paused')done();};
+ $('rAgain').onclick=()=>{if(state==='result')start(mode==='daily'?'classic':mode);};$('toHome').onclick=()=>{if(state==='result')home();};
+ $('share').onclick=()=>{if(state==='result')K.share({title:'Balok Jatuh · Dehayuk',text:'Skorku '+fmt(game.score)+'! Bisakah kamu melewatinya dengan urutan balok yang sama?',url:K.challengeLink(slug,seed,game.score)});};
+ $('challenge').onclick=()=>{closeDialogs();$('helpTitle').textContent='Tantang dengan urutan yang sama';$('help').showModal();$('closeHelp').focus();announce('Main dahulu, lalu Bagikan dari layar hasil untuk mengirim tantangan.');$('help').querySelector('p').textContent='Main satu permainan, lalu pilih Bagikan pada layar hasil. Temanmu menerima urutan balok yang sama dan target skormu. Tanpa akun.';};
+ const helpP=$('help').querySelector('p').textContent;
+ function openHelp(){closeDialogs();$('helpTitle').textContent='Rapi dari bawah';$('help').querySelector('p').textContent=helpP;$('help').showModal();$('closeHelp').focus();}
+ $('how').onclick=openHelp;$('pauseHelp').onclick=openHelp;$('closeHelp').onclick=()=>{if(state==='paused'){$('help').close();$('paused').showModal();$('resume').focus();}else $('help').close();};
+ function settings(){
+  if(state==='playing')pause();if($('paused').open)$('paused').close();
+  DehayukKit.ui.openSettings();settingsOverlay=document.querySelector('.dk-overlay:not([hidden])');
+  if(settingsObserver)settingsObserver.disconnect();if(settingsOverlay){settingsObserver=new MutationObserver(()=>{if(settingsOverlay.hidden){settingsObserver.disconnect();if(state==='paused'){$('paused').showModal();$('resume').focus();}else $('settings').focus();}});settingsObserver.observe(settingsOverlay,{attributes:true,attributeFilter:['hidden']});}
+ }
+ $('settings').onclick=settings;$('pauseSettings').onclick=settings;
+ $('daily').onclick=()=>{const saved=store.get('daily',null),used=saved&&saved.date===K.dateKey();$('dailyText').textContent=used?'Percobaan hari ini sudah dimulai'+(saved.score!==null?' · Skor '+fmt(saved.score):'')+'. Kamu tetap bisa bermain mode klasik.':'Urutan balok yang sama untuk semua pemain hari ini. Satu percobaan resmi per perangkat, mulai dari level 1.';$('startDaily').hidden=!!used;$('dailyDialog').showModal();(used?$('closeDaily'):$('startDaily')).focus();};
+ $('startDaily').onclick=()=>{const saved=store.get('daily',null);if(!(saved&&saved.date===K.dateKey()))start('daily');};$('closeDaily').onclick=()=>$('dailyDialog').close();
+ for(const id of dialogs)$(id).addEventListener('cancel',e=>{e.preventDefault();if(id==='paused')resume();else if(id==='help')$('closeHelp').click();else if(id==='dailyDialog')$(id).close();});
+ function block(c,x,y,size,type,alpha=1){
+  const color=colors[type];c.save();c.globalAlpha=alpha;const p=Math.max(1,size*.045),r=size*.13;c.translate(x,y);
+  const grad=c.createLinearGradient(0,0,size,size);grad.addColorStop(0,'#ffffff');grad.addColorStop(.09,color);grad.addColorStop(1,color);
+  c.fillStyle='#030d20';c.beginPath();c.roundRect(p,p,size-p*2,size-p*2,r);c.fill();c.fillStyle=grad;c.beginPath();c.roundRect(p+1,p+1,size-p*2-2,size-p*2-3,r);c.fill();
+  c.fillStyle='#fff7';c.beginPath();c.roundRect(size*.14,size*.12,size*.71,size*.12,r/2);c.fill();c.fillStyle='#0003';c.fillRect(size*.15,size*.83,size*.7,size*.07);
+  c.strokeStyle='#fff2';c.lineWidth=Math.max(1,size*.035);c.strokeRect(size*.2,size*.31,size*.6,size*.43);c.restore();
+ }
+ function drawNext(){nctx.clearRect(0,0,160,100);if(!game)return;const m=B.matrix(game.next),s=25,occupied=[];m.forEach((r,y)=>r.forEach((v,x)=>{if(v)occupied.push([x,y]);}));const maxX=Math.max(...occupied.map(p=>p[0])),minX=Math.min(...occupied.map(p=>p[0])),maxY=Math.max(...occupied.map(p=>p[1])),minY=Math.min(...occupied.map(p=>p[1]));for(const[x,y]of occupied)block(nctx,80-(maxX-minX+1)*s/2+(x-minX)*s,50-(maxY-minY+1)*s/2+(y-minY)*s,s,game.next);}
+ function render(dt){
+  if(!game)return;ctx.clearRect(0,0,400,800);ctx.fillStyle='#09162b';ctx.fillRect(0,0,400,800);
+  ctx.strokeStyle='#7190b011';ctx.lineWidth=1;ctx.beginPath();for(let x=1;x<10;x++){ctx.moveTo(x*40,0);ctx.lineTo(x*40,800);}for(let y=1;y<20;y++){ctx.moveTo(0,y*40);ctx.lineTo(400,y*40);}ctx.stroke();
+  for(let y=0;y<20;y++)for(let x=0;x<10;x++)if(game.board[y][x])block(ctx,x*40,y*40,40,game.board[y][x]);
+  if(!game.over){const ghost=game.ghost();ctx.strokeStyle=colors[game.active.type]+'70';ctx.lineWidth=2;for(const[x,y]of B.cells(ghost))if(y>=0){ctx.beginPath();ctx.roundRect(x*40+5,y*40+5,30,30,5);ctx.stroke();}
+   for(const[x,y]of B.cells(game.active))if(y>=0)block(ctx,x*40,y*40,40,game.active.type);
+  }
+  for(const f of flashes)if(clock<f.until){ctx.fillStyle='#ecfffa';ctx.globalAlpha=Math.max(0,(f.until-clock)/260);ctx.fillRect(0,f.y*40,400,40);}ctx.globalAlpha=1;
+  if(state==='playing'){for(const p of particles){p.life-=dt;p.x+=p.vx*dt/1000;p.y+=p.vy*dt/1000;p.vy+=400*dt/1000;}particles=particles.filter(p=>p.life>0);}
+  for(const p of particles){ctx.globalAlpha=Math.max(0,p.life/650);ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,5,5);}ctx.globalAlpha=1;
+ }
+ function drawArt(){
+  const art=$('art'),c=art.getContext('2d');c.clearRect(0,0,420,480);c.fillStyle='#233b5b';c.beginPath();c.roundRect(30,5,360,465,24);c.fill();c.strokeStyle='#8bb9d966';c.lineWidth=3;c.stroke();c.fillStyle='#0a192e';c.beginPath();c.roundRect(43,18,334,438,14);c.fill();
+  const s=32.3,ox=48,oy=30;const rows=['..........','....TTT...','.....T....','..........','..........','..........','..........','..........','..........','I..S......','ISSST..L..','IJSTTTLLLO','IJJZZTOOOO'];
+  rows.forEach((r,y)=>[...r].forEach((t,x)=>{if(colors[t])block(c,ox+x*s,oy+y*s,s,t);}));
+  const glow=c.createLinearGradient(0,0,360,0);glow.addColorStop(0,'#5eead400');glow.addColorStop(.5,'#5eead466');glow.addColorStop(1,'#5eead400');c.fillStyle=glow;c.fillRect(48,oy+12*s,323,s);
+  for(let i=0;i<7;i++){const x=20+(i*61)%390,y=20+(i*97)%420;c.fillStyle='#bce8ff';c.beginPath();c.arc(x,y,i%2?2:3,0,7);c.fill();}
+  const ic=$('iconArt').getContext('2d'),g=ic.createLinearGradient(0,0,512,512);g.addColorStop(0,'#21466a');g.addColorStop(1,'#10243c');ic.fillStyle=g;ic.fillRect(0,0,512,512);
+  const tiles=[[0,2,'I'],[0,3,'I'],[0,4,'I'],[0,5,'I'],[1,4,'J'],[1,5,'J'],[2,5,'J'],[2,4,'O'],[3,4,'O'],[3,5,'O'],[2,3,'T'],[3,3,'T'],[4,3,'T'],[3,2,'T'],[4,5,'S'],[4,4,'S'],[5,4,'S']];for(const[x,y,t]of tiles)block(ic,44+x*71,48+y*62,68,t);ic.fillStyle='#ffe582';ic.font='900 38px Trebuchet MS';ic.textAlign='center';ic.fillText('BALOK JATUH',256,66);
+ }
+ function tick(now){
+  const dt=last?Math.min(100,now-last):0;last=now;
+  if(state==='playing'){
+   clock+=dt;if(toastUntil&&clock>toastUntil){$('toast').classList.remove('show');toastUntil=0;}
+   if(freeze>0){freeze=Math.max(0,freeze-dt);}else{
+    for(const[key,h]of held){if(clock>=h.next){act(h.action);h.next=clock+(h.action==='down'?45:65);if(!held.has(key))break;}}
+    gravity+=dt;if(gravity>=game.interval){gravity-=game.interval;locked(game.down());}
+   }
+   render(dt);
+  }
+  if(state==='result'&&!reduced.matches)$('resultScore').textContent=fmt(resultFrom+(resultFinal-resultFrom)*Math.min(1,(now-resultStart)/550));
+  requestAnimationFrame(tick);
+ }
+ function fitBoard(){const r=canvas.parentElement.getBoundingClientRect(),arena=document.querySelector('.arena'),gap=parseFloat(getComputedStyle(arena).columnGap)||0,side=document.querySelector('.stats').getBoundingClientRect().width;arena.style.maxWidth=Math.min(650,r.height/2+side+gap)+'px';const w=Math.floor(Math.min(r.width,r.height/2));if(w>0){canvas.style.width=w+'px';canvas.style.height=w*2+'px';}}
+ new ResizeObserver(fitBoard).observe(canvas.parentElement);
+ if(['localhost','127.0.0.1'].includes(location.hostname)&&query.has('uji-ui'))window.BalokUji={get game(){return game;},get state(){return state;},get held(){return held.size;},get seed(){return seed;}};
+ drawArt();updateHome();
+ if(challenge){$('challengeNote').hidden=false;$('challengeNote').textContent='Tantangan masuk · Target '+fmt(challenge.score);$('start').textContent='▶ TERIMA TANTANGAN';}
+ if(cover||icon){document.body.classList.add(cover?'cover':'icon');}
+ else if(query.has('uji')){const pre=document.createElement('pre');pre.id='uji';try{const tests=B.selfTest();pre.textContent='UJI LULUS\n'+tests.join('\n');}catch(e){pre.textContent='UJI GAGAL\n'+e.message;}document.body.append(pre);}
+ else requestAnimationFrame(tick);
+})();
+</script></body></html>
