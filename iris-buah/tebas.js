@@ -1,0 +1,13 @@
+(function(root){'use strict';
+const LIFE=165;
+function ribbon(points,now){const live=points.filter(p=>now-p.t<LIFE);if(live.length<2)return [];const spine=[];for(let i=0;i<live.length-1;i++){const a=live[Math.max(0,i-1)],b=live[i],c=live[i+1],d=live[Math.min(live.length-1,i+2)],steps=Math.min(80,Math.max(1,Math.ceil(Math.hypot(c.x-b.x,c.y-b.y)/2)));for(let j=0;j<steps;j++){const u=j/steps,u2=u*u,u3=u2*u,axis=k=>.5*((2*b[k])+(-a[k]+c[k])*u+(2*a[k]-5*b[k]+4*c[k]-d[k])*u2+(-a[k]+3*b[k]-3*c[k]+d[k])*u3);spine.push({x:axis('x'),y:axis('y'),t:b.t+(c.t-b.t)*u,w:b.w+(c.w-b.w)*u});}}spine.push(live[live.length-1]);let distance=0;spine.forEach((p,i)=>{if(i)distance+=Math.hypot(p.x-spine[i-1].x,p.y-spine[i-1].y);p.distance=distance;});if(distance<2)return [];return spine.map((p,i)=>{const before=spine[Math.max(0,i-1)],after=spine[Math.min(spine.length-1,i+1)],dx=after.x-before.x,dy=after.y-before.y,l=Math.hypot(dx,dy)||1,u=p.distance/distance,tip=Math.min(1,p.distance/20,(distance-p.distance)/12),fade=Math.max(0,1-(now-p.t)/LIFE),width=p.w*Math.sqrt(Math.max(0,tip))*fade**1.35;return {x:p.x,y:p.y,nx:-dy/l,ny:dx/l,width};});}
+class Blade{
+constructor(){this.strokes=[];this.active=null;}
+begin(x,y,now){this.active=[{x,y,t:now,w:2}];this.strokes.push(this.active);this.strokes=this.strokes.slice(-5);}
+move(x,y,now){if(!this.active)return;const last=this.active[this.active.length-1],dist=Math.hypot(x-last.x,y-last.y);if(dist<1)return;const speed=dist/Math.max(4,now-last.t),w=Math.min(4.5,1.6+speed*.5);this.active.push({x,y,t:now,w});this.active=this.active.slice(-65);this.strokes[this.strokes.length-1]=this.active;}
+end(){this.active=null;}
+clear(){this.active=null;this.strokes=[];}
+draw(c,now){this.strokes=this.strokes.filter(s=>s.length&&now-s[s.length-1].t<LIFE);for(const s of this.strokes){const edge=ribbon(s,now);if(edge.length<2)continue;c.save();c.globalCompositeOperation='source-over';const a=edge[0],b=edge[edge.length-1],g=c.createLinearGradient(a.x,a.y,b.x,b.y);g.addColorStop(0,'rgba(110,212,255,0)');g.addColorStop(.4,'rgba(116,230,255,.35)');g.addColorStop(1,'rgba(210,255,249,.85)');const fill=(scale,color)=>{c.beginPath();edge.forEach((p,i)=>{const x=p.x+p.nx*p.width*scale,y=p.y+p.ny*p.width*scale;i?c.lineTo(x,y):c.moveTo(x,y);});for(let i=edge.length-1;i>=0;i--){const p=edge[i];c.lineTo(p.x-p.nx*p.width*scale,p.y-p.ny*p.width*scale);}c.closePath();c.fillStyle=color;c.fill();};c.shadowColor='#9bf3ff';c.shadowBlur=4;fill(1,g);c.shadowBlur=0;fill(.62,'rgba(255,255,250,.94)');c.restore();}}
+}
+const api={Blade,ribbon,LIFE};if(typeof module==='object')module.exports=api;else root.IrisTebas=api;
+})(typeof window==='object'?window:globalThis);
