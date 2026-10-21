@@ -9,7 +9,7 @@ const FACE_ROTATIONS={1:'rotateX(90deg)',2:'rotateY(90deg)',3:'',4:'rotateY(180d
 const asC=q=>new CQ(q.x,q.y,q.z,q.w);
 function makeManager(board){
  const layer=document.createElement('div');layer.id='diceLayer';layer.setAttribute('aria-hidden','true');board.appendChild(layer);
- const scene=new T.Scene(),camera=new T.OrthographicCamera(-5,5,5,-5,.1,60);camera.position.set(0,15,6.5);camera.lookAt(0,0,0);camera.updateMatrixWorld();
+ const scene=new T.Scene(),camera=new T.OrthographicCamera(-3,3,3,-3,.1,60);camera.position.set(0,15,6.5);camera.lookAt(0,0,0);camera.updateMatrixWorld();
  const actors=[],states=[0,1].map(i=>({p:new T.Vector3(i? .55:-.55,.42,0),q:new T.Quaternion().setFromEuler(new T.Euler(0,i?.48:-.32,0)),local:new T.Quaternion(),value:1}));
  let renderer,cssDice,kind='webgl',width=360,frame=0,running=false,paused=false,elapsed=0,previous=0,plan=null,playToken=0,contactIndex=0,runCount=0;
  let queue=[],queued=false;const meshQuaternion=new T.Quaternion(),tempQ=new T.Quaternion(),v=new T.Vector3();
@@ -32,7 +32,7 @@ function makeManager(board){
    meshQuaternion.copy(s.q).multiply(s.local);
    if(renderer){meshes[i].position.copy(s.p);meshes[i].quaternion.copy(meshQuaternion);}
    else{
-    v.copy(s.p).project(camera);const x=(v.x*.5+.5)*width,y=(-v.y*.5+.5)*width,edge=width/10*.84;
+    v.copy(s.p).project(camera);const x=(v.x*.5+.5)*width,y=(-v.y*.5+.5)*width,edge=width/6*.84;
     const view=camera.quaternion.clone().invert().multiply(meshQuaternion),matrix=new T.Matrix4().makeRotationFromQuaternion(view),a=matrix.elements;for(const k of [1,4,6,9])a[k]*=-1;
     const root=cssDice[i];root.style.setProperty('--die-edge',edge+'px');root.style.left=x+'px';root.style.top=y+'px';root.querySelector('.physical-cube').style.transform='matrix3d('+a.join(',')+')';
     v.set(s.p.x,0,s.p.z).project(camera);const shadow=root.querySelector('.physical-shadow');shadow.style.transform='translate('+((v.x*.5+.5)*width-x)+'px,'+((-v.y*.5+.5)*width-y+edge*.45)+'px) scale('+(1+s.p.y*.12)+')';shadow.style.opacity=Math.max(.06,.23-s.p.y*.045);
@@ -40,7 +40,7 @@ function makeManager(board){
   });
   renderer?.render(scene,camera);
  }
- function resize(){width=board.clientWidth||360;renderer?.setSize(width,width);draw();}
+ function resize(){width=layer.clientWidth||200;renderer?.setSize(width,width);draw();}
  function valueText(){actors.forEach((a,i)=>{a.hud.dataset.result=states[i].value;a.hud.setAttribute('aria-label','Dadu '+(i+1)+': '+states[i].value);});}
  function restore(){states.forEach((_,i)=>resetState(i));valueText();draw();}
  function finish(ok){cancelAnimationFrame(frame);frame=0;running=false;paused=false;previous=0;layer.dataset.active='false';actors.forEach(a=>{a.stage.hidden=true;a.hud.classList.remove('rolling');});const pending=queue;queue=[];pending.forEach(r=>r.resolve(ok));valueText();}

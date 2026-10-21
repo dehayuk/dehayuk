@@ -1,4 +1,4 @@
-/* A uniform 11 x 11 board, following the supplied visual reference. */
+/* Forty property cards on an 11 x 11 grid; wide edge cards keep city names readable. */
 #play{max-width:1280px;margin:auto;padding:0 12px 12px;font-family:Arial,sans-serif}
 #play>.top{height:46px;padding:3px 0;max-width:930px;margin:auto}
 #play .game-heading{font-size:16px;letter-spacing:.055em;color:#f2c660}
@@ -152,3 +152,51 @@
 .physical-face{position:absolute;inset:0;display:block;border:1px solid #ded8cb;border-radius:8%;background:linear-gradient(140deg,#fffefa,#ece7dd);backface-visibility:hidden;box-shadow:inset 0 0 5px #fff8}
 .physical-face i{position:absolute;width:17%;height:17%;border-radius:50%;background:#20232b;box-shadow:inset 1px 1px 1px #000a,0 1px 0 #fff;transform:translate(-50%,-50%)}
 .physical-shadow{display:block;position:absolute;inset:20% -10%;border-radius:50%;background:#20312c;filter:blur(3px);z-index:-1}
+
+/* Readable property cards. The wide edge gives city names room at phone sizes. */
+#play #board,.zoom-surface{--rim:21.875%;--lane:6.25cqw;--depth:21.875cqw}
+#play #board{border:3px solid #d5a52e;background:#184e50;box-shadow:0 4px 0 #0b3039,0 9px 24px #001d2c3b}
+#play #tiles,.zoom-tiles{grid-template-columns:3.5fr repeat(9,minmax(0,1fr)) 3.5fr;grid-template-rows:3.5fr repeat(9,minmax(0,1fr)) 3.5fr}
+#play .tile,.zoom-tiles .tile{position:relative;padding:0;background:#fffefa;color:#102e3c;border:0;box-shadow:inset 0 0 0 1px #c3d4d0;overflow:hidden}
+#play .tile-label,.zoom-tiles .tile-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:100%;height:100%;padding:5px 7px}
+#play .tile-name,#play .tile-name.long-name,.zoom-tiles .tile-name,.zoom-tiles .tile-name.long-name{display:block;width:100%;max-width:none;overflow:visible;white-space:nowrap;word-break:normal;overflow-wrap:normal;font:700 clamp(11px,2.4cqw,14px)/1.2 Arial,sans-serif;letter-spacing:0;color:#102e3c;text-shadow:none}
+#play .tile-price,.zoom-tiles .tile-price{font:700 clamp(10px,1.9cqw,12px)/1.1 Arial,sans-serif;color:#355c67}
+#play .tile:not(.corner) .tile-icon,.zoom-tiles .tile:not(.corner) .tile-icon{display:none}
+#play .tile.corner .tile-name,.zoom-tiles .tile.corner .tile-name{font-size:clamp(11px,2.3cqw,14px);white-space:normal;line-height:1.2}
+#play .tile.corner .tile-icon,.zoom-tiles .tile.corner .tile-icon{display:block;width:clamp(20px,5cqw,30px);height:clamp(20px,5cqw,30px);color:#176876}
+#play .tile.corner .tile-label,.zoom-tiles .tile.corner .tile-label{gap:5px;padding:6px}
+#play .tile.corner,.zoom-tiles .tile.corner{background:#fff7dc}
+#play .tile.side-top .tile-label,#play .tile.side-bottom .tile-label,.zoom-tiles .tile.side-top .tile-label,.zoom-tiles .tile.side-bottom .tile-label{inset:auto;left:50%;top:50%;width:var(--depth);height:var(--lane);padding:0 7px;transform:translate(-50%,-50%) rotate(90deg)}
+#play .tile.side-bottom .tile-label,.zoom-tiles .tile.side-bottom .tile-label{transform:translate(-50%,-50%) rotate(-90deg)}
+#play .tile .band,.zoom-tiles .tile .band{inset:0 0 auto;width:100%;height:6px;background:var(--tile-color);box-shadow:inset 0 1px 0 #fff4}
+#play .tile.side-top .band,.zoom-tiles .tile.side-top .band{inset:auto 0 0}
+#play .tile.side-left .band,.zoom-tiles .tile.side-left .band{inset:0 0 0 auto;width:6px;height:100%}
+#play .tile.side-right .band,.zoom-tiles .tile.side-right .band{inset:0 auto 0 0;width:6px;height:100%}
+#play .tile.current-tile,.zoom-tiles .tile.current-tile{background:#fff0a6;box-shadow:inset 0 0 0 2px #d58c13;outline:0}
+#play .travel-cell{background:#ffe68c;outline:0;box-shadow:inset 0 0 0 2px #b37a13}
+#play .tile:focus-visible,.zoom-tiles .tile:focus-visible{outline:3px solid #116ca5;outline-offset:-3px}
+#play .tile-owner,.zoom-tiles .tile-owner{left:auto;right:2px;top:2px;bottom:auto;z-index:2;width:clamp(11px,2.3cqw,15px);height:clamp(11px,2.3cqw,15px);font:700 clamp(8px,1.8cqw,11px)/1 Arial,sans-serif;box-shadow:0 0 0 1px white}
+#play .houses,.zoom-tiles .houses{top:1px;left:1px;right:1px;bottom:auto;gap:1px}
+#play .tile.side-top .houses,.zoom-tiles .tile.side-top .houses{top:auto;bottom:1px}
+#play .tile.side-left .houses,.zoom-tiles .tile.side-left .houses{top:1px;bottom:1px;left:auto;right:1px;flex-direction:column;align-items:center}
+#play .tile.side-right .houses,.zoom-tiles .tile.side-right .houses{top:1px;bottom:1px;right:auto;left:1px;flex-direction:column;align-items:center}
+#play #boardCenter,.zoom-center{inset:var(--rim);background:#d9f2e6;background-image:radial-gradient(ellipse at 48% 30%,#effcf5,#c5e8d7);border:1px solid #a7c8ba}
+#play #mapArt{display:block!important;position:absolute;inset:13% 5% 20%;opacity:.13;pointer-events:none}#play #mapArt svg{width:100%;height:100%}
+#play .center-brand{position:absolute;inset:7% 4% auto;color:#174d50;font-size:clamp(10px,2.6cqw,17px);letter-spacing:.03em;line-height:1.25}
+#play #boardLocation{position:absolute;inset:auto 5% 16%;font-size:clamp(10px,2.1cqw,13px);font-weight:700;line-height:1.4;color:#245b5d}
+#play #diceSum,#play #board.is-offer #diceSum{color:#17484a;max-width:90%;font-size:clamp(11px,2.2cqw,14px)}
+#diceLayer{inset:var(--rim);z-index:3}
+#play .token{width:clamp(11px,3cqw,20px);height:clamp(16px,4.5cqw,30px);transform:translate(-50%,-50%)}
+#play .token.stacked{width:clamp(10px,2.8cqw,18px);height:clamp(15px,4cqw,26px)}
+#play .token.crowded{width:clamp(9px,2.2cqw,14px);height:clamp(12px,3cqw,18px)}
+.zoom-surface{width:960px;height:960px}.zoom-tiles .tile-name,.zoom-tiles .tile-name.long-name,.zoom-tiles .tile.corner .tile-name{font-size:17px}.zoom-tiles .tile-price{font-size:14px}.zoom-center b{color:#174d50}
+@container (max-width:440px){.tile:not(.corner) .tile-price{display:none!important}.tile-label{gap:0!important;padding-left:3px!important;padding-right:3px!important}.tile.corner .tile-label{padding:4px!important;gap:3px!important}}
+
+#play .tile.side-left .tile-label,.zoom-tiles .tile.side-left .tile-label{padding:0 6px 0 0}#play .tile.side-right .tile-label,.zoom-tiles .tile.side-right .tile-label{padding:0 0 0 6px}
+#play .tile.side-top .tile-label,#play .tile.side-bottom .tile-label,.zoom-tiles .tile.side-top .tile-label,.zoom-tiles .tile.side-bottom .tile-label{padding-left:3px;padding-right:3px}
+@container (max-width:440px){.tile.side-left .tile-label{padding-right:6px!important;padding-left:0!important}.tile.side-right .tile-label{padding-left:6px!important;padding-right:0!important}}
+@container (max-width:330px){.tile .tile-name,.tile .tile-name.long-name{font-size:10px!important}}
+@container (max-width:290px){.tile .tile-name,.tile .tile-name.long-name{font-size:9px!important}}
+
+/* Keep the current destination readable when a pawn stands over its card. */
+@media(max-width:959px) and (orientation:portrait),(max-width:599px){#play #decision:has(.turn-prompt){display:block;margin:0 0 7px}#play .turn-prompt h2{font-size:16px;line-height:1.2;margin:0}}

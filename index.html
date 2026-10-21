@@ -840,7 +840,7 @@
     stage.innerHTML = "";
     if (wide.matches) {
       var f = document.createElement("iframe");
-      f.src = gameUrl(g)+(g.slug === "nusa-properti" ? "?v=physics-20261020-r2" : ""); f.title = g.nama + " (Esc untuk keluar layar penuh)"; f.allow = "fullscreen; autoplay"; f.setAttribute("allowfullscreen", "");
+      f.src = gameUrl(g)+(g.slug === "nusa-properti" ? "?v=legible-20261021" : ""); f.title = g.nama + " (Esc untuk keluar layar penuh)"; f.allow = "fullscreen; autoplay"; f.setAttribute("allowfullscreen", "");
       // Tombol kembali milik game disembunyikan; bilah portal sudah ada di atasnya.
       f.addEventListener("load", function () {
         try { var st = f.contentDocument.createElement("style"); st.textContent = 'a[href="/"]{visibility:hidden!important}'; f.contentDocument.head.appendChild(st); } catch (e) {}

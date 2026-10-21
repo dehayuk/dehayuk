@@ -31,6 +31,15 @@ for(const [w,h] of [[360,640],[596,852],[390,844],[768,1024],[1280,800],[1017,68
  await page.screenshot({path:dir+'/final-board-'+w+'.png',fullPage:true});
 }
 console.log('PASS all 27 layout cases: roll, buy, jail; no board/decision overlap, actions and toolbar reachable');
+
+// Measure painted text, including rotated labels; checking scrollWidth alone misses clipping.
+for(const [width,height] of [[360,640],[390,844],[596,852],[1280,800],[910,480]]){
+ await page.setViewportSize({width,height});await page.evaluate(()=>TycoonUji.setState(NusantaraTycoon.create({mode:'local'})));
+ const text=await page.evaluate(()=>{const b=document.getElementById('board').getBoundingClientRect();const labels=[...document.querySelectorAll('#tiles .tile-name')];return {board:b.width,minFont:Math.min(...labels.map(e=>parseFloat(getComputedStyle(e).fontSize))),clipped:labels.filter(e=>{const range=document.createRange();range.selectNodeContents(e);const r=range.getBoundingClientRect(),t=e.closest('.tile').getBoundingClientRect();return r.left<t.left-1||r.right>t.right+1||r.top<t.top-1||r.bottom>t.bottom+1;}).map(e=>e.textContent),fullCities:[...document.querySelectorAll('#tiles .type-p')].every(e=>e.querySelector('.tile-name').textContent===NusantaraTycoon.tiles[+e.dataset.index].name)};});
+ assert(text.minFont>=10&&text.fullCities&&!text.clipped.length,JSON.stringify({width,height,text}));
+}
+console.log('PASS full city names, measured text containment and readable sizes at five viewports');
+
 // Zoom pauses play and never changes the game. Tiles still open correct details.
 await page.setViewportSize({width:390,height:844});await page.evaluate(()=>TycoonUji.setState(NusantaraTycoon.create({mode:'local'})));
 const beforeZoom=await page.evaluate(()=>TycoonUji.getState());await page.click('#zoomBoard');assert(await page.evaluate(()=>TycoonUji.isPaused()));assert.equal(await page.locator('[data-zoom-index]').count(),40);await page.click('[data-zoom-index="15"]');assert.match(await page.locator('#tileInfoTitle').textContent(),/Stasiun/);await page.click('#tileInfoClose');assert(!await page.evaluate(()=>TycoonUji.isPaused()));assert.deepEqual(await page.evaluate(()=>TycoonUji.getState()),beforeZoom);console.log('PASS board zoom + tile details + unchanged state');
@@ -48,10 +57,10 @@ for(const [width,height] of [[360,640],[596,852],[600,820],[1017,680]]){
  assert(!await page.locator('#tileInfo').isVisible());
 }
 console.log('PASS compact Malang details; throwing closes details and reveals the board at mobile/tablet/desktop sizes');
-// The new board has forty equal squares; tokens must remain inside their cell.
+// The forty edge cards have room for full city names; tokens remain inside their cell.
 for(const w of [360,600,1280]){await page.setViewportSize({width:w,height:820});for(let i=0;i<40;i++){
  await page.evaluate(i=>{const s=NusantaraTycoon.create({mode:'local'});s.players[0].pos=i;s.players[1].pos=(i+1)%40;TycoonUji.setState(s);},i);
- const fit=await page.evaluate(i=>{const cell=document.querySelector('[data-index="'+i+'"]').getBoundingClientRect(),first=document.querySelector('[data-index="0"]').getBoundingClientRect(),p=document.getElementById('token0').getBoundingClientRect();return {square:Math.abs(cell.width-cell.height)<1,equal:Math.abs(cell.width-first.width)<1,inside:p.left>=cell.left-1&&p.right<=cell.right+1&&p.top>=cell.top-1&&p.bottom<=cell.bottom+1};},i);assert(fit.square&&fit.equal&&fit.inside,JSON.stringify({w,i,fit}));
+ const fit=await page.evaluate(i=>{const cell=document.querySelector('[data-index="'+i+'"]').getBoundingClientRect(),first=document.querySelector('[data-index="0"]').getBoundingClientRect(),p=document.getElementById('token0').getBoundingClientRect();return {inside:p.left>=cell.left-1&&p.right<=cell.right+1&&p.top>=cell.top-1&&p.bottom<=cell.bottom+1};},i);assert(fit.inside,JSON.stringify({w,i,fit}));
  }
 }
 await page.setViewportSize({width:600,height:820});await page.evaluate(()=>{const s=NusantaraTycoon.create({mode:'local'});s.dice=[3,5];s.rolls=1;TycoonUji.setState(s);});await page.addStyleTag({content:'#uji{display:none}'});
@@ -67,12 +76,12 @@ await page.goto(url.replace('/nusa-properti/','/')+'#main/blok-ledak');await pag
 for(const [width,height] of [[360,640],[596,852]]){await page.setViewportSize({width,height});await page.goto(url+'?uji=ui');const setupFit=await page.locator('#home').evaluate(el=>[...el.querySelectorAll('button')].filter(b=>b.offsetWidth&&b.offsetHeight).every(b=>{const r=b.getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight+1&&r.left>=0&&r.right<=innerWidth+1;}));assert(setupFit,'Hidden setup button at '+width);}
 // A six-step throw to Malang: readable dice first, then one visible step at a time.
 await page.setViewportSize({width:596,height:852});await page.goto(url+'?uji=ui');
-assert.equal(await page.locator('body').getAttribute('data-release'),'physics-20261020');
-assert(await page.locator('script[src*="tycoon.js"]').evaluate(e=>e.src.includes('v=physics-20261020')));
+assert.equal(await page.locator('body').getAttribute('data-release'),'legible-20261021');
+assert(await page.locator('script[src*="tycoon.js"]').evaluate(e=>e.src.includes('v=legible-20261021')));
 await page.evaluate(()=>{for(let seed=1;seed<1000;seed++){const s=NusantaraTycoon.create({mode:'local',seed});s.players[0].pos=13;const out=NusantaraTycoon.roll(s);if(out.dice[0]+out.dice[1]===6){window.expectedMotion=out;TycoonUji.setState(s);break;}}window.motion=[];window.motionStart=performance.now();function sample(){const pawn=document.getElementById('token0'),d=TycoonDadu.inspect();motion.push({t:performance.now()-motionStart,left:pawn.style.left,top:pawn.style.top,throwing:d.active,pose:d.dice[0].quaternion.join(',')});if(performance.now()-motionStart<12000)requestAnimationFrame(sample);}sample();});
 await page.click('[data-action="roll"]');await page.waitForTimeout(500);await page.screenshot({path:dir+'/readable-throw.png'});await page.waitForFunction(()=>!TycoonUji.getBusy());
 const timing=await page.evaluate(()=>{let last=motion[0].left+','+motion[0].top,steps=[];for(const f of motion){const pos=f.left+','+f.top;if(pos!==last){steps.push(f.t);last=pos;}}return {steps,poses:new Set(motion.filter(f=>f.throwing).map(f=>f.pose)).size};});assert(timing.poses>20);assert.equal(timing.steps.length,6);assert(timing.steps[0]>2400);assert(timing.steps.every((t,i)=>!i||t-timing.steps[i-1]>=280));assert.deepEqual(await page.evaluate(()=>TycoonUji.getState()),await page.evaluate(()=>expectedMotion));
-const dock=await page.evaluate(()=>{const f=document.querySelector('.toolbar').getBoundingClientRect(),a=document.getElementById('actions').getBoundingClientRect(),sum=document.getElementById('diceSum').getBoundingClientRect(),who=document.getElementById('boardLocation').getBoundingClientRect();return {inside:f.bottom<=innerHeight+1&&a.bottom<=f.top,separated:sum.bottom<=who.top+1,pawn:document.getElementById('token0').getBoundingClientRect().height>=18};});assert(dock.inside&&dock.separated&&dock.pawn,JSON.stringify(dock));await page.screenshot({path:dir+'/complete-turn-malang.png'});console.log('PASS visible setup/play controls at 596x852; dice before six paced steps; larger numbered pawn');
+const dock=await page.evaluate(()=>{const f=document.querySelector('.toolbar').getBoundingClientRect(),a=document.getElementById('actions').getBoundingClientRect(),sum=document.getElementById('diceSum').getBoundingClientRect(),who=document.getElementById('boardLocation').getBoundingClientRect();return {inside:f.bottom<=innerHeight+1&&a.bottom<=f.top,separated:who.bottom<=sum.top+1,pawn:document.getElementById('token0').getBoundingClientRect().height>=18};});assert(dock.inside&&dock.separated&&dock.pawn,JSON.stringify(dock));await page.screenshot({path:dir+'/complete-turn-malang.png'});console.log('PASS visible setup/play controls at 596x852; dice before six paced steps; larger numbered pawn');
 // A browser without WebGL uses CSS 3D with the same physical trajectory.
 await page.goto(url+'?uji=ui&dice=css');await page.evaluate(()=>TycoonUji.setState(NusantaraTycoon.create({mode:'local'})));assert.equal(await page.locator('#diceLayer').getAttribute('data-renderer'),'css');await page.click('[data-action="roll"]');await page.waitForFunction(()=>!TycoonUji.getBusy());assert(await page.evaluate(()=>TycoonDadu.inspect().collisions>0));assert.deepEqual(await page.evaluate(()=>TycoonDadu.inspect().dice.map(d=>d.top.value)),await page.evaluate(()=>TycoonUji.getState().dice));console.log('PASS no-WebGL fallback retains physics and correct results');
 // Settings that block browser storage cannot stop gameplay.
