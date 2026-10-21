@@ -1,39 +1,32 @@
-# Sampul kurasi Dehayuk — 22 Oktober 2026
+# Sampul dan ikon seluruh game Dehayuk — 22 Oktober 2026
 
-Lingkup: sampul Bola Pantul dan Sortir Cairan, integrasi media portal, serta penerbitan Balok Jatuh. Mekanik game lama dan aplikasi Android dipertahankan.
+Seluruh **16 game** memakai sampul dan ikon ilustrasi 3D berwarna hidup dalam satu keluarga desain. Bola Pantul dan Sortir Cairan menjadi acuan yang dipertahankan. Empat belas game lainnya memperoleh 14 artwork lebar dan 14 komposisi persegi baru, dibuat dengan built-in **image_gen**.
 
-## Aset final
+## Berkas final
 
-Untuk masing-masing `bola-pantul/` dan `sortir-cairan/`:
+Tiap game memiliki sampul 1024×640, thumbnail WebP 480×300, ikon PNG 512×512, dan gambar bagikan 1200×630. Sampul maksimal 200 KB dan thumbnail maksimal 40 KB. Ikon tambahan memakai PNG dengan palet adaptif agar ukuran unduhan lebih kecil.
 
-- `sampul-neon-20261022.jpg`: 1024×640, kartu lebar. Sekitar 178 KB / 155 KB.
-- `ikon-neon-20261022.png`: 512×512, komposisi persegi tersendiri.
-- `bagikan-neon-20261022.jpg`: 1200×630, pratinjau tautan.
-- `kartu/<slug>-neon-20261022.webp`: thumbnail 480×300.
+`katalog.js` menunjuk edisi artwork melalui `media`: `n1` untuk 14 game tambahan, `neon-20261022` untuk dua game acuan. `scripts/buat-situs.js` menghasilkan nama berkas berversi berikut beserta metadata:
 
-Alamat standar `sampul.jpg`, ikon dan gambar bagikan lama tetap tersedia. Artwork sebelumnya tersimpan dalam riwayat Git sebelum perubahan ini. Sampul game lain dipertahankan.
+- `<slug>/sampul-<media>.jpg`
+- `kartu/<slug>-<media>.webp`
+- `<slug>/ikon-<media>.png`
+- `<slug>/bagikan-<media>.jpg`
 
-## Arah ilustrasi dan alat
+Alamat standar sebelumnya tetap tersedia. Riwayat Git menyimpan artwork versi lama. Gambar sumber resolusi penuh tersimpan di ruang kerja `velgo-folder/.semua-sampul/source/`; tidak diunduh pemain. Prompt produksi lengkap tersedia di [scripts/sampul-prompts.json](scripts/sampul-prompts.json).
 
-Empat artwork final dibuat memakai **built-in image_gen**, kemudian diekspor ke ukuran web dengan Canvas. Sumber resolusi penuh disimpan di ruang kerja `velgo-folder/.sampul-premium/source/`, tidak dimuat pemain.
+## Konsistensi dan perawatan
 
-Prompt set yang digunakan:
+Judul memakai huruf besar berdimensi dengan kontras kuat. Bahan, warna, tokoh, dan objek utama mengikuti mekanik masing-masing game: buah terbelah untuk Iris Buah, jajanan pasar untuk Jajan Manis, kue lapis untuk Tumpuk Lapis, papan dan kerang untuk Congklak, dan seterusnya. Ikon persegi memiliki komposisi sendiri, sehingga judul dan objek penting tidak dipotong dari sampul lebar.
 
-1. **Bola Pantul lebar:** ilustrasi game 3D glossy, judul tepat “BOLA PANTUL”, palet biru elektrik/ungu/magenta/emas, bola keemasan besar, lintasan yang memantul ke dinding, balok berangka dan motif buah, pecahan kecil. Mekanik yang ditampilkan adalah menghancurkan balok dengan pantulan; tanpa platform atau flipper.
-2. **Sortir Cairan lebar:** ilustrasi puzzle 3D, judul tepat “SORTIR CAIRAN”, botol kaca transparan simetris, lapisan cyan/magenta/kuning/hijau yang terpisah jelas, satu botol miring menuangkan cyan ke lapisan cyan penerima, latar laboratorium fantasi biru.
-3. **Bola Pantul persegi:** komposisi ulang artwork lebar menjadi 1:1, judul lengkap di atas, bola utuh dan tiga balok berangka di bawah, identitas warna/material dipertahankan.
-4. **Sortir Cairan persegi:** komposisi ulang 1:1, judul lengkap di atas, tiga botol berdiri dan satu botol menuang, latar disederhanakan agar terbaca saat kecil.
+Portal mempertahankan tata letak, navigasi, pencarian, favorit, dan perilaku klik. Halaman game hanya diperbarui pada metadata gambar/ikon. Gameplay, skor, simpanan, kit bersama, `www/`, dan Android dipertahankan.
 
-## Perawatan
+Untuk pembaruan artwork berikutnya gunakan edisi `media` baru, lalu jalankan `npm run situs` dan `npm run cek`. `scripts/buat-media-game.cjs` melewati artwork kurasi agar tidak menggantinya dengan screenshot. Build Android tidak diperlukan untuk penerbitan web ini.
 
-`katalog.js` menggunakan `media: "neon-20261022"` pada dua game tersebut. `scripts/buat-situs.js` menghasilkan alias berversi beserta metadata. Portal memakai alamat tersebut agar cache lama tidak tertukar. Untuk pembaruan artwork berikutnya, gunakan nama edisi baru.
+## Pemeriksaan rilis
 
-`scripts/buat-media-game.cjs` melewati artwork kurasi saat merender ulang media game lain. Jalankan `npm run situs` dan `npm run cek` setelah mengganti sumber final. Tidak perlu menjalankan build Android.
-
-## Validasi
-
-- Gerbang mutu: 16 game lolos; peringatan lama tetap tercatat di keluaran pemeriksaan.
-- Media: 32 halaman, gambar bagikan 1200×630 dan ikon 512×512.
-- Sampul: empat ukuran layar, pencarian, daftar permainan, pembukaan game, dan cache lama.
-- Balok Jatuh: 134 uji bawaan, 5.018 pemeriksaan mesin dan 19 skenario antarmuka pada enam ukuran layar.
-- Keutuhan gameplay lama diperiksa terpisah dari metadata halaman; Android, `www/` dan kit bersama tidak diubah.
+- `npm run cek`: kelengkapan seluruh katalog, ukuran berkas, dan hasil generator.
+- `node scripts/uji-media-game.cjs`: metadata 32 halaman, 16 gambar bagikan, 16 ikon, serta portal responsif.
+- `node scripts/uji-sampul-premium.cjs`: seluruh 16 sampul dan ikon, empat ukuran layar, pencarian, favorit, daftar permainan, halaman game, cache lama, dan halaman offline.
+- Perbandingan sumber memastikan isi game lama dan berkas di luar lingkup tidak berubah.
+- Setelah penayangan, periksa kembali domain publik dan kesamaan berkas dengan rilis yang diuji.
