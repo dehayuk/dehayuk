@@ -120,7 +120,7 @@
 
   /* Sampul */
   .thumb { position: relative; overflow: hidden; border-radius: 16px; isolation: isolate; background: var(--c, var(--panel-2)); box-shadow: 0 8px 18px rgba(0,0,0,.35); transition: transform .18s ease, box-shadow .18s ease; }
-  .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
   .thumb.wide { aspect-ratio: 16 / 10; }
   .thumb.sq { aspect-ratio: 1; }
   /* Label BARU di kiri bawah, agar logo di bagian atas sampul tidak tertutup. */
@@ -582,18 +582,19 @@
     side: "300px"
   };
   window.dkImgErr = function (img) { img.onerror = null; img.removeAttribute("srcset"); img.src = img.getAttribute("data-full"); };
-  function imgTag(g, sizes, eager) {
+  function imgTag(g, sizes, eager, square) {
+    if (square) return '<img src="' + esc(g.ikon || '/' + g.slug + '/ikon-20261022.png') + '" width="512" height="512" alt="" loading="lazy" decoding="async">';
     var small = "/kartu/" + g.slug + ".webp";
     return '<img src="' + small + '" srcset="' + small + " 480w, " + g.sampul + ' 1024w" sizes="' + (SIZES[sizes] || SIZES.grid) + '" width="480" height="300" alt="" data-full="' + g.sampul + '" ' +
       (eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"') + ' decoding="async" onerror="dkImgErr(this)">';
   }
   function iconTile(g, cls) {
     return '<span class="ltile ' + (cls || "") + '" style="--c:' + g.warna + '" aria-hidden="true">' +
-      (g.ikon ? '<img src="' + esc(g.ikon) + '" alt="" width="256" height="256">' : esc(g.nama.charAt(0).toUpperCase())) + "</span>";
+      '<img src="' + esc(g.ikon || '/' + g.slug + '/ikon-20261022.png') + '" alt="" width="256" height="256"></span>';
   }
   function thumb(g, shape, opts) {
     opts = opts || {};
-    return '<div class="thumb ' + shape + '" style="--c:' + g.warna + '">' + imgTag(g, opts.sizes, opts.eager) +
+    return '<div class="thumb ' + shape + '" style="--c:' + g.warna + '">' + imgTag(g, opts.sizes, opts.eager, shape === "sq") +
       (BADGE_ON && opts.badge && isNew(g) ? '<span class="badge">Baru</span>' : "") +
       (opts.info ? '<span class="hover-info"><b>' + esc(g.nama) + "</b><span>" + esc(genreOf(g)) + "</span></span>" : "") + "</div>";
   }

@@ -48,6 +48,7 @@ function fullGames(K) {
     const f = rel("info/" + g.slug + ".json");
     if (fs.existsSync(f)) { try { info = JSON.parse(fs.readFileSync(f, "utf8")); } catch (e) { info = { _rusak: e.message }; } }
     const full = Object.assign({}, info, g);
+    full.ikon = "/" + g.slug + "/ikon-20261022.png";
     return full;
   });
 }
@@ -85,6 +86,29 @@ function infoText(g) {
   return JSON.stringify(o, null, 2) + "\n";
 }
 
+
+// Game pages and static information pages share the same dedicated social image.
+function gameMedia(html,g) {
+  const end=Math.min(...['<style','<script','</head>','<body'].map(x=>html.toLowerCase().indexOf(x)).filter(x=>x>=0));
+  let head=html.slice(0,end),body=html.slice(end);
+  head=head.replace(/<!-- dehayuk:media:start -->[\s\S]*?<!-- dehayuk:media:end -->\s*/g,'');
+  head=head.replace(/<meta\b[^>]*>/gi,tag=>/\b(?:property|name)=["'](?:og:[^"']+|twitter:[^"']+|description)["']/i.test(tag)?'':tag);
+  head=head.replace(/<link\b[^>]*>/gi,tag=>/\brel=["'](?:canonical|icon|shortcut icon|apple-touch-icon)["']/i.test(tag)?'':tag);
+  const image=SITE+'/'+g.slug+'/bagikan-20261022.jpg',url=SITE+'/'+g.slug+'/';
+  const tags='<!-- dehayuk:media:start -->\n'+[
+   '<meta name="description" content="'+esc(g.ajakan)+'">',
+   '<link rel="canonical" href="'+url+'">',
+   '<meta property="og:type" content="website">','<meta property="og:site_name" content="Dehayuk">',
+   '<meta property="og:title" content="'+esc(g.nama)+'">','<meta property="og:description" content="'+esc(g.ajakan)+'">',
+   '<meta property="og:url" content="'+url+'">','<meta property="og:image" content="'+image+'">',
+   '<meta property="og:image:width" content="1200">','<meta property="og:image:height" content="630">',
+   '<meta property="og:image:type" content="image/jpeg">','<meta property="og:image:alt" content="'+esc(g.nama)+' — Dehayuk">',
+   '<meta name="twitter:card" content="summary_large_image">','<meta name="twitter:image" content="'+image+'">',
+   '<link rel="icon" type="image/png" href="'+g.ikon+'">','<link rel="apple-touch-icon" href="'+g.ikon+'">'
+  ].join('\n')+'\n<!-- dehayuk:media:end -->\n';
+  head=head.replace(/(<meta charset="utf-8">)\s*/i,'$1\n'+tags);return head+body;
+}
+
 // ---------- halaman info statis ----------
 const BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 function tanggal(s) { const d = new Date(s + "T00:00:00Z"); return isNaN(d) ? "" : d.getUTCDate() + " " + BULAN[d.getUTCMonth()] + " " + d.getUTCFullYear(); }
@@ -93,7 +117,7 @@ function seoPage(g, K, all) {
   const catById = Object.fromEntries(K.kategori.map((c) => [c.id, c]));
   const cats = g.kategori.map((id) => catById[id]).filter(Boolean);
   const url = SITE + "/main/" + g.slug + "/";
-  const img = SITE + g.sampul;
+  const img = SITE + "/" + g.slug + "/bagikan-20261022.jpg";
   const title = g.nama + " — main gratis di Dehayuk";
   const desc = g.ajakan + " " + (g.genre ? g.genre + ", " : "") + "langsung main di browser HP atau komputer, tanpa unduh.";
   const ld = {
@@ -130,9 +154,14 @@ function seoPage(g, K, all) {
 <meta property="og:description" content="${esc(g.ajakan)}">
 <meta property="og:url" content="${url}">
 <meta property="og:image" content="${img}">
-<meta property="og:image:width" content="1024">
-<meta property="og:image:height" content="640">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${esc(g.nama)} — Dehayuk">
+<meta property="og:image:type" content="image/jpeg">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="${img}">
+<link rel="icon" type="image/png" href="${g.ikon}">
+<link rel="apple-touch-icon" href="${g.ikon}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&family=Nunito:wght@700;800&display=swap">
@@ -279,7 +308,11 @@ function run(opts) {
   const light = { kategori: K.kategori, game: K.game.map((g) => { const o = {}; for (const k in g) if (!DETAIL.includes(k)) o[k] = g[k]; return o; }) };
   text.set("katalog.js", katalogText(light));
   for (const g of games) text.set("info/" + g.slug + ".json", infoText(g));
-  for (const g of games) text.set("main/" + g.slug + "/index.html", seoPage(g, K, games));
+  for (const g of games) {
+    text.set("main/" + g.slug + "/index.html", seoPage(g, K, games));
+    const p = g.slug + "/index.html";
+    text.set(p, gameMedia(nl(fs.readFileSync(rel(p), "utf8")), g));
+  }
   text.set("sitemap.xml", sitemapText(games));
   text.set("robots.txt", ROBOTS);
   text.set("_redirects", redirectsText(draftFolders(slugs)));

@@ -99,8 +99,8 @@ for (const g of games) {
   if (!Array.isArray(g.caraMain) || !g.caraMain.length) fail(tag + ": caraMain kosong");
   if (g.skor !== undefined && (typeof g.skor !== "number" || !isFinite(g.skor))) fail(tag + ": skor harus angka");
   if (g.tag !== undefined && (!Array.isArray(g.tag) || g.tag.some((t) => typeof t !== "string"))) fail(tag + ": tag harus daftar kata");
-  if (g.ikon === undefined) noIcon++;
-  else if (!fs.existsSync(path.join(root, String(g.ikon).replace(/^\//, "")))) fail(tag + ": berkas ikon " + g.ikon + " tidak ada");
+  if (g.ikon === undefined && !fs.existsSync(path.join(root, g.slug, "ikon-20261022.png"))) noIcon++;
+  else if (g.ikon !== undefined && !fs.existsSync(path.join(root, String(g.ikon).replace(/^\//, "")))) fail(tag + ": berkas ikon " + g.ikon + " tidak ada");
 
   // Sampul: berkas ada, rasio 16:10, cukup tajam, tidak terlalu besar.
   const coverFile = path.join(root, (g.sampul || "").replace(/^\//, ""));
@@ -187,7 +187,7 @@ for (const g of games) {
   }
 
   // Tag pratinjau di kepala halaman game (untuk link tantangan di WhatsApp). Halaman info /main/<slug>/ sudah lengkap.
-  const seo = [/<meta name="description"/, /<link rel="canonical"/, /<meta property="og:title"/, /<meta property="og:image" content="https:\/\/dehayuk\.netlify\.app\//, /<meta property="og:url"/];
+  const seo = [/<meta name="description"/, /<link rel="canonical"/, /<meta property="og:title"/, /<meta property="og:image" content="https:\/\/dehayuk\.online\//, /<meta property="og:url"/];
   if (seo.some((re) => !re.test(html))) seoMissing++;
 
   if (fails === before) ok(tag + " (" + Math.round(kb) + " KB, kit " + [...vers].join("+") + ")");
