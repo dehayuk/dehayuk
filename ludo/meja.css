@@ -76,6 +76,19 @@ body:not(.cover) #home .welcome{height:calc(100% - 52px);padding:12px 24px 24px}
 #play header>div{display:flex;align-items:center;justify-content:center;gap:14px;min-width:0}#play header .table-brand{flex:none}#matchType{max-width:150px;line-height:1.3;text-align:left}
 @media(max-width:699px) and (orientation:portrait){#play header>div{gap:9px}#play header .table-brand{grid-template-columns:repeat(4,18px);gap:2px}.table-brand b{height:20px;font-size:20px}.table-brand em{font-size:6px;letter-spacing:1.5px;padding-top:2px}#matchType{max-width:104px;font-size:8px!important}}
 .pawn svg image,.choice-pawn svg image,.seat-pawns svg image{filter:brightness(1.15) saturate(1.06)}
+.pawn.finished{pointer-events:none;filter:drop-shadow(0 1px 1px #30241299) drop-shadow(0 0 2px #ffe68b);transition:none}
+.pawn.captured{transition:none;z-index:18;pointer-events:none}
+#impactLayer{position:absolute;inset:0;pointer-events:none;z-index:35;overflow:visible}
+.capture-burst{position:absolute;width:0;height:0}
+.impact-ring,.impact-core,.impact-spark{position:absolute;display:block;pointer-events:none}
+.impact-ring{width:72px;height:72px;border:4px solid #ffe27b;border-radius:50%;box-shadow:0 0 12px #ffcf72,inset 0 0 10px var(--impact-color);transform:translate(-50%,-50%)}
+.impact-core{width:78px;height:78px;border-radius:50%;background:radial-gradient(circle,#fff6c6 0,#ffe27bbb 25%,transparent 68%);transform:translate(-50%,-50%)}
+.impact-spark{width:4px;height:13px;left:-2px;top:-6px;border-radius:50%;background:linear-gradient(#fff9d8,#ffc953);box-shadow:0 0 4px var(--impact-color);transform-origin:50% 50%}
+.capture-banner{position:absolute;left:50%;top:40%;width:max-content;max-width:94%;text-align:center;transform:translate(-50%,-50%);padding:8px 18px;border:1px solid #ffe5a577;border-radius:15px;background:linear-gradient(110deg,#07162de6,#1a3559eb,#07162de6);box-shadow:0 4px 18px #02081a66;color:#ffe59a}
+.capture-banner b{display:block;font:1000 clamp(20px,4vw,30px)/1.1 'Baloo 2',Nunito;letter-spacing:.5px;text-shadow:0 2px #6c3d16}
+.capture-banner small{display:block;margin-top:4px;font:800 11px/1.3 Nunito;color:#f2f5ff}
+.capture-burst.calm .impact-core,.capture-burst.calm .impact-spark{display:none}
+.capture-burst.calm .impact-ring{width:42px;height:42px;border-width:2px;box-shadow:none}
 /* A sibling projection layer avoids Canvas being buried in the board's 3D context. */
 .board-side{--rim:9px;--tilt:20deg}
 #diceThrow{inset:var(--rim);transform:rotateX(var(--tilt));z-index:25}

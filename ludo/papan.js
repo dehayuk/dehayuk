@@ -1,5 +1,7 @@
 (function(){'use strict';
 const colors=[['#ff435c','#b81032','Merah'],['#21d58c','#00724e','Hijau'],['#22b9ff','#0755be','Biru'],['#ffce25','#ba7000','Kuning']];let drawing=0;
+const PARK=[[[200,190],[224,190],[248,190],[224,206]],[[190,202],[190,224],[190,248],[206,224]],[[200,260],[224,260],[248,260],[224,244]],[[260,202],[260,224],[260,248],[244,224]]];
+function finishCoord(p,id){return PARK[p][id].map(v=>v/30-.5);}
 const star='M0-9 2.8-3.1 9.3-2.7 4.5 1.7 5.8 8.2 0 4.8-5.8 8.2-4.5 1.7-9.3-2.7-2.8-3.1Z',arrow='M-7-3H1V-7L8 0 1 7V3H-7Z';
 function board(prefix='main'){
  const E=LudoMesin,key='ludo-'+String(prefix).replace(/[^a-zA-Z0-9_-]/g,'')+'-'+(++drawing),u=id=>'url(#'+key+'-'+id+')';
@@ -20,7 +22,8 @@ function board(prefix='main'){
  E.TRACK.forEach(([r,c],i)=>{const p=E.START.indexOf(i),cx=c*30+15,cy=r*30+14;s+=tile(r,c,p);if(p>=0)s+='<path d="'+arrow+'" transform="translate('+cx+' '+cy+') rotate('+(p*90)+')" fill="#fff8d5" stroke="'+colors[p][1]+'" stroke-width=".8"/>';else if(E.SAFE.has(i))s+='<circle cx="'+cx+'" cy="'+cy+'" r="11" fill="#ddede9" stroke="#bdcfcb" stroke-width=".7"/><path d="'+star+'" transform="translate('+cx+' '+cy+') scale(.82)" fill="#397679" stroke="#fff" stroke-width=".6"/>';});
  E.LANES.forEach((lane,p)=>lane.slice(0,5).forEach(([r,c])=>{s+=tile(r,c,p)+'<path d="M-3-5 2 0-3 5" transform="translate('+(c*30+15)+' '+(r*30+14)+') rotate('+(p*90)+')" stroke="'+(p===3?'#805000':'#fff5cd')+'" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>';}));
  ['180,180 225,225 180,270','180,180 270,180 225,225','270,180 270,270 225,225','180,270 225,225 270,270'].forEach((points,p)=>s+='<polygon points="'+points+'" fill="'+u('base'+p)+'" stroke="#fff0b5" stroke-width="1.3"/>');
- return s+'<circle cx="225" cy="228" r="19" fill="#1c2435" opacity=".3"/><circle cx="225" cy="225" r="18" fill="'+u('gold')+'" stroke="#fff5b5" stroke-width="1.5"/><circle cx="225" cy="225" r="13" fill="none" stroke="#a36a12"/><path d="'+star+'" transform="translate(225 225)" fill="#a46913" stroke="#fff2a8" stroke-width=".7"/></svg>';
+ for(let p=0;p<4;p++)for(const[y,x]of PARK[p])s+='<ellipse cx="'+x+'" cy="'+y+'" rx="6.5" ry="4.5" fill="#fff6ce" fill-opacity=".15" stroke="#fff0bc" stroke-opacity=".45" stroke-width=".7"/>';
+ return s+'<circle cx="225" cy="228" r="12" fill="#1c2435" opacity=".3"/><circle cx="225" cy="225" r="11" fill="'+u('gold')+'" stroke="#fff5b5" stroke-width="1.5"/><circle cx="225" cy="225" r="8" fill="none" stroke="#a36a12"/><path d="'+star+'" transform="translate(225 225) scale(.65)" fill="#a46913" stroke="#fff2a8" stroke-width=".7"/></svg>';
 }
 function pawn(p,id){
  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 60" aria-hidden="true"><image href="/ludo/pion-'+p+'-scene.webp" x="3" y="0" width="38" height="58" preserveAspectRatio="xMidYMax meet"/><circle cx="22" cy="52" r="5" fill="'+colors[p][1]+'" stroke="#fff1b2" stroke-width=".7"/><text x="22" y="55" text-anchor="middle" font-family="Nunito,Arial,sans-serif" font-weight="900" font-size="8.3" fill="#fff8df">'+(id+1)+'</text></svg>';
@@ -29,5 +32,5 @@ function avatar(p,robot){
  const c=colors[p][0];return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="avatar-'+p+'-'+(++drawing)+'" x2="0" y2="1"><stop stop-color="#42617e"/><stop offset="1" stop-color="#102139"/></linearGradient></defs><rect width="64" height="64" fill="'+c+'"/>'+ (robot?'<path d="M12 58q2-15 20-15t20 15" fill="#e6eced"/><rect x="12" y="15" width="40" height="31" rx="12" fill="#dbe8eb" stroke="#fff2b7" stroke-width="2"/><path d="M32 14V7" stroke="#fff0b3" stroke-width="3"/><circle cx="32" cy="7" r="4" fill="#ffe177"/><rect x="17" y="22" width="30" height="17" rx="7" fill="#133449"/><circle cx="25" cy="30" r="3" fill="#73f3e3"/><circle cx="39" cy="30" r="3" fill="#73f3e3"/><path d="M26 42h12" stroke="#7d9caa" stroke-width="2"/>':'<path d="M6 64q1-20 26-20t26 20" fill="#193e67"/><ellipse cx="32" cy="26" rx="18" ry="22" fill="#432b29"/><ellipse cx="32" cy="30" rx="15" ry="17" fill="#f1b988"/><path d="M17 25q3-19 23-14l8 15q-18-2-21-9-2 7-10 8" fill="#352a2b"/><circle cx="26" cy="30" r="1.8" fill="#302b31"/><circle cx="38" cy="30" r="1.8" fill="#302b31"/><path d="M27 38q5 5 10 0" fill="none" stroke="#9e523f" stroke-width="1.8" stroke-linecap="round"/><path d="M24 49l8 9 8-9" fill="#fff4d8"/>')+'</svg>';
 }
 function dice(n){const ps={1:[[50,50]],2:[[27,27],[73,73]],3:[[27,27],[50,50],[73,73]],4:[[27,27],[73,27],[27,73],[73,73]],5:[[27,27],[73,27],[50,50],[27,73],[73,73]],6:[[27,24],[73,24],[27,50],[73,50],[27,76],[73,76]]};return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true">'+(ps[n]||ps[1]).map(([x,y])=>'<circle cx="'+x+'" cy="'+y+'" r="8.1" fill="#132f49"/>').join('')+'</svg>';}
-window.LudoPapan={colors,board,pawn,dice,avatar};
+window.LudoPapan={colors,board,pawn,dice,avatar,finishCoord};
 })();
