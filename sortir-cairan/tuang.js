@@ -7,7 +7,7 @@
   'use strict';
   // Inner glass outline in the same 100 x 220 coordinates as bottleSVG.
   // Liquid bands are cut along WORLD gravity, then clipped by the curved SVG glass.
-  const VESSEL=[[39,12],[39,40],[36,47],[27,56],[24,63],[24,183],[26,191],[33,198],[42,200],[58,200],[67,198],[74,191],[76,183],[76,63],[73,56],[64,47],[61,40],[61,12]];
+  const VESSEL=[[37,12],[37,38],[33,48],[20,56],[16,64],[16,183],[18,192],[28,200],[72,200],[82,192],[84,183],[84,64],[80,56],[67,48],[63,38],[63,12]];
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   function area(poly){let sum=0;for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length];sum+=a[0]*b[1]-b[0]*a[1];}return Math.abs(sum)/2;}
   function clip(poly,s,c,height,below){
@@ -48,7 +48,7 @@
   }
   function footprint(width,height,angle){
     const s=Math.sin(angle*Math.PI/180),c=Math.cos(angle*Math.PI/180);
-    const points=[[18,6],[82,6],[82,205],[18,205]].map(p=>{const x=(p[0]-50)*width/100,y=(p[1]-10)*height/220;return [x*c-y*s,x*s+y*c];});
+    const points=[[12,6],[88,6],[88,205],[12,205]].map(p=>{const x=(p[0]-50)*width/100,y=(p[1]-10)*height/220;return [x*c-y*s,x*s+y*c];});
     return {left:Math.min(...points.map(p=>p[0])),right:Math.max(...points.map(p=>p[0])),top:Math.min(...points.map(p=>p[1])),bottom:Math.max(...points.map(p=>p[1]))};
   }
   function plan(source,target,viewport){
