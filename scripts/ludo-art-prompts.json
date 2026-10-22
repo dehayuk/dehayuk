@@ -1,0 +1,13 @@
+{
+  "tool": "built-in image_gen.imagegen",
+  "use": "Production artwork integrated in the interactive Ludo table, not a gameplay mockup",
+  "background": {
+    "file": "ludo/meja-nusantara-scene.webp",
+    "prompt": "Use case: stylized-concept. Create a production background illustration asset for a premium Indonesian Ludo browser game, landscape 3:2. A luxurious midnight navy lacquer gaming table, subtle rich dark blue batik floral engravings, sweeping fine inlaid gold curves around the edges, warm sculpted brass lantern details in the upper far corners, lush tropical Indonesian palm leaves and a few frangipani flowers at bottom far corners. Golden shafts of light, carefully painted polished materials, high-end 3D casual board game art, highly crafted, vibrant yet dark and legible. Camera nearly overhead with a gentle perspective. COMPOSITION: large entire central 75 percent region remains very dark navy, quiet and empty, to place an actual interactive Ludo board and UI over it. All rich details concentrated at outer corners and perimeter. NO board, NO squares, NO pawns, NO dice, NO circular pedestal, NO interface, NO text, NO logos. An environment asset, not a mockup or screenshot. Edge to edge polished art."
+  },
+  "pawns": {
+    "files": ["ludo/pion-0-scene.webp", "ludo/pion-1-scene.webp", "ludo/pion-2-scene.webp", "ludo/pion-3-scene.webp"],
+    "transparent_background": true,
+    "prompt": "Use case: stylized-concept. Production game sprite atlas on a genuinely transparent background. Exactly FOUR separate beautifully rendered classic Ludo playing pawns, arranged in a clean 2 by 2 grid with ample equal transparent margins; each whole pawn centered within its own quadrant, not touching any other. Top left ruby red; top right emerald green; bottom left sapphire blue; bottom right golden yellow. All four are IDENTICAL in geometry, camera, size and lighting, differing only in material color. Classic round spherical head on an elegant tapered turned body and a round stepped disk base. Smooth polished glossy translucent lacquer, saturated jewel colors, bright broad white softbox reflections from upper left, subtle golden rim light, beautiful physically plausible shading and form, luxury 3D mobile board game quality. Front three-quarter view with camera looking down approximately 25 degrees so top of round base is visible, upright pieces. Each pawn is about twice as tall as it is wide. Minimal very soft contact shadow under base, no floor or background, no platform except the pawn own small base, no labels, no numbers, no decorations, no text, no dice, no board. Full bodies, uncropped. Exactly 4 pawns."
+  }
+}
