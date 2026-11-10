@@ -3,9 +3,9 @@
 # https://github.com/dehayuk/dehayuk/releases/latest/download/dehayuk.apk
 name: Build APK
 
+# PWA adalah jalur instalasi utama. APK lama tetap bisa dibuat saat benar-benar
+# dibutuhkan, tetapi tidak lagi menghabiskan proses GitHub pada setiap rilis web.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
