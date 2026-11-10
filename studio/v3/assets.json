@@ -1,0 +1,490 @@
+{
+  "fruit": [
+    {
+      "name": "fruit-0",
+      "x": 148.8780487804878,
+      "y": 154.78048780487805,
+      "r": 92.2439024390244,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-ba5f94c3-fa0a-40ce-9de1-789bb9d8b963.png"
+    },
+    {
+      "name": "fruit-1",
+      "x": 127.28445747800588,
+      "y": 122.98240469208211,
+      "r": 119.13782991202346,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-ba5f94c3-fa0a-40ce-9de1-789bb9d8b963.png"
+    },
+    {
+      "name": "fruit-2",
+      "x": 127.60000000000001,
+      "y": 131.60000000000002,
+      "r": 115.2,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-ba5f94c3-fa0a-40ce-9de1-789bb9d8b963.png"
+    },
+    {
+      "name": "fruit-3",
+      "x": 127.55483870967743,
+      "y": 136.65806451612903,
+      "r": 110.19354838709677,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-ba5f94c3-fa0a-40ce-9de1-789bb9d8b963.png"
+    },
+    {
+      "name": "fruit-4",
+      "x": 130.1875,
+      "y": 137.35795454545456,
+      "r": 109.86931818181819,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-ba5f94c3-fa0a-40ce-9de1-789bb9d8b963.png"
+    },
+    {
+      "name": "fruit-5",
+      "x": 125.5193370165746,
+      "y": 141.48066298342542,
+      "r": 105.8232044198895,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-ba5f94c3-fa0a-40ce-9de1-789bb9d8b963.png"
+    },
+    {
+      "name": "fruit-6",
+      "x": 127.67226890756302,
+      "y": 140.64425770308122,
+      "r": 106.6218487394958,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-ba5f94c3-fa0a-40ce-9de1-789bb9d8b963.png"
+    },
+    {
+      "name": "fruit-7",
+      "x": 126.01139601139602,
+      "y": 143.29344729344731,
+      "r": 103.92592592592594,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-ba5f94c3-fa0a-40ce-9de1-789bb9d8b963.png"
+    },
+    {
+      "name": "fruit-8",
+      "x": 127.25382262996942,
+      "y": 128,
+      "r": 119.01529051987768,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-ba5f94c3-fa0a-40ce-9de1-789bb9d8b963.png"
+    },
+    {
+      "name": "fruit-9",
+      "x": 127.41993957703927,
+      "y": 129.8429003021148,
+      "r": 117.2084592145015,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-ba5f94c3-fa0a-40ce-9de1-789bb9d8b963.png"
+    },
+    {
+      "name": "fruit-10",
+      "x": 128.69914040114614,
+      "y": 122.61031518624642,
+      "r": 120.60171919770774,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-ba5f94c3-fa0a-40ce-9de1-789bb9d8b963.png"
+    }
+  ],
+  "warung": [
+    {
+      "name": "warung-nasi",
+      "x": 128,
+      "y": 109.58064516129032,
+      "r": 119.04838709677419,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-mi",
+      "x": 128.96442687747037,
+      "y": 101.8498023715415,
+      "r": 120.07114624505928,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-sayur",
+      "x": 127.5234375,
+      "y": 98.1953125,
+      "r": 121.5234375,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-telur",
+      "x": 127.5040650406504,
+      "y": 81.2520325203252,
+      "r": 118.52845528455283,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-ayam",
+      "x": 128,
+      "y": 93.328125,
+      "r": 120.09375,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-tahu",
+      "x": 127.51394422310757,
+      "y": 94.41035856573706,
+      "r": 118.59760956175299,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-gurih",
+      "x": 127.45045045045046,
+      "y": 111.67567567567568,
+      "r": 118.15315315315317,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-manis",
+      "x": 128.46456692913387,
+      "y": 150.57480314960628,
+      "r": 95.58267716535433,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-pedas",
+      "x": 127.5234375,
+      "y": 120.9921875,
+      "r": 121.5234375,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-wok",
+      "x": 127.5234375,
+      "y": 124.6640625,
+      "r": 121.5234375,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-dish-0",
+      "x": 127.5234375,
+      "y": 124.6640625,
+      "r": 121.5234375,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-dish-1",
+      "x": 127.5234375,
+      "y": 106.4453125,
+      "r": 121.5234375,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-dish-2",
+      "x": 128.96062992125985,
+      "y": 105.73228346456692,
+      "r": 120.07874015748031,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-chef",
+      "x": 131.8125,
+      "y": 128.953125,
+      "r": 117.234375,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-person-0",
+      "x": 125.6171875,
+      "y": 126.5703125,
+      "r": 119.6171875,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-person-1",
+      "x": 127.46875,
+      "y": 136.578125,
+      "r": 109.609375,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-person-2",
+      "x": 128.46184738955822,
+      "y": 152.49799196787149,
+      "r": 93.58232931726907,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-person-3",
+      "x": 126.67068273092369,
+      "y": 135.34939759036143,
+      "r": 110.73092369477911,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-person-4",
+      "x": 125.73809523809524,
+      "y": 136.23015873015873,
+      "r": 109.89682539682539,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-person-5",
+      "x": 127.5234375,
+      "y": 121.8984375,
+      "r": 121.5234375,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-person-6",
+      "x": 124.65098039215687,
+      "y": 125.69411764705883,
+      "r": 118.65098039215687,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    },
+    {
+      "name": "warung-person-7",
+      "x": 128.51394422310756,
+      "y": 127.51394422310757,
+      "r": 118.59760956175299,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-cbf45197-d69b-4041-8fc7-15504159e2f2.png"
+    }
+  ],
+  "mahjong": [
+    {
+      "name": "mahjong-0",
+      "x": 93.06382978723404,
+      "y": 104.29787234042554,
+      "r": 79.14893617021276,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-1",
+      "x": 97.6401384083045,
+      "y": 109.0795847750865,
+      "r": 74.42906574394463,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-2",
+      "x": 96.61855670103093,
+      "y": 89.01030927835052,
+      "r": 88.76288659793815,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-3",
+      "x": 95.69594594594595,
+      "y": 90.39864864864865,
+      "r": 89.69594594594595,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-4",
+      "x": 92.03389830508475,
+      "y": 83.67796610169492,
+      "r": 86.03389830508475,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-5",
+      "x": 93.52595155709342,
+      "y": 100.98269896193771,
+      "r": 82.52595155709342,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-6",
+      "x": 96.20338983050848,
+      "y": 101.1864406779661,
+      "r": 82.37288135593221,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-7",
+      "x": 94.20338983050848,
+      "y": 99.35593220338984,
+      "r": 84.20338983050848,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-8",
+      "x": 92.90721649484536,
+      "y": 98.23711340206187,
+      "r": 84.43298969072166,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-9",
+      "x": 97.22033898305085,
+      "y": 97.22033898305085,
+      "r": 86.33898305084746,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-10",
+      "x": 95.94915254237289,
+      "y": 99.66101694915255,
+      "r": 83.89830508474577,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-11",
+      "x": 93.37288135593221,
+      "y": 101.1864406779661,
+      "r": 82.37288135593221,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-12",
+      "x": 96.61855670103093,
+      "y": 86.91752577319588,
+      "r": 88.76288659793815,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-13",
+      "x": 95.69491525423729,
+      "y": 88.71186440677967,
+      "r": 89.69491525423729,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-14",
+      "x": 95.69594594594595,
+      "y": 86.49324324324324,
+      "r": 89.69594594594595,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-15",
+      "x": 95.69594594594595,
+      "y": 89.96621621621621,
+      "r": 89.69594594594595,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-16",
+      "x": 93.51724137931035,
+      "y": 93.65517241379311,
+      "r": 87.51724137931035,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    },
+    {
+      "name": "mahjong-17",
+      "x": 95.3169014084507,
+      "y": 140.0492957746479,
+      "r": 43.41549295774648,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-8727d373-6d4b-4858-b28d-0515c8a597e5.png"
+    }
+  ],
+  "jajan": [
+    {
+      "name": "jajan-0",
+      "x": 127.4218009478673,
+      "y": 126.68720379146919,
+      "r": 119.68720379146919,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-d05b9202-7df5-4f2f-940c-eb63bc2915a0.png"
+    },
+    {
+      "name": "jajan-1",
+      "x": 127.7239819004525,
+      "y": 124.7556561085973,
+      "r": 120.06787330316743,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-d05b9202-7df5-4f2f-940c-eb63bc2915a0.png"
+    },
+    {
+      "name": "jajan-2",
+      "x": 121.31140350877193,
+      "y": 131.38157894736844,
+      "r": 107.28508771929825,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-d05b9202-7df5-4f2f-940c-eb63bc2915a0.png"
+    },
+    {
+      "name": "jajan-3",
+      "x": 127.46608315098469,
+      "y": 114.9059080962801,
+      "r": 119.86433260393873,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-d05b9202-7df5-4f2f-940c-eb63bc2915a0.png"
+    },
+    {
+      "name": "jajan-4",
+      "x": 127.73931623931625,
+      "y": 119.61965811965813,
+      "r": 120.17521367521368,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-d05b9202-7df5-4f2f-940c-eb63bc2915a0.png"
+    },
+    {
+      "name": "jajan-5",
+      "x": 128,
+      "y": 119.49789029535866,
+      "r": 119.9409282700422,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-d05b9202-7df5-4f2f-940c-eb63bc2915a0.png"
+    }
+  ],
+  "iris": [
+    {
+      "name": "slice-0",
+      "x": 127.32669322709164,
+      "y": 130.18725099601593,
+      "r": 117.86852589641434,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-eb9c29ef-f84e-427d-a555-79b29cccfdd4.png"
+    },
+    {
+      "name": "slice-1",
+      "x": 127.9065606361829,
+      "y": 132.6083499005964,
+      "r": 115.45129224652086,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-eb9c29ef-f84e-427d-a555-79b29cccfdd4.png"
+    },
+    {
+      "name": "slice-2",
+      "x": 127.14229249011858,
+      "y": 129.9288537549407,
+      "r": 118.14229249011858,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-eb9c29ef-f84e-427d-a555-79b29cccfdd4.png"
+    },
+    {
+      "name": "slice-3",
+      "x": 127.75,
+      "y": 125.75,
+      "r": 120.25,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-eb9c29ef-f84e-427d-a555-79b29cccfdd4.png"
+    },
+    {
+      "name": "slice-4",
+      "x": 127.74688796680498,
+      "y": 126.7219917012448,
+      "r": 120.22821576763485,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-eb9c29ef-f84e-427d-a555-79b29cccfdd4.png"
+    },
+    {
+      "name": "slice-5",
+      "x": 127.74948665297741,
+      "y": 125.74332648870636,
+      "r": 120.24640657084188,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-eb9c29ef-f84e-427d-a555-79b29cccfdd4.png"
+    }
+  ],
+  "cake": [
+    {
+      "name": "cake-pink",
+      "x": 127.7525354969574,
+      "y": 70.41379310344827,
+      "r": 120.26774847870182,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-6051d44d-349b-40b5-9592-77627b8d0730.png"
+    },
+    {
+      "name": "cake-gold",
+      "x": 127.75,
+      "y": 71.75,
+      "r": 120.25,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-6051d44d-349b-40b5-9592-77627b8d0730.png"
+    },
+    {
+      "name": "cake-green",
+      "x": 127.75102040816326,
+      "y": 70.71428571428571,
+      "r": 120.25714285714285,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-6051d44d-349b-40b5-9592-77627b8d0730.png"
+    },
+    {
+      "name": "cake-purple",
+      "x": 127.75303643724696,
+      "y": 71.63157894736842,
+      "r": 120.27125506072875,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-6051d44d-349b-40b5-9592-77627b8d0730.png"
+    },
+    {
+      "name": "cake-coconut",
+      "x": 130.1125541125541,
+      "y": 129.58441558441558,
+      "r": 117.77489177489177,
+      "source": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4/exec-6051d44d-349b-40b5-9592-77627b8d0730.png"
+    }
+  ]
+}

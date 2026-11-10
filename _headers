@@ -1,0 +1,30 @@
+/*.jpg
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+/kartu/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+/og.png
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+/kit/v1/*
+  Cache-Control: no-cache
+/kit/kit.js
+  Cache-Control: no-cache
+/kit/kit.css
+  Cache-Control: no-cache
+/kit/gelanggang/*
+  Cache-Control: no-cache
+/kit/lapor/*
+  Cache-Control: no-cache
+/gelanggang.json
+  Cache-Control: no-cache
+  Access-Control-Allow-Origin: *
+/katalog.js
+  Cache-Control: no-cache
+/info/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=86400
+/sw.js
+  Cache-Control: no-cache
+/manifest.webmanifest
+  Cache-Control: public, max-age=3600
+  Content-Type: application/manifest+json
+/font/*
+  Cache-Control: public, max-age=31536000, immutable

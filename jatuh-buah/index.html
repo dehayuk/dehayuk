@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="id">
 <head>
+<link rel="preload" as="image" href="/jatuh-buah/wajah-asli.png">
 <meta charset="utf-8">
 <!-- dehayuk:media:start -->
 <meta name="description" content="Satukan buah kembar sampai jadi Durian sang raja buah!">
@@ -141,6 +142,7 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
 .rmisc{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
 .xp{font:800 14px/1 var(--fd);background:var(--ink);color:#ffe36a;border-radius:999px;padding:5px 12px 6px}
 #rAgain{font-size:26px;padding:14px 10px 17px}
+.fruit-choice{display:grid;gap:5px;text-align:left;font:800 15px var(--fb);padding:4px 0}.fruit-choice select{font:800 16px var(--fb);color:#3b2818;min-height:44px;border:2px solid #ab7a3d;border-radius:12px;background:#fffaf0;padding:7px 10px;width:100%}.fruit-choice small{font-size:12px;line-height:1.3;color:#68472c;font-weight:700}
 /* koleksi */
 .kg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
 .kt{display:flex;flex-direction:column;align-items:center;gap:2px}
@@ -190,8 +192,8 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
 #uji{position:fixed;left:4px;top:4px;right:4px;z-index:99;background:rgba(0,0,0,.8);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px;pointer-events:none}
 </style>
 <link rel="stylesheet" href="/kit/v1/menu-game.css">
-</head>
-<body>
+<link rel="stylesheet" href="/studio/v2/panggung.css?v=20261022-all"><link rel="stylesheet" href="panggung.css?v=20261022-all"><link rel="preload" as="image" href="/jatuh-buah/kebun-jernih-v8.webp"><script src="/studio/v2/panggung.js?v=20261022-all" data-world="native" data-game="jatuh-buah"></script></head>
+<body data-release="fruit-clear-living-20261026-v8">
 <canvas id="cv"></canvas>
 <div id="probe"></div>
 <div id="col">
@@ -273,6 +275,8 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
         <div class="tg"><span class="ico"><svg viewBox="0 0 24 24" stroke="#3d1a0c" stroke-width="1.8" stroke-linejoin="round"><path d="M3 9.5h4l5-4.5v14l-5-4.5H3z" fill="#fff"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke-width="2.4" stroke-linecap="round"/></svg></span><b>Suara</b><button class="sw" role="switch" aria-checked="false" data-k="snd" aria-label="Suara"></button></div>
         <div class="tg"><span class="ico" style="background:#7fd8ff"><svg viewBox="0 0 24 24" stroke="#3d1a0c" stroke-width="1.8" stroke-linejoin="round"><path d="M9 17V5l11-2v12" fill="none" stroke-width="2.6"/><ellipse cx="6.5" cy="17.5" rx="3.3" ry="2.7" fill="#fff"/><ellipse cx="17.5" cy="15.5" rx="3.3" ry="2.7" fill="#fff"/></svg></span><b>Musik</b><button class="sw" role="switch" aria-checked="false" data-k="mus" aria-label="Musik"></button></div>
         <div class="tg"><span class="ico" style="background:#ff9fc3"><svg viewBox="0 0 24 24" stroke="#3d1a0c" stroke-width="1.8" stroke-linecap="round"><rect x="8" y="3.5" width="8" height="17" rx="2" fill="#fff"/><path d="M4.5 8v8M19.5 8v8M2 10.5v3M22 10.5v3" stroke-width="2.2"/></svg></span><b>Getar</b><button class="sw" role="switch" aria-checked="false" data-k="vib" aria-label="Getar"></button></div>
+        <label class="fruit-choice" for="faceMotion"><b>Ekspresi wajah</b><select id="faceMotion"><option value="on">Hidup — kedip dan senyum</option><option value="off">Diam</option></select><small>Gerak wajah halus. Pilih Diam jika lebih nyaman.</small></label>
+        <label class="fruit-choice" for="fruitStyle"><b>Variasi buah besar</b><select id="fruitStyle"><option value="segar">Semangka &amp; melon</option><option value="nusantara">Pepaya &amp; nangka</option></select><small>Pilih tampilan buah favoritmu. Ukuran dan poin tetap sama.</small></label>
         <button class="b bl ol" id="bLapor" style="font-size:19px"><svg viewBox="0 0 24 24" fill="#fff" stroke="#3d1a0c" stroke-width="2" stroke-linejoin="round"><path d="M4 4.5h16v11.5H9.5L4 20.5z"/><path d="M8.5 9h7M8.5 12h4.5" fill="none" stroke-linecap="round"/></svg>Lapor &amp; Saran</button>
       </div>
     </div>
@@ -304,6 +308,7 @@ display:inline-flex;align-items:center;justify-content:center;gap:8px;transition
 </div>
 <canvas id="fx"></canvas>
 <script src="/kit/kit.js"></script>
+<script src="buah-hidup.js?v=20261026-v8"></script>
 <script>
 "use strict";
 const KIT = window.DehayukKit, SLUG = "jatuh-buah";
@@ -806,7 +811,9 @@ function tmp(side) {
 }
 // buah dengan garis tepi tebal: seni -> siluet gelap dicap 16 arah -> seni di atasnya
 function makeFruit(lv, R, ex, lock) {
-  const t = Math.max(2.2, R * .068 + 1.0), side = Math.ceil(R * 3.3 + t * 2 + 4), h = side / 2;
+  const live = window.JatuhFruitArt?.sprite(lv, R, ex, lock);
+  if (live) return live;
+  const t = Math.max(1.1, R * .032 + .5), side = Math.ceil(R * 3.3 + t * 2 + 4), h = side / 2;
   const [a, b] = tmp(side);
   a.translate(h, h); ART[lv](a, R);
   if (!lock) {
@@ -893,12 +900,13 @@ const cv = $("cv"), ctx = cv.getContext("2d"), fx = $("fx"), fctx = fx.getContex
 let vw = 0, vh = 0, dpr = 1, colX = 0, colW = 0, sT = 0, sB = 0, S = 1, IX = 0, IY = 0, GY = 0;
 let BG = null, JB = null, JF = null, JX = 0, JY = 0, CLOUDS = [], SPR = [], DROPS = [], STAR = null, STAR2 = null, TITLE = [], UI = [], LOCK = [];
 function layout() {
-  dpr = Math.min(2, window.devicePixelRatio || 1);
   vw = window.innerWidth; vh = window.innerHeight;
+  dpr = Math.min(3, Math.max(1.5, window.devicePixelRatio || 1), Math.sqrt(8000000 / (vw * vh)));
   const ps = getComputedStyle($("probe"));
   sT = parseFloat(ps.paddingTop) || 0; sB = parseFloat(ps.paddingBottom) || 0;
   cv.width = Math.round(vw * dpr); cv.height = Math.round(vh * dpr);
   fx.width = cv.width; fx.height = cv.height;
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
   colW = Math.min(vw, Math.max(320, Math.round((vh - sT - sB) * .64)));
   colX = Math.round((vw - colW) / 2);
   colEl.style.left = colX + "px"; colEl.style.width = colW + "px";
@@ -917,12 +925,12 @@ function buildSprites() {
   const K = S * dpr;
   SPR = [];
   for (let lv = 0; lv < 11; lv++) SPR.push([makeFruit(lv, FR[lv].r * K, 0), makeFruit(lv, FR[lv].r * K, 1), makeFruit(lv, FR[lv].r * K, 2)]);
-  DROPS = FR.map((f) => makeDrop(f.j, Math.round(24 * dpr)));
+  DROPS = FR.map((f,lv) => makeDrop(JatuhFruitArt.color(lv,f.j), Math.round(24 * dpr)));
   STAR = makeStar(Math.round(40 * dpr), "#ffd23a"); STAR2 = makeStar(Math.round(40 * dpr), "#fff");
 }
 function buildUiImages() {
   UI = []; LOCK = [];
-  for (let lv = 0; lv < 11; lv++) { UI.push(makeFruit(lv, 44, 0).toDataURL()); LOCK.push(makeFruit(lv, 44, 0, 1).toDataURL()); }
+  for (let lv = 0; lv < 11; lv++) { UI.push(makeFruit(lv, 88, 0).toDataURL()); LOCK.push(makeFruit(lv, 88, 0, 1).toDataURL()); }
 }
 function cloud(w) {
   const h = w * .5, c = mk(Math.ceil(w * dpr), Math.ceil(h * dpr)), g = c.getContext("2d");
@@ -932,6 +940,17 @@ function cloud(w) {
   g.fillStyle = "#fff8ee"; for (const [x, y, r] of blobs) { circ(g, x * w, y * h, r * w); g.fill(); }
   g.fillStyle = "rgba(255,210,170,.5)"; g.fillRect(0, h * .78, w, h);
   c.w = w; c.h = h; return c;
+}
+const orchard = new Image(); orchard.src = '/jatuh-buah/kebun-jernih-v8.webp';
+const orchardReady = orchard.decode().then(()=>true).catch(async()=>{orchard.src='/studio/v2/assets/orchard.webp';try{await orchard.decode();return true;}catch(_){return false;}});
+let orchardCache = null;
+function drawOrchard(g) {
+  if (!orchard.complete || !orchard.naturalWidth) return false;
+  if (!orchardCache || orchardCache.width !== cv.width || orchardCache.height !== cv.height) {
+    orchardCache = mk(cv.width, cv.height); const q = orchardCache.getContext('2d'), k = Math.max(cv.width/orchard.width,cv.height/orchard.height), w = cv.width/k, h = cv.height/k;
+    q.imageSmoothingQuality = 'high'; q.drawImage(orchard,(orchard.width-w)/2,(orchard.height-h)/2,w,h,0,0,cv.width,cv.height);
+  }
+  g.drawImage(orchardCache,0,0); return true;
 }
 function buildBg() {
   BG = mk(cv.width, cv.height); const g = BG.getContext("2d"); g.scale(dpr, dpr);
@@ -1013,38 +1032,19 @@ function woodRect(g, x, y, w, h, r, c1, c2, c3, grain) {
   g.lineWidth = 3.2; g.strokeStyle = "#3d1a0c"; g.beginPath(); rrPath(g, x, y, w, h, r); g.stroke();
 }
 function buildJar() {
-  const T = 17 * S, B = 24 * S, iw = W * S, ih = H * S, up = 16 * S;
-  const bw = iw + T * 2 + 20, bh = ih + up + B + 24;
-  JX = IX - T - 10; JY = IY - up - 8;
-  const ox = T + 10, oy = up + 8; // posisi interior di kanvas
-  JB = mk(Math.ceil(bw * dpr), Math.ceil(bh * dpr)); let g = JB.getContext("2d"); g.scale(dpr, dpr);
-  const bg = g.createLinearGradient(0, oy - up, 0, oy + ih); bg.addColorStop(0, "#fffdf1"); bg.addColorStop(.58, "#fff5df"); bg.addColorStop(1, "#f4dfb4");
-  g.fillStyle = bg; g.fillRect(ox - 2, oy - up, iw + 4, ih + up);
-  g.strokeStyle = "rgba(170,105,40,.075)"; g.lineWidth = 2;
-  for (let k = 1; k < 6; k++) { const x = ox + iw * k / 6; g.beginPath(); g.moveTo(x, oy - up); g.lineTo(x, oy + ih); g.stroke(); }
-  g.fillStyle = "rgba(255,255,255,.18)"; for (let k = 0; k < 6; k++) g.fillRect(ox + iw * k / 6 + 3, oy - up, 3, ih + up);
-  // anyaman halus
-  g.strokeStyle = "rgba(190,120,50,.045)"; g.lineWidth = 2 * S;
-  for (let y = oy; y < oy + ih; y += 26 * S) { g.beginPath(); g.moveTo(ox, y); g.lineTo(ox + iw, y); g.stroke(); }
-  const sh = (x0, y0, x1, y1, a) => { const q = g.createLinearGradient(x0, y0, x1, y1); q.addColorStop(0, "rgba(110,50,10," + a + ")"); q.addColorStop(1, "rgba(110,50,10,0)"); return q; };
-  g.fillStyle = sh(ox, 0, ox + 26 * S, 0, .28); g.fillRect(ox, oy - up, 26 * S, ih + up);
-  g.fillStyle = sh(ox + iw, 0, ox + iw - 26 * S, 0, .28); g.fillRect(ox + iw - 26 * S, oy - up, 26 * S, ih + up);
-  g.fillStyle = sh(0, oy + ih, 0, oy + ih - 40 * S, .3); g.fillRect(ox, oy + ih - 40 * S, iw, 40 * S);
-  // depan
-  JF = mk(JB.width, JB.height); g = JF.getContext("2d"); g.scale(dpr, dpr);
-  woodRect(g, 4, oy + ih - 2, iw + T * 2 + 12, B + 4, [4, 4, 14, 14], "#b8662c", "#a45522", "#86421a", false);
-  g.fillStyle = "#3d1a0c"; g.beginPath(); rrPath(g, ox + iw * .08, oy + ih + B, 30 * S, 12 * S, [0, 0, 6, 6]); rrPath(g, ox + iw * .92 - 30 * S, oy + ih + B, 30 * S, 12 * S, [0, 0, 6, 6]); g.fill();
-  g.fillStyle = "rgba(255,210,150,.35)"; g.fillRect(8, oy + ih + 3, iw + T * 2 + 4, 4);
-  for (const x of [ox - T, ox + iw]) {
-    woodRect(g, x, oy - up, T, ih + up + 4, [T * .5, T * .5, 2, 2], "#ffd28b", "#e19a50", "#b97034", true);
-    g.fillStyle = "rgba(255,240,200,.45)"; g.fillRect(x + T * .22, oy - up + T * .6, T * .18, ih + up - T);
-    for (const by of [.22, .72]) {
-      const y = oy + ih * by; g.beginPath(); rrPath(g, x - 3, y, T + 6, 12 * S, 4); g.fillStyle = "#ffcf5a"; g.fill(); g.lineWidth = 2.6; g.strokeStyle = "#3d1a0c"; g.stroke();
-      g.fillStyle = "#3d1a0c"; circ(g, x + T / 2, y + 6 * S, 2.2 * S); g.fill();
-    }
-  }
-  // garis lantai
-  g.fillStyle = "rgba(90,40,10,.25)"; g.fillRect(ox, oy + ih - 2, iw, 3);
+  const T=17*S,B=24*S,iw=W*S,ih=H*S,up=16*S,bw=iw+T*2+20,bh=ih+up+B+24;
+  JX=IX-T-10;JY=IY-up-8;const ox=T+10,oy=up+8;
+  JB=mk(Math.ceil(bw*dpr),Math.ceil(bh*dpr));let g=JB.getContext('2d');g.scale(dpr,dpr);
+  // Clear pane: leave the playfield transparent, with reflections only at its edges.
+  const edge=g.createLinearGradient(ox,0,ox+iw,0);edge.addColorStop(0,'#c4edff38');edge.addColorStop(.025,'#ffffff00');edge.addColorStop(.975,'#ffffff00');edge.addColorStop(1,'#b6e6ff38');g.fillStyle=edge;g.fillRect(ox,oy-up,iw,ih+up);
+  JF=mk(JB.width,JB.height);g=JF.getContext('2d');g.scale(dpr,dpr);
+  g.shadowColor='#1b473f55';g.shadowBlur=12*S;g.shadowOffsetY=5*S;
+  const rim=g.createLinearGradient(ox-T,0,ox+iw+T,0);rim.addColorStop(0,'#81a9b9');rim.addColorStop(.03,'#fcfff2');rim.addColorStop(.06,'#c6f0ff');rim.addColorStop(.5,'#f5fdff');rim.addColorStop(.94,'#76b1c7');rim.addColorStop(.98,'#faffed');rim.addColorStop(1,'#7fb5a6');
+  g.strokeStyle=rim;g.lineWidth=7*S;g.lineJoin='round';g.beginPath();g.moveTo(ox-4*S,oy-up);g.lineTo(ox-4*S,oy+ih-9*S);g.quadraticCurveTo(ox-4*S,oy+ih+5*S,ox+12*S,oy+ih+5*S);g.lineTo(ox+iw-12*S,oy+ih+5*S);g.quadraticCurveTo(ox+iw+4*S,oy+ih+5*S,ox+iw+4*S,oy+ih-9*S);g.lineTo(ox+iw+4*S,oy-up);g.stroke();g.shadowBlur=0;g.shadowOffsetY=0;
+  g.strokeStyle='#ffffffb8';g.lineWidth=2*S;g.beginPath();g.moveTo(ox,oy+8*S);g.lineTo(ox,oy+ih-14*S);g.moveTo(ox+iw,oy+18*S);g.lineTo(ox+iw,oy+ih-14*S);g.stroke();
+  g.strokeStyle='#effcffb8';g.lineWidth=2*S;g.beginPath();g.ellipse(ox+iw/2,oy-up,(iw+8*S)/2,7*S,0,0,Math.PI);g.stroke();
+  for(const x of [ox-4*S,ox+iw+4*S]){g.fillStyle='#fcfff5';g.beginPath();g.ellipse(x,oy-up,7*S,3*S,0,0,TAU);g.fill();}
+  const base=g.createLinearGradient(0,oy+ih,0,oy+ih+B);base.addColorStop(0,'#ffe9a9');base.addColorStop(.2,'#e3b65c');base.addColorStop(.8,'#9d622a');base.addColorStop(1,'#593715');g.fillStyle=base;rrPath(g,ox-T,oy+ih+12*S,iw+2*T,10*S,5*S);g.fill();
 }
 let PSC = 1, PGY = 0;
 function buildTitle() {
@@ -1102,11 +1102,15 @@ function ftext(x, y, s, size, col) { ctx.save(); ctx.font = fontPx(size); const 
 let comboT = 0, comboS = "", shake = 0, flash = 0;
 const mergeRings = [];
 const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+let faceAnimation = true;
+try { faceAnimation = localStorage.getItem('jatuhbuah.face-motion.v1') !== 'off'; } catch (_) {}
+// Gentle facial expression is independent of camera/ambient motion preferences.
+function faceMotionEnabled() { return faceAnimation && !document.hidden && !document.documentElement.classList.contains('noanim'); }
 function calmMotion() { return motionQuery.matches || document.documentElement.classList.contains("noanim"); }
 function ring(lv, x, y) {
   if (calmMotion()) return;
   if (mergeRings.length >= 18) mergeRings.shift();
-  mergeRings.push({ x, y, radius: FR[lv].r * S, color: FR[lv].j, age: 0 });
+  mergeRings.push({ x, y, radius: FR[lv].r * S, color: JatuhFruitArt.color(lv,FR[lv].j), age: 0 });
 }
 function drawMergeRings(c, dt) {
   c.setTransform(1, 0, 0, 1, 0, 0);
@@ -1150,7 +1154,7 @@ function startGame(k, seed) {
   updNext(); mode = "play";
 }
 function mark(lv) { if (!(SV.col & (1 << lv))) { SV.col |= 1 << lv; save(); } }
-function updNext() { $("hNext").src = UI[core.next[1]]; $("hNext").alt = "Buah berikutnya: " + FR[core.next[1]].n; }
+function updNext() { $("hNext").src = UI[core.next[1]]; $("hNext").alt = "Buah berikutnya: " + fruitName(core.next[1]); }
 function endGame() {
   if (mode !== "play" && mode !== "ending") return;
   if (kind === "daily" && runDate !== ymd(new Date())) kind = "practice";
@@ -1163,7 +1167,7 @@ function endGame() {
   const pr = KIT.progress.record({ game: SLUG, score: sc, papan: kind === "daily" ? "harian" : kind === "practice" || kind === "chal" ? "" : "bebas" });
   $("hud").hidden = true;
   $("rMode").textContent = kind === "daily" ? "Harian · Hari ke-" + dayN() : kind === "practice" ? "Latihan" : kind === "chal" ? "Tantangan" : "Skor";
-  $("rImg").src = UI[core.top]; $("rName").textContent = FR[core.top].n;
+  $("rImg").src = UI[core.top]; $("rName").textContent = fruitName(core.top);
   $("rRek").hidden = true;
   // jarak ke rekor: nyaris, atau selisih dari rekor lama
   $("rRec").textContent = rec ? (recPrev > 0 ? "+" + (sc - recPrev) + " dari rekor lama" : "Rekor pertamamu!") : "Rekor " + recPrev + " · kurang " + (recPrev - sc + 1);
@@ -1231,7 +1235,7 @@ function openKoleksi() {
     const t = document.createElement("div"); t.className = "kt" + (on ? "" : " lk") + (lv === 10 && on ? " top" : "");
     const box = document.createElement("div"); const im = document.createElement("img"); im.src = on ? UI[lv] : LOCK[lv]; im.alt = ""; box.appendChild(im);
     if (!on) { const q = document.createElement("b"); q.className = "ol"; q.textContent = "?"; box.appendChild(q); }
-    const nm = document.createElement("span"); nm.className = on ? "" : ""; nm.textContent = on ? FR[lv].n : "???";
+    const nm = document.createElement("span"); nm.className = on ? "" : ""; nm.textContent = on ? fruitName(lv) : "???";
     t.appendChild(box); t.appendChild(nm); g.appendChild(t);
   }
   $("kProg").textContent = n + "/11";
@@ -1243,7 +1247,7 @@ function paintSetelan() {
   const st = KIT.settings.get();
   for (const b of document.querySelectorAll(".sw")) { const v = !!st[SETK[b.dataset.k]]; b.classList.toggle("on", v); b.setAttribute("aria-checked", v ? "true" : "false"); }
 }
-function openSetelan() { paintSetelan(); show($("sSetelan")); }
+function openSetelan() { $("faceMotion").value=faceAnimation?"on":"off"; paintSetelan(); $("fruitStyle").value=JatuhFruitArt.style; show($("sSetelan")); }
 function openHarian() {
   const d = new Date(), M = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
   $("dMonth").textContent = M[d.getMonth()]; $("dDay").textContent = d.getDate();
@@ -1336,10 +1340,17 @@ let rsT = 0; window.addEventListener("resize", () => { clearTimeout(rsT); rsT = 
 const DASH = [2, 12], DASH2 = [10, 9];
 function fontPx(n) { return "800 " + (n | 0) + "px 'Baloo 2','Arial Rounded MT Bold',sans-serif"; }
 const FONTS = []; for (let i = 0; i < 90; i++) FONTS.push(fontPx(i));
-function drawSpr(c, img, x, y, ang, sx, sy) {
+let fruitClock = 0;
+function drawSpr(c, img, x, y, ang, sx, sy, identity = 0, look = 0) {
+  const moving = faceMotionEnabled() && (mode === 'play' || mode === 'title');
+  // Keep a resting fruit still; impact springs already animate actual landings.
+  // Aim-guide dashes must never leak into facial strokes or another sprite.
+  c.save(); c.setLineDash([]); c.lineDashOffset = 0;
   const co = Math.cos(ang), si = Math.sin(ang), R = img.R;
-  c.setTransform(sx * co, sy * si, -sx * si, sy * co, x, y + R * (1 - sy));
-  c.drawImage(img, -img.h, -img.h);
+  c.setTransform(sx * co, sx * si, -sy * si, sy * co, x, y + R * (1 - sy));
+  c.drawImage(img.body || img, -img.h, -img.h);
+  if (img.body) JatuhFruitArt.paintFace(c,R,img.level,img.expression,fruitClock,identity,look,moving);
+  c.restore();
 }
 function handleEvents() {
   const n = core.evN;
@@ -1357,7 +1368,7 @@ function handleEvents() {
     juice(lv - 1, x, y, 10 + lv * 2, 170 + lv * 22);
     if (lv >= 5) stars(x, y, lv - 3, 200 + lv * 20);
     if (lv >= 6) shake = Math.max(shake, 3 + (lv - 5) * 1.6);
-    ftext(x, y - FR[lv].r * S * .6, (discovered ? FR[lv].n + "! " : "") + "+" + pts, discovered ? 24 : 22 + lv * 1.6, cmb > 1 || discovered ? "#ffd23a" : "#fff");
+    ftext(x, y - FR[lv].r * S * .6, (discovered ? fruitName(lv) + "! " : "") + "+" + pts, discovered ? 24 : 22 + lv * 1.6, cmb > 1 || discovered ? "#ffd23a" : "#fff");
     if (cmb > 1) { comboT = 1.1; comboS = "Kombo x" + cmb + "!"; SFX.combo(cmb); }
   }
   core.evN = 0;
@@ -1370,6 +1381,7 @@ function frameCore(ts) {
   let dt = (ts - lastTs) / 1000; lastTs = ts;
   if (!(dt > 0)) dt = 0; if (dt > .1) dt = .1;
   time += dt;
+  if (faceMotionEnabled() && (mode === "play" || mode === "title")) fruitClock += dt;
   $("playHint").hidden = mode !== "play" || core.drops >= 2 || hasModal();
   if (mode === "play") {
     if (entry < 1) entry = Math.min(1, entry + dt * 2.4);
@@ -1394,8 +1406,8 @@ function frameCore(ts) {
 function render(dt) {
   const c = ctx;
   c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1;
-  c.drawImage(BG, 0, 0);
-  for (let ci = 0; ci < CLOUDS.length; ci++) { const cl = CLOUDS[ci];
+  if(!drawOrchard(c))c.drawImage(BG, 0, 0);
+  for (let ci = 0; ci < (window.DehayukVisual.stats.ready?0:CLOUDS.length); ci++) { const cl = CLOUDS[ci];
     cl.x += calmMotion() ? 0 : cl.v * dt; if (cl.x > vw + 20) cl.x = -cl.w - 20;
     c.drawImage(cl, cl.x * dpr, cl.y * dpr);
   }
@@ -1424,7 +1436,9 @@ function render(dt) {
   if (mode === "play" || mode === "pause") {
     const lv = core.next[0], r = FR[lv].r, x = Math.max(r, Math.min(W - r, aimX));
     if (heldT <= 0 || heldT < .2) {
-      heldScV += ((1 - heldSc) * 320 - heldScV * 13) * dt; heldSc += heldScV * dt;
+      const heldSteps=Math.max(1,Math.ceil(dt*120)),heldDt=dt/heldSteps;
+      for(let k=0;k<heldSteps;k++){heldScV += ((1-heldSc)*320-heldScV*13)*heldDt; heldSc += heldScV*heldDt;}
+      heldSc=Math.max(.2,Math.min(1.18,heldSc));
       // cari titik mendarat
       let land = H - r;
       for (let i = 0; i < MAXB; i++) {
@@ -1439,7 +1453,7 @@ function render(dt) {
         c.globalAlpha = .35; c.fillStyle = "#fff"; c.beginPath(); c.ellipse(gx, (oyy + (land + r) * S) * dpr, r * K * .8, r * K * .22, 0, 0, TAU); c.fill(); c.globalAlpha = 1;
       }
       const bob = calmMotion() ? 0 : Math.sin(time * 4) * 2 * S;
-      drawSpr(c, SPR[lv][0], gx, (oyy + SPAWN_Y * S + bob) * dpr, Math.sin(time * 3) * .08, heldSc, heldSc);
+      drawSpr(c, SPR[lv][0], gx, (oyy + SPAWN_Y * S + bob) * dpr, calmMotion() ? 0 : Math.sin(time * 3) * .08, heldSc, heldSc, 121, Math.sin(fruitClock * .65));
       c.setTransform(1, 0, 0, 1, 0, 0);
     }
   }
@@ -1450,8 +1464,12 @@ function render(dt) {
     const b = i * 4, lv = core.lv[i];
     if (core.born[i]) { const bn = core.born[i]; if (bn === 2) { VS[b + 2] = .45; VS[b + 3] = 0; VS[b] = 0; VS[b + 1] = 0; } else if (bn === 1) { VS[b] = 0; VS[b + 1] = 0; VS[b + 2] = 1; VS[b + 3] = 0; } core.born[i] = 0; happy[i] = lv ? .9 : 0; }
     if (core.hit[i] > 0) { const h = core.hit[i]; VS[b] = -Math.min(.24, h * .035); VS[b + 1] = 0; core.hit[i] = 0; }
-    VS[b + 1] += (-VS[b] * 420 - VS[b + 1] * 12) * dt; VS[b] += VS[b + 1] * dt;
-    VS[b + 3] += ((1 - VS[b + 2]) * 380 - VS[b + 3] * 11) * dt; VS[b + 2] += VS[b + 3] * dt;
+    // Substep only visual springs: a slow frame must not flatten or invert fruit.
+    const visualSteps=Math.max(1,Math.ceil(dt*120)),visualDt=dt/visualSteps;
+    for(let k=0;k<visualSteps;k++){
+      VS[b+1]+=(-VS[b]*420-VS[b+1]*12)*visualDt;VS[b]+=VS[b+1]*visualDt;
+      VS[b+3]+=((1-VS[b+2])*380-VS[b+3]*11)*visualDt;VS[b+2]+=VS[b+3]*visualDt;
+    }
     if (happy[i] > 0) happy[i] -= dt;
     let a = core.ang[i]; a = a - TAU * Math.round(a / TAU);
     const spd = Math.abs(X[i] - core.px[i]) + Math.abs(Y[i] - core.py[i]);
@@ -1459,9 +1477,9 @@ function render(dt) {
     let ex = 0;
     if (mode === "ending" || (core.dangerT > 0 && Y[i] - core.r[i] < DANGER + 90) || (warn && Y[i] - core.r[i] < DANGER + 40)) ex = 2;
     else if (happy[i] > 0) ex = 1;
-    else if (((time * 1000 + i * 977) % 4200) < 130) ex = 1;
-    const q = calmMotion() ? 0 : VS[b], sc = calmMotion() ? 1 : VS[b + 2];
-    drawSpr(c, SPR[lv][ex], (ox + X[i] * S) * dpr, (oyy + Y[i] * S) * dpr, a, sc * (1 - q * .7), sc * (1 + q));
+    // Blinking belongs to the face renderer, independently phased per fruit.
+    const q = calmMotion() ? 0 : Math.max(-.24,Math.min(.18,VS[b])), sc = calmMotion() ? 1 : Math.max(.45,Math.min(1.18,VS[b+2]));
+    drawSpr(c, SPR[lv][ex], (ox + X[i] * S) * dpr, (oyy + Y[i] * S) * dpr, a, sc * (1 - q * .7), sc * (1 + q), i + .37, (aimX - X[i]) / 150);
   }
   c.setTransform(1, 0, 0, 1, 0, 0);
   c.drawImage(JF, (JX + sx) * dpr, (JY + sy) * dpr);
@@ -1578,7 +1596,20 @@ function boot() {
   if (DEMO) { let ft = 0; lastTs = 0; setInterval(() => { ft += 1000 / 60; frameCore(ft); }, 16); } else requestAnimationFrame((t) => { lastTs = t; frame(t); });
   if (document.fonts && document.fonts.load) document.fonts.load("800 40px 'Baloo 2'").then(() => { drawLogo(); }).catch(() => { });
 }
-boot();
+function fruitName(lv) { return JatuhFruitArt.name(lv, FR[lv].n); }
+function refreshFruitArt() {
+  buildUiImages(); buildSprites(); buildTitle(); drawLogo();
+  if (core) updNext();
+  if (!$('sKoleksi').hidden) openKoleksi();
+  if (mode === 'over') { $('rImg').src=UI[core.top]; $('rName').textContent=fruitName(core.top); }
+}
+document.addEventListener('jatuh:appearance',refreshFruitArt);
+$('faceMotion').addEventListener('change',e=>{faceAnimation=e.target.value==='on';try{localStorage.setItem('jatuhbuah.face-motion.v1',e.target.value);}catch(_){}});
+$('fruitStyle').addEventListener('change',e=>JatuhFruitArt.setStyle(e.target.value));
+// Start with the original artwork loaded: never flash the replacement face on entry.
+const entryButtons=[...document.querySelectorAll('button')].map(button=>[button,button.disabled]);
+for(const [button] of entryButtons)button.disabled=true;
+Promise.all([JatuhFruitArt.ready,Promise.race([orchardReady,new Promise(r=>setTimeout(r,5000))])]).then(()=>{for(const [button,disabled] of entryButtons)button.disabled=disabled;boot();});
 </script>
 </body>
 </html>

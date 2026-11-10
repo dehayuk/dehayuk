@@ -209,7 +209,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #8ff0ff;outline-offset:4p
 #uji{position:fixed;left:4px;top:4px;right:4px;bottom:4px;overflow:auto;z-index:99;background:rgba(0,0,0,.88);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px}
 </style>
 <link rel="stylesheet" href="/kit/v1/menu-game.css">
-</head>
+<link rel="stylesheet" href="/studio/v2/panggung.css?v=20261022-all"><link rel="stylesheet" href="panggung.css?v=20261022-all"><link rel="preload" as="image" href="/studio/v2/assets/neon.webp"><script src="/studio/v2/panggung.js?v=20261022-all" data-world="neon" data-game="bola-pantul"></script><script src="/studio/v3/materials.js?v=20261022-objects"></script></head>
 <body>
 <canvas id="cv" role="img" aria-label="Papan balok berangka dan bola"></canvas>
 <div id="sr" class="vhid" aria-live="polite"></div>
@@ -764,8 +764,9 @@ function blockSprite(k, o, ci, white) {
   shapePath(g, k, o, s, SP, rad);
   if (white) { g.fillStyle = "#fff"; g.fill(); BS.set(key, c); return c; }
   const col = PAL[ci], dark = rgb(col.map(v => v * .58)), gr = g.createLinearGradient(SP, SP, s - SP, s - SP);
-  gr.addColorStop(0, rgb(mx(col, [255,255,255], .2))); gr.addColorStop(.32, rgb(col)); gr.addColorStop(.7, rgb(col)); gr.addColorStop(1, dark);
+  gr.addColorStop(0, rgb(mx(col, [255,255,255], .2))); gr.addColorStop(.32, rgb(mx(col,[255,255,255],.13))); gr.addColorStop(.7, rgb(col)); gr.addColorStop(1, dark);
   g.shadowColor = "rgba(5,16,40,.45)"; g.shadowBlur = 3; g.shadowOffsetY = 3 * K; g.fillStyle = gr; g.fill(); g.shadowBlur = 0; g.shadowOffsetY = 0;
+  if(k===0)window.DehayukVisual.jewel(g,SP,SP,d,rgb(col));
   g.save(); shapePath(g, k, o, s, SP, rad); g.clip();
   // Soft inner rim, clean same-hue shading; no white wash over the whole face.
   g.strokeStyle = dark; g.lineWidth = Math.max(4, 12 * K); g.stroke();
@@ -785,13 +786,13 @@ function blockSprite(k, o, ci, white) {
   const shine=g.createLinearGradient(0,SP,0,SP+d*.48); shine.addColorStop(0,"rgba(255,255,255,.65)"); shine.addColorStop(1,"rgba(255,255,255,0)");
   g.fillStyle=shine; rr(g,SP+d*.1,SP+d*.07,d*.6,d*.29,d*.12); g.fill();
   g.fillStyle="rgba(255,255,255,.85)"; g.beginPath(); g.ellipse(SP+d*.19,SP+d*.16,d*.062,d*.028,-.5,0,TAU); g.fill();
-  g.strokeStyle="rgba(255,255,255,.38)"; g.lineWidth=Math.max(.8,1.6*K); shapePath(g,k,o,s,SP+2*K,Math.max(1,rad-2*K)); g.stroke();
+  g.strokeStyle="rgba(255,255,255,.62)"; g.lineWidth=Math.max(.8,1.6*K); shapePath(g,k,o,s,SP+2*K,Math.max(1,rad-2*K)); g.stroke();
   g.restore(); g.strokeStyle=dark; g.lineWidth=lw; shapePath(g,k,o,s,SP,rad); g.stroke();
   BS.set(key,c); return c;
 }
 // bola: kulit dipilih di Koleksi
 const SKINS = [
-  { id: "putih", nama: "Putih", c: "#ffffff", harga: 0 },
+  { id: "putih", nama: "Surya", c: "#ffbc28", harga: 0 },
   { id: "api", nama: "Api", c: "#ff8a2b", harga: 25, ekor: "#ffcf3a" },
   { id: "es", nama: "Es", c: "#8ff0ff", harga: 60, ekor: "#e8fdff" },
   { id: "daun", nama: "Daun", c: "#8cff6a", harga: 110, ekor: "#d8ffb0" },
@@ -799,15 +800,7 @@ const SKINS = [
   { id: "pelangi", nama: "Pelangi", c: "#ff5c93", harga: 350, ekor: "pelangi" }
 ]; // harga permata [ANGKA SEMENTARA]
 let skinSel = 0, BALL = null, BALLS = [];
-function ballSprite(col, r) {
-  const s = (r + 3) * 2, c = mk(s * dpr), g = c.getContext("2d"); g.scale(dpr,dpr);
-  const white=col==="#ffffff", gr=g.createRadialGradient(s/2-r*.35,s/2-r*.4,r*.06,s/2,s/2,r);
-  gr.addColorStop(0,"#fff"); gr.addColorStop(.3,white?"#f2fcff":rgb(mx(hx(col),[255,255,255],.28))); gr.addColorStop(.68,col); gr.addColorStop(1,white?"#6bbbec":rgb(hx(col).map(v=>v*.6)));
-  g.fillStyle="rgba(131,229,255,.15)"; g.beginPath(); g.arc(s/2,s/2,r*1.25,0,TAU); g.fill();
-  g.fillStyle=gr; g.beginPath(); g.arc(s/2,s/2,r,0,TAU); g.fill(); g.strokeStyle=white?"#e3fbff":rgb(hx(col).map(v=>v*.55)); g.lineWidth=Math.max(.7,r*.13); g.stroke();
-  g.fillStyle="rgba(255,255,255,.95)"; g.beginPath(); g.ellipse(s/2-r*.28,s/2-r*.36,r*.26,r*.13,-.6,0,TAU); g.fill();
-  c.s=s; return c;
-}
+function ballSprite(col,r){const s=(r+3)*2,c=mk(s*dpr),g=c.getContext('2d');g.scale(dpr,dpr);const aura=g.createRadialGradient(s/2,s/2,r*.3,s/2,s/2,r*1.4);aura.addColorStop(0,'#fff8b477');aura.addColorStop(1,'#56eaff00');g.fillStyle=aura;g.fillRect(0,0,s,s);window.DehayukVisual.orb(g,s/2,s/2,r,col==='#ffffff'?'#fff4c9':col);c.s=s;return c;}
 function buildBalls() {
   const r = Math.max(5, BR * K * 1.12);
   BALLS = SKINS.map((S) => ballSprite(S.c, r));
@@ -828,14 +821,14 @@ function buildBg() {
   const w=FW*K,h=FLOOR*K,p=10;
   FIELD=mk((w+2*p)*dpr,(h+2*p)*dpr); const f=FIELD.getContext("2d"); f.scale(dpr,dpr);
   f.shadowColor="rgba(3,13,28,.45)"; f.shadowBlur=10; f.shadowOffsetY=3; rr(f,p,p,w,h,14*K+6); f.fillStyle="#16314e"; f.fill(); f.shadowBlur=0; f.shadowOffsetY=0;
-  const fg=f.createLinearGradient(0,p,0,p+h); fg.addColorStop(0,"#214363"); fg.addColorStop(.6,"#1b3653"); fg.addColorStop(1,"#142d47"); f.fillStyle=fg; rr(f,p,p,w,h,14*K+6); f.fill();
+  const fg=f.createLinearGradient(0,p,0,p+h); fg.addColorStop(0,"#132349"); fg.addColorStop(.6,"#101d3e"); fg.addColorStop(1,"#0a142f"); f.fillStyle=fg; rr(f,p,p,w,h,14*K+6); f.fill();
   f.fillStyle="rgba(149,217,229,.055)"; for(let r=1;r<ROWS;r++)for(let c=1;c<COLS;c++){f.beginPath();f.arc(p+c*CELL*K,p+r*CELL*K,Math.max(.7,1.3*K),0,TAU);f.fill();}
   f.fillStyle="rgba(121,219,235,.055)"; f.fillRect(p,p+(ROWS-1)*CELL*K,w,CELL*K);
-  f.lineWidth=2; f.strokeStyle="#456d89"; rr(f,p,p,w,h,14*K+6); f.stroke(); f.lineWidth=1; f.strokeStyle="rgba(184,243,247,.25)"; rr(f,p+2,p+2,w-4,h-4,14*K+4); f.stroke();
+  f.lineWidth=2; f.strokeStyle="#50a6d6"; rr(f,p,p,w,h,14*K+6); f.stroke(); f.lineWidth=1; f.strokeStyle="rgba(184,243,247,.25)"; rr(f,p+2,p+2,w-4,h-4,14*K+4); f.stroke();
   DECO=[]; if(!COVER&&fxC>60)for(let i=0;i<8;i++)DECO.push({x:rn(),y:rn(),s:12+rn()*21,k:i%2,c:i%NCOL,sp:3+rn()*5,a:rn()*TAU,va:(rn()-.5)*.3});
 }
 function drawBg() {
-  const g=ctx; g.drawImage(BG,0,0,vw,vh); if(!DECO.length)return;
+  const g=ctx;if(!window.DehayukVisual.scene(g,vw,vh))g.drawImage(BG,0,0,vw,vh); if(!DECO.length)return;
   const L=fxC-20,t=calmMotion()?0:time;
   for(const d of DECO){const left=d.x<.5,x=left?d.x*2*L*.9+10:vw-L+(d.x-.5)*2*L*.9,y=((d.y*vh-t*d.sp)%(vh+80)+vh+80)%(vh+80)-40;
     const im=blockSprite(d.k, d.c%4,d.c,false),s=d.s;g.save();g.translate(x,y);g.rotate(d.a+t*d.va);g.globalAlpha=.14;g.drawImage(im,-s/2,-s/2,s,s);g.restore();}

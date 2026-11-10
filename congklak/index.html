@@ -211,7 +211,9 @@ canvas{display:block}
 #uji{position:fixed;left:4px;top:4px;right:4px;bottom:4px;overflow:auto;z-index:99;background:rgba(0,0,0,.86);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px}
 </style>
 <link rel="stylesheet" href="/kit/v1/menu-game.css">
-</head>
+<link rel="stylesheet" href="/online-public.css?v=1">
+<style>#bOnline.po-home{width:min(330px,90vw);min-height:52px;margin:-7px auto 0;font-size:15px;flex:none}@media(max-height:620px){#bOnline.po-home{min-height:42px;font-size:13px}.tmid{gap:8px}}</style>
+<link rel="stylesheet" href="/studio/v2/panggung.css?v=20261022-all"><link rel="stylesheet" href="panggung.css?v=20261022-all"><link rel="preload" as="image" href="/studio/v2/assets/garden.webp"><script src="/studio/v2/panggung.js?v=20261022-all" data-world="garden" data-game="congklak"></script></head>
 <body>
 <canvas id="cv" role="img" aria-label="Papan congklak"></canvas>
 <div id="sr" class="vhid" aria-live="polite"></div>
@@ -226,6 +228,7 @@ canvas{display:block}
     <div class="tmid ent" id="tMid">
       <div class="chal dk-ol" id="tChal" hidden>Temanmu dapat 0 poin. Kalahkan!</div>
       <button class="dk-btn dk-green dk-ol" id="bMain" data-dh-main><svg viewBox="0 0 24 24"><path fill="#fff" stroke="#3d1a0c" stroke-width="2" stroke-linejoin="round" d="M7 4.5v15l12-7.5z"/></svg>MAIN</button>
+      <button id="bOnline" class="po-home"><b>Main online</b><small>Satu meja publik · dua pemain · boleh menonton</small></button>
       <button class="lvchip dk-ol" id="bLv" aria-label="Pilih lawan"><small>Lawan</small><b id="tLvN">Mudah</b><svg viewBox="0 0 24 24"><path d="M5 9l7 7 7-7" fill="none" stroke="#3d1a0c" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 9l7 7 7-7" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="icons" data-dh-menu role="navigation" aria-label="Menu permainan">
         <button class="dk-round dk-yellow" id="bHarian" data-dh-action="daily" aria-label="Harian"><i class="dh-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="3" fill="#fff" stroke="#30203f" stroke-width="2"/><path d="M5 10h14" stroke="#fa5683" stroke-width="4"/><path d="M8 3v4m8-4v4" stroke="#30203f" stroke-width="2.6" stroke-linecap="round"/><rect x="9" y="13" width="6" height="5" rx="1" fill="#f44c87"/></svg><b class="dk-dot" id="dDaily" hidden></b><b class="dstar" id="dStarN" hidden></b></i><span class="dh-menu-label">Harian</span></button>
@@ -345,6 +348,7 @@ canvas{display:block}
   </section>
 </div>
 <script src="/kit/kit.js"></script>
+<script src="/online-public.js?v=1"></script>
 <script id="inti">
 // Aturan Congklak Dehayuk (tanpa DOM). Indeks: 0..6 lubang A, 7 lumbung A, 8..14 lubang B, 15 lumbung B.
 // Tabur ke indeks naik (berlawanan jarum jam dilihat dari atas); lumbung lawan dilewati. Seberang lubang i = 14 - i.
@@ -560,7 +564,7 @@ const BIJI = [
   { id: "mutiara", nama: "Mutiara", biji: 3000 }
 ]; // [ANGKA SEMENTARA]
 const PAPAN = [
-  { id: "jati", nama: "Jati", c: ["#f6c27c", "#dc8a44", "#a4561f"], uk: "#7a3a12", hi: "#ffe2b0", butuh: null },
+  { id: "jati", nama: "Jati", c: ["#c78242", "#9e5428", "#4f2412"], uk: "#653013", hi: "#f5c587", butuh: null },
   { id: "sono", nama: "Sonokeling", c: ["#a8786a", "#74463a", "#43231c"], uk: "#f0cf98", hi: "#e9b9a0", butuh: "b2" },
   { id: "merah", nama: "Merah ukir", c: ["#f0685a", "#c43232", "#7d1a1f"], uk: "#ffd36a", hi: "#ffc2a8", butuh: "b3" }
 ];
@@ -735,6 +739,7 @@ function curl(g, x, y, r, dir, s, col) { // ukiran ikal
   g.beginPath(); for (let a = 0; a < TAU * 1.6; a += 0.2) { const rr2 = r * (1 - a / (TAU * 1.9)), px = x + Math.cos(a * dir) * rr2, py = y + Math.sin(a * dir) * rr2; a ? g.lineTo(px, py) : g.moveTo(px, py); }
   g.strokeStyle = "rgba(0,0,0,.35)"; g.lineWidth = 0.6 * s; g.stroke(); g.save(); g.translate(-0.25 * s, -0.25 * s); g.strokeStyle = col; g.lineWidth = 0.35 * s; g.stroke(); g.restore();
 }
+function carvedLeaf(g,x,y,r,a,s){g.save();g.translate(x,y);g.rotate(a);g.beginPath();g.moveTo(0,-r);g.bezierCurveTo(r*.8,-r*.75,r*.7,r*.45,0,r);g.bezierCurveTo(-r*.5,r*.4,-r*.7,-r*.7,0,-r);g.closePath();const wood=g.createLinearGradient(-r,-r,r,r);wood.addColorStop(0,'#f6bd7c');wood.addColorStop(.16,'#6c3014');wood.addColorStop(.45,'#ad612c');wood.addColorStop(.8,'#bd7b3e');wood.addColorStop(1,'#54250e');g.fillStyle=wood;g.shadowColor='#2b130b99';g.shadowBlur=.3*s;g.shadowOffsetY=.35*s;g.fill();g.shadowBlur=0;g.shadowOffsetY=0;g.strokeStyle='#54270f';g.lineWidth=.15*s;g.stroke();g.beginPath();g.moveTo(0,-r*.72);g.quadraticCurveTo(-r*.15,0,0,r*.78);g.strokeStyle='#f1ba744f';g.stroke();g.restore();}
 function drawBoardTo(g, s, P, rn) {
   // badan
   const bg = g.createLinearGradient(-BHW * s, 0, BHW * s, 0);
@@ -744,12 +749,14 @@ function drawBoardTo(g, s, P, rn) {
   boatPath(g, s, 0); g.fillStyle = bg; g.fill();
   g.save(); boatPath(g, s, 0); g.clip();
   g.strokeStyle = "rgba(60,25,5,.16)"; g.lineWidth = 0.35 * s; // serat kayu
-  for (let q = 0; q < 16; q++) { const u0 = (-18 + q * 2.4 + rn()) * s, f = 0.5 + rn(), ph = rn() * TAU; g.beginPath(); for (let v = -58; v <= 58; v += 2) { const x = u0 + Math.sin(v * 0.08 * f + ph) * 0.9 * s; v === -58 ? g.moveTo(x, v * s) : g.lineTo(x, v * s); } g.stroke(); }
+  for (let q = 0; q < 48; q++) { const u0 = (-18 + q * .78 + rn()*.4) * s, f = 0.5 + rn(), ph = rn() * TAU; g.beginPath(); for (let v = -58; v <= 58; v += 2) { const x = u0 + Math.sin(v * 0.08 * f + ph) * 0.9 * s; v === -58 ? g.moveTo(x, v * s) : g.lineTo(x, v * s); } g.stroke(); }
   for (let q = 0; q < 3; q++) { const x = (rn() * 30 - 15) * s, y = (rn() * 80 - 40) * s; g.beginPath(); g.ellipse(x, y, 1.2 * s, 2.6 * s, 0, 0, TAU); g.stroke(); g.beginPath(); g.ellipse(x, y, 0.5 * s, 1.3 * s, 0, 0, TAU); g.stroke(); }
-  g.restore();
+  const polish=g.createLinearGradient(-BHW*s,-40*s,BHW*s,40*s);polish.addColorStop(0,'#ffffc74d');polish.addColorStop(.35,'#ffffff00');polish.addColorStop(.72,'#fff3bf1f');polish.addColorStop(1,'#2e120726');g.fillStyle=polish;g.fillRect(-BHW*s,-60*s,BHW*2*s,120*s);g.restore();
   boatPath(g, s, 0); g.lineWidth = 0.7 * s; g.strokeStyle = INK; g.stroke();
   boatPath(g, s, 1.4); g.lineWidth = 0.45 * s; g.strokeStyle = "rgba(255,240,210,.45)"; g.stroke();
   boatPath(g, s, 2.2); g.lineWidth = 0.35 * s; g.strokeStyle = "rgba(60,20,0,.35)"; g.stroke();
+  // Recessed teak vines sit on the real board perimeter, outside the seed wells.
+  g.save();boatPath(g,s,1.3);g.clip();for(const side of [-1,1])for(let j=0;j<12;j++){const y=(-33+j*6)*s,x=side*(15.3+Math.sin(j*.65)*.6)*s;carvedLeaf(g,x,y,2.45*s,side*(.5+(j%2)*.8),s);}for(const end of [-1,1])for(let petal=0;petal<8;petal++){const a=petal*TAU/8;carvedLeaf(g,Math.cos(a)*2*s,end*48.5*s+Math.sin(a)*2*s,2.1*s,a+Math.PI/2,s);}g.restore();
   // alur tengah dan wajik ukir di antara dua lajur
   g.strokeStyle = "rgba(60,20,0,.35)"; g.lineWidth = 0.35 * s; g.beginPath(); g.moveTo(-0.9 * s, -33 * s); g.lineTo(-0.9 * s, 33 * s); g.moveTo(0.9 * s, -33 * s); g.lineTo(0.9 * s, 33 * s); g.stroke();
   for (let k = 0; k < 7; k++) {
@@ -774,7 +781,7 @@ function seedSprite(kind, v, L) {
   const W = L * 0.72, c = mk(L * dpr * 1.3, L * dpr * 1.3), g = c.getContext("2d");
   g.translate(c.width / 2, c.height / 2); g.scale(dpr, dpr);
   const hl = (x, y, a, b) => { g.fillStyle = "rgba(255,255,255,.8)"; g.beginPath(); g.ellipse(x, y, a, b, -0.5, 0, TAU); g.fill(); };
-  g.lineWidth = Math.max(0.8, L * 0.07); g.strokeStyle = INK;
+  g.lineWidth = Math.max(0.5, L * 0.035); g.strokeStyle = INK;
   if (kind === 0) { // kerang (cowrie)
     const cols = [["#fffaf0", "#efd9b0", "#b8905e"], ["#fff4e4", "#f0cfa0", "#c08a58"], ["#fbf7f2", "#e2d8c8", "#a39075"]][v % 3];
     const gr = g.createRadialGradient(-L * 0.12, -W * 0.18, 0, 0, 0, L * 0.55); gr.addColorStop(0, cols[0]); gr.addColorStop(0.55, cols[1]); gr.addColorStop(1, cols[2]);
@@ -998,8 +1005,10 @@ function celebrate(e, mover) {
 let mode = "title", kind = "normal", lv = 1, seedNow = 1, dailyKey = "", phase = "", phT = 0, aiPick = -1, aiR = null, det = false;
 let chal = null, chalLast = null, recPrev = 0, viewSide = 0, duoFirst = 0, time = 0, endT = 0, seenSkip = false, lastPts = 0, demoT = 0;
 let first = 0, firstNext = 0, tutPit = -1, hintDone = false; // first: 1 = komputer jalan duluan
-const isHuman = (side) => !DEMO && (kind === "duo" || side === 0);
-const isAI = (side) => DEMO || (kind !== "duo" && side === 1);
+let online = null, onlineRoom = null, onlineGame = -1, onlineApplied = -1, onlineQueued = null;
+const isOnline = () => kind === "online";
+const isHuman = (side) => !DEMO && (isOnline() ? online && online.canAct() && online.you === side : kind === "duo" || side === 0);
+const isAI = (side) => !isOnline() && (DEMO || (kind !== "duo" && side === 1));
 function activeScene() { return mode === "title" || mode === "leaving" || COVER ? DS : PS; }
 
 /* ---------- komputer: Web Worker bila ada, cadangan langsung ---------- */
@@ -1020,13 +1029,13 @@ function askAI(b, side, lvv, r, ch, dt, cb) {
 }
 
 /* ================= ALUR PERMAINAN ================= */
-function turnName(side) { return kind === "duo" ? "Pemain " + (side + 1) : side ? "Komputer" : "Kamu"; }
+function turnName(side) { return isOnline() ? online.name(side) + (online.you === side ? " (kamu)" : "") : kind === "duo" ? "Pemain " + (side + 1) : side ? "Komputer" : "Kamu"; }
 function setTurnChip() {
   const g = PS.g, t = $("hTurn"), ai = isAI(g.turn) && !DEMO;
-  $("hTurnT").textContent = kind === "duo" ? "Pemain " + (g.turn + 1) : ai ? "Komputer" : "Giliranmu";
+  $("hTurnT").textContent = isOnline() ? (online.canAct() ? "Giliranmu" : online.you === null ? "Menonton" : "Giliran lawan") : kind === "duo" ? "Pemain " + (g.turn + 1) : ai ? "Komputer" : "Giliranmu";
   $("hDots").hidden = !ai; t.classList.toggle("b", g.turn === 1);
   t.classList.remove("go"); void t.offsetWidth; t.classList.add("go");
-  $("sr").textContent = kind === "duo" ? "Giliran pemain " + (g.turn + 1) : ai ? "Giliran komputer" : "Giliranmu";
+  $("sr").textContent = isOnline() ? "Giliran " + turnName(g.turn) : kind === "duo" ? "Giliran pemain " + (g.turn + 1) : ai ? "Giliran komputer" : "Giliranmu";
 }
 function startGame(k, seed, level, keepFirst) {
   kind = k; dailyKey = KIT.dateKey();
@@ -1064,6 +1073,7 @@ function nextTurn() {
   if (g.over) { phase = "ending"; endT = 0; return; }
   setTurnChip();
   if (kind === "duo" && viewSide !== g.turn) { viewSide = g.turn; V.thT = baseTh() + (viewSide ? Math.PI : 0); phase = "rotate"; phT = 0; SFX.whoosh(); banner(1, "Giliran Pemain " + (g.turn + 1), 1.3, 36, g.turn ? "blue" : "gold"); return; }
+  if (isOnline() && !online.canAct()) { phase = "wait"; return; }
   if (isAI(g.turn)) {
     phase = "think"; phT = 0; aiPick = -1;
     const r = [aiR(), aiR()], ai = DEMO && (g.turn === 0 || kind === "duo") ? 1 : lv;
@@ -1072,13 +1082,14 @@ function nextTurn() {
   }
   phase = "input";
 }
-function doMove(pit) {
+function doMove(pit, authoritative) {
+  if (isOnline() && !authoritative) { online.action("move", { pit }); return true; }
   const g = PS.g, res = CK.play(g, pit, true); if (!res) return false;
   phase = "anim"; $("hint").hidden = true; tutPit = -1; if (isHuman(res.side) && !hintDone) { hintDone = true; ST.set("hint", 1); }
   animStart(PS, res, (r) => {
     const h = $("hint"); if (h.dataset.tip) { h.hidden = true; delete h.dataset.tip; }
     if (r.over) { phase = "ending"; endT = 0; const w = PS.g.winner; if (kind !== "duo") banner(0, w === 0 ? "MENANG!" : w === 1 ? "KALAH" : "SERI", 1.6, 60, w === 0 ? "green" : w === 1 ? "red" : "blue"); else banner(0, w === 2 ? "SERI!" : "PEMAIN " + (w + 1) + " MENANG!", 1.6, 52, w ? "blue" : "gold"); (w === 0 || kind === "duo" && w < 2 ? SFX.win : SFX.lose)(); return; }
-    nextTurn();
+    nextTurn(); if (isOnline() && onlineQueued) { const queued = onlineQueued; onlineQueued = null; syncOnline(queued.room, queued.you); }
   });
   if (!seenSkip && PS.an && PS.an.total > 3 && !DEMO && !CEPAT) { const h = $("hint"); h.textContent = "Ketuk papan untuk mempercepat"; h.dataset.tip = 1; h.hidden = false; h.classList.remove("off"); } // sampai pemain pernah mempercepat
   return true;
@@ -1093,6 +1104,7 @@ function tapBoard(x, y) {
   SFX.tap(); KIT.vibrate(8); doMove(pit);
 }
 function endGame() {
+  if (isOnline()) { mode = "play"; phase = "wait"; setTurnChip(); return; }
   mode = "over"; phase = "";
   const g = PS.g, duo = kind === "duo", w = g.winner, me = duo ? (w === 1 ? 1 : 0) : 0, biji = g.b[me ? 15 : 7], opp = g.b[me ? 7 : 15];
   const sc = duo ? biji : pts(biji, lv, w === 0), today = dailyKey || KIT.dateKey(), rec = kind === "normal" && sc > recPrev && sc > 0;
@@ -1312,13 +1324,28 @@ function shareResult() {
   else if (kind === "daily" || kind === "practice") KIT.share({ title: "Congklak", text: "Congklak Harian hari ke-" + KIT.dayNumber() + ": " + g.b[7] + " biji " + "★".repeat(starsFor(g.b[7])) + ". Coba susunan hari ini!", url: (KIT.inApp() ? "https://dehayuk.online" : location.origin) + "/" + SLUG + "/" });
   else KIT.share({ title: "Congklak", text: "Main congklak berdua seru! " + g.b[7] + " lawan " + g.b[15] + ". Yuk main!", url: (KIT.inApp() ? "https://dehayuk.online" : location.origin) + "/" + SLUG + "/" });
 }
-function pause() { if (mode !== "play") return; mode = "pause"; KIT.ui.show($("sPause")); }
+function pause() { if (isOnline()) { online.menu(); return; } if (mode !== "play") return; mode = "pause"; KIT.ui.show($("sPause")); }
 function resume() { if (mode !== "pause") return; $("sPause").hidden = true; mode = "play"; }
+
+function startOnline(room) {
+  startGame("duo"); kind = "online"; onlineGame = room.game; onlineApplied = room.seq; onlineQueued = null;
+  PS.g = JSON.parse(JSON.stringify(room.state)); PS.vis = PS.g.b.slice(); PS.an = null; PS.fly = []; PS.hand = null; PS.last = -1; PS.pop.fill(0);
+  viewSide = online.you === null ? 0 : online.you; V.thT = baseTh() + (viewSide ? Math.PI : 0); mode = "play"; phase = ""; $("hTag").textContent = "Online"; $("hBestP").hidden = true; $("hint").hidden = false; $("hint").textContent = online.you === null ? "Mode penonton · papan diperbarui langsung" : "Ketuk lubangmu saat giliran"; placeView(true); nextTurn();
+}
+function syncOnline(room, you) {
+  onlineRoom = room; if (room.status !== "playing" && room.status !== "ended") return;
+  if (room.game !== onlineGame || !isOnline()) { startOnline(room); return; }
+  if (room.seq <= onlineApplied) return; if (phase === "anim") { onlineQueued = { room, you }; return; }
+  const move = [...room.events].reverse().find(event => event.seq > onlineApplied && event.type === "move"); onlineApplied = room.seq;
+  if (move && room.state.moves > PS.g.moves) doMove(move.pit, true); else { PS.g = JSON.parse(JSON.stringify(room.state)); PS.vis = PS.g.b.slice(); PS.an = null; PS.fly = []; PS.hand = null; nextTurn(); }
+}
 
 /* ================= INPUT ================= */
 function on(id, fn) { $(id).addEventListener("click", (e) => { SFX.tap(); fn(e); }); }
 // MAIN langsung bermain di level terakhir (pertama kali: Mudah); chip di bawahnya untuk ganti lawan
 on("bMain", () => { if (mode !== "title") return; if (chal) { const c = chal; leaveTitle(() => startGame("chal", c.seed)); } else { const l = lastLv(); leaveTitle(() => startGame("normal", 0, l)); } });
+online = DehaOnline.create({ gameId: "congklak", title: "Congklak Online", onRoom: syncOnline, onExit: () => { if (isOnline()) toTitle(); } });
+on("bOnline", () => { if (mode === "title") online.open(); });
 on("bLv", () => { if (mode === "title") openLawan(); });
 for (const b of document.querySelectorAll("[data-lv]")) b.addEventListener("click", () => { SFX.tap(); if (mode !== "title") return; const l = +b.dataset.lv; ST.set("lv", l); $("sLawan").hidden = true; leaveTitle(() => startGame("normal", 0, l)); });
 on("bDuo", () => { if (mode !== "title") return; $("sLawan").hidden = true; leaveTitle(() => startGame("duo")); });
@@ -1352,7 +1379,7 @@ document.addEventListener("keydown", (e) => {
     else if (e.key === "Escape") { const ov = [...document.querySelectorAll(".dk-overlay")].filter((o) => !o.hidden && o.id !== "sOver" && o.id !== "sPause").pop(); if (ov) { const x = ov.querySelector("[data-close],[data-x]"); if (x) x.click(); else ov.hidden = true; } }
   }
 });
-document.addEventListener("visibilitychange", () => { if (document.hidden) pause(); });
+document.addEventListener("visibilitychange", () => { if (document.hidden && !isOnline()) pause(); });
 window.addEventListener("contextmenu", (e) => e.preventDefault());
 let rsT = 0; window.addEventListener("resize", () => { clearTimeout(rsT); rsT = setTimeout(layout, 120); });
 
@@ -1409,7 +1436,7 @@ function pillAt(x, y, s, bg, glow, sz) {
 function render(dt) {
   const g = ctx, S = activeScene();
   shake *= Math.pow(0.02, dt); if (shake < 0.3) shake = 0; if (flash > 0) flash -= dt;
-  g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.drawImage(BG, 0, 0); if (SIDE && S === PS) g.drawImage(SIDE, 0, 0);
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; if(!window.DehayukVisual.scene(g,cv.width,cv.height)){g.drawImage(BG,0,0);if(SIDE&&S===PS)g.drawImage(SIDE,0,0);}
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
   for (const m of MOTES) { // debu cahaya melayang
     const x = ((m[0] * vw + Math.sin(time * 0.3 + m[3]) * 30) % vw + vw) % vw, y = ((m[1] * vh - time * m[4]) % vh + vh) % vh;
@@ -1487,7 +1514,7 @@ function drawBoard(S) {
   const tt = S === PS && !COVER, turn = S.g.turn;
   for (const sd of [0, 1]) {
     const st = sd ? 15 : 7, n = S.vis[st], lp = pillUV(sd), p = toS(lp[0], lp[1]);
-    const lab = tt ? (kind === "duo" ? "P" + (sd + 1) + " · " + n : (sd ? "KOMPUTER " : "KAMU ") + n) : String(n);
+    const lab = tt ? (isOnline() ? online.name(sd).toUpperCase().slice(0, 12) + " " + n : kind === "duo" ? "P" + (sd + 1) + " · " + n : (sd ? "KOMPUTER " : "KAMU ") + n) : String(n);
     pillAt(p[0], p[1], lab, sd ? COLB : COLA, tt && !PS.g.over && turn === sd && mode === "play", tt ? 17 : 14);
   }
   V.cx -= ox; V.cy -= oy;

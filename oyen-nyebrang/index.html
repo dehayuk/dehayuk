@@ -187,7 +187,7 @@ body:has(#sOver:not([hidden])) .dk-toast{top:calc(var(--dk-st) + 12px);bottom:au
 #uji{position:fixed;left:4px;top:4px;right:4px;bottom:4px;overflow:auto;z-index:99;background:rgba(0,0,0,.88);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px}
 </style>
 <link rel="stylesheet" href="/kit/v1/menu-game.css">
-</head>
+<link rel="stylesheet" href="/studio/v2/panggung.css?v=20261022-all"><link rel="stylesheet" href="panggung.css?v=20261022-all"><script src="/studio/v2/panggung.js?v=20261022-all" data-world="native" data-game="oyen-nyebrang"></script></head>
 <body>
 <canvas id="cv" role="img" aria-label="Jalanan Oyen"></canvas>
 <div id="live" class="sr" aria-live="polite"></div>
@@ -784,9 +784,12 @@ const SKINS = [
 ];
 const FV = [[0, -1], [0, 1], [-1, 0], [1, 0]];
 // kucing di titik tanah (0,0); o: {u, sx, sy, air, tail, mood: 0 biasa, 1 gepeng, 2 basah, 3 senang}
+const oyenArt=[0,1,2,3].map(i=>{const im=new Image();im.src='/studio/v2/assets/oyen-'+i+'.webp';return im;});
 function drawCat(g, sk, face, o) {
+  const art=oyenArt[face===UP?1:face===DOWN?0:face===LEFT?2:3];
+  if(sk[0]==='oyen'&&!(o.mood>0)&&art.complete&&art.naturalWidth){const u=o.u,air=(o.air||0)/u;g.save();g.scale(u,u);g.fillStyle='#2b421c40';ell(g,0,-.02,.3*(1-min(.55,air*.8)),.12);g.fill();g.translate(0,-air);g.scale(o.sx||1,o.sy||1);const h=.97,w=h*art.naturalWidth/art.naturalHeight;g.drawImage(art,-w/2,-h,w,h);g.restore();return;}
   const u = o.u, air = (o.air || 0) / u, lw = .045, [fx, fy] = FV[face], upF = face === UP, side = fx;
-  const hb = sk[9] || sk[2];
+  const hb = sk[9] || sk[2],fur=(col,x,y,r)=>{const q=g.createRadialGradient(x-r*.35,y-r*.45,.01,x+r*.15,y+r*.15,r*1.4);q.addColorStop(0,lite(col,.35));q.addColorStop(.4,col);q.addColorStop(1,lite(col,-.25));return q;};
   g.save(); g.scale(u, u);
   g.fillStyle = "rgba(30,20,10,.24)"; const ss = 1 - min(.55, air * .8); ell(g, 0, -.02, .33 * ss, .13 * ss); g.fill();
   g.translate(0, -air); g.scale(o.sx || 1, o.sy || 1); g.lineJoin = "round"; g.lineCap = "round";
@@ -805,7 +808,7 @@ function drawCat(g, sk, face, o) {
       if (sk[8] === "luka" && e > 0) { g.fillStyle = hb; g.beginPath(); g.arc(ex + e * HR * .14, ey - HR * .3, HR * .1, 0, TAU); g.fill(); }
       g.beginPath(); g.moveTo(ex - e * HR * .15, ey + HR * .1); g.lineTo(ex + e * HR * .14, ey - HR * .3); g.lineTo(ex + e * HR * .24, ey + HR * .18); g.closePath(); g.fillStyle = "#ffb3c1"; g.fill();
     }
-    ell(g, hx, hy, HR * 1.08, HR); fl(g, hb, lw);
+    ell(g, hx, hy, HR * 1.08, HR); fl(g, fur(hb,hx,hy,HR), lw*.65);
     if (sk[7] === 0 || sk[9]) { g.strokeStyle = sk[4]; g.lineWidth = .04; for (const e of [-.35, 0, .35]) { g.beginPath(); g.moveTo(hx + e * HR, hy - HR * .95); g.lineTo(hx + e * HR * .8, hy - HR * (upF ? .2 : .55)); g.stroke(); } }
     if (sk[7] === 1) { g.fillStyle = sk[4]; ell(g, hx - HR * .45, hy - HR * .45, HR * .4, HR * .33); g.fill(); g.fillStyle = "#3a2a22"; ell(g, hx + HR * .5, hy - HR * .5, HR * .33, HR * .28); g.fill(); }
     if (sk[7] === 3) batik(g, hx, hy - HR * .3, HR * .8, sk, u);
@@ -844,7 +847,7 @@ function drawCat(g, sk, face, o) {
   const tailBehind = fy >= 0 || fx !== 0;
   if (upF) head();
   if (tailBehind) tail();
-  ell(g, 0, by, .29, .25); fl(g, sk[2], lw);
+  ell(g, 0, by, .29, .25); fl(g, fur(sk[2],0,by,.29), lw*.65);
   if (sk[7] === 0) { g.strokeStyle = sk[4]; g.lineWidth = .05; for (const e of [-.12, .02, .16]) { g.beginPath(); g.arc(0, by + e - .18, .2, .25 * PI, .75 * PI); g.stroke(); } }
   if (sk[7] === 1) { g.fillStyle = sk[4]; ell(g, -.12, by - .06, .12, .09); g.fill(); g.fillStyle = "#3a2a22"; ell(g, .13, by + .05, .1, .08); g.fill(); }
   if (sk[7] === 3) batik(g, 0, by, .2, sk, u);
@@ -1100,7 +1103,7 @@ function buildRow(w, L, row) {
   const c0 = floor(-gx0 / u) - 1, c1 = ceil((vw - gx0) / u), X = (c) => gx0 + c * u, H = (c, k) => hsh(row * 131 + c * 17 + k * 7919 + (w.seed & 1023));
   B_NIGHT = B.night ? 1 : 0;
   if (L.t === L_G) {
-    g.fillStyle = L.hedge ? (row === -2 ? "#dcc49a" : "#7cb85a") : B.g[row & 1]; g.fillRect(0, y0, vw, u);
+    const grassColor=L.hedge?(row===-2?'#dcc49a':'#7cb85a'):B.g[row&1],grass=g.createLinearGradient(0,y0,0,y1);grass.addColorStop(0,lite(grassColor,.12));grass.addColorStop(.8,grassColor);grass.addColorStop(1,lite(grassColor,-.15));g.fillStyle=grass;g.fillRect(0,y0,vw,u);
     for (let c = c0; c <= c1; c++) {
       const h = H(c, 1), x = X(c);
       if (L.b === 1 && !L.hedge) { g.fillStyle = "rgba(0,0,0,.07)"; g.fillRect(x, y0, u * .03, u); g.fillRect(x + u * .5, y0, u * .02, u); g.fillRect(x, y0 + u * .5, u, u * .02); }
@@ -1125,7 +1128,7 @@ function buildRow(w, L, row) {
       g.font = "800 " + round(u * .34) + "px 'Baloo 2',sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillStyle = INK; g.fillText(B.n.toUpperCase(), (xa + xb) / 2, yy + u * .35);
     }
   } else if (L.t === L_R) {
-    g.fillStyle = B.road; g.fillRect(0, y0, vw, u);
+    const asphalt=g.createLinearGradient(0,y0,0,y1);asphalt.addColorStop(0,lite(B.road,.07));asphalt.addColorStop(.5,B.road);asphalt.addColorStop(1,lite(B.road,-.13));g.fillStyle=asphalt;g.fillRect(0,y0,vw,u);
     g.fillStyle = "rgba(255,255,255,.05)"; for (let k = 0; k < vw / u * 3; k++) { const h = H(k, 5); g.fillRect(h * vw, y0 + H(k, 6) * u, u * .06, u * .06); }
     if (up.t === L_R) { g.fillStyle = "rgba(255,255,255,.85)"; for (let x = (gx0 % (u * .8)) - u * .8; x < vw; x += u * .8) g.fillRect(x, y0 - u * .03, u * .42, u * .06); }
     if (dn.t !== L_R) { g.fillStyle = "#cfcfd6"; g.fillRect(0, y1 - u * .12, vw, u * .12); g.fillStyle = "rgba(0,0,0,.15)"; g.fillRect(0, y1 - u * .12, vw, u * .025); }

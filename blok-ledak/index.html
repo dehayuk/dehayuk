@@ -146,7 +146,7 @@ canvas{display:block}
 #uji{position:fixed;left:4px;top:4px;right:4px;bottom:4px;overflow:auto;z-index:99;background:rgba(0,0,0,.86);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px}
 </style>
 <link rel="stylesheet" href="/kit/v1/menu-game.css">
-</head>
+<link rel="stylesheet" href="/studio/v2/panggung.css?v=20261022-all"><link rel="stylesheet" href="panggung.css?v=20261022-all"><link rel="preload" as="image" href="/studio/v2/assets/neon.webp"><script src="/studio/v2/panggung.js?v=20261022-all" data-world="neon" data-game="blok-ledak"></script><script src="/studio/v3/materials.js?v=20261022-objects"></script></head>
 <body>
 <canvas id="cv"></canvas>
 <div id="probe"></div>
@@ -528,26 +528,7 @@ function rr(g, x, y, w, h, r) {
 }
 function quad(g, a, b, c, d, e, f, h, i, col) { g.beginPath(); g.moveTo(a, b); g.lineTo(c, d); g.lineTo(e, f); g.lineTo(h, i); g.closePath(); g.fillStyle = col; g.fill(); }
 // blok jeli mengilap: tepi gelap, bevel empat sisi, muka cembung, kilau
-function makeBlock(p, s, px) {
-  const P = px || Math.max(6, Math.round(s * dpr)), c = mk(P), g = c.getContext("2d"), k = P / s;
-  g.scale(k, k);
-  const m = s * 0.025, w = s - 2 * m, r = s * 0.2, b = s * 0.15, x0 = m, y0 = m, x1 = m + w, y1 = m + w;
-  rr(g, x0, y0, w, w, r); g.fillStyle = p[3]; g.fill();
-  g.save(); rr(g, x0 + s * 0.04, y0 + s * 0.035, w - s * 0.08, w - s * 0.085, r * 0.85); g.clip();
-  g.fillStyle = p[1]; g.fillRect(x0, y0, w, w);
-  quad(g, x0, y0, x1, y0, x1 - b, y0 + b, x0 + b, y0 + b, p[0]);
-  quad(g, x0, y1, x1, y1, x1 - b, y1 - b, x0 + b, y1 - b, p[2]);
-  quad(g, x0, y0, x0 + b, y0 + b, x0 + b, y1 - b, x0, y1, mix(p[0], p[1], 0.45));
-  quad(g, x1, y0, x1 - b, y0 + b, x1 - b, y1 - b, x1, y1, mix(p[1], p[2], 0.6));
-  g.restore();
-  const f = s * 0.17, fw = s - 2 * f;
-  const fg = g.createLinearGradient(0, f, 0, f + fw); fg.addColorStop(0, mix(p[1], p[0], 0.35)); fg.addColorStop(0.55, p[1]); fg.addColorStop(1, mix(p[1], p[2], 0.45));
-  rr(g, f, f * 0.95, fw, fw, r * 0.55); g.fillStyle = fg; g.fill();
-  g.fillStyle = "rgba(255,255,255,.32)"; rr(g, f + s * 0.04, f * 0.95 + s * 0.02, fw - s * 0.08, fw * 0.4, [r * 0.45, r * 0.45, r * 0.25, r * 0.25]); g.fill();
-  g.fillStyle = "rgba(255,255,255,.95)"; rr(g, m + s * 0.1, m + s * 0.075, s * 0.2, s * 0.075, s * 0.04); g.fill();
-  g.beginPath(); g.arc(m + s * 0.36, m + s * 0.112, s * 0.035, 0, TAU); g.fill();
-  return c;
-}
+function makeBlock(p,s,px){const P=px||Math.max(6,Math.round(s*dpr)),c=mk(P),g=c.getContext('2d');g.scale(P/s,P/s);window.DehayukVisual.jewel(g,0,0,s,p[1]);return c;}
 function makeWhite(s) { // siluet putih untuk kilatan
   const c = mk(Math.round(s * dpr)), g = c.getContext("2d"), k = c.width / s; g.scale(k, k);
   rr(g, s * 0.025, s * 0.025, s * 0.95, s * 0.95, s * 0.2); g.fillStyle = "#fff"; g.fill(); return c;
@@ -673,17 +654,17 @@ function buildBoard() {
   const R = F * 1.7;
   g.fillStyle = "rgba(25,5,60,.4)"; rr(g, 3, 11, BO, BO, R); g.fill();
   rr(g, 0, 0, BO, BO, R); g.fillStyle = INK; g.fill();
-  const fr = g.createLinearGradient(0, 0, 0, BO); fr.addColorStop(0, "#ffe19a"); fr.addColorStop(0.18, "#ffb53d"); fr.addColorStop(0.7, "#f08a24"); fr.addColorStop(1, "#b9581a");
+  const fr = g.createLinearGradient(0, 0, 0, BO); fr.addColorStop(0, "#b5fbff"); fr.addColorStop(0.18, "#3ecde9"); fr.addColorStop(0.7, "#445ac9"); fr.addColorStop(1, "#262663");
   rr(g, 3, 3, BO - 6, BO - 6, R - 2); g.fillStyle = fr; g.fill();
   g.fillStyle = "rgba(255,255,255,.4)"; rr(g, R * 0.7, 5, BO - R * 1.4, Math.max(3, F * 0.28), 3); g.fill();
   g.fillStyle = "rgba(120,40,0,.25)"; rr(g, R * 0.7, BO - 5 - Math.max(3, F * 0.25), BO - R * 1.4, Math.max(3, F * 0.25), 3); g.fill();
   const iw = 8 * C;
   rr(g, F - 3, F - 3, iw + 6, iw + 6, F * 0.8); g.fillStyle = INK; g.fill();
-  const wg = g.createLinearGradient(0, F, 0, F + iw); wg.addColorStop(0, "#1c1146"); wg.addColorStop(1, "#2b1c62");
+  const wg = g.createLinearGradient(0, F, 0, F + iw); wg.addColorStop(0, "#07132e"); wg.addColorStop(1, "#101d44");
   rr(g, F, F, iw, iw, F * 0.6); g.fillStyle = wg; g.fill();
   for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
     const px = F + x * C, py = F + y * C, q = C * 0.07;
-    rr(g, px + q, py + q, C - 2 * q, C - 2 * q, C * 0.2); g.fillStyle = "#33267a"; g.fill();
+    rr(g, px + q, py + q, C - 2 * q, C - 2 * q, C * 0.2); g.fillStyle = "#14234a"; g.fill();
     rr(g, px + q, py + q, C - 2 * q, C * 0.16, [C * 0.2, C * 0.2, 0, 0]); g.fillStyle = "rgba(10,0,30,.28)"; g.fill();
     rr(g, px + q + C * 0.1, py + C - q - C * 0.07, C - 2 * q - C * 0.2, C * 0.05, 2); g.fillStyle = "rgba(160,140,255,.22)"; g.fill();
   }
@@ -1126,7 +1107,7 @@ function setT(sx, x, y) { ctx.setTransform(dpr * sx, 0, 0, dpr * sx, dpr * x, dp
 function drawBack(dt, cx, cy) {
   const c = ctx;
   c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1;
-  c.drawImage(BG, 0, 0);
+  if(window.DehayukVisual.scene(c,cv.width,cv.height))return;c.drawImage(BG, 0, 0);
   const R = Math.hypot(vw, vh) * 0.75, a = time * 0.12, co = Math.cos(a) * R / 256 * dpr, si = Math.sin(a) * R / 256 * dpr;
   c.setTransform(co, si, -si, co, cx * dpr, cy * dpr); c.drawImage(RAYS, -256, -256);
   for (let k = 0; k < FLOAT.length; k++) {
@@ -1143,11 +1124,11 @@ function render(dt) {
   drawBack(dt, BX + BO / 2, BY + BO / 2);
   shake *= Math.pow(0.015, dt); if (shake < 0.3) shake = 0;
   const sx = shake ? (Math.random() - 0.5) * shake : 0, sy = shake ? (Math.random() - 0.5) * shake : 0;
-  const e = entry, es = e >= 1 ? 1 : 0.86 + 0.14 * (1 - Math.pow(1 - e, 3)) + Math.sin(e * Math.PI) * 0.04;
+  const e = entry, es = 1;
   const ccx = BX + BO / 2, ccy = BY + BO / 2;
   const ox = ccx * (1 - es) + sx, oy = ccy * (1 - es) + sy;
   // rak baki
-  c.globalAlpha = Math.min(1, e * 1.5);
+  c.globalAlpha = 1;
   setT(1, 0, 0); c.drawImage(SHELF, 0, 0, SHELF.width, SHELF.height, SHELF.x, SHELF.y, SHELF.w, SHELF.h);
   // papan
   setT(es, ox, oy);

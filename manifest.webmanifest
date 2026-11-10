@@ -1,18 +1,92 @@
 {
-  "name": "Dehayuk",
+  "id": "/",
+  "name": "Dehayuk — Game Indonesia",
   "short_name": "Dehayuk",
-  "description": "Game ringan buatan Indonesia. Bisa dimainkan tanpa internet.",
-  "lang": "id",
-  "start_url": "/?sumber=layar-utama",
+  "description": "Kumpulan game ringan buatan Indonesia. Langsung main, bisa dipasang, dan game tersimpan dapat dimainkan tanpa internet.",
+  "lang": "id-ID",
+  "dir": "ltr",
+  "start_url": "/?sumber=pwa",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
   "background_color": "#0D0F1C",
   "theme_color": "#0D0F1C",
   "categories": ["games", "entertainment"],
+  "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
   "icons": [
-    { "src": "/ikon/ikon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/ikon/ikon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/ikon/ikon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/ikon/ikon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/ikon/ikon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/ikon/ikon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/ikon/ikon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/pwa/tampilan-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Beranda Dehayuk di ponsel"
+    },
+    {
+      "src": "/pwa/tampilan-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Koleksi game Dehayuk"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Jatuh Buah",
+      "short_name": "Jatuh Buah",
+      "description": "Gabungkan buah sampai menjadi durian.",
+      "url": "/jatuh-buah/?sumber=pwa-pintasan",
+      "icons": [{"src": "/jatuh-buah/ikon-n1.png", "sizes": "512x512", "type": "image/png"}]
+    },
+    {
+      "name": "Ludo Nusantara",
+      "short_name": "Ludo",
+      "description": "Main Ludo Nusantara.",
+      "url": "/ludo/?sumber=pwa-pintasan",
+      "icons": [{"src": "/ludo/ikon-n1.png", "sizes": "512x512", "type": "image/png"}]
+    },
+    {
+      "name": "Catur",
+      "short_name": "Catur",
+      "description": "Main catur offline atau di satu meja global.",
+      "url": "/catur/?sumber=pwa-pintasan",
+      "icons": [{"src": "/catur/ikon-n1.png", "sizes": "512x512", "type": "image/png"}]
+    },
+    {
+      "name": "Sortir Cairan",
+      "short_name": "Sortir",
+      "description": "Susun cairan berwarna di bengkel kaca.",
+      "url": "/sortir-cairan/?sumber=pwa-pintasan",
+      "icons": [{"src": "/sortir-cairan/ikon-20261022.png", "sizes": "512x512", "type": "image/png"}]
+    }
   ]
 }

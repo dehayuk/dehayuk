@@ -21,7 +21,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d1b32"><title>Balok Jatuh · Dehayuk</title>
 <link rel="stylesheet" href="/kit/v1/kit.css"><link rel="stylesheet" href="gaya.css"><link rel="stylesheet" href="/kit/v1/menu-game.css">
-</head><body>
+<link rel="stylesheet" href="/studio/v2/panggung.css?v=20261022-all"><link rel="stylesheet" href="panggung.css?v=20261022-all"><link rel="preload" as="image" href="/studio/v2/assets/neon.webp"><script src="/studio/v2/panggung.js?v=20261022-all" data-world="neon" data-game="balok-jatuh"></script><script src="/studio/v3/materials.js?v=20261022-objects"></script></head><body>
 <section id="home" class="screen" aria-label="Balok Jatuh">
  <header class="topbar"><a href="/" class="home-link" aria-label="Kembali ke Dehayuk">‹</a><span class="brand">Dehayuk · arcade klasik</span><span class="badge" id="progress">Level 1 · 0 hari</span></header>
  <div class="home-layout">
@@ -153,16 +153,10 @@
  $('daily').onclick=()=>{const saved=store.get('daily',null),used=saved&&saved.date===K.dateKey();$('dailyText').textContent=used?'Percobaan hari ini sudah dimulai'+(saved.score!==null?' · Skor '+fmt(saved.score):'')+'. Kamu tetap bisa bermain mode klasik.':'Urutan balok yang sama untuk semua pemain hari ini. Satu percobaan resmi per perangkat, mulai dari level 1.';$('startDaily').hidden=!!used;$('dailyDialog').showModal();(used?$('closeDaily'):$('startDaily')).focus();};
  $('startDaily').onclick=()=>{const saved=store.get('daily',null);if(!(saved&&saved.date===K.dateKey()))start('daily');};$('closeDaily').onclick=()=>$('dailyDialog').close();
  for(const id of dialogs)$(id).addEventListener('cancel',e=>{e.preventDefault();if(id==='paused')resume();else if(id==='help')$('closeHelp').click();else if(id==='dailyDialog')$(id).close();});
- function block(c,x,y,size,type,alpha=1){
-  const color=colors[type];c.save();c.globalAlpha=alpha;const p=Math.max(1,size*.045),r=size*.13;c.translate(x,y);
-  const grad=c.createLinearGradient(0,0,size,size);grad.addColorStop(0,'#ffffff');grad.addColorStop(.09,color);grad.addColorStop(1,color);
-  c.fillStyle='#030d20';c.beginPath();c.roundRect(p,p,size-p*2,size-p*2,r);c.fill();c.fillStyle=grad;c.beginPath();c.roundRect(p+1,p+1,size-p*2-2,size-p*2-3,r);c.fill();
-  c.fillStyle='#fff7';c.beginPath();c.roundRect(size*.14,size*.12,size*.71,size*.12,r/2);c.fill();c.fillStyle='#0003';c.fillRect(size*.15,size*.83,size*.7,size*.07);
-  c.strokeStyle='#fff2';c.lineWidth=Math.max(1,size*.035);c.strokeRect(size*.2,size*.31,size*.6,size*.43);c.restore();
- }
+ function block(c,x,y,size,type,alpha=1){window.DehayukVisual.jewel(c,x,y,size,colors[type],alpha);}
  function drawNext(){nctx.clearRect(0,0,160,100);if(!game)return;const m=B.matrix(game.next),s=25,occupied=[];m.forEach((r,y)=>r.forEach((v,x)=>{if(v)occupied.push([x,y]);}));const maxX=Math.max(...occupied.map(p=>p[0])),minX=Math.min(...occupied.map(p=>p[0])),maxY=Math.max(...occupied.map(p=>p[1])),minY=Math.min(...occupied.map(p=>p[1]));for(const[x,y]of occupied)block(nctx,80-(maxX-minX+1)*s/2+(x-minX)*s,50-(maxY-minY+1)*s/2+(y-minY)*s,s,game.next);}
  function render(dt){
-  if(!game)return;ctx.clearRect(0,0,400,800);ctx.fillStyle='#09162b';ctx.fillRect(0,0,400,800);
+  if(!game)return;ctx.clearRect(0,0,400,800);const bg=ctx.createLinearGradient(0,0,400,800);bg.addColorStop(0,'#061024');bg.addColorStop(1,'#111335');ctx.fillStyle=bg;ctx.fillRect(0,0,400,800);
   ctx.strokeStyle='#7190b011';ctx.lineWidth=1;ctx.beginPath();for(let x=1;x<10;x++){ctx.moveTo(x*40,0);ctx.lineTo(x*40,800);}for(let y=1;y<20;y++){ctx.moveTo(0,y*40);ctx.lineTo(400,y*40);}ctx.stroke();
   for(let y=0;y<20;y++)for(let x=0;x<10;x++)if(game.board[y][x])block(ctx,x*40,y*40,40,game.board[y][x]);
   if(!game.over){const ghost=game.ghost();ctx.strokeStyle=colors[game.active.type]+'70';ctx.lineWidth=2;for(const[x,y]of B.cells(ghost))if(y>=0){ctx.beginPath();ctx.roundRect(x*40+5,y*40+5,30,30,5);ctx.stroke();}

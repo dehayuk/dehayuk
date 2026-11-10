@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-22",
+  "purpose": "Interactive Nusantara Tycoon foreground assets",
+  "originalDirectory": "C:/Users/HP/.codex/generated_images/01a111c5-17af-74e2-b6f1-6a337d708df4",
+  "assets": [
+    {
+      "role": "board",
+      "tool": "image_gen.imagegen (built-in)",
+      "prompt": "Use case: stylized-concept. Asset type: actual interactive board material texture for Nusantara Tycoon, not a background environment or mockup. Use the supplied game cover as the material, color and craft reference. Make ONE square board photographed STRICTLY ORTHOGRAPHIC TOP DOWN, perfectly square edges parallel to image, no perspective, no tilt. Beautiful substantial polished Indonesian teak board with finely carved Nusantara floral relief and restrained gold inlays around the outermost 5 percent border. Thick warm dark teak edges with realistic wood grain, sculpted golden corner medallions and edge bevel highlights. The ENTIRE INNER 90 percent is an EMPTY warm ivory parchment / pale maple inlay, tactile delicate fibres and subtle tiny golden filigree confined to its four corners. Center calm pale cream with fine natural material texture. Consistent soft upper-left light and subtle inset depth. Crisp premium mobile game 3D rendering at high detail. Absolutely NO game grid, no cells, no dice, no pawns, no buildings, no map, no text, no title, no letters, no UI, no scenery outside board. Fill the image with this single board material surface, board frame flush with image edges. All game cells, buildings, map, labels, dice and tokens will be placed INTERACTIVELY by code over this texture.",
+      "original": "exec-be3a1365-d54b-4917-a4ef-7327641e6e9d.png",
+      "finalFiles": [
+        "studio/v2/assets/tycoon-v3-board.webp",
+        "studio/v2/assets/tycoon-v3-parchment.webp",
+        "studio/v2/assets/tycoon-v3-inlay.webp"
+      ]
+    },
+    {
+      "role": "pawn",
+      "tool": "image_gen.imagegen (built-in)",
+      "prompt": "Use case: stylized-concept. Asset type: four premium 3D board-game pawn sprites for Nusantara Tycoon, matching the glossy pawn in the supplied cover. One transparent sprite atlas, exactly TWO columns by TWO rows with equal quadrant cells and generous transparent padding. TOP LEFT polished ruby-red pawn; TOP RIGHT polished sapphire-blue pawn; BOTTOM LEFT polished emerald-teal pawn; BOTTOM RIGHT polished amber-gold pawn. SAME beautifully proportioned classic pawn design in all four cells: round spherical head, curved tapered neck and stem, wide stable circular sculpted base with a subtle brass gold rim. Rich glossy lacquer, real 3D volume, soft upper-left studio highlights, delicate reflected warm light, believable rounded silhouettes. Front three-quarter view with slight top view. All pawns same physical scale, centered in cells, full base visible, no overlap. NO text, no numbers, no UI, no dice, no scenery, no board, no cast ground shadow. Transparent background. These four individual sprites will become actual moving game pieces; no unrelated objects.",
+      "original": "exec-696b4f19-a059-445c-8621-6f5b39b9bed6.png",
+      "finalFiles": [
+        "studio/v2/assets/tycoon-v3-pawn-0.webp",
+        "studio/v2/assets/tycoon-v3-pawn-1.webp",
+        "studio/v2/assets/tycoon-v3-pawn-2.webp",
+        "studio/v2/assets/tycoon-v3-pawn-3.webp"
+      ]
+    },
+    {
+      "role": "landmark",
+      "tool": "image_gen.imagegen (built-in)",
+      "prompt": "Use case: stylized-concept. Asset type: coherent set of miniature Indonesian landmark and transport game pieces for an interactive property board. EXACTLY 12 separate miniature objects, centered in a regular 4 columns by 3 rows sprite atlas, on transparent background. All are premium richly detailed 3D board-game dioramas, like the beautifully crafted architecture miniatures in the supplied Nusantara Tycoon cover. Slightly elevated front three-quarter camera, warm soft upper-left light, vivid natural colors, wood/brass/terracotta and lush greenery details. Equal cell spacing with generous transparent margins. Row1 LEFT TO RIGHT: (1) Indonesian white mosque with dark domes and two small minarets; (2) Minangkabau rumah gadang with dramatic upswept buffalo-horn roof; (3) elegant red steel river bridge; (4) Javanese joglo house with warm terracotta roof. Row2 LEFT TO RIGHT: (5) Borobudur-inspired small stone stupa temple; (6) Balinese multi-roof temple with terracotta gateway; (7) traditional pinisi sailing ship with white sails and wood hull; (8) vintage blue locomotive with brass details. Row3 LEFT TO RIGHT: (9) small silver airplane beside a tiny terminal; (10) blue water tower; (11) green karst islands with turquoise water on a tiny base; (12) modern Indonesian city tower cluster with palms. Each miniature fully contained in its cell. NO ground shadow outside the object, no words, no labels, no grid lines, no border, no UI, no dice, no pawns, no scenery joining the sprites. Small plinth under each architecture may be present but must stay within that sprite. Genuine transparent background. We will split these into twelve image files and place them on actual interactive city cards.",
+      "original": "exec-778cce15-716b-4f2e-89ea-781c762d8e55.png",
+      "finalFiles": [
+        "studio/v2/assets/tycoon-v3-mosque.webp",
+        "studio/v2/assets/tycoon-v3-gadang.webp",
+        "studio/v2/assets/tycoon-v3-bridge.webp",
+        "studio/v2/assets/tycoon-v3-joglo.webp",
+        "studio/v2/assets/tycoon-v3-stupa.webp",
+        "studio/v2/assets/tycoon-v3-bali.webp",
+        "studio/v2/assets/tycoon-v3-pinisi.webp",
+        "studio/v2/assets/tycoon-v3-train.webp",
+        "studio/v2/assets/tycoon-v3-airport.webp",
+        "studio/v2/assets/tycoon-v3-water.webp",
+        "studio/v2/assets/tycoon-v3-islands.webp",
+        "studio/v2/assets/tycoon-v3-city.webp"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-22",
+  "tool": "image_gen.imagegen",
+  "originalsPreserved": true,
+  "assets": [
+    {
+      "name": "neon",
+      "prompt": "Use case: stylized-concept. Asset: production gameplay backdrop for Dehayuk's Balok Jatuh, Blok Ledak and Bola Pantul, three games in the same premium neon arcade world. Reference cover images specify the visual language ONLY. Landscape 1536x1024. Beautiful polished stylized 3D arcade pavilion with deep sapphire and violet atmosphere, glowing cyan and magenta light channels, a few faceted jewel cubes confined to outermost borders, curved luminous paths leading toward a calm deep-blue center, subtle reflections on a glossy floor at bottom. Center 70% width and center 80% height must remain very quiet, dark and low detail so actual interactive colourful numbered blocks, grids and balls will be rendered clearly over it. Edge illumination and small distant sparkles provide richness; no bright burst in center. No foreground game board, no grid of gameplay cells, no ball, no paddles, no lettering, no numbers, no logos, no UI, no characters. Premium animated-film lighting, sharp clean materials, saturated electric edge colours balanced with calm background. Works as centered portrait crop as well as desktop landscape. This is environment art only, not a mockup.",
+      "source": "exec-dd1b74dd-9fdb-499d-a038-2e338471c11b.png",
+      "output": "studio/v2/assets/neon.webp",
+      "processing": "WebP compression; atlases split into transparent sprites, no gameplay rendered into background."
+    },
+    {
+      "name": "orchard",
+      "prompt": "Use case: stylized-concept. Production game environment art, 1536x1024 landscape, for Dehayuk fruit games. References are existing Jatuh Buah and Iris Buah Nusantara covers, style/world only. Beautiful premium animated-film 3D tropical Indonesian orchard pavilion, warm morning sun, soft lush green fruit trees, distant rice terraces, a little carved wood and baskets confined to far side edges, lovely clear turquoise sky. Lower 45% is a smooth empty warmly lit wooden work surface, front view with slight elevation. Central 70% width is calm and low detail with soft warm green background so bright interactive fruit can fly and fall over it. Rich realistic wood material and luminous sun at borders, clean game-art finish, no text, no logos, no UI, no foreground fruit, no basket or bowl at center, no characters, no knife. The foreground fruit and container will be drawn interactively in code, do not bake them into this asset. Center portrait crop must remain useful. Cheerful lush sunny premium family game, not an empty flat gradient or a screenshot.",
+      "source": "exec-3feb258e-c45d-4ce2-b11e-9a055f2b14c1.png",
+      "output": "studio/v2/assets/orchard.webp",
+      "processing": "WebP compression; atlases split into transparent sprites, no gameplay rendered into background."
+    },
+    {
+      "name": "garden",
+      "prompt": "Production background game art for Dehayuk's Indonesian tile, word and congklak board games. Premium polished animated-film 3D rendering with luminous color and real rich materials, matching the attached existing covers' Indonesian garden world. 1536x1024 landscape composition. An elegant open tropical carved wooden pavilion, soft green rice terraces, blue distant mountains and turquoise lake, temple roofs at far sides, tiny frangipani foliage confined to corners. Foreground bottom 40 percent is an EMPTY smooth honey-colored wooden tabletop. The central 70 percent of the entire image must be quiet low-detail light jade and warm wood, suitable for placing interactive tiles and boards on top. Soft sunny light and warm reflections, dreamy depth and crisp edges. Absolutely NO foreground game board, letters, tiles, seeds, people, text, UI or logos. Do not put large props in middle. Portrait center crop should be usable. It is an environment asset, not a screenshot.",
+      "source": "exec-c2f2a23c-9e68-43ab-b38c-f14d702a711d.png",
+      "output": "studio/v2/assets/garden.webp",
+      "processing": "WebP compression; atlases split into transparent sprites, no gameplay rendered into background."
+    },
+    {
+      "name": "warung",
+      "prompt": "Production background environment asset for Dehayuk Jajan Manis and Warung Rasa cooking games. Style reference: attached existing cover, premium joyful animated-film 3D Indonesian street-food market. Rich color, warm natural light, tactile wood, red-and-cream canvas awning across top edge, leafy village rooftops and pretty food-stall shelves at far left and right edges. Central 70% of image is visually quiet, softly blurred pale warm teal and cream wall, no foreground characters. Lower 40% is a beautiful EMPTY honey-colored wooden kitchen worktop, no dishes, no food on center, soft reflections. 1536x1024 landscape, center portrait crop must be useful. Bright welcoming and clean, cinematic material detail, professional mobile game art. No words, text, logo, UI, characters, front counter blocking lower area, no game board. Interactive food and customers will be drawn by code above this environment.",
+      "source": "exec-57327216-b544-4b23-9962-61320ffcfcf1.png",
+      "output": "studio/v2/assets/warung.webp",
+      "processing": "WebP compression; atlases split into transparent sprites, no gameplay rendered into background."
+    },
+    {
+      "name": "lapis",
+      "prompt": "Production background environment art for Dehayuk Tumpuk Lapis, a colorful Indonesian cake stacking game. Use existing cover as sunny premium 3D family-game style reference. Landscape1536x1024. Beautiful tropical cake terrace high above a lake, distant Balinese temple rooftops and colorful Indonesian city skyline, lush far-edge plants, brilliant clear cyan sky, soft puffy clouds, gentle warm sunlight. Lower 25 percent a large EMPTY warmly lit pale-cream stone serving surface. Central 65 percent width must be calm clear blue sky and very soft distant view so a tall interactive cake tower can be drawn over it. Rich but restrained cinematic color, real tactile materials, premium animated-film finish. NO cake, plate, tower, foreground objects, characters, words, letters, logo or UI. Composition must work as portrait center crop.",
+      "source": "exec-1993bdec-66e4-477c-9495-43cd723102e4.png",
+      "output": "studio/v2/assets/lapis.webp",
+      "processing": "WebP compression; atlases split into transparent sprites, no gameplay rendered into background."
+    },
+    {
+      "name": "tycoon",
+      "prompt": "Production environment art asset for Dehayuk Nusantara Tycoon, a polished tropical property board game, use existing cover only as color and world reference. 1536x1024 landscape. A high-end Indonesian coastal pavilion tabletop, turquoise archipelago sea and sunlit green islands in distant background, small beautifully crafted Indonesian city landmarks confined to FAR outer edges. EMPTY central 75 percent, smooth deep teal felt tabletop transitioning into quiet turquoise distance, subtle elegant gold inlay border ONLY at very outer edges. Rich glossy wood and warm gold lighting, bright cinematic 3D mobile game quality, sapphire/teal and sun gold. No board, no dice, no tokens, no cards, no letters, no text, no logo or UI. Interactive board will be placed above this environment. Useful central portrait crop, low-detail center, beautiful but subordinate to legible gameplay.",
+      "source": "exec-9e241ce9-82a0-4a86-8908-179da1c03b88.png",
+      "output": "studio/v2/assets/tycoon.webp",
+      "processing": "WebP compression; atlases split into transparent sprites, no gameplay rendered into background."
+    },
+    {
+      "name": "catur",
+      "prompt": "Production environment background for Dehayuk Catur chess game. Reference existing cover for onyx/ivory/gold and royal violet identity. Premium stylized realistic 3D royal Indonesian-inspired pavilion at twilight, deep amethyst and midnight navy, subtle elegant warm gold pillars and carved details at FAR outer edges only, soft violet light, tiny distant garden lights, luxurious polished dark marble table across bottom45%. Center75% calm very dark violet with restrained soft lighting, empty space for an interactive chessboard. Landscape1536x1024 usable portrait center crop. Beautiful cinematic physical materials, crisp refined game art, no heavy fog. NO chess pieces, chessboard, dice, people, words, logo, letters or UI. Environment should make ivory and onyx pieces readable above it rather than competing with them.",
+      "source": "exec-a49738ce-a624-4922-8c5a-9fd422fcdbc8.png",
+      "output": "studio/v2/assets/catur.webp",
+      "processing": "WebP compression; atlases split into transparent sprites, no gameplay rendered into background."
+    },
+    {
+      "name": "oyen",
+      "prompt": "Use case: sprite sheet, production transparent sprite atlas for Dehayuk Oyen Nyebrang. Create exactly FOUR separate full-body views of the SAME adorable glossy 3D orange tabby kitten mascot, matching the supplied cover's kitten, in an aligned 2 by 2 grid. TOP LEFT: facing directly toward camera (front); TOP RIGHT: facing directly away from camera (back, show ears back of head and tail, NO face); BOTTOM LEFT: strict left-facing side profile; BOTTOM RIGHT: strict right-facing side profile. Standing on four tiny paws with cute chubby body, large rounded head, cream muzzle/chest/paws, warm orange striped fur, big expressive glossy green eyes on visible face, no clothing/accessories. Professional animated-film game character render, sunny soft light, luminous saturated orange, subtle real fur texture, clean smooth outline. Each sprite centered within its own quadrant, same physical scale and height, all paws visible, generous transparent padding between sprites and all edges. No perspective ground, no cast ground shadow, no background, no boxes, no words, no letters, no logo, no UI. These are directional game animation assets, not four different cats. Transparent background.",
+      "source": "exec-a445156b-03fb-4e4d-a2ae-76bae8c3c4f3.png",
+      "output": "studio/v2/assets/oyen-{0..3}.webp",
+      "processing": "WebP compression; atlases split into transparent sprites, no gameplay rendered into background."
+    },
+    {
+      "name": "fruit",
+      "prompt": "Production sprite atlas of SIX distinct tropical fruit objects for a premium 3D Indonesian fruit slicing game. Exactly a 3 columns by 2 rows regular grid with transparent background. Each whole fruit isolated and centered within its own cell with generous empty transparent margin, same approximate visual size, no overlap. Row1 left to right: a ripe golden-orange mango with a little red blush and one green leaf; a deep-purple mangosteen with green calyx; a round striped green watermelon. Row2 left to right: a bright orange with tiny natural pores and small green leaf; a green young coconut with subtle fibrous skin; a vivid pink dragonfruit with green-tipped petals. Beautiful juicy natural fruit material, glossy soft studio light from upper left, realistic animated-film mobile-game render, very crisp silhouettes, bright appetizing saturated color, gentle shading. Whole uncut fruit, no faces, no bowls, no ground shadows, no table, no words, no text, no UI, no border/grid lines. Transparent canvas.",
+      "source": "exec-11cd027a-df12-4ec7-a03a-6d195271cce6.png",
+      "output": "studio/v2/assets/fruit-{0..5}.webp",
+      "processing": "WebP compression; atlases split into transparent sprites, no gameplay rendered into background."
+    },
+    {
+      "name": "chess",
+      "prompt": "Production transparent chess piece sprite atlas for Dehayuk Catur. Exactly TWELVE isolated chess pieces in a regular SIX columns by TWO rows grid. Top row from left to right: ivory PAWN, ivory ROOK, ivory KNIGHT, ivory BISHOP, ivory QUEEN, ivory KING. Bottom row in same order: black onyx PAWN, black onyx ROOK, black onyx KNIGHT, black onyx BISHOP, black onyx QUEEN, black onyx KING. Classic recognizable Staunton shapes, elegant luxurious polished ivory and black onyx, restrained brushed gold collars and base rims. Queen has crown, king has traditional cross, bishop has diagonal miter slit, knight is horse head. Individual bases at same row baseline, front-facing three-quarter view with slight top view, white pieces visibly cream-white, black pieces visibly dark charcoal with crisp reflected highlights. Premium realistic 3D game art, upper-left soft studio light. Transparent background, no board, ground shadow, text, numbers, captions, borders, UI or objects. Each piece fully visible and centered in its own equally spaced cell, generous empty padding, no overlap. Top row and bottom row clearly separated. Consistent scale of bases; pawn naturally shorter than king. Need all twelve pieces with distinct silhouettes.",
+      "source": "exec-2354c95b-d81e-4f26-b210-4982e1a4dffc.png",
+      "output": "studio/v2/assets/chess-{w,b}{p,r,n,b,q,k}.webp",
+      "processing": "WebP compression; atlases split into transparent sprites, no gameplay rendered into background."
+    }
+  ]
+}

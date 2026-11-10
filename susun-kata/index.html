@@ -197,7 +197,7 @@ canvas{display:block}
 #uji{position:fixed;left:4px;top:4px;right:4px;bottom:4px;overflow:auto;z-index:99;background:rgba(0,0,0,.86);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px}
 </style>
 <link rel="stylesheet" href="/kit/v1/menu-game.css">
-</head>
+<link rel="stylesheet" href="/studio/v2/panggung.css?v=20261022-all"><link rel="stylesheet" href="panggung.css?v=20261022-all"><link rel="preload" as="image" href="/studio/v2/assets/garden.webp"><script src="/studio/v2/panggung.js?v=20261022-all" data-world="garden" data-game="susun-kata"></script></head>
 <body>
 <canvas id="cv" role="img" aria-label="Papan silang kata dan roda huruf"></canvas>
 <div id="sr" class="vhid" aria-live="polite"></div>
@@ -754,6 +754,7 @@ function hills(i) {
   HILLS.h = h; HILLS.w = w; return HILLS;
 }
 function drawBackdrop(dt) {
+  if(window.DehayukVisual.scene(ctx,vw,vh,{shade:themeMix().night*.5}))return;
   const g = ctx, m = themeMix(), k = Math.min(1, thT), base = k >= 1 ? thB : thA, blend = k < 1 && thA !== thB;
   g.drawImage(skyOf(base), 0, 0, vw, vh); if (blend) { g.globalAlpha = k; g.drawImage(skyOf(thB), 0, 0, vw, vh); g.globalAlpha = 1; }
   if (m.night > 0.05) for (const s of STARS) { g.globalAlpha = m.night * (0.5 + 0.5 * Math.sin(time * 2 + s[3])); g.fillStyle = "#fff"; g.beginPath(); g.arc(s[0] * vw, s[1] * vh, s[2], 0, TAU); g.fill(); }
@@ -811,18 +812,12 @@ function bunting() {
   }
 }
 // ubin huruf: kotak bulat bergaris tepi dengan kilap
-function tile(g, x, y, s, ch, cols, st) {
-  const r = s * 0.22, lw = Math.max(1.5, s * 0.07);
-  g.fillStyle = INK; rr(g, x, y + s * 0.07, s, s, r); g.fill();
-  const gr = g.createLinearGradient(0, y, 0, y + s); gr.addColorStop(0, cols[0]); gr.addColorStop(1, cols[1]);
-  g.fillStyle = gr; rr(g, x, y, s, s, r); g.fill(); g.lineWidth = lw; g.strokeStyle = INK; g.stroke();
-  g.fillStyle = "rgba(255,255,255,.45)"; rr(g, x + s * 0.12, y + s * 0.09, s * 0.76, s * 0.2, s * 0.1); g.fill();
-  if (ch) {
-    g.font = fontPx(s * 0.66); g.textAlign = "center"; g.textBaseline = "middle"; g.lineJoin = "round";
-    const L = ch.toUpperCase(), cx = x + s / 2, cy = y + s * 0.54;
-    if (st === 1) { g.fillStyle = INK; g.fillText(L, cx, cy); }
-    else { g.lineWidth = s * 0.14; g.strokeStyle = INK; g.strokeText(L, cx, cy); g.fillStyle = "#fff"; g.fillText(L, cx, cy); }
-  }
+function tile(g,x,y,s,ch,cols,st){
+ const r=s*.16,wood=st===1;g.save();g.fillStyle='#79502d';rr(g,x,y+s*.065,s,s,r);g.fill();
+ const q=g.createLinearGradient(x,y,x+s,y+s);q.addColorStop(0,wood?'#fffdf0':cols[0]);q.addColorStop(.35,wood?'#ffefc6':cols[0]);q.addColorStop(1,wood?'#e8bd72':cols[1]);g.fillStyle=q;rr(g,x,y,s,s,r);g.fill();g.strokeStyle=wood?'#a4743f':'#825632';g.lineWidth=Math.max(1,s*.025);g.stroke();
+ g.strokeStyle='#ffffffb0';g.lineWidth=Math.max(1,s*.025);rr(g,x+s*.06,y+s*.06,s*.88,s*.83,r*.8);g.stroke();
+ if(wood){g.strokeStyle='#b77a2720';g.lineWidth=s*.012;for(let i=0;i<3;i++){g.beginPath();g.moveTo(x+s*.12,y+s*(.27+i*.26));g.quadraticCurveTo(x+s*.5,y+s*(.17+i*.26),x+s*.88,y+s*(.26+i*.26));g.stroke();}}
+ if(ch){g.font=fontPx(s*.65);g.textAlign='center';g.textBaseline='middle';g.fillStyle=wood?'#593716':'#fffaf0';g.shadowColor=wood?'#fff8d2':'#43292399';g.shadowOffsetY=wood?1:2;g.fillText(ch.toUpperCase(),x+s/2,y+s*.54);}g.restore();
 }
 
 // lampu petunjuk kecil
@@ -871,10 +866,10 @@ function wheelSprite(R) {
   g.save(); g.beginPath(); g.arc(o, o, R * 0.88, 0, TAU); g.clip();
   g.fillStyle = "#edc27a"; g.fillRect(0, 0, o * 2, o * 2);
   // anyaman bambu: kotak miring berselang
-  const st = Math.max(8, R * 0.11); g.translate(o, o); g.rotate(Math.PI / 4);
+  const st = Math.max(4, R * 0.045); g.translate(o, o); g.rotate(Math.PI / 4);
   for (let x = -R * 1.5; x < R * 1.5; x += st) for (let y = -R * 1.5; y < R * 1.5; y += st) {
     const k = (Math.round(x / st) + Math.round(y / st)) & 1;
-    g.fillStyle = k ? "rgba(185,120,50,.28)" : "rgba(255,240,200,.25)"; g.fillRect(x, y, st - 1, st - 1);
+    const reed=g.createLinearGradient(x,y,x+(k?0:st),y+(k?st:0));reed.addColorStop(0,"#a5743f");reed.addColorStop(.3,"#e9c68b");reed.addColorStop(.65,"#d9b473");reed.addColorStop(1,"#a97640");g.fillStyle=reed;g.fillRect(x+.3,y+.3,st-.6,st-.6);
   }
   g.restore();
   g.lineWidth = 2.5; g.strokeStyle = INK; g.beginPath(); g.arc(o, o, R * 0.88, 0, TAU); g.stroke();
@@ -1513,10 +1508,11 @@ function drawWheel(b) {
   }
   for (let i = 0; i < n; i++) {
     const p = slotXY(i), on = sel.indexOf(i) >= 0, r = LY.tr * (on ? 1.1 : 1) * es;
-    g.fillStyle = INK; g.beginPath(); g.arc(p[0], p[1] + r * 0.12, r, 0, TAU); g.fill();
+    g.fillStyle = "#805027"; rr(g,p[0]-r,p[1]-r+r*.15,r*2,r*2,r*.20);g.fill();
     const gr = g.createLinearGradient(0, p[1] - r, 0, p[1] + r);
-    if (on) { gr.addColorStop(0, "#ffc36b"); gr.addColorStop(1, "#ff7a2b"); } else { gr.addColorStop(0, "#fffdf5"); gr.addColorStop(1, "#f4e2c0"); }
-    g.fillStyle = gr; g.beginPath(); g.arc(p[0], p[1], r, 0, TAU); g.fill(); g.lineWidth = Math.max(2, r * 0.1); g.strokeStyle = INK; g.stroke();
+    if (on) { gr.addColorStop(0, "#ffc36b"); gr.addColorStop(1, "#ff7a2b"); } else { gr.addColorStop(0, "#fff5d8"); gr.addColorStop(.4, "#f4dfac"); gr.addColorStop(1, "#d8b77d"); }
+    g.fillStyle = gr; rr(g,p[0]-r,p[1]-r,r*2,r*2,r*.20);g.fill(); g.lineWidth = Math.max(1.1, r * 0.045); g.strokeStyle = "#9f6a35"; g.stroke();
+    g.save();rr(g,p[0]-r+1,p[1]-r+1,r*2-2,r*2-2,r*.18);g.clip();g.lineWidth=.6;for(let line=0;line<8;line++){g.strokeStyle=line%3?"#a1753c19":"#fff5ce55";g.beginPath();g.moveTo(p[0]-r,p[1]-r+line*r*.3);g.bezierCurveTo(p[0]-r*.4,p[1]-r+line*r*.3+r*.1,p[0]+r*.4,p[1]-r+line*r*.3-r*.1,p[0]+r,p[1]-r+line*r*.3);g.stroke();}g.restore();
     g.fillStyle = "rgba(255,255,255,.55)"; g.beginPath(); g.ellipse(p[0] - r * 0.3, p[1] - r * 0.45, r * 0.34, r * 0.16, -0.4, 0, TAU); g.fill();
     g.font = fontPx(r * 1.15); g.textAlign = "center"; g.textBaseline = "middle"; g.lineJoin = "round";
     const L = b.lv.letters[i].toUpperCase();

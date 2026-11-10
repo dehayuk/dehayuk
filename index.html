@@ -3,6 +3,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0D0F1C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Dehayuk</title>
 <meta name="description" content="Dehayuk: game ringan buatan Indonesia. Langsung main di browser atau pasang di HP Android.">
 <link rel="canonical" href="https://dehayuk.online/">
@@ -22,6 +24,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Dehayuk">
 <link rel="stylesheet" href="/font/font.css">
+<link rel="stylesheet" href="/pwa.css?v=20261110">
+<script src="/pwa.js?v=20261110" defer></script>
 <style>
   :root {
     color-scheme: dark;
@@ -213,6 +217,8 @@
   /* Halaman main: game dimainkan di dalam portal */
   .player { display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; background: #05060D; box-shadow: 0 14px 34px rgba(0,0,0,.45); }
   .stage { position: relative; height: calc(100vh - var(--top-h) - 150px); min-height: 480px; background: #05060D; }
+  .stage[data-game="jatuh-buah"] { height:calc(100svh - var(--top-h) - 94px); min-height:520px; }
+  .stage[data-game="jatuh-buah"]:fullscreen { height:100vh; min-height:0; }
   .stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
   .fs-hint { position: absolute; left: 50%; top: 16px; transform: translateX(-50%); z-index: 2; background: rgba(13,15,28,.88); color: #fff; font-weight: 800; font-size: 13.5px; padding: 8px 16px; border-radius: 999px; pointer-events: none; }
   .pbar { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--panel); }
@@ -229,6 +235,10 @@
   .pinfo h1 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 26px; line-height: 1.1; }
   .pinfo p { margin: 0; color: var(--muted); font-weight: 700; line-height: 1.45; max-width: 34ch; }
   .pinfo .btn-play { height: 54px; font-size: 21px; padding: 0 34px 0 28px; margin-top: 8px; }
+  .property-table #pMobile .pinfo { order: -1; padding: 14px; }
+  .property-table #pMobile .pinfo h1 { font-size: 23px; }
+  .property-table #pMobile .pinfo p { font-size: 13px; }
+  .property-table #pMobile .pinfo .btn-play { height: 48px; margin-top: 4px; }
   .desk-only { display: none; }
 
   /* Tombol Simpan dan Bagikan */
@@ -391,7 +401,7 @@
   </a>
   <form class="search" role="search" id="topSearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><input id="topQ" type="search" placeholder="Cari game" autocomplete="off" aria-label="Cari game"><kbd aria-hidden="true">/</kbd></form>
   <div class="top-end">
-    <a class="install" href="https://github.com/dehayuk/dehayuk/releases/latest/download/dehayuk.apk"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 3h2v10.2l3.6-3.6 1.4 1.4L12 17l-6-6 1.4-1.4 3.6 3.6zM5 19h14v2H5z"/></svg>Pasang app</a>
+    <button class="install" type="button" id="pwaInstallTop"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 3h2v10.2l3.6-3.6 1.4 1.4L12 17l-6-6 1.4-1.4 3.6 3.6zM5 19h14v2H5z"/></svg>Pasang app</button>
   </div>
 </header>
 
@@ -477,7 +487,7 @@
   <div class="view" id="vOffline" hidden>
     <div class="off-page">
       <h1 class="page-title">Main tanpa internet</h1>
-      <p class="off-lead">Semua game Dehayuk bisa dimainkan <b>tanpa internet</b>, baik lewat app Android maupun langsung di browser. Skor dan rekormu tetap tersimpan di HP-mu.</p>
+      <p class="off-lead">Game Dehayuk yang sudah disimpan bisa dimainkan <b>tanpa internet</b> dari aplikasi di layar utama atau langsung melalui browser. Skor dan rekormu tetap tersimpan di HP-mu.</p>
 
       <section class="off-card app-only">
         <h2>Kamu sudah memakai app Dehayuk</h2>
@@ -505,16 +515,29 @@
         <p>Buka Dehayuk dari ikon di layar utama HP-mu. Tanpa sinyal pun, game yang sudah tersimpan tetap bisa dimainkan.</p>
       </section>
 
-      <section class="off-card web-only">
-        <h2>Lebih suka app?</h2>
-        <p>App Dehayuk untuk HP Android sudah berisi semua game dan langsung bisa dimainkan tanpa internet.</p>
-        <div class="off-actions"><a class="btn-cta" href="https://github.com/dehayuk/dehayuk/releases/latest/download/dehayuk.apk">Pasang app Android</a></div>
-      </section>
-
       <p class="off-note">Yang tetap butuh internet: mengirim tantangan lewat WhatsApp, iklan, dan game baru yang belum pernah disimpan.</p>
     </div>
   </div>
 
+  <dialog class="pwa-dialog" id="pwaInstall" aria-labelledby="pwaInstallTitle">
+    <div class="pwa-sheet">
+      <div class="pwa-sheet-head">
+        <img class="pwa-sheet-icon" src="/ikon/ikon-192.png" alt="">
+        <div class="pwa-sheet-title"><small>Aplikasi web Dehayuk</small><h2 id="pwaInstallTitle">Pasang di HP</h2></div>
+        <button class="pwa-x" type="button" data-pwa-close aria-label="Tutup">×</button>
+      </div>
+      <p class="pwa-lead">Buka Dehayuk seperti aplikasi: layar penuh, akses cepat dari layar utama, dan game tersimpan tetap bisa dimainkan saat offline.</p>
+      <ul class="pwa-points">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 2h14a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m7 17a1.3 1.3 0 1 0 0 .01M6 5v11h12V5z"/></svg>Layar aplikasi</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 9.3 13.7h-3.4A7 7 0 1 1 12 5c1.9 0 3.6.8 4.9 2H14v3h8V2h-3v2.7A9.9 9.9 0 0 0 12 2"/></svg>Selalu terbaru</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 6.5A14 14 0 0 1 21 6l-2 2.3a11 11 0 0 0-14 .4zm4 4.6a8.5 8.5 0 0 1 10-.2l-2 2.3a5.4 5.4 0 0 0-6 .2zM10.5 16a2.2 2.2 0 1 1 3 3.2z"/></svg>Main offline</li>
+      </ul>
+      <button class="pwa-primary" type="button" id="pwaInstallNow">Pasang Dehayuk</button>
+      <button class="pwa-secondary" type="button" data-pwa-close>Nanti saja</button>
+      <p class="pwa-help" id="pwaHelp"></p>
+    </div>
+  </dialog>
+  <div class="pwa-update" id="pwaUpdate" role="status" hidden><span>Versi baru Dehayuk sudah siap.</span><button type="button" id="pwaUpdateNow">Perbarui</button></div>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
   <footer>© 2026 Dehayuk · Game ringan buatan Indonesia · <a href="#offline">Main tanpa internet</a> · <a href="/privasi/">Kebijakan Privasi</a> · <a href="/privasi/#lapor" data-lapor>Lapor &amp; Saran</a></footer>
 </main>
@@ -526,7 +549,7 @@
 <script>
 (function () {
   var DATA = window.DEHAYUK || { kategori: [], game: [] };
-  var GAMES = DATA.game.slice();
+  var GAMES = DATA.game.filter(function(g){return g.slug !== "nusa-properti";});
   var bySlug = {}; GAMES.forEach(function (g) { bySlug[g.slug] = g; });
   var ROW_MAX = 20;       // satu baris menampilkan paling banyak 20 game
   var PAGE = 30;          // daftar panjang dimuat per 30 game
@@ -849,7 +872,7 @@
     stage.innerHTML = "";
     if (wide.matches) {
       var f = document.createElement("iframe");
-      f.src = gameUrl(g)+(g.slug === "nusa-properti" ? "?v=legible-20261021" : ""); f.title = g.nama + " (Esc untuk keluar layar penuh)"; f.allow = "fullscreen; autoplay"; f.setAttribute("allowfullscreen", "");
+      f.src = gameUrl(g)+(g.slug === "jatuh-buah" ? "?v=20261026-v8" : g.slug === "nusa-properti" ? "?v=nusantara32-20261023-v9" : ""); f.title = g.nama + " (Esc untuk keluar layar penuh)"; f.allow = "fullscreen; autoplay"; f.setAttribute("allowfullscreen", "");
       // Tombol kembali milik game disembunyikan; bilah portal sudah ada di atasnya.
       f.addEventListener("load", function () {
         try { var st = f.contentDocument.createElement("style"); st.textContent = 'a[href="/"]{visibility:hidden!important}'; f.contentDocument.head.appendChild(st); } catch (e) {}
@@ -1068,10 +1091,9 @@
   var root = document.documentElement;
   var inApp = root.classList.contains("in-app") || (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
   if (inApp || !/^https?:$/.test(location.protocol)) return;
-  var GAMES = (window.DEHAYUK && window.DEHAYUK.game) || [];
-  var VERSI = "dehayuk-v2";
+  var GAMES = ((window.DEHAYUK && window.DEHAYUK.game) || []).filter(function(g){return g.slug !== "nusa-properti";});
+  var VERSI = "dehayuk-v3";
   var hasSW = "serviceWorker" in navigator && "caches" in window;
-  if (hasSW) window.addEventListener("load", function () { navigator.serviceWorker.register("/sw.js").catch(function () {}); });
 
   function toast(msg) {
     var t = document.getElementById("toast"); if (!t) return;
@@ -1132,16 +1154,16 @@
     if (!hasSW) { toast("Browser ini belum mendukung main tanpa internet. Coba Chrome terbaru."); return; }
     if (!navigator.onLine) { toast("Sambungkan internet dulu untuk menyimpan game."); return; }
     btn.disabled = true; btn.textContent = "Menyimpan…";
-    var urls = ["/", "/katalog.js", "/kit/v1/kit.js", "/kit/v1/kit.css", "/kit/kit.js", "/kit/kit.css", "/font/font.css", "/font/baloo-2.woff2", "/font/nunito.woff2"]
+    var urls = ["/", "/katalog.js", "/kit/v1/kit.js", "/kit/v1/kit.css", "/kit/kit.js", "/kit/kit.css", "/font/font.css", "/font/baloo-2.woff2", "/font/nunito.woff2", "/kit/v1/menu-game.css"]
       .concat(GAMES.reduce(function (acc, g) { return acc.concat(filesOf(g)); }, []));
     // Disimpan langsung dari halaman, agar tidak bergantung pada service worker yang baru saja dipasang.
     caches.open(VERSI).then(function (c) {
-      return Promise.all(urls.map(function (u) { return c.add(u).catch(function () {}); })).then(function () {
+      return fetch('/studio/v2/offline.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw Error('visual manifest');return r.json();}).then(function(extra){if(!Array.isArray(extra))return;extra.forEach(function(u){if(typeof u==='string'&&/^\/(studio\/v[23]|jatuh-buah|ludo|sortir-cairan)\//.test(u)&&!u.includes('..'))urls.push(u);});}).catch(function(){}).then(function(){return Promise.all(urls.map(function(u){return c.add(u).catch(function(){});}));}).then(function () {
         // Berkas pendukung milik game (misalnya daftar kata) ikut disimpan: dibaca dari halaman game yang sudah tersimpan.
         return Promise.all(GAMES.map(function (g) {
           return c.match("/" + g.slug + "/").then(function (r) { return r ? r.text() : ""; }).then(function (html) {
-            var extra = [], re = /\b(?:src|href)="(?!\/|https?:|#|data:|mailto:)([^"?#]+\.(?:js|css|json|png|jpg|webp|woff2))"/g, m;
-            while ((m = re.exec(html))) extra.push("/" + g.slug + "/" + m[1]);
+            var extra = [], re = /\b(?:src|href)="(?!https?:|\/\/|#|data:|mailto:)([^"?#]+\.(?:js|css|json|png|jpg|webp|woff2))(?:[?#][^"]*)?"/g, m;
+            while ((m = re.exec(html))) if (!/['+{}<>\[\]]/.test(m[1])) extra.push(m[1].charAt(0)==="/"?m[1]:"/" + g.slug + "/" + m[1]);
             return Promise.all(extra.map(function (u) { return c.add(u).catch(function () {}); }));
           });
         }));
@@ -1152,15 +1174,5 @@
     });
   });
 
-  // Tombol "Pasang di layar utama" muncul bila browser menawarkan pemasangan (Chrome/Edge di Android dan komputer).
-  var promptEvt = null, box = document.getElementById("offInstallBox");
-  window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); promptEvt = e; if (box) box.hidden = false; });
-  var inst = document.getElementById("offInstall");
-  if (inst) inst.addEventListener("click", function () {
-    if (!promptEvt) return;
-    promptEvt.prompt();
-    promptEvt.userChoice.then(function (r) { if (r.outcome === "accepted") { toast("Dehayuk dipasang di layar utama."); if (box) box.hidden = true; } promptEvt = null; });
-  });
-  window.addEventListener("appinstalled", function () { if (box) box.hidden = true; });
 })();
 </script>

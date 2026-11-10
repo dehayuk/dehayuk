@@ -4,7 +4,7 @@ const symbols=[
 ['Wayang','#b68bff','<path fill="#c896ff" d="m34 9 11 8-10 7 7 8-8 6 12 16H19l7-20-6-12 9-5z"/><path d="m24 35-12 8 7 9m17-13 16 4-3 9M30 53v7"/><circle cx="33" cy="18" r="2" fill="#fff"/>'],
 ['Rumah gadang','#ff7b96','<path fill="#fa6e86" d="M7 10q6 20 25 11Q51 30 57 10L49 31H15Z"/><path fill="#ffc978" d="M16 32h32v19H16z"/><path d="M20 51v8m24-8v8M28 36h8v15"/>'],
 ['Pinisi','#39cdeb','<path fill="#34c9e3" d="M8 43h48l-9 12H20Z"/><path d="M32 7v36"/><path fill="#fff4be" d="m29 11-19 27h19zm6 6v21h18z"/>'],
-['Rafflesia','#ff707d','<g fill="#ff7185"><ellipse cx="32" cy="19" rx="10" ry="14"/><ellipse cx="19" cy="29" rx="14" ry="10"/><ellipse cx="24" cy="44" rx="11" ry="14"/><ellipse cx="43" cy="43" rx="11" ry="14"/><ellipse cx="46" cy="26" rx="14" ry="10"/></g><circle cx="33" cy="32" r="10" fill="#8f3049"/><path stroke="#ffe1a0" d="m22 16 2 3m22 10 3 1m-8 15 1 3m-20-4-2 3m-4-17-3 1"/>'],
+['Kamboja','#ff707d','<g fill="#ff7185"><ellipse cx="32" cy="19" rx="10" ry="14"/><ellipse cx="19" cy="29" rx="14" ry="10"/><ellipse cx="24" cy="44" rx="11" ry="14"/><ellipse cx="43" cy="43" rx="11" ry="14"/><ellipse cx="46" cy="26" rx="14" ry="10"/></g><circle cx="33" cy="32" r="10" fill="#8f3049"/><path stroke="#ffe1a0" d="m22 16 2 3m22 10 3 1m-8 15 1 3m-20-4-2 3m-4-17-3 1"/>'],
 ['Ketupat','#58d6a0','<path fill="#65dda4" d="m32 10 22 22-22 22L10 32Z"/><path d="m21 21 22 22m-11-33v44M10 32h44m11-11L21 43M25 53l-4 7m17-7 5 7"/>'],
 ['Keris','#90b8ff','<path fill="#c9dcff" d="M34 7q-11 7-3 14t-3 13l3 12h8l-1-11q-8-7 0-14t-4-14Z"/><path stroke="#b07646" stroke-width="7" d="M24 48h22M35 48v11l9-2"/>'],
 ['Cenderawasih','#ffc84b','<path fill="#ffd35e" d="M19 27q1-17 15-13l14 8-11 5q-1 16-15 15Z"/><path fill="#ff7c57" d="M23 37Q6 60 13 14q4 19 13 17Q46 43 51 57q-17-3-28-20Z"/><circle cx="34" cy="19" r="2" fill="#183b42"/>'],
@@ -20,6 +20,6 @@ const symbols=[
 ['Perisai','#52c8ff','<path fill="#65cfff" d="M32 6 50 15v24L32 59 14 39V15Z"/><path stroke="#ffd966" stroke-width="4" d="M32 14v36M23 19l18 22m0-22L23 41"/>']
 
 ];
-function svg(i){const s=symbols[i];return '<svg viewBox="0 0 64 64" aria-hidden="true"><g stroke="#493837" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" fill="none">'+s[2]+'</g></svg>';}
+function svg(i){return '<svg viewBox="0 0 192 192" aria-hidden="true"><image href="/studio/v3/mahjong-'+i+'.webp" width="192" height="192"/></svg>';}
 window.NusantaraSymbols={symbols,svg};
 })();

@@ -1,0 +1,50 @@
+/* Lapisan aplikasi PWA Dehayuk. Ringkas, ramah sentuh, dan tetap satu bahasa visual dengan portal. */
+html.pwa-standalone{background:#0d0f1c}
+html.pwa-standalone body{overscroll-behavior-y:none;min-height:100dvh}
+html.pwa-standalone .top{padding-top:max(env(safe-area-inset-top,0px),4px)}
+html.pwa-standalone .install{display:none!important}
+
+.install{
+  appearance:none;border:0;cursor:pointer;touch-action:manipulation;
+}
+.install[hidden]{display:none!important}
+
+.pwa-dialog{
+  width:min(430px,calc(100vw - 24px));max-height:calc(100dvh - 24px);margin:auto;padding:0;
+  overflow:auto;overscroll-behavior:contain;color:#f7f5ff;
+  border:1px solid rgba(255,221,132,.58);border-radius:26px;
+  background:radial-gradient(circle at 50% -15%,#3b376d 0,#171a31 52%,#101222 100%);
+  box-shadow:0 28px 90px rgba(0,0,0,.72),inset 0 1px rgba(255,255,255,.13);
+}
+.pwa-dialog::backdrop{background:rgba(6,7,15,.78);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.pwa-sheet{padding:22px}
+.pwa-sheet-head{display:flex;align-items:center;gap:14px}
+.pwa-sheet-icon{width:74px;height:74px;border-radius:20px;box-shadow:0 9px 24px rgba(0,0,0,.36);flex:none}
+.pwa-sheet-title{min-width:0;flex:1}
+.pwa-sheet-title small{display:block;color:#f4c152;font-weight:900;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.pwa-sheet-title h2{margin:3px 0 0;font:800 27px/1.05 var(--display,"Baloo 2",sans-serif)}
+.pwa-x{width:42px;height:42px;border:1px solid rgba(255,255,255,.14);border-radius:13px;background:rgba(255,255,255,.07);color:#fff;font-size:25px;line-height:1;cursor:pointer}
+.pwa-lead{margin:19px 0 15px;color:#d8d9ec;font-weight:750;line-height:1.5}
+.pwa-points{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 18px;padding:0;list-style:none}
+.pwa-points li{min-width:0;padding:10px 6px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.045);text-align:center;color:#dfe0ef;font-size:11px;font-weight:900}
+.pwa-points svg{display:block;width:25px;height:25px;margin:0 auto 6px;color:#ffd978}
+.pwa-primary,.pwa-secondary{
+  width:100%;min-height:50px;border-radius:15px;padding:10px 16px;cursor:pointer;touch-action:manipulation;font-weight:900
+}
+.pwa-primary{border:1px solid #ffe49b;background:linear-gradient(#ffda78,#efb53e);color:#3b2904;box-shadow:0 4px 0 #96661c}
+.pwa-secondary{margin-top:10px;border:1px solid rgba(255,255,255,.17);background:rgba(255,255,255,.07);color:#f7f5ff}
+.pwa-help{margin:16px 0 0;padding:13px 14px;border-radius:14px;background:rgba(5,7,17,.35);color:#c7c9df;font-size:12px;font-weight:750;line-height:1.55}
+.pwa-help b{color:#fff0b3}
+
+.pwa-update{
+  position:fixed;z-index:80;left:50%;bottom:calc(var(--nav-h,64px) + env(safe-area-inset-bottom,0px) + 12px);
+  width:min(430px,calc(100vw - 24px));transform:translateX(-50%);display:flex;align-items:center;gap:12px;
+  padding:12px 12px 12px 15px;border:1px solid rgba(255,218,120,.62);border-radius:17px;
+  background:rgba(28,31,58,.97);box-shadow:0 15px 40px rgba(0,0,0,.55);color:#f7f5ff
+}
+.pwa-update[hidden]{display:none}
+.pwa-update span{flex:1;min-width:0;font-size:12px;font-weight:850;line-height:1.35}
+.pwa-update button{min-height:39px;padding:8px 13px;border:0;border-radius:11px;background:#f4c152;color:#3b2a05;font-weight:900;cursor:pointer}
+@media(min-width:761px){.pwa-update{bottom:22px}}
+@media(max-width:360px){.pwa-sheet{padding:17px}.pwa-points{grid-template-columns:1fr}.pwa-points li{display:flex;align-items:center;gap:8px;text-align:left;padding:8px 11px}.pwa-points svg{margin:0}.pwa-sheet-icon{width:64px;height:64px}}
+@media(prefers-reduced-motion:reduce){.pwa-dialog::backdrop{backdrop-filter:none;-webkit-backdrop-filter:none}}

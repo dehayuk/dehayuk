@@ -33,7 +33,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/kit/kit.css">
-<link rel="stylesheet" href="/tumpuk-lapis/gelanggang.css">
+<link rel="stylesheet" href="/tumpuk-lapis/online.css?v=20261026-global">
 <style>
 :root{--dk-ink:#4a1d2e;--dk-lbl:#8a4a5a;--dk-p1:#fffaf2;--dk-p2:#ffe6ec;--dk-pe:#f5c9d4}
 html,body{background:#6fc8ff}
@@ -206,7 +206,7 @@ canvas{display:block}
 #uji{position:fixed;left:4px;top:4px;right:4px;bottom:4px;overflow:auto;z-index:99;background:rgba(0,0,0,.86);color:#fff;font:12px/1.35 monospace;padding:8px;white-space:pre-wrap;border-radius:8px}
 </style>
 <link rel="stylesheet" href="/kit/v1/menu-game.css">
-</head>
+<link rel="stylesheet" href="/studio/v2/panggung.css?v=20261022-all"><link rel="stylesheet" href="panggung.css?v=20261022-all"><link rel="preload" as="image" href="/studio/v2/assets/lapis.webp"><script src="/studio/v2/panggung.js?v=20261022-all" data-world="lapis" data-game="tumpuk-lapis"></script></head>
 <body>
 <canvas id="cv" role="img" aria-label="Menara kue lapis"></canvas>
 <div id="sr" class="vhid" aria-live="polite"></div>
@@ -312,10 +312,10 @@ canvas{display:block}
   </section>
 </div>
 <script src="/kit/kit.js"></script>
-<script src="/kit/gelanggang/v1/inti.js"></script>
-<script src="/kit/gelanggang/v1/dukungan.js"></script>
-<script src="/tumpuk-lapis/gelanggang-state.js"></script>
-<script src="/tumpuk-lapis/gelanggang.js"></script>
+
+
+
+<script src="/tumpuk-lapis/online.js?v=20261026-global"></script>
 <script>
 "use strict";
 const KIT = window.DehayukKit, SLUG = "tumpuk-lapis", ST = KIT.store(SLUG), TAU = Math.PI * 2;
@@ -643,10 +643,10 @@ function runUji() {
 }
 
 /* ================= SENI ================= */
-const INK = "#4a1d2e", HK = 1.2; // HK: tinggi lapis terhadap lantai isometrik 2:1
+const INK = "#4a1d2e", HK = 1.8; // HK: tinggi lapis terhadap lantai isometrik 2:1
 // tema: warna lapis bergiliran, langit [atas, tengah, bawah], gaya garis (0 halus, 1 spekuk, 2 putih, 3 cokelat)
 const BANDS = [
-  { nama: "Kue Lapis", lay: ["#ff8fb8", "#fff4f7", "#7fd67a"], sky: ["#5cc2ff", "#a9e2ff", "#fff1cf"], str: 0 },
+  { nama: "Kue Lapis", lay: ["#ef4d91", "#f2c548", "#70b938", "#9852af"], sky: ["#5cc2ff", "#a9e2ff", "#fff1cf"], str: 0 },
   { nama: "Lapis Legit", lay: ["#b8692e", "#f3c565"], sky: ["#ff9d5c", "#ffc98a", "#fff0c2"], str: 1 },
   { nama: "Lapis Pelangi", lay: ["#ff5a6e", "#ff9a3c", "#ffd93d", "#5fd068", "#3fb8ff", "#6c7bff", "#b86cff"], sky: ["#7e8cff", "#b7b2ff", "#ffd0ea"], str: 2 },
   { nama: "Lapis Talas", lay: ["#9b6bd6", "#f4e7c9"], sky: ["#5b3aa6", "#9a6fd0", "#f2b6dd"], str: 0 },
@@ -678,6 +678,13 @@ let OX = 0, OY = 0, KZ = 1, CAM = 0;
 function sxy(X, Y, Z) { return [OX + (Z - X) * KZ, OY + ((X + Z) * 0.5 - Y * HK - CAM) * KZ]; }
 function poly4(a, b, c, d, e, f, g, h) { const q = ctx; q.beginPath(); q.moveTo(a, b); q.lineTo(c, d); q.lineTo(e, f); q.lineTo(g, h); q.closePath(); q.fill(); }
 // satu lapis: muka atas terang, kiri sedang, kanan gelap, garis lapis di sisi, tepi gelap 2 px
+
+const CAKE_TEXTURES=new Map();let CAKE_READY=false;
+const CAKE_IMAGES=['pink','gold','green','purple','coconut'].map(name=>{const im=new Image();im.src='/studio/v3/cake-'+name+'.webp';return im;});Promise.all(CAKE_IMAGES.map(i=>i.decode())).then(()=>{CAKE_READY=true;CAKE_TEXTURES.clear();}).catch(()=>{});
+function cakeTexture(color){if(CAKE_TEXTURES.has(color))return CAKE_TEXTURES.get(color);const c=document.createElement('canvas');c.width=256;c.height=64;const q=c.getContext('2d');q.fillStyle=color;q.fillRect(0,0,256,64);let seed=811;const rnd=()=>((seed=Math.imul(seed,1664525)+1013904223>>>0)/4294967296);for(let i=0;i<1550;i++){const x=rnd()*256,y=rnd()*64,r=.25+rnd()*.85;q.fillStyle=i%4?'rgba(65,25,9,.17)':'rgba(255,250,215,.48)';q.beginPath();q.ellipse(x,y,r,r*.7,0,0,Math.PI*2);q.fill();}const gr=q.createLinearGradient(0,0,0,64);gr.addColorStop(0,'#fff5');gr.addColorStop(.25,'#fff0');gr.addColorStop(1,'#230c092d');q.fillStyle=gr;q.fillRect(0,0,256,64);if(CAKE_READY){const rgb=color.match(/[0-9.]+/g).map(Number),[r,g,b]=rgb,kind=g>r&&g>b?2:b>r*.8&&r>g*1.1?3:r>g*1.2&&b>g*1.1?0:1;q.drawImage(CAKE_IMAGES[kind],0,0,256,64);q.globalCompositeOperation='multiply';q.globalAlpha=.45;q.fillStyle=color;q.fillRect(0,0,256,64);q.globalAlpha=1;q.globalCompositeOperation='source-over';}CAKE_TEXTURES.set(color,c);return c;}
+function cakeFace(g,ax,ay,bx,by,cx,cy,dx,dy,color){g.save();g.beginPath();g.moveTo(ax,ay);g.lineTo(bx,by);g.lineTo(cx,cy);g.lineTo(dx,dy);g.closePath();g.clip();g.transform((bx-ax)/256,(by-ay)/256,(dx-ax)/64,(dy-ay)/64,ax,ay);g.drawImage(cakeTexture(color),0,0);if(!CAKE_READY){g.fillStyle='#fff2cc';g.fillRect(0,19,256,4);g.fillRect(0,43,256,4);g.fillStyle='#6e241026';g.fillRect(0,23,256,1);g.fillRect(0,47,256,1);}g.restore();}
+function coconut(g,ax,ay,bx,by,dx,dy){const w=Math.hypot(bx-ax,by-ay),d=Math.hypot(dx-ax,dy-ay);if(w<12||d<12)return;g.save();g.beginPath();g.moveTo(ax,ay);g.lineTo(bx,by);g.lineTo(bx+dx-ax,by+dy-ay);g.lineTo(dx,dy);g.closePath();g.clip();if(CAKE_READY){g.transform((bx-ax)/256,(by-ay)/256,(dx-ax)/256,(dy-ay)/256,ax,ay);g.drawImage(CAKE_IMAGES[4],0,0,256,256);g.restore();return;}g.lineCap='round';g.lineWidth=Math.max(.8,Math.min(2,w/100));for(let i=0;i<50;i++){const u=((i*37+19)%101)/101,v=((i*61+7)%103)/103,x=ax+(bx-ax)*u+(dx-ax)*v,y=ay+(by-ay)*u+(dy-ay)*v;g.strokeStyle=i%3?'#fff9e4':'#d7bfa8';g.beginPath();g.moveTo(x-1.6,y-1.1);g.lineTo(x+1.7+(i%3),y+.6);g.stroke();}g.restore();}
+
 function drawBox(x0, x1, z0, z1, y0, y1, C) {
   const k = KZ, m = 0.5 / k, g = ctx;
   if (x1 - x0 < 2 * m) { const c = (x0 + x1) / 2; x0 = c - m; x1 = c + m; } // paling tipis 1 px
@@ -688,8 +695,9 @@ function drawBox(x0, x1, z0, z1, y0, y1, C) {
   const aT = OY + (vA - yt) * k, bT = OY + (vB - yt) * k, bB = OY + (vB - yb) * k, cT = OY + (vC - yt) * k, cB = OY + (vC - yb) * k, dT = OY + (vD - yt) * k, dB = OY + (vD - yb) * k;
   if (Math.max(bB, cB, dB) < -20 || Math.min(aT, bT, dT) > vh + 20) return;
   const hp = bB - bT;
-  g.fillStyle = C.l; poly4(bx, bT, cx, cT, cx, cB, bx, bB);
-  g.fillStyle = C.r; poly4(cx, cT, dx, dT, dx, dB, cx, cB);
+  const left=g.createLinearGradient(bx,bT,cx,cB);left.addColorStop(0,window.DehayukVisual.tint(C.l,.18));left.addColorStop(.35,C.l);left.addColorStop(1,window.DehayukVisual.tint(C.l,-.2));g.fillStyle=left;poly4(bx, bT, cx, cT, cx, cB, bx, bB);
+  const right=g.createLinearGradient(cx,cT,dx,dB);right.addColorStop(0,window.DehayukVisual.tint(C.r,.1));right.addColorStop(1,window.DehayukVisual.tint(C.r,-.22));g.fillStyle=right;poly4(cx, cT, dx, dT, dx, dB, cx, cB);
+  cakeFace(g,bx,bT,cx,cT,cx,cB,bx,bB,C.l);cakeFace(g,cx,cT,dx,dT,dx,dB,cx,cB,C.r);
   if (hp >= 7) { // garis lapis kue
     const st = C.str, fr = st === 1 ? [0.34, 0.68] : [0.5];
     g.strokeStyle = st === 1 ? "#4a220c" : st === 2 ? "rgba(255,255,255,.75)" : st === 3 ? "#5a2c12" : C.s1;
@@ -698,14 +706,15 @@ function drawBox(x0, x1, z0, z1, y0, y1, C) {
     for (const f of fr) { const yl = bT + hp * f, yc = cT + hp * f, yd = dT + hp * f; g.moveTo(bx, yl); g.lineTo(cx, yc); g.lineTo(dx, yd); }
     g.stroke();
   }
-  g.fillStyle = C.t; poly4(ax, aT, bx, bT, cx, cT, dx, dT);
+  const top=g.createLinearGradient(ax,aT,cx,cT);top.addColorStop(0,window.DehayukVisual.tint(C.t,.2));top.addColorStop(.5,C.t);top.addColorStop(1,window.DehayukVisual.tint(C.t,-.08));g.fillStyle=top;poly4(ax, aT, bx, bT, cx, cT, dx, dT);
   g.fillStyle = C.hi; // kilau muka atas
   poly4(ax, aT, (ax + bx) / 2, (aT + bT) / 2, (ax + cx) / 2 * 0.9 + ax * 0.1, (aT + cT) / 2 * 0.9 + aT * 0.1, (ax + dx) / 2, (aT + dT) / 2);
+  coconut(g,ax,aT,bx,bT,dx,dT);
   if (C.gold) { // kilap emas berjalan
     const p = (time * 0.7) % 1.6 - 0.3, p0 = Math.max(0, p), p1 = Math.min(1, p + 0.14);
     if (p1 > p0) { g.fillStyle = "rgba(255,255,255,.7)"; poly4(ax + (bx - ax) * p0, aT + (bT - aT) * p0, ax + (bx - ax) * p1, aT + (bT - aT) * p1, dx + (cx - dx) * p1, dT + (cT - dT) * p1, dx + (cx - dx) * p0, dT + (cT - dT) * p0); }
   }
-  g.lineWidth = Math.max(0.5, Math.min(2, hp * 0.2)); g.strokeStyle = C.o; g.lineJoin = "round";
+  g.lineWidth = Math.max(0.5, Math.min(1.1, hp * 0.09)); g.strokeStyle = C.o; g.lineJoin = "round";
   g.beginPath(); g.moveTo(bx, bT); g.lineTo(ax, aT); g.lineTo(dx, dT); g.lineTo(dx, dB); g.lineTo(cx, cB); g.lineTo(bx, bB); g.closePath();
   g.moveTo(bx, bT); g.lineTo(cx, cT); g.lineTo(dx, dT); g.moveTo(cx, cT); g.lineTo(cx, cB); g.stroke();
 }
@@ -716,7 +725,7 @@ function drawLayer(L, i, sq) {
 
 /* ---------- piring ---------- */
 const PLATES = [
-  { id: "biasa", nama: "Piring biasa", top: "#ffffff", rim: "#c9d8ea", ring: "#b5cfee", butuh: null },
+  { id: "biasa", nama: "Piring biasa", top: "#ffffff", rim: "#d9ceb7", ring: "#d4aa52", butuh: null },
   { id: "rotan", nama: "Piring rotan", top: "#ecc27a", rim: "#b07a36", ring: "#c48a42", butuh: "l25", krim: 150 },
   { id: "kayu", nama: "Nampan kayu", top: "#c07d45", rim: "#7a4520", ring: "#9a5a2c", butuh: "l50", krim: 400 },
   { id: "daun", nama: "Daun pisang", top: "#5cc45a", rim: "#2f8a38", ring: "#3f9f45", butuh: "c10", krim: 800 },
@@ -800,6 +809,7 @@ function drawBackdrop(camL, plateY) {
   const key = c.map((x) => rgb(x)).join("|") + vh;
   if (key !== skyCache) { skyCache = key; skyGrad = g.createLinearGradient(0, 0, 0, vh); skyGrad.addColorStop(0, rgb(c[0])); skyGrad.addColorStop(0.55, rgb(c[1])); skyGrad.addColorStop(1, rgb(c[2])); }
   g.fillStyle = skyGrad; g.fillRect(0, 0, vw, vh);
+  const newWorld=window.DehayukVisual.scene(g,vw,vh,{shade:night});
   const sa = Math.max(0, Math.min(1, (camL - 46) / 8));
   if (sa > 0) {
     for (const s of STARS) { g.globalAlpha = sa * (0.55 + 0.45 * Math.sin(time * 2 + s[3])); g.fillStyle = "#fff"; g.beginPath(); g.arc(s[0] * vw, s[1] * vh, s[2], 0, TAU); g.fill(); }
@@ -810,13 +820,13 @@ function drawBackdrop(camL, plateY) {
     g.globalAlpha = 1;
   }
   const ca = 1 - night * 1.2, span = vh * 1.5, lift = -CAM * KZ * 0.22;
-  if (ca > 0.05) for (const q of CLOUDS) {
+  if (!newWorld && ca > 0.05) for (const q of CLOUDS) {
     const y = ((q[1] * span + lift) % span + span) % span - vh * 0.25, x = ((q[0] * (vw + 240) + time * q[3]) % (vw + 240)) - 200;
     g.globalAlpha = ca * 0.85; g.drawImage(CLOUD, x, y, 180 * q[2], 80 * q[2]);
   }
   g.globalAlpha = 1;
   const sa2 = Math.max(0, Math.min(1, 1 - camL / 24));
-  if (sa2 > 0 && SIL) { const yb = vh + (plateY - vh * 0.75) * 0.45; g.globalAlpha = sa2; g.drawImage(SIL, 0, yb - SIL.h, SIL.w, SIL.h); g.globalAlpha = 1; }
+  if (!newWorld && sa2 > 0 && SIL) { const yb = vh + (plateY - vh * 0.75) * 0.45; g.globalAlpha = sa2; g.drawImage(SIL, 0, yb - SIL.h, SIL.w, SIL.h); g.globalAlpha = 1; }
 }
 
 /* ---------- logo ---------- */
@@ -1009,7 +1019,7 @@ function camTarget(c) {
   // Gelanggang belah dua: menaraku di setengah kiri, sama besar dengan menara lawan di kanan (skala dibagikan lewat GL skala()).
   // Hanya kamera yang berubah; fisika, ketukan, dan rekaman tidak.
   if (kind === "arena" && (mode === "play" || mode === "count" || mode === "ending" || mode === "arenaTunggu")) {
-    const za = arenaZ(n), aa = (arenaArea.top + Math.max(80, vh - arenaArea.top - arenaArea.bottom) * 0.3) / vh, ba = (vh - arenaArea.bottom - 12) / vh; // lebar puncak menara ±36% layar: tetap di setengahnya sendiri
+    const za = arenaZ(n), aa = (arenaArea.top + Math.max(80, vh - arenaArea.top - arenaArea.bottom) * 0.3) / vh, ba = (vh - arenaArea.bottom - 12 - 75 * S0 * za) / vh; // lebar puncak menara ±36% layar: tetap di setengahnya sendiri
     return { z: za, a: aa, c: Math.min(topV, -(ba - aa) * vh / (S0 * za)), x: 0.25 };
   }
   const topU = Math.min(topV, G && (mode === "over" || mode === "ending") ? -(G.g.n + 1) * LH * HK : Infinity) - 70, botU = 95;
@@ -1302,6 +1312,7 @@ on("rMenu", () => { if (mode === "over") toTitle(); });
 for (const b of document.querySelectorAll("[data-close]")) b.addEventListener("click", () => { SFX.tap(); b.closest(".dk-overlay").hidden = true; });
 cv.addEventListener("pointerdown", (e) => { if (mode === "play") { e.preventDefault(); tapDrop(); } else skipEnding(); });
 document.addEventListener("keydown", (e) => {
+  if (document.querySelector("#lpDialog[open]")) return;
   if ((e.key === " " || e.key === "Enter") && (mode === "play" || mode === "ending")) { e.preventDefault(); if (!e.repeat) { if (mode === "play") tapDrop(); else skipEnding(); } return; }
   if (e.key === "Escape" || e.key === "p") {
     if (mode === "play" || mode === "count") pause(); else if (mode === "pause") resume();
@@ -1610,7 +1621,9 @@ function tontonMenara(el, o) {
 }
 window.addEventListener("resize", () => setTimeout(() => TONTON.forEach((t) => t.gambar()), 150));
 if (KIT.gelanggang && !COVER) GL = KIT.gelanggang.pasang({
-  api: 1, slug: SLUG, nama: "Tumpuk Lapis", satuan: "LAPIS", satuanKecil: "lapis",
+  api: 1, slug: SLUG, nama: "Tumpuk Lapis",
+  tunggu(seed) { hideAll(); $("hud").hidden=true; $("hint").hidden=true; kind="arena"; mode="arenaTunggu"; core.reset(seed||1); camUpdate(0,true); },
+  pulihkan(seed,taps,seconds) { arenaMulai(seed,{anginDetik:90}); for(const ms of taps)core.tapArena(ms);core.cur.t=Math.max(-.12,seconds-core.aT-.12);if(core.over)mode="arenaTunggu";camUpdate(0,true); }, satuan: "LAPIS", satuanKecil: "lapis",
   mulai: arenaMulai, henti: arenaHenti,
   fase(n) { if (n === "akhir-dekat" && kind === "arena") { banner(1, "ANGIN KENCANG!", 2, 44); KIT.vibrate([20, 30, 20]); } },
   rekaman: { versi: 2, periksa: arenaPeriksa, jadwal: arenaJadwal, contoh: arenaContoh },
@@ -1620,7 +1633,7 @@ if (KIT.gelanggang && !COVER) GL = KIT.gelanggang.pasang({
   rekorPribadi() { return best(); },
   // skala kamera menaraku saat ini, agar menara lawan digambar sama besar di belah dua
   viewport(area) { arenaArea = area; },
-  skala() { const space = Math.max(80, vh - arenaArea.top - arenaArea.bottom); return kind === "arena" ? { kz: S0 * camZ, a: (arenaArea.top + space * 0.3) / vh, base: (vh - arenaArea.bottom - 12) / vh } : null; }
+  skala() { const space = Math.max(80, vh - arenaArea.top - arenaArea.bottom); return kind === "arena" ? { kz: S0 * camZ, a: 0.3, base: (space - 12 - 75 * S0 * camZ) / space } : null; }
 });
 
 /* ================= MULAI ================= */

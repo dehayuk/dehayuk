@@ -1,0 +1,8 @@
+/* Opt-in visual material. Game layouts, input coordinates and Kit contracts stay owned by each game. */
+html[data-visual-world]{--studio-ink:#0b1d37;--studio-edge:#9fd9ff66;--studio-gold:#ffe8a5}
+html[data-visual-world=neon]{--studio-ink:#0b1236;--studio-edge:#7bedff77}
+html[data-visual-world] body{background-color:var(--studio-ink)}
+html[data-visual-world] button:focus-visible,html[data-visual-world] a:focus-visible{outline:3px solid #ffe59b;outline-offset:3px}
+html[data-visual-world] [data-dh-menu]{filter:drop-shadow(0 3px 4px #00112666)}
+html[data-visual-world] .dk-overlay{backdrop-filter:blur(5px)}
+@media(prefers-reduced-motion:reduce){html[data-visual-world] [data-dh-menu]{filter:none}}

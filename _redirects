@@ -1,3 +1,20 @@
+# Nusantara Tycoon withdrawn at owner request, 2026-10-24.
+/nusa-properti  /game-tidak-tersedia.html  404!
+/nusa-properti/*  /game-tidak-tersedia.html  404!
+/main/nusa-properti  /game-tidak-tersedia.html  404!
+/main/nusa-properti/*  /game-tidak-tersedia.html  404!
+/info/nusa-properti.json  /game-tidak-tersedia.html  404!
+/kartu/nusa-properti*  /game-tidak-tersedia.html  404!
 # Dibuat oleh scripts/buat-situs.js, jangan diubah manual.
 # Folder game yang belum terdaftar di katalog.js (draf) tidak dibuka untuk umum.
 /adu-penalti/*  /  302!
+https://dehayuk.netlify.app/*  https://dehayuk.online/:splat  301!
+/android/*  /  302!
+/scripts/*  /  302!
+/.github/*  /  302!
+/STANDAR-GAME.md  /  302!
+/package.json  /  302!
+/package-lock.json  /  302!
+/server.js  /  302!
+/capacitor.config.json  /  302!
+/kartu/sidik.json  /  302!

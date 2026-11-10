@@ -161,3 +161,8 @@
   for = "/font/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Catur online and cleanup of expired game rooms.
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"

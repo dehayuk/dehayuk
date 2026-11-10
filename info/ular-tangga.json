@@ -1,0 +1,16 @@
+{
+  "deskripsi": [
+    "Ular Tangga Nusantara menghadirkan papan 100 petak yang tajam, angka menyatu pada petak, 12 ular, 12 tangga, pion berdimensi, dan dadu beranimasi. Mainkan melawan komputer, bersama pada satu perangkat, atau dua pemain online.",
+    "Tidak perlu angka 6 untuk mulai. Angka 6 memberi giliran tambahan, pion dapat berbagi petak, dan kemenangan memerlukan angka tepat untuk mencapai 100. Posisi dan hasil lemparan disimpan otomatis. Harian dan tantangan teman memakai urutan dadu yang tetap."
+  ],
+  "caraMain": [
+    "Pilih lawan komputer, satu perangkat, atau Main online.",
+    "Ketuk Lempar dadu. Pion berjalan otomatis mengikuti nomor petak.",
+    "Berhenti di kaki tangga untuk naik atau di kepala ular untuk turun. Melewatinya tidak memicu perpindahan.",
+    "Angka 6 memberi giliran tambahan. Pion tidak saling memakan.",
+    "Capai 100 dengan angka tepat. Lemparan berlebih membuat pion tetap di tempat."
+  ],
+  "kontrol": "Ketuk Lempar dadu atau tekan Spasi. Escape untuk jeda. Mode online memakai satu meja publik untuk dua pemain dan dapat ditonton langsung.",
+  "orientasi": "tegak dan mendatar",
+  "diperbarui": "2026-10-27"
+}

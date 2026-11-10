@@ -166,7 +166,7 @@ canvas{display:block}
 <link rel="stylesheet" href="perjalanan.css">
 <link rel="stylesheet" href="penyajian.css">
 <link rel="stylesheet" href="/kit/v1/menu-game.css">
-</head>
+<link rel="stylesheet" href="/studio/v2/panggung.css?v=20261022-all"><link rel="stylesheet" href="panggung.css?v=20261022-all"><link rel="preload" as="image" href="/studio/v2/assets/warung.webp"><script src="/studio/v2/panggung.js?v=20261022-all" data-world="warung" data-game="jajan-manis"></script></head>
 <body>
 <canvas id="cv" role="img" aria-label="Papan jajanan pasar"></canvas>
 <div id="sr" class="vhid" aria-live="polite"></div>
@@ -315,7 +315,7 @@ const INK = "#3b1740";
 const KUE = [
   { nama: "Klepon", c: ["#d1ff95", "#47dc26", "#139c32", "#12623c"] },
   { nama: "Onde-onde", c: ["#fff391", "#ffb928", "#e87512", "#96501a"] },
-  { nama: "Dadar gulung", c: ["#a4faff", "#22c8f4", "#087cdc", "#145899"] },
+  { nama: "Dadar gulung", c: ["#d9f7a3", "#7eb633", "#3e7a18", "#294b13"] },
   { nama: "Kue lapis", c: ["#ffbded", "#ff46ae", "#d42283", "#952266"] },
   { nama: "Cenil", c: ["#e6c7ff", "#ad62ff", "#733be6", "#502197"] },
   { nama: "Kue mangkok", c: ["#ffcbbb", "#ff6056", "#da263d", "#982949"] }
@@ -380,7 +380,11 @@ function gula(g, x, y, R, s) {
   g.restore();
 }
 // gambar satu jajanan (biasa) di titik (0,0): badan bergradasi, tekstur khas, cahaya pantul, kilap
+const COVER_SWEETS=Array.from({length:6},(_,i)=>{const im=new Image();im.src='/studio/v3/jajan-'+i+'.webp';return im;});
+Promise.all(COVER_SWEETS.map(i=>i.decode().catch(()=>{}))).then(()=>{if(CELL>0){SPR_S=0;buildSprites(CELL*dpr);for(const key of Object.keys(ICONS))delete ICONS[key];if(mode==="play")drawHUD();}});
 function drawKue(g, t, R, noShadow) {
+ const image=COVER_SWEETS[t];if(image.complete&&image.naturalWidth){g.drawImage(image,-R*1.08,-R*1.08,R*2.16,R*2.16);return;}
+
   const rn = KIT.rng(t * 97 + 13), c = KUE[t].c;
   if (!noShadow) { g.save(); g.translate(0, R * 0.8); g.scale(1, 0.26); ell(g, 0, 0, R * 0.86, R * 0.86, 0, grad(g, 0, [0, 0, 0, 0, 0, R * 0.86], ["rgba(50,10,40,.42)", "rgba(50,10,40,.2)", "rgba(50,10,40,0)"])); g.restore(); }
   g.lineJoin = "round";
@@ -398,7 +402,7 @@ function drawKue(g, t, R, noShadow) {
       for (let k = 0; k < 3; k++) ell(g, X + (rn() - 0.5) * P * 1.6, Y + (rn() - 0.5) * P * 1.6, P * 0.06, P * 0.045, 0, "rgba(255,210,200,.45)");
       ell(g, X + P * 0.2, Y + P * 0.75, P * 0.8, P * 0.35, 0, "rgba(90,0,10,.22)");
       ell(g, X - P * 0.3, Y - P * 0.38, P * 0.36, P * 0.2, -0.6, "rgba(255,255,255,.62)");
-      g.restore(); g.strokeStyle = c[3]; g.lineWidth = R * 0.07; g.stroke();
+      g.restore(); g.strokeStyle = c[3]; g.lineWidth = R * 0.04; g.stroke();
       ell(g, X - P * 0.46, Y - P * 0.5, P * 0.08, P * 0.08, 0, "#fff");
     }
     return;
@@ -445,7 +449,7 @@ function drawKue(g, t, R, noShadow) {
   ell(g, R * 0.05, R * 0.66, R * 0.42, R * 0.12, 0, "rgba(255,255,255,.2)");
   ell(g, -R * 0.3, -R * 0.4, R * 0.3, R * 0.17, -0.6, grad(g, 0, [-R * 0.3, -R * 0.42, 0, -R * 0.3, -R * 0.4, R * 0.3], ["rgba(255,255,255,.9)", "rgba(255,255,255,.4)", "rgba(255,255,255,0)"]));
   g.restore();
-  shapePath(g, t, R); g.lineWidth = R * 0.06; g.strokeStyle = c[3]; g.stroke();
+  shapePath(g, t, R); g.lineWidth = R * 0.033; g.strokeStyle = c[3]; g.stroke();
   ell(g, -R * 0.4, -R * 0.46, R * 0.065, R * 0.065, 0, "#fff");
 }
 // lebah madu; flap 0..1 = kepak sayap
@@ -738,7 +742,7 @@ function tampah(g, cx, cy, rx, rn, bob) {
 function sprAt(g, t, s, x, y, R) { const k = R / (SPR_R / dpr), D = SPR_S / dpr * k; g.drawImage(sprOf(t, s), x - D / 2, y - D / 2, D, D); }
 function drawBackdrop() {
   buildBG();
-  const g = ctx; g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(BG, 0, 0);
+  const g = ctx; g.setTransform(1, 0, 0, 1, 0, 0); if(window.DehayukVisual.scene(g,cv.width,cv.height,{shade:THEMES[themeNow].night?.4:0})){g.setTransform(dpr,0,0,dpr,0,0);return;} g.drawImage(BG, 0, 0);
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
   const night = THEMES[themeNow].night;
   for (let k = 0; k < LAMPS.length; k++) { // lampu berkedip
@@ -758,7 +762,8 @@ function drawBackdrop() {
 // satu sel (latar kotak + agar-agar); w = goyangan agar
 function drawCell(g, i, x, y, w) {
   const r = i >> 3, c = i & 7;
-  g.fillStyle = (r + c) & 1 ? "#266b74" : "#2a727b"; rr(g, x + 1.5, y + 1.5, CELL - 3, CELL - 3, CELL * 0.18); g.fill();
+  g.fillStyle = (r + c) & 1 ? "rgba(71,100,32,.13)" : "rgba(112,66,27,.13)"; rr(g, x + 1.5, y + 1.5, CELL - 3, CELL - 3, CELL * 0.18); g.fill();
+  g.strokeStyle='#5d39185c';g.lineWidth=1;rr(g,x+3,y+3,CELL-6,CELL-6,CELL*.15);g.stroke();
   const L = core.J[i];
   if (L) {
     const k = w > 0 ? Math.sin(w * 40) * w * 0.25 : 0, p = CELL * (0.06 - k * 0.1);
@@ -783,7 +788,9 @@ function boardLayer() {
   g.strokeStyle = "rgba(140,80,25,.10)"; g.lineWidth = 2; g.beginPath();
   for (let k = -S; k < S; k += 8) { g.moveTo(x0 + k, y0); g.lineTo(x0 + k + S, y0 + S); }
   g.stroke(); g.restore();
-  g.fillStyle = "#19535f"; rr(g, BX - 2, BY - 2, BS + 4, BS + 4, CELL * 0.22); g.fill(); g.strokeStyle = INK; g.lineWidth = 2.5; g.stroke();
+  const weave=document.createElement('canvas');weave.width=weave.height=64;const q=weave.getContext('2d');for(let y=0;y<64;y+=8)for(let x=0;x<64;x+=8){const horizontal=((x+y)/8)%2,reed=horizontal?q.createLinearGradient(0,y,0,y+8):q.createLinearGradient(x,0,x+8,0);reed.addColorStop(0,'#805024');reed.addColorStop(.2,'#e3b768');reed.addColorStop(.55,'#d2a35c');reed.addColorStop(1,'#98652c');q.fillStyle=reed;q.fillRect(x,y,7.5,7.5);q.fillStyle='#f6d68c66';q.fillRect(x+1,y+1,horizontal?6:1,horizontal?1:6);}
+  g.fillStyle=g.createPattern(weave,'repeat');rr(g,BX-2,BY-2,BS+4,BS+4,CELL*.22);g.fill();g.strokeStyle='#67401b';g.lineWidth=2.5;g.stroke();
+
   for (let i = 0; i < NN; i++) if (core.M[i]) drawCell(g, i, BX + (i & 7) * CELL, BY + (i >> 3) * CELL, 0);
 }
 function drawBoard() {

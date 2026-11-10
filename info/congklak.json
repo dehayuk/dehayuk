@@ -1,7 +1,7 @@
 {
   "deskripsi": [
     "Congklak, atau dakon, adalah permainan papan warisan Nusantara. Di sini kamu memainkannya di papan kayu berukir berbentuk perahu, lengkap dengan biji kerang, tikar pandan, dan musik lembut bernuansa gamelan.",
-    "Lawan Komputer tiga tingkat: Mudah, Sedang, dan Sulit dengan poin ×1, ×3, dan ×10. Giliran pertama bergantian tiap permainan. Bisa juga main berdua di satu HP, dengan papan yang berputar menghadap pemain yang sedang jalan.",
+    "Lawan Komputer tiga tingkat, main berdua di satu HP, atau masuk ke satu meja publik untuk duel online. Penonton melihat papan yang sama secara langsung.",
     "Ikuti Harian dengan susunan biji yang sama untuk semua orang, tantang teman lewat WhatsApp untuk mengalahkan poinmu, kumpulkan lencana, dan buka biji serta papan baru."
   ],
   "caraMain": [
@@ -11,7 +11,7 @@
     "Jatuh di lubang kosong milikmu setelah melewati lumbungmu? Nembak: biji di lubang seberang masuk lumbungmu.",
     "Permainan selesai saat giliran tak bisa jalan. Lumbung terbanyak menang."
   ],
-  "kontrol": "Ketuk lubang untuk menabur. Ketuk papan untuk mempercepat. Di komputer, tombol 1 sampai 7 memilih lubang, Spasi mempercepat, dan P atau Esc menjeda.",
+  "kontrol": "Ketuk lubang untuk menabur. Ketuk papan untuk mempercepat. Di komputer, tombol 1 sampai 7 memilih lubang, Spasi mempercepat, dan P atau Esc menjeda. Mode online memakai satu meja publik untuk dua pemain; giliran dan langkah diperiksa server.",
   "orientasi": "Tegak",
-  "diperbarui": "2026-09-28"
+  "diperbarui": "2026-10-27"
 }
